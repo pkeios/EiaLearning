@@ -13,6 +13,20 @@ const todas = () => T.flatMap(preguntasDe);
 const INTERVALOS = [1, 3, 7, 14];
 const dia = (mas = 0) => { const d = new Date(); d.setDate(d.getDate() + mas); return d.toLocaleDateString('sv'); }; // 'sv' da AAAA-MM-DD
 const tocaHoy = (p, k) => p.falladas[k] && (!p.agenda[k] || p.agenda[k].d <= dia());
+// Búsqueda sin distinguir mayúsculas ni tildes; el índice se arma una vez al cargar.
+const normal = s => s.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase();
+const INDICE = T.flatMap(m => m.lecciones.map(l => {
+  const texto = (l.titulo + '. ' + l.html.replace(/<[^>]+>/g, ' ')).replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&').replace(/\s+/g, ' ');
+  return { m, l, texto, norm: normal(texto) + ' ' + normal(m.titulo) };
+}));
+function buscar(consulta) {
+  const palabras = normal(consulta).split(/\s+/).filter(p => p.length > 1);
+  if (!palabras.length) return [];
+  return INDICE.filter(x => palabras.every(p => x.norm.includes(p))).map(x => {
+    const i = Math.max(0, x.norm.indexOf(palabras[0]));
+    return { ...x, fragmento: (i > 60 ? '…' : '') + x.texto.slice(Math.max(0, i - 60), i + 160) + '…' };
+  });
+}
 // Racha: días seguidos con al menos una actividad (lección leída o quiz). Si hoy todavía no estudiaste, cuenta hasta ayer.
 const estudiar = p => { p.dias[dia()] = (p.dias[dia()] || 0) + 1; };
 function racha(p) {
@@ -150,6 +164,24 @@ function modulo(id) {
   app.querySelector('#apunte').oninput = e => { const p = cargar(); p.apuntes[m.id] = e.target.value; guardar(p); };
 }
 
+function busqueda() {
+  app.innerHTML = `<a class="volver" href="#/">← Temario</a><h1>🔎 Buscar en las lecciones</h1>
+    <input id="consulta" type="search" class="buscador" placeholder="Ej.: embeddings, KV cache, overfitting..." aria-label="Buscar en las lecciones">
+    <div id="resultados" aria-live="polite"></div>`;
+  const input = app.querySelector('#consulta'), salida = app.querySelector('#resultados');
+  input.oninput = () => {
+    const r = buscar(input.value);
+    salida.innerHTML = input.value.trim().length < 2 ? '<p class="suave">Escribí al menos 2 letras.</p>'
+      : !r.length ? '<p class="suave">Sin resultados. Probá con otra palabra.</p>'
+      : `<p class="suave">${r.length} ${r.length === 1 ? 'lección' : 'lecciones'}</p>` + r.map(x => `
+        <a class="resultado-busqueda" href="#/m/${x.m.id}">
+          <small>${icono(x.m)} ${esc(x.m.titulo)}</small><strong>${esc(x.l.titulo)}</strong><span>${esc(x.fragmento)}</span>
+        </a>`).join('');
+  };
+  input.oninput();
+  input.focus();
+}
+
 function quiz(titulo, preguntas, alTerminar, vacio = 'No hay preguntas pendientes. 🎉') {
   app.innerHTML = `<a class="volver" href="#/">← Temario</a><h1>${esc(titulo)}</h1>
     ${preguntas.length ? `<div class="quiz-estado"><span id="contador">0/${preguntas.length} respondidas</span>${barra(0)}</div>` : `<section class="card"><p>${esc(vacio)}</p></section>`}
@@ -198,6 +230,7 @@ function quiz(titulo, preguntas, alTerminar, vacio = 'No hay preguntas pendiente
 function render() {
   const [, ruta, id] = location.hash.split('/');
   if (ruta === 'm') modulo(id);
+  else if (ruta === 'buscar') busqueda();
   else if (ruta === 'quiz' && T.some(m => m.id === id)) {
     const m = T.find(x => x.id === id);
     quiz(`${icono(m)} Quiz: ${m.titulo}`, mezclar(preguntasDe(m)), (p, pct) => { p.notas[m.id] = Math.max(p.notas[m.id] ?? 0, pct); });

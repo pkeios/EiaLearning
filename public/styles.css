@@ -95,6 +95,14 @@ code { font-family: ui-monospace, "Cascadia Code", Consolas, monospace; }
 :not(pre) > code { background: var(--card2); padding: .1rem .35rem; border-radius: 5px; font-size: .9em; }
 textarea { width: 100%; background: var(--bg); color: var(--texto); border: 1px solid var(--borde); border-radius: 10px; padding: .8rem; font: inherit; resize: vertical; }
 
+/* Buscador */
+.buscador { width: 100%; background: var(--card); color: var(--texto); border: 1px solid var(--borde); border-radius: 12px; padding: .9rem 1.1rem; font: inherit; font-size: 1.05rem; margin-bottom: 1rem; }
+.buscador:focus { border-color: var(--acento); outline: none; }
+.resultado-busqueda { display: flex; flex-direction: column; gap: .2rem; background: var(--card); border: 1px solid var(--borde); border-radius: 12px; padding: .9rem 1.1rem; margin: .6rem 0; color: var(--texto); }
+.resultado-busqueda:hover { border-color: var(--acento); text-decoration: none; }
+.resultado-busqueda small, .resultado-busqueda span { color: var(--suave); }
+.resultado-busqueda span { font-size: .9rem; }
+
 /* Quiz */
 .quiz-estado { position: sticky; top: 62px; z-index: 5; background: rgba(11, 16, 32, .9); backdrop-filter: blur(8px); padding: .5rem 0; color: var(--suave); font-size: .9rem; }
 .pregunta { background: var(--card); border: 1px solid var(--borde); border-radius: var(--radio); margin: 1rem 0; padding: 1.2rem 1.3rem; }

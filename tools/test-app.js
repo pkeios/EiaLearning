@@ -1,13 +1,13 @@
 // Prueba la lógica de public/app.js sin navegador. Uso: node tools/test-app.js
 const fs = require('fs'), path = require('path'), vm = require('vm'), assert = require('assert');
 const leer = f => fs.readFileSync(path.join(__dirname, '..', 'public', f), 'utf8');
-const el = { querySelector: () => el, querySelectorAll: () => [], h: '', set innerHTML(v) { this.h = v; }, get innerHTML() { return this.h; } };
+const el = { querySelector: () => el, querySelectorAll: () => [], focus() {}, value: '', h: '', set innerHTML(v) { this.h = v; }, get innerHTML() { return this.h; } };
 let guardado = null;
 const ctx = { window: {}, document: { getElementById: () => el }, localStorage: { getItem: () => guardado, setItem: (k, v) => { guardado = v; } }, location: { hash: '' }, addEventListener() {}, scrollTo() {}, Date };
 vm.createContext(ctx);
 vm.runInContext(leer('contenido.js'), ctx);
-vm.runInContext(leer('app.js') + ';this.X = { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar };', ctx);
-const { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar } = ctx.X;
+vm.runInContext(leer('app.js') + ';this.X = { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar };', ctx);
+const { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar } = ctx.X;
 const plano = o => JSON.parse(JSON.stringify(o));
 
 // Inicio renderiza con progreso vacío
@@ -44,6 +44,17 @@ const l = limpiarProgreso({ leidas: { 'a:0': 1 }, notas: { a: '<img onerror=x>',
 assert.deepStrictEqual(plano(l), { leidas: { 'a:0': true }, notas: { a: 0, b: 100, c: 85 }, falladas: { x: true }, apuntes: { a: '5' },
   agenda: { x: { n: 3, d: dia() }, y: { n: 1, d: '2026-12-01' } }, dias: { '2026-11-01': 2, '2026-10-31': 0 }, examen: 90 });
 for (const malo of [null, [], 5, 'x']) assert.throws(() => limpiarProgreso(malo));
+
+// Buscador: sin tildes ni mayúsculas, todas las palabras deben aparecer
+assert.equal(buscar('').length, 0);
+assert.equal(buscar('a').length, 0);
+assert.ok(buscar('KV CACHE').some(x => x.m.id === 'fine-tuning'));
+assert.ok(buscar('atencion').length > 0);
+assert.ok(buscar('embeddings rag').every(x => x.norm.includes('embeddings') && x.norm.includes('rag')));
+assert.equal(buscar('palabrainexistentexyz').length, 0);
+ctx.location.hash = '#/buscar';
+vm.runInContext('render()', ctx);
+assert.ok(el.h.includes('Escribí al menos 2 letras') || el.h.includes('consulta'));
 
 // Repaso vacío muestra un mensaje en lugar de un formulario
 guardado = null;

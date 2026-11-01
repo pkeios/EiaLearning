@@ -14,3 +14,4 @@ Lo completa el comando `/mejorar`. Una línea por ejecución.
 - 2026-11-01 · app · racha de días de estudio y meta diaria (1 lección o 1 quiz) en el inicio, con tests
 - 2026-11-01 · evals · lección de rigor estadístico (error estándar, IC95, comparación pareada, repetición, errores agrupados, pass@k vs pass^k), 5 preguntas, 1 práctica, 2 recursos · fuentes: https://www.anthropic.com/research/statistical-approach-to-model-evals, https://arxiv.org/abs/2406.12045
 - 2026-11-01 · fine-tuning · lección de servicio de modelos (prefill/decode, KV cache con cálculo, GQA, batching continuo, PagedAttention, métricas), 5 preguntas, 1 práctica, 3 recursos · fuentes: https://arxiv.org/abs/2309.06180, https://arxiv.org/abs/2305.13245, https://docs.vllm.ai/en/latest/
+- 2026-11-01 · app · buscador de lecciones (sin tildes ni mayúsculas, con fragmento de contexto), enlace en la cabecera, con tests
