@@ -229,7 +229,7 @@ for nombre, modelo in [("lineal", lineal), ("boosting", boosting)]:
         <li><strong>Razonamiento:</strong> modelos entrenados (a menudo con RL) para "pensar" antes de responder; mejoran en matemáticas, código y tareas de varios pasos a cambio de más tokens y latencia.</li>
       </ol>
       <p><strong>Ventana de contexto:</strong> máximo de tokens (entrada + salida) que el modelo procesa a la vez. Fuera de ahí, no existe para el modelo.</p>
-      <p><strong>Muestreo:</strong> <em>temperatura</em> baja = más determinista; alta = más variado. <em>Top-p</em> limita la elección a los tokens que acumulan probabilidad p.</p>
+      <p><strong>Muestreo:</strong> <em>temperatura</em> baja = más determinista; alta = más variado. <em>Top-p</em> limita la elección a los tokens que acumulan probabilidad p. Ojo: no todas las APIs los exponen. En la API de Claude, la versión 2026-10-21 eliminó <code>temperature</code>, <code>top_p</code> y <code>top_k</code> (devuelven error 400) y el comportamiento se guía con el prompt. Siguen existiendo en muchos otros proveedores y en modelos abiertos.</p>
       <p><strong>Alucinaciones:</strong> el modelo genera texto plausible, no necesariamente verdadero. Se mitiga dando contexto (RAG), pidiendo citas, permitiendo "no sé" y evaluando.</p>
       <p><strong>Leyes de escalado:</strong> el rendimiento mejora de forma predecible con más parámetros, datos y cómputo, y también con más cómputo en inferencia (pensar más).</p>` },
   ],
@@ -779,6 +779,7 @@ Ejemplo, modelo tipo Llama 3 8B: 32 capas, 8 cabezas KV, dim 128, fp16 (2 bytes)
     'Instrumentar observabilidad: trazas, tokens, costo, latencia',
     'Optimizar costo y latencia sin perder calidad',
     'Hacer sistemas fiables: validación, fallbacks, versionado',
+    'Migrar modelos y prompts en producción con shadow, canary y rollback',
   ],
   lecciones: [
     { titulo: 'Observabilidad y versionado', html: `
@@ -795,14 +796,44 @@ Ejemplo, modelo tipo Llama 3 8B: 32 capas, 8 cabezas KV, dim 128, fp16 (2 bytes)
         <li><strong>Rate limits:</strong> conocé tus límites, encolá picos de tráfico y limitá por usuario para evitar abusos.</li>
       </ul>
       <p>Toda optimización se valida con tus evals: un modelo más barato que baja la calidad no es ahorro.</p>` },
+    { titulo: 'Cambiar de modelo o de prompt sin romper producción', html: `
+      <p>Tu app depende de algo que no controlás: los modelos tienen fecha de vencimiento. Anthropic, por ejemplo, define un ciclo de vida (<em>active</em>, <em>legacy</em>, <em>deprecated</em>, <em>retired</em>), avisa con al menos 60 días de anticipación antes de retirar un modelo público, y las peticiones a un modelo retirado fallan.</p>
+      <p>También cambian las APIs: la versión 2026-10-21 de la API de Claude eliminó <code>temperature</code>, <code>top_p</code> y <code>top_k</code>, que ahora devuelven error 400. Código que nadie tocó puede romperse al actualizar la versión.</p>
+      <p><strong>Prácticas:</strong></p>
+      <ul>
+        <li><strong>Modelo y versión de prompt en configuración</strong>, no escritos en el código. Cambiarlos es editar una config, no hacer un deploy.</li>
+        <li><strong>Evals antes de migrar:</strong> los prompts quedan ajustados al modelo para el que se escribieron. Un modelo más capaz puede empeorar algunos casos hasta que revisás el prompt. Compará con evals pareadas.</li>
+        <li><strong>Shadow:</strong> mandás una copia del tráfico real al modelo nuevo y comparás offline. Ningún usuario ve esas respuestas.</li>
+        <li><strong>Canary:</strong> el 1-5% de los usuarios recibe la versión nueva; si las métricas aguantan, subís el porcentaje.</li>
+        <li><strong>Rollback inmediato:</strong> volver atrás es cambiar la config, en segundos.</li>
+        <li><strong>Auditá el uso:</strong> sabé qué modelos usa cada servicio para que un retiro no te sorprenda.</li>
+      </ul>
+      <pre><code>import hashlib
+
+CONFIG = {
+    "estable": {"modelo": "claude-sonnet-5-5", "prompt": "v7"},
+    "canary":  {"modelo": "claude-opus-5-5",   "prompt": "v8", "porcentaje": 5},
+}
+
+def variante(usuario_id):
+    # hash estable: hash() de Python cambia entre procesos y el usuario saltaría de variante
+    cubeta = int(hashlib.sha256(usuario_id.encode()).hexdigest(), 16) % 100
+    c = CONFIG["canary"]
+    return ("canary", c) if c and cubeta &lt; c["porcentaje"] else ("estable", CONFIG["estable"])
+
+nombre, cfg = variante("usuario-123")
+# registrá "nombre" en cada traza para comparar éxito, latencia y costo por variante</code></pre>
+      <p>El mismo usuario siempre cae en la misma variante: así su experiencia es coherente y las métricas por variante no se mezclan.</p>` },
   ],
   practica: [
     'Agregá a tu app un log por llamada (Postgres o Langfuse) con tokens, costo, latencia y versión de prompt. Hacé un dashboard simple.',
     'Implementá routing: un clasificador barato decide si la consulta va al modelo chico o al grande. Medí ahorro y calidad con tus evals.',
+    'Agregá a tu app un canary configurable (porcentaje, modelo y versión de prompt) con hash estable por usuario, y un tablero que compare tasa de éxito, latencia y costo entre estable y canary. Simulá un rollback cambiando solo la configuración.',
   ],
   recursos: [
     { t: 'Langfuse (observabilidad open source)', url: 'https://langfuse.com/docs' },
     { t: 'OpenTelemetry', url: 'https://opentelemetry.io/docs/' },
+    { t: 'Claude — Ciclo de vida y retiro de modelos', url: 'https://platform.claude.com/docs/en/about-claude/model-deprecations' },
     { t: 'Documentación de prompt caching de Claude', url: 'https://docs.claude.com/en/docs/build-with-claude/prompt-caching' },
   ],
   quiz: [
@@ -812,6 +843,11 @@ Ejemplo, modelo tipo Llama 3 8B: 32 capas, 8 cabezas KV, dim 128, fp16 (2 bytes)
     { q: 'El modelo debe devolver JSON y a veces devuelve texto inválido. ¿Qué hacés en producción?', opciones: ['Mostrarlo igual al usuario', 'Pedirle al usuario que reintente', 'Subir la temperatura', 'Validar contra un esquema y reintentar con el error si falla'], correcta: 3, explicacion: 'Nunca confíes en que la salida cumple el formato: validá siempre. Las salidas estructuradas nativas reducen mucho el problema.' },
     { q: '¿Qué es el time to first token (TTFT)?', opciones: ['El tiempo de entrenamiento', 'La latencia hasta que llega el primer token de la respuesta', 'El tiempo de tokenización', 'La duración de la sesión'], correcta: 1, explicacion: 'Es la latencia que el usuario siente con streaming; el prompt caching y los prompts más cortos la reducen.' },
     { q: '¿Por qué versionar los prompts?', opciones: ['Para reproducir resultados, comparar versiones y poder hacer rollback', 'Porque lo exige la API', 'Para que sean más cortos', 'Para cifrarlos'], correcta: 0, explicacion: 'Un prompt es código que cambia el comportamiento del producto; merece el mismo control de versiones.' },
+    { q: 'Tu proveedor anuncia que el modelo que usás se retira en 60 días. ¿Cuál es tu primer paso?', opciones: ['Correr tus evals con el modelo de reemplazo y ajustar el prompt, bien antes de la fecha', 'Esperar a la fecha y cambiar el nombre del modelo', 'Ignorarlo hasta que falle', 'Hacer fine-tuning del modelo viejo'], correcta: 0, explicacion: 'Los prompts están ajustados al modelo actual y el reemplazo puede comportarse distinto. Cambiar el nombre el último día es descubrir las regresiones en producción.' },
+    { q: 'Actualizás la versión de la API y un endpoint que nadie tocó empieza a devolver errores 400. ¿Causa más probable?', opciones: ['Rate limit', 'Una caída del proveedor', 'La versión nueva eliminó un parámetro que enviás (por ejemplo, temperature en la API de Claude): revisás la guía de migración', 'La API key venció'], correcta: 2, explicacion: 'Un 400 indica una petición inválida, no un problema transitorio (eso sería 429 o 5xx) ni de credenciales (401). Los cambios de versión pueden eliminar parámetros.' },
+    { q: 'Querés probar un modelo nuevo con tráfico real sin que ningún usuario vea sus respuestas. ¿Qué técnica usás?', opciones: ['Canary al 5%', 'Un A/B test', 'Cambiar todo de una vez', 'Shadow: mandás una copia del tráfico al modelo nuevo y comparás offline'], correcta: 3, explicacion: 'En canary y A/B hay usuarios que reciben la versión nueva. En shadow nadie la ve, así que es el paso más seguro antes del canary.' },
+    { q: 'Para asignar usuarios a un canary del 5% usás hash(usuario_id) % 100 en Python. ¿Qué problema tiene?', opciones: ['hash() de strings cambia entre procesos, así que el mismo usuario salta de variante; hay que usar un hash estable como SHA-256', 'Ninguno', 'Es demasiado lento', 'El 5% es demasiado tráfico'], correcta: 0, explicacion: 'Python aleatoriza hash() de strings en cada proceso. Con varios servidores o reinicios, un usuario vería respuestas de las dos variantes y las métricas se mezclarían.' },
+    { q: 'Migraste a un modelo más capaz y algunos casos empeoraron. ¿Por qué puede pasar?', opciones: ['Porque los modelos más capaces siempre son peores', 'Porque es un bug del proveedor', 'Porque tus prompts estaban ajustados al modelo anterior: hay que revisarlos y comparar con evals pareadas', 'Por el prompt caching'], correcta: 2, explicacion: 'Instrucciones que compensaban debilidades del modelo viejo pueden confundir al nuevo. Se detecta con evals pareadas y se corrige revisando el prompt.' },
   ],
 },
 {
