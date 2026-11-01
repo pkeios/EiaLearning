@@ -626,6 +626,7 @@ Formato: tabla con producto | plan gratuito | precio por millón de vectores | f
     'Construir un dataset de evaluación a partir de casos reales',
     'Combinar evaluaciones por código, LLM-as-judge y revisión humana',
     'Usar evals para iterar sin regresiones',
+    'Comparar versiones con rigor: intervalos de confianza, comparación pareada y pass@k vs pass^k',
   ],
   lecciones: [
     { titulo: 'Por qué las evals son la habilidad número uno', html: `
@@ -646,16 +647,43 @@ Formato: tabla con producto | plan gratuito | precio por millón de vectores | f
       </ol>
       <p><strong>Sesgos del LLM-as-judge:</strong> prefiere respuestas largas, la primera opción en comparaciones, y a veces sus propias respuestas. Mitigaciones: rúbricas específicas, veredictos binarios, alternar el orden, y <em>medir el acuerdo del juez con etiquetas humanas</em> antes de confiar en él.</p>
       <p><strong>Offline vs online:</strong> offline = dataset fijo antes de desplegar. Online = señales en producción (feedback del usuario, tasa de éxito de tareas, A/B tests).</p>` },
+    { titulo: 'Evals con rigor: error estándar, comparación pareada y pass@k', html: `
+      <p>"La versión nueva saca 84% y la vieja 80%" no dice nada sin un margen de error. Los modelos no son deterministas y tu dataset es una muestra, así que cada nota trae ruido.</p>
+      <p><strong>1. Reportá el error estándar.</strong> Para una tasa de aciertos p con n casos, <code>SEM = √(p·(1−p)/n)</code> y el intervalo de confianza del 95% es <code>p ± 1,96·SEM</code>. Con 50 casos y 80% de aciertos: SEM ≈ 0,057, o sea <strong>±11 puntos</strong> (de 69% a 91%). Con 500 casos baja a unos ±3,5. Si la mejora que buscás es de 4 puntos, 50 casos no alcanzan para verla.</p>
+      <p><strong>2. Compará de forma pareada.</strong> Las dos versiones responden los mismos casos, así que analizá la diferencia caso por caso. Eso elimina el ruido de que unos casos sean más difíciles que otros y achica el error. Si el intervalo de la diferencia incluye el 0, no hay mejora demostrada.</p>
+      <p><strong>3. Repetí cada caso.</strong> Ejecutá cada caso varias veces y promediá: baja la varianza por el azar del modelo. Si dos corridas idénticas dan 78% y 83%, ya sabés cuánto ruido tenés.</p>
+      <p><strong>4. Cuidado con los casos agrupados.</strong> Si tus 100 preguntas son 10 sobre cada uno de 10 documentos, no son independientes. El error real es mayor que el ingenuo: Anthropic encontró que en evals populares los errores agrupados eran más de 3 veces los ingenuos.</p>
+      <pre><code>import math
+
+def ic95(resultados):                 # lista de 0/1
+    n, p = len(resultados), sum(resultados) / len(resultados)
+    sem = math.sqrt(p * (1 - p) / n)
+    return p - 1.96 * sem, p + 1.96 * sem
+
+def diferencia_pareada(a, b):         # mismos casos, mismo orden
+    d = [x - y for x, y in zip(a, b)]
+    n, media = len(d), sum(d) / len(d)
+    sem = math.sqrt(sum((x - media) ** 2 for x in d) / (n - 1) / n)
+    return media - 1.96 * sem, media + 1.96 * sem   # si incluye 0: no concluyente</code></pre>
+      <p><strong>pass@k vs pass^k (agentes):</strong></p>
+      <ul>
+        <li><strong>pass@k:</strong> probabilidad de que <em>al menos uno</em> de k intentos salga bien. Sirve cuando podés verificar y elegir, como generar código y correr tests.</li>
+        <li><strong>pass^k</strong> (popularizada por τ-bench): probabilidad de que <em>los k</em> intentos salgan bien. Mide confiabilidad, que es lo que importa cuando un agente atiende usuarios reales.</li>
+      </ul>
+      <p>Con 80% de éxito por intento (independientes): pass@3 = 1 − 0,2³ ≈ <strong>99%</strong>, pero pass^3 = 0,8³ ≈ <strong>51%</strong>. El mismo agente parece excelente o mediocre según qué preguntes.</p>` },
   ],
   practica: [
     'Tomá tu RAG o chatbot, revisá 50 respuestas a mano y armá una taxonomía de errores con su frecuencia.',
     'Escribí un juez LLM binario para tu modo de fallo más común. Etiquetá 40 casos a mano y medí el acuerdo (accuracy, y precision/recall del juez).',
     'Integrá tus evals en CI para que fallen si la tasa de aprobación baja de un umbral.',
+    'Corré cada caso de tus evals 5 veces con dos versiones de prompt. Calculá el intervalo de confianza de cada versión y el de la diferencia pareada, decidí si la mejora es real y estimá cuántos casos necesitarías para detectar una mejora de 3 puntos.',
   ],
   recursos: [
     { t: 'Hamel Husain — Your AI Product Needs Evals', url: 'https://hamel.dev/blog/posts/evals/' },
     { t: 'Anthropic — Crear evaluaciones empíricas', url: 'https://docs.claude.com/en/docs/test-and-evaluate/develop-tests' },
     { t: 'Chip Huyen — AI Engineering (libro, O\'Reilly)', url: 'https://www.oreilly.com/library/view/ai-engineering/9781098166298/' },
+    { t: 'Anthropic — A statistical approach to model evaluations', url: 'https://www.anthropic.com/research/statistical-approach-to-model-evals' },
+    { t: 'τ-bench: agentes con herramientas y usuarios (paper, introduce pass^k)', url: 'https://arxiv.org/abs/2406.12045' },
   ],
   quiz: [
     { q: '¿Cuál es el primer paso recomendado para crear evals útiles?', opciones: ['Elegir una métrica genérica como BLEU', 'Leer trazas reales y hacer análisis de errores', 'Comprar una herramienta de evals', 'Pedirle al modelo que se evalúe solo'], correcta: 1, explicacion: 'Las métricas útiles salen de los fallos que realmente ocurren en tu sistema, no de una lista genérica.' },
@@ -664,6 +692,11 @@ Formato: tabla con producto | plan gratuito | precio por millón de vectores | f
     { q: '¿Cómo sabés si podés confiar en tu juez LLM?', opciones: ['Si usa el modelo más caro', 'Si su prompt es largo', 'Si da notas altas', 'Midiendo su acuerdo con etiquetas humanas'], correcta: 3, explicacion: 'Un juez es un clasificador: medí su precision y recall contra la verdad humana.' },
     { q: '¿Para qué sirven las evals de regresión?', opciones: ['Para entrenar el modelo', 'Para asegurar que un cambio no rompe casos que ya funcionaban', 'Para reducir costos', 'Para generar datos sintéticos'], correcta: 1, explicacion: 'Mejorar un caso empeorando otros es muy común con prompts; las regresiones lo detectan.' },
     { q: '¿Qué evaluación es ideal para verificar que la salida es JSON válido con un campo "categoria"?', opciones: ['Una assertion en código', 'Un juez LLM', 'Revisión humana', 'Un A/B test'], correcta: 0, explicacion: 'Es determinista y verificable: parsear y chequear el campo. Gratis y exacto.' },
+    { q: 'La versión 1 de tu prompt saca 80% y la versión 2 saca 84%, sobre 50 casos. ¿Qué concluís?', opciones: ['La versión 2 es mejor: la publicás', 'La versión 1 es mejor', 'Son idénticas', 'No es concluyente: con 50 casos el margen es de unos ±11 puntos; hacés una comparación pareada o ampliás el dataset'], correcta: 3, explicacion: 'SEM = √(0,8·0,2/50) ≈ 0,057, así que el intervalo del 95% es de unos ±11 puntos. Una diferencia de 4 puntos cabe de sobra en el ruido.' },
+    { q: 'Tu agente de soporte resuelve bien el 80% de los intentos, de forma independiente. Los usuarios necesitan que funcione siempre. ¿Qué métrica lo refleja y cuánto da con k = 3?', opciones: ['pass^3, que da alrededor de 51%', 'pass@3, que da alrededor de 99%', 'Accuracy, que da 80%', 'pass@1, que da 80%'], correcta: 0, explicacion: 'pass^k exige que los k intentos salgan bien: 0,8³ ≈ 0,51. pass@3 (al menos uno bien) da 99%, pero un usuario no puede reintentar hasta que salga.' },
+    { q: 'Generás código y tenés tests automáticos: podés producir 5 candidatos y quedarte con el que pase. ¿Qué métrica describe mejor este sistema?', opciones: ['pass^5', 'pass@5', 'BLEU', 'Latencia media'], correcta: 1, explicacion: 'Si podés verificar y elegir, te alcanza con que uno de los k salga bien: eso es pass@k. pass^k es para cuando cada intento llega al usuario.' },
+    { q: 'Corrés la misma eval dos veces sin cambiar nada y da 78% y 83%. ¿Qué hacés?', opciones: ['Te quedás con la corrida mejor', 'Cambiás de modelo', 'Ejecutás cada caso varias veces, promediás y reportás el error estándar', 'Bajás el dataset a 10 casos para que corra más rápido'], correcta: 2, explicacion: 'Ese salto es ruido del modelo. Repetir y promediar reduce la varianza; achicar el dataset la aumenta, y quedarte con la mejor corrida es engañarte.' },
+    { q: 'Tu dataset tiene 100 preguntas, pero son 10 preguntas sobre cada uno de 10 documentos. El error estándar calculado de forma ingenua es ±4 puntos. ¿Qué pasa?', opciones: ['Nada, el cálculo es correcto', 'El error real es menor', 'Hay que borrar documentos', 'Las preguntas de un mismo documento no son independientes: hay que agrupar el error por documento, y puede ser bastante mayor'], correcta: 3, explicacion: 'Las preguntas de un mismo documento tienden a acertarse o fallarse juntas. Anthropic encontró errores agrupados de más de 3 veces los ingenuos en evals populares.' },
   ],
 },
 {
