@@ -36,6 +36,11 @@ function inicio() {
         <a class="stat" href="#/examen"><strong>${p.examen != null ? p.examen + '%' : '—'}</strong><span>examen final</span></a>
       </div>
       <a class="boton" href="#/m/${siguiente.id}">${aprobados || leidas ? 'Continuar' : 'Empezar'}: ${icono(siguiente)} ${esc(siguiente.titulo)} →</a>
+      <div class="datos">
+        <button class="secundario" id="exportar">⬇ Exportar progreso</button>
+        <button class="secundario" id="importar">⬆ Importar progreso</button>
+        <input type="file" id="archivo" accept=".json,application/json" hidden>
+      </div>
     </section>
     <div class="grilla">${T.map((m, i) => {
       const a = avance(m, p), nota = p.notas[m.id];
@@ -47,6 +52,37 @@ function inicio() {
         <small>${a.leidas}/${m.lecciones.length} lecciones · quiz ${nota != null ? nota + '%' : 'pendiente'}${aprobado(m, p) ? ' ✔' : ''}</small>
       </a>`;
     }).join('')}</div>`;
+  app.querySelector('#exportar').onclick = exportar;
+  app.querySelector('#importar').onclick = () => app.querySelector('#archivo').click();
+  app.querySelector('#archivo').onchange = e => e.target.files[0] && importar(e.target.files[0]);
+}
+
+function exportar() {
+  const url = URL.createObjectURL(new Blob([JSON.stringify(cargar(), null, 2)], { type: 'application/json' }));
+  const a = Object.assign(document.createElement('a'), { href: url, download: 'progreso-ai-engineering.json' });
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+// El archivo viene de afuera: solo se copian los campos conocidos y con el tipo esperado.
+// Si agregás campos nuevos al progreso, sumalos acá también.
+function limpiarProgreso(d) {
+  if (!d || typeof d !== 'object' || Array.isArray(d)) throw new Error('formato inválido');
+  const p = { leidas: {}, notas: {}, falladas: {}, apuntes: {} };
+  for (const k of ['leidas', 'falladas']) for (const c in d[k] || {}) p[k][c] = true;
+  for (const c in d.notas || {}) p.notas[c] = Math.min(100, Math.max(0, Number(d.notas[c]) || 0));
+  for (const c in d.apuntes || {}) p.apuntes[c] = String(d.apuntes[c]);
+  if (d.examen != null) p.examen = Math.min(100, Math.max(0, Number(d.examen) || 0));
+  return p;
+}
+
+async function importar(archivo) {
+  let p;
+  try { p = limpiarProgreso(JSON.parse(await archivo.text())); }
+  catch { return alert('Ese archivo no es un progreso válido.'); }
+  if (!confirm('Esto reemplaza tu progreso actual por el del archivo. ¿Continuar?')) return;
+  guardar(p);
+  inicio();
 }
 
 function modulo(id) {

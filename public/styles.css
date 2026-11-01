@@ -31,7 +31,9 @@ h2 { margin: 2.2rem 0 .8rem; font-size: 1.35rem; }
 button, .boton { display: inline-block; background: linear-gradient(90deg, var(--acento), #6a8bff); color: #fff; border: 0; border-radius: 10px; padding: .7rem 1.3rem; font: inherit; font-weight: 700; cursor: pointer; transition: transform .15s, box-shadow .15s; }
 button:hover, .boton:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(139, 124, 255, .35); text-decoration: none; }
 button:disabled { opacity: .45; cursor: default; transform: none; box-shadow: none; }
-.boton.secundario { background: var(--card2); border: 1px solid var(--borde); }
+.secundario { background: var(--card2); border: 1px solid var(--borde); color: var(--texto); }
+.datos { display: flex; gap: .6rem; flex-wrap: wrap; margin-top: 1rem; }
+.datos button { font-size: .85rem; padding: .45rem .9rem; }
 
 /* Barras y badges */
 .barra { height: 8px; background: var(--card2); border-radius: 999px; overflow: hidden; margin: .7rem 0; }

@@ -19,9 +19,8 @@ Leé las últimas líneas de `MEJORAS.md`.
 
 ## 3. Validar y publicar
 1. `node tools/validar.js` tiene que decir OK. Si falla, arreglalo; no publiques nada roto.
-2. `git pull --rebase` (por si hubo cambios en GitHub).
-3. Hacé un commit con un mensaje corto, como `mejorar(<modulo>): ...` o `app: ...`, y agregá al final la línea de co-autoría de la sesión.
-4. `git push`.
-5. Respondé con una sola línea: qué cambió y si el push salió bien.
+2. Hacé un commit con un mensaje corto, como `mejorar(<modulo>): ...` o `app: ...`, y agregá al final la línea de co-autoría de la sesión.
+3. `git pull --rebase` (por si hubo cambios en GitHub) y después `git push`.
+4. Respondé con una sola línea: qué cambió y si el push salió bien.
 
 Si algo falla dos veces seguidas, por ejemplo el push o la validación, no insistas: dejá el trabajo sin commitear y explicá el problema en una línea.
