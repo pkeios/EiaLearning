@@ -546,6 +546,7 @@ def buscar_docs(consulta, usuario, producto=None):
     'Implementar el bucle de tool use desde cero',
     'Distinguir workflows de agentes y conocer los patrones principales',
     'Entender MCP y diseñar herramientas que un modelo use bien',
+    'Decidir cuándo un sistema multi-agente vale su costo, y delegar y evaluar bien',
   ],
   lecciones: [
     { titulo: 'Tool use: el bucle que da superpoderes', html: `
@@ -571,16 +572,36 @@ for paso in range(10):                      # límite de pasos: siempre
       </ul>
       <p><strong>MCP (Model Context Protocol):</strong> estándar abierto para conectar aplicaciones de IA con herramientas y datos. Un <em>servidor MCP</em> expone tools, resources y prompts; cualquier cliente compatible (Claude Code, IDEs, apps) los puede usar sin integración a medida.</p>
       <p><strong>Riesgos:</strong> bucles infinitos, costos que se disparan, acciones irreversibles. Salvaguardas: límite de pasos y presupuesto, confirmación humana para acciones destructivas, permisos mínimos, logs de cada paso.</p>` },
+    { titulo: 'Sistemas multi-agente: cuándo valen lo que cuestan', html: `
+      <p>Anthropic publicó cómo construyó su sistema de investigación multi-agente: un agente principal (orquestador) planifica y lanza subagentes en paralelo, cada uno con su propia ventana de contexto, que buscan y devuelven resúmenes. En su evaluación interna superó en 90,2% a un solo agente con el modelo más potente.</p>
+      <p><strong>Por qué funciona:</strong> en su análisis, el uso de tokens solo explicó el 80% de la variación de rendimiento. Los sistemas multi-agente funcionan, sobre todo, porque permiten <strong>gastar suficientes tokens</strong> en paralelo y en ventanas separadas. La contracara: un agente usa unas 4 veces los tokens de un chat, y un sistema multi-agente unas 15 veces.</p>
+      <p><strong>Cuándo sí:</strong> tareas amplias que se dividen en partes independientes (investigar varias fuentes, comparar muchas opciones) y cuyo valor justifica el costo.</p>
+      <p><strong>Cuándo no:</strong> cuando todos los agentes necesitan el mismo contexto o hay muchas dependencias entre subtareas. La mayoría de las tareas de código entran acá: tienen menos partes realmente paralelizables.</p>
+      <p><strong>Lecciones de prompting del orquestador:</strong></p>
+      <ul>
+        <li><strong>Delegar con precisión:</strong> cada subagente necesita objetivo, formato de salida, herramientas y fuentes sugeridas, y límites claros. Con instrucciones vagas, dos subagentes investigaban lo mismo y quedaban huecos.</li>
+        <li><strong>Escalar el esfuerzo:</strong> reglas explícitas para cada tipo de consulta. Un dato simple lo resuelve 1 agente con 3 a 10 llamadas; una comparación, de 2 a 4 subagentes; una investigación compleja, más de 10. Sin esas reglas, las primeras versiones lanzaban 50 subagentes para preguntas simples.</li>
+        <li><strong>Paralelizar:</strong> lanzar de 3 a 5 subagentes a la vez, y que cada uno use varias herramientas en paralelo, redujo el tiempo hasta 90% en consultas complejas.</li>
+      </ul>
+      <pre><code>Tarea para el subagente 2 de 3:
+Objetivo: precios y límites de uso de las 3 bases vectoriales gestionadas más usadas en 2026.
+No cubras: rendimiento ni benchmarks (los investiga el subagente 3).
+Fuentes: páginas oficiales de precios y documentación; evitá blogs comparativos.
+Herramientas: web_search y web_fetch, como máximo 10 llamadas.
+Formato: tabla con producto | plan gratuito | precio por millón de vectores | fuente (URL).</code></pre>
+      <p><strong>Evaluación:</strong> los agentes llegan al mismo resultado por caminos distintos, así que se juzga el <em>resultado</em> (exactitud, citas, completitud, calidad de fuentes) con una rúbrica, no una secuencia fija de pasos. Empezaron con unas 20 consultas reales y sumaron pruebas humanas, que detectaron problemas que la automatización no vio, como preferir granjas de contenido SEO a fuentes autorizadas.</p>` },
   ],
   practica: [
     'Implementá desde cero (sin frameworks) un agente con 3 herramientas: calculadora, búsqueda en tus archivos y lectura de una URL. Logueá cada paso.',
     'Escribí tu propio servidor MCP (por ejemplo, que consulte tu base de notas) y conectalo a Claude Code o Claude Desktop.',
     'Implementá el patrón evaluador-optimizador para mejorar un texto hasta que un juez le dé la nota mínima, con un máximo de 3 iteraciones.',
+    'Implementá un orquestador que lance 3 subagentes en paralelo, cada uno con objetivo, límites y formato de salida explícitos. Comparalo contra un solo agente en 10 preguntas de investigación: calidad (con un juez de rúbrica), tokens totales y tiempo. Decidí con números si vale la pena.',
   ],
   recursos: [
     { t: 'Anthropic — Building effective agents', url: 'https://www.anthropic.com/engineering/building-effective-agents' },
     { t: 'Model Context Protocol (documentación oficial)', url: 'https://modelcontextprotocol.io/' },
     { t: 'Documentación de tool use de Claude', url: 'https://docs.claude.com/en/docs/agents-and-tools/tool-use/overview' },
+    { t: 'Anthropic — How we built our multi-agent research system', url: 'https://www.anthropic.com/engineering/multi-agent-research-system' },
   ],
   quiz: [
     { q: 'En tool use, ¿quién ejecuta la herramienta?', opciones: ['El modelo, en los servidores del proveedor', 'Tu aplicación; el modelo solo pide la llamada con argumentos', 'El navegador del usuario siempre', 'Nadie, es simulado'], correcta: 1, explicacion: 'El modelo genera una solicitud estructurada; tu código decide si la ejecuta y devuelve el resultado. (Existen herramientas del lado del servidor del proveedor, pero el patrón base es este.)' },
@@ -589,6 +610,11 @@ for paso in range(10):                      # límite de pasos: siempre
     { q: '¿Cuál es la recomendación al empezar un sistema con LLMs?', opciones: ['Empezar con un sistema multi-agente', 'Usar el framework más completo disponible', 'Darle al agente todos los permisos', 'Empezar con la solución más simple y agregar complejidad solo si mejora los resultados'], correcta: 3, explicacion: 'Cada capa agéntica agrega latencia, costo y modos de fallo; tiene que justificarse con mejoras medidas.' },
     { q: '¿Qué salvaguarda es imprescindible en un agente que puede borrar archivos o enviar mails?', opciones: ['Temperatura 0', 'Confirmación humana para acciones irreversibles y límite de pasos', 'Un system prompt más largo', 'Usar el modelo más grande'], correcta: 1, explicacion: 'El modelo puede equivocarse o ser manipulado; las acciones irreversibles necesitan un control fuera del modelo.' },
     { q: '¿Qué hace que una herramienta sea fácil de usar para un modelo?', opciones: ['Que tenga muchos parámetros opcionales', 'Que devuelva toda la información posible', 'Nombre y descripción claros, parámetros documentados y errores que expliquen cómo corregir', 'Que su nombre sea corto y críptico'], correcta: 2, explicacion: 'El modelo solo conoce la herramienta por su descripción: escribila como documentación para un colega nuevo.' },
+    { q: 'Según el análisis de Anthropic, ¿por qué funcionan principalmente los sistemas multi-agente?', opciones: ['Porque permiten gastar suficientes tokens en paralelo, en ventanas de contexto separadas', 'Porque cada subagente es más inteligente que un agente solo', 'Porque usan menos tokens que un solo agente', 'Porque no necesitan herramientas'], correcta: 0, explicacion: 'El uso de tokens solo explicó el 80% de la variación de rendimiento. Y usan muchos más tokens, no menos: unas 15 veces los de un chat.' },
+    { q: 'Tenés que refactorizar un módulo de código con muchas dependencias entre archivos. ¿Usás un sistema multi-agente?', opciones: ['Sí, siempre es más rápido', 'Sí, con 50 subagentes', 'Sí, un subagente por archivo y sin coordinación', 'Probablemente no: las subtareas dependen entre sí y comparten contexto, y un solo agente suele rendir mejor'], correcta: 3, explicacion: 'Los multi-agente rinden en tareas amplias e independientes. Con muchas dependencias, los subagentes chocan o trabajan con información incompleta.' },
+    { q: 'En tu sistema, dos subagentes investigaron exactamente lo mismo y una parte de la pregunta quedó sin cubrir. ¿Causa y arreglo?', opciones: ['El modelo es chico: usás uno más grande', 'La temperatura es alta: la bajás', 'Delegación vaga: cada subagente necesita objetivo, formato de salida, herramientas y límites claros', 'Falta GPU: escalás la infraestructura'], correcta: 2, explicacion: 'Es el mismo problema que documentó Anthropic: sin límites explícitos ("no cubras X, eso lo hace otro") los subagentes se superponen y dejan huecos.' },
+    { q: 'Alguien pregunta "¿cuál es la capital de Australia?" y tu orquestador lanza 10 subagentes. ¿Qué le falta al sistema?', opciones: ['Más subagentes', 'Reglas de escalado de esfuerzo: las consultas simples van a un solo agente con pocas llamadas', 'Un modelo más grande', 'Desactivar las herramientas'], correcta: 1, explicacion: 'Sin reglas explícitas de esfuerzo, el orquestador sobredimensiona. Un dato simple se resuelve con 1 agente y de 3 a 10 llamadas.' },
+    { q: '¿Cómo evaluás un agente que puede llegar a la respuesta correcta por caminos distintos?', opciones: ['Juzgás el resultado final con una rúbrica (exactitud, citas, completitud) en vez de exigir una secuencia fija de pasos', 'Comparás la secuencia exacta de herramientas contra una referencia', 'Contás cuántas herramientas usó', 'No se puede evaluar'], correcta: 0, explicacion: 'Exigir un camino fijo penaliza soluciones válidas. Se evalúa el resultado y, aparte, la eficiencia (por ejemplo, llamadas o tokens) como métrica secundaria.' },
   ],
 },
 {
