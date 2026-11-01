@@ -708,6 +708,7 @@ def diferencia_pareada(a, b):         # mismos casos, mismo orden
     'Decidir cuándo conviene fine-tuning frente a prompting o RAG',
     'Entender SFT, DPO, LoRA y QLoRA',
     'Correr y cuantizar modelos abiertos localmente',
+    'Entender qué limita el servicio de LLMs: KV cache, GQA, batching continuo y PagedAttention',
   ],
   lecciones: [
     { titulo: '¿Cuándo hacer fine-tuning?', html: `
@@ -726,16 +727,34 @@ def diferencia_pareada(a, b):         # mismos casos, mismo orden
       <p><strong>Cuantización:</strong> representar los pesos con menos bits (16 → 8 → 4). Menos memoria y más velocidad, con alguna pérdida de calidad. Formatos comunes: GGUF (llama.cpp / Ollama), AWQ, GPTQ.</p>
       <p><strong>Inferencia local y servidores:</strong> Ollama y llama.cpp para tu máquina; vLLM o TGI para servir con alto rendimiento en producción.</p>
       <p>Regla para estimar memoria de los pesos: parámetros × bytes por parámetro. Un modelo de 8B en 16 bits ≈ 16 GB; en 4 bits ≈ 4-5 GB (más la memoria del contexto, la KV cache).</p>` },
+    { titulo: 'Servir modelos: KV cache, batching continuo y PagedAttention', html: `
+      <p>Si vas a servir un modelo abierto, entender qué consume memoria y tiempo te ahorra mucha GPU.</p>
+      <p><strong>Dos fases:</strong> el <em>prefill</em> procesa todo el prompt en paralelo (rápido por token, domina el tiempo hasta el primer token) y el <em>decode</em> genera token por token (cada paso depende del anterior, domina la duración total).</p>
+      <p><strong>KV cache:</strong> en cada paso de decode, el token nuevo necesita las keys y values de todos los anteriores. En lugar de recalcularlas, se guardan. Acelera muchísimo, pero ocupa memoria que crece con el largo del contexto y con la cantidad de usuarios simultáneos:</p>
+      <pre><code>bytes por token = 2 (K y V) × capas × cabezas_kv × dim_cabeza × bytes_por_valor
+
+Ejemplo, modelo tipo Llama 3 8B: 32 capas, 8 cabezas KV, dim 128, fp16 (2 bytes)
+2 × 32 × 8 × 128 × 2 = 131.072 bytes ≈ 128 KB por token
+× 8.192 tokens de contexto ≈ 1 GB por secuencia
+× 16 usuarios simultáneos ≈ 16 GB, ¡tanto como los pesos!</code></pre>
+      <p>Por eso los modelos modernos usan <strong>GQA</strong> (grouped-query attention): varias cabezas de query comparten las mismas keys y values. En el ejemplo, 8 cabezas KV en lugar de 32 dividen el KV cache por 4.</p>
+      <p><strong>Batching continuo:</strong> con batching estático, el lote espera a que termine la respuesta más larga y las cortas quedan bloqueadas. Con batching continuo, las secuencias entran y salen del lote en cada paso: la GPU siempre está ocupada y el throughput sube mucho.</p>
+      <p><strong>PagedAttention (vLLM):</strong> reservar memoria contigua para el contexto máximo de cada pedido desperdicia la mayor parte. vLLM guarda el KV cache en bloques chicos, como las páginas de memoria de un sistema operativo, y así entran muchos más pedidos simultáneos en la misma GPU.</p>
+      <p><strong>Métricas que importan:</strong> tiempo hasta el primer token (TTFT), tokens por segundo por usuario, throughput total del servidor y costo por millón de tokens. Más usuarios simultáneos suben el throughput pero empeoran la latencia de cada uno: hay que elegir el punto según tu producto.</p>` },
   ],
   practica: [
     'Instalá Ollama, corré un modelo abierto de 7-8B y compará calidad y velocidad en 4 bits vs 8 bits con 10 prompts tuyos.',
     'Hacé fine-tuning con LoRA (Hugging Face PEFT o Unsloth) de un modelo chico para una tarea de clasificación, y comparalo con few-shot prompting usando tus evals.',
+    'Serví un modelo chico con vLLM y medí TTFT, tokens por segundo por usuario y throughput total con 1, 8 y 32 usuarios simultáneos. Calculá a mano la memoria de KV cache esperada y comparala con lo que reporta vLLM.',
   ],
   recursos: [
     { t: 'LoRA (paper)', url: 'https://arxiv.org/abs/2106.09685' },
     { t: 'QLoRA (paper)', url: 'https://arxiv.org/abs/2305.14314' },
     { t: 'Hugging Face PEFT', url: 'https://huggingface.co/docs/peft' },
     { t: 'Ollama', url: 'https://ollama.com/' },
+    { t: 'PagedAttention / vLLM (paper)', url: 'https://arxiv.org/abs/2309.06180' },
+    { t: 'Documentación de vLLM', url: 'https://docs.vllm.ai/en/latest/' },
+    { t: 'GQA: Grouped-Query Attention (paper)', url: 'https://arxiv.org/abs/2305.13245' },
   ],
   quiz: [
     { q: '¿Qué hace LoRA?', opciones: ['Entrena todos los pesos con menor learning rate', 'Entrena matrices de bajo rango añadidas, con los pesos originales congelados', 'Elimina capas del modelo', 'Cuantiza el modelo a 4 bits'], correcta: 1, explicacion: 'Aprende un "delta" de bajo rango por capa. Mucho menos memoria y almacenamiento que un fine-tuning completo.' },
@@ -744,6 +763,11 @@ def diferencia_pareada(a, b):         # mismos casos, mismo orden
     { q: '¿Qué es QLoRA?', opciones: ['Una versión de LoRA para imágenes', 'Un tokenizador', 'Un formato de archivo', 'LoRA aplicado sobre un modelo base cuantizado a 4 bits'], correcta: 3, explicacion: 'Combina cuantización del base con adaptadores LoRA, permitiendo afinar modelos grandes en hardware modesto.' },
     { q: '¿Qué datos usa DPO?', opciones: ['Pares de respuesta preferida y rechazada', 'Solo texto sin etiquetar', 'Imágenes etiquetadas', 'Puntuaciones de un modelo de recompensa entrenado aparte'], correcta: 0, explicacion: 'DPO optimiza directamente con preferencias, sin entrenar un modelo de recompensa separado como en RLHF clásico.' },
     { q: '¿Cuánta memoria ocupan aproximadamente los pesos de un modelo de 8B parámetros en 16 bits?', opciones: ['8 MB', '1 GB', '16 GB', '128 GB'], correcta: 2, explicacion: '8.000 millones × 2 bytes = 16 GB, sin contar la KV cache del contexto.' },
+    { q: '¿Por qué el KV cache acelera la generación de texto?', opciones: ['Porque evita recalcular las keys y values de todos los tokens anteriores en cada paso', 'Porque comprime los pesos del modelo', 'Porque guarda respuestas anteriores de otros usuarios', 'Porque reduce el tamaño del vocabulario'], correcta: 0, explicacion: 'Cada token nuevo atiende a todos los anteriores; guardar sus K y V evita rehacer ese cálculo. No es una cache de respuestas: eso sería otra técnica.' },
+    { q: 'Un modelo tiene 32 capas, 8 cabezas KV de dimensión 128 y usa fp16. ¿Cuánta memoria de KV cache ocupa una secuencia de 8.192 tokens?', opciones: ['128 KB', 'Alrededor de 1 GB', 'Alrededor de 16 GB', '8 MB'], correcta: 1, explicacion: '2 × 32 × 8 × 128 × 2 bytes = 128 KB por token; × 8.192 tokens ≈ 1 GB. 128 KB es solo un token, y 16 GB serían 16 secuencias.' },
+    { q: 'Tu servidor usa batching estático y las respuestas cortas tardan tanto como las largas. ¿Qué cambiás?', opciones: ['Agrandás el lote', 'Subís la temperatura', 'Pasás a batching continuo: las secuencias entran y salen del lote en cada paso', 'Desactivás el KV cache'], correcta: 2, explicacion: 'Con lotes estáticos todo espera a la secuencia más larga. Agrandar el lote empeora la espera, y sin KV cache todo se vuelve más lento.' },
+    { q: '¿Qué problema resuelve PagedAttention en vLLM?', opciones: ['La precisión del modelo', 'La tokenización', 'El entrenamiento distribuido', 'El desperdicio de memoria del KV cache, guardándolo en bloques como páginas de memoria'], correcta: 3, explicacion: 'Reservar memoria contigua para el contexto máximo de cada pedido deja mucho espacio sin usar. Con bloques, entran más pedidos simultáneos en la misma GPU.' },
+    { q: '¿Por qué GQA (grouped-query attention) es importante al servir un modelo?', opciones: ['Porque mejora la tokenización', 'Porque reduce el KV cache al compartir keys y values entre varias cabezas de query, y entran más usuarios simultáneos', 'Porque elimina la necesidad de GPU', 'Porque aumenta la cantidad de parámetros'], correcta: 1, explicacion: 'Con 8 cabezas KV en lugar de 32, el KV cache se divide por 4. En servicio, la memoria del KV cache suele ser el límite de cuántos usuarios atendés a la vez.' },
   ],
 },
 {
