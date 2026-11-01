@@ -1,0 +1,45 @@
+// Prueba la lógica de public/app.js sin navegador. Uso: node tools/test-app.js
+const fs = require('fs'), path = require('path'), vm = require('vm'), assert = require('assert');
+const leer = f => fs.readFileSync(path.join(__dirname, '..', 'public', f), 'utf8');
+const el = { querySelector: () => el, querySelectorAll: () => [], h: '', set innerHTML(v) { this.h = v; }, get innerHTML() { return this.h; } };
+let guardado = null;
+const ctx = { window: {}, document: { getElementById: () => el }, localStorage: { getItem: () => guardado, setItem: (k, v) => { guardado = v; } }, location: { hash: '' }, addEventListener() {}, scrollTo() {}, Date };
+vm.createContext(ctx);
+vm.runInContext(leer('contenido.js'), ctx);
+vm.runInContext(leer('app.js') + ';this.X = { registrar, tocaHoy, dia, limpiarProgreso, cargar };', ctx);
+const { registrar, tocaHoy, dia, limpiarProgreso, cargar } = ctx.X;
+const plano = o => JSON.parse(JSON.stringify(o));
+
+// Inicio renderiza con progreso vacío
+assert.ok(el.h.includes('id="exportar"'));
+
+// Repetición espaciada: fallar agenda para mañana; cada acierto avanza 3, 7, 14 días; el siguiente la saca
+const p = cargar(), k = 'm|q';
+assert.match(dia(), /^\d{4}-\d{2}-\d{2}$/);
+registrar(p, k, false);
+assert.equal(p.agenda[k].d, dia(1));
+assert.ok(!tocaHoy(p, k));
+p.agenda[k].d = dia();
+assert.ok(tocaHoy(p, k));
+for (const [n, d] of [[1, 3], [2, 7], [3, 14]]) { registrar(p, k, true); assert.deepStrictEqual(plano(p.agenda[k]), { n, d: dia(d) }); }
+registrar(p, k, true);
+assert.ok(!p.falladas[k] && !p.agenda[k]);
+registrar(p, 'nunca-fallada', true);
+assert.ok(!p.falladas['nunca-fallada']);
+p.falladas.vieja = true; // progreso de antes de la agenda: se repasa hoy
+assert.ok(tocaHoy(p, 'vieja'));
+
+// Importar: solo campos conocidos, con tipos y rangos válidos
+const l = limpiarProgreso({ leidas: { 'a:0': 1 }, notas: { a: '<img onerror=x>', b: 150, c: 85 }, apuntes: { a: 5 }, examen: '90', raro: 1,
+  falladas: { x: 1 }, agenda: { x: { n: '9', d: '<x>' }, y: { n: 1, d: '2026-12-01' } } });
+assert.deepStrictEqual(plano(l), { leidas: { 'a:0': true }, notas: { a: 0, b: 100, c: 85 }, falladas: { x: true }, apuntes: { a: '5' },
+  agenda: { x: { n: 3, d: dia() }, y: { n: 1, d: '2026-12-01' } }, examen: 90 });
+for (const malo of [null, [], 5, 'x']) assert.throws(() => limpiarProgreso(malo));
+
+// Repaso vacío muestra un mensaje en lugar de un formulario
+guardado = null;
+ctx.location.hash = '#/repaso';
+vm.runInContext('render()', ctx);
+assert.ok(el.h.includes('No tenés preguntas falladas'));
+
+console.log('test-app OK');

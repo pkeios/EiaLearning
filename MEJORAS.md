@@ -8,3 +8,4 @@ Lo completa el comando `/mejorar`. Una línea por ejecución.
 - 2026-11-01 · app · exportar/importar progreso como JSON desde el inicio (con limpieza de datos al importar)
 - 2026-11-01 · prompting · lección de context engineering (context rot, just-in-time, compactación, notas, subagentes), 5 preguntas, 1 práctica, 1 recurso · fuentes: https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents
 - 2026-11-01 · apis · lección de código robusto (salidas estructuradas + validación de negocio, qué reintentar, jitter, idempotencia), 5 preguntas, 1 práctica, 2 recursos · fuentes: https://platform.claude.com/docs/en/build-with-claude/structured-outputs, https://docs.pydantic.dev/latest/
+- 2026-11-01 · app · repaso espaciado (1, 3, 7 y 14 días) con agenda por pregunta, contador "para repasar hoy" y test automático tools/test-app.js en CI

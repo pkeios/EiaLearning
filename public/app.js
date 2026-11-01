@@ -2,12 +2,24 @@ const T = window.TEMARIO;
 const app = document.getElementById('app');
 const APROBADO = 80;
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-const cargar = () => ({ leidas: {}, notas: {}, falladas: {}, apuntes: {}, ...JSON.parse(localStorage.getItem('progreso') || '{}') });
+const cargar = () => ({ leidas: {}, notas: {}, falladas: {}, apuntes: {}, agenda: {}, ...JSON.parse(localStorage.getItem('progreso') || '{}') });
 const guardar = p => localStorage.setItem('progreso', JSON.stringify(p));
 const mezclar = a => a.map(x => [Math.random(), x]).sort((x, y) => x[0] - y[0]).map(x => x[1]);
 // La clave de una pregunta es su texto: sobrevive a reordenar o insertar preguntas.
 const preguntasDe = m => m.quiz.map(q => ({ ...q, m: m.id }));
 const clave = q => q.m + '|' + q.q;
+const todas = () => T.flatMap(preguntasDe);
+// Repetición espaciada: tras fallar, la pregunta vuelve a los 1, 3, 7 y 14 días; cada acierto la empuja al siguiente intervalo.
+const INTERVALOS = [1, 3, 7, 14];
+const dia = (mas = 0) => { const d = new Date(); d.setDate(d.getDate() + mas); return d.toLocaleDateString('sv'); }; // 'sv' da AAAA-MM-DD
+const tocaHoy = (p, k) => p.falladas[k] && (!p.agenda[k] || p.agenda[k].d <= dia());
+function registrar(p, k, ok) {
+  if (!ok) { p.falladas[k] = true; p.agenda[k] = { n: 0, d: dia(INTERVALOS[0]) }; return; }
+  if (!p.falladas[k]) return;
+  const n = (p.agenda[k]?.n ?? -1) + 1;
+  if (n >= INTERVALOS.length) { delete p.falladas[k]; delete p.agenda[k]; }
+  else p.agenda[k] = { n, d: dia(INTERVALOS[n]) };
+}
 const aprobado = (m, p) => p.notas[m.id] >= APROBADO;
 const nivelClase = n => ({ 'Básico': 'basico', 'Intermedio': 'intermedio', 'Avanzado': 'avanzado' }[n] || 'proyecto');
 const badge = m => `<span class="badge ${nivelClase(m.nivel)}">${esc(m.nivel)}</span>`;
@@ -32,7 +44,7 @@ function inicio() {
       <div class="stats">
         <div class="stat"><strong>${aprobados}/${T.length}</strong><span>módulos aprobados</span></div>
         <div class="stat"><strong>${leidas}</strong><span>lecciones leídas</span></div>
-        <a class="stat" href="#/repaso"><strong>${Object.keys(p.falladas).length}</strong><span>preguntas para repasar</span></a>
+        <a class="stat" href="#/repaso"><strong>${todas().filter(q => tocaHoy(p, clave(q))).length}</strong><span>preguntas para repasar hoy</span></a>
         <a class="stat" href="#/examen"><strong>${p.examen != null ? p.examen + '%' : '—'}</strong><span>examen final</span></a>
       </div>
       <a class="boton" href="#/m/${siguiente.id}">${aprobados || leidas ? 'Continuar' : 'Empezar'}: ${icono(siguiente)} ${esc(siguiente.titulo)} →</a>
@@ -68,10 +80,14 @@ function exportar() {
 // Si agregás campos nuevos al progreso, sumalos acá también.
 function limpiarProgreso(d) {
   if (!d || typeof d !== 'object' || Array.isArray(d)) throw new Error('formato inválido');
-  const p = { leidas: {}, notas: {}, falladas: {}, apuntes: {} };
+  const p = { leidas: {}, notas: {}, falladas: {}, apuntes: {}, agenda: {} };
   for (const k of ['leidas', 'falladas']) for (const c in d[k] || {}) p[k][c] = true;
   for (const c in d.notas || {}) p.notas[c] = Math.min(100, Math.max(0, Number(d.notas[c]) || 0));
   for (const c in d.apuntes || {}) p.apuntes[c] = String(d.apuntes[c]);
+  for (const c in d.agenda || {}) {
+    const a = d.agenda[c] || {};
+    p.agenda[c] = { n: Math.min(INTERVALOS.length - 1, Math.max(0, parseInt(a.n) || 0)), d: /^\d{4}-\d{2}-\d{2}$/.test(a.d) ? a.d : dia() };
+  }
   if (d.examen != null) p.examen = Math.min(100, Math.max(0, Number(d.examen) || 0));
   return p;
 }
@@ -125,9 +141,9 @@ function modulo(id) {
   app.querySelector('#apunte').oninput = e => { const p = cargar(); p.apuntes[m.id] = e.target.value; guardar(p); };
 }
 
-function quiz(titulo, preguntas, alTerminar) {
+function quiz(titulo, preguntas, alTerminar, vacio = 'No hay preguntas pendientes. 🎉') {
   app.innerHTML = `<a class="volver" href="#/">← Temario</a><h1>${esc(titulo)}</h1>
-    ${preguntas.length ? `<div class="quiz-estado"><span id="contador">0/${preguntas.length} respondidas</span>${barra(0)}</div>` : '<section class="card"><p>No hay preguntas pendientes. 🎉</p></section>'}
+    ${preguntas.length ? `<div class="quiz-estado"><span id="contador">0/${preguntas.length} respondidas</span>${barra(0)}</div>` : `<section class="card"><p>${esc(vacio)}</p></section>`}
     <form id="quiz">${preguntas.map((q, i) => `
       <fieldset class="pregunta"><legend><span class="num">${i + 1}</span>${esc(q.q)}</legend>
         ${q.opciones.map((o, j) => `<label class="opcion"><input type="radio" name="p${i}" value="${j}" required><span>${esc(o)}</span></label>`).join('')}
@@ -153,7 +169,7 @@ function quiz(titulo, preguntas, alTerminar) {
       const exp = campos[i].querySelector('.explicacion');
       exp.hidden = false;
       exp.innerHTML = (ok ? '✔ ' : `✘ La correcta era: <strong>${esc(q.opciones[q.correcta])}</strong>. `) + esc(q.explicacion);
-      if (ok) delete p.falladas[clave(q)]; else p.falladas[clave(q)] = true;
+      registrar(p, clave(q), ok);
     });
     form.querySelectorAll('input, button').forEach(el => el.disabled = true);
     const pct = Math.round(100 * bien / preguntas.length);
@@ -171,14 +187,18 @@ function quiz(titulo, preguntas, alTerminar) {
 
 function render() {
   const [, ruta, id] = location.hash.split('/');
-  const todas = () => T.flatMap(preguntasDe);
   if (ruta === 'm') modulo(id);
   else if (ruta === 'quiz' && T.some(m => m.id === id)) {
     const m = T.find(x => x.id === id);
     quiz(`${icono(m)} Quiz: ${m.titulo}`, mezclar(preguntasDe(m)), (p, pct) => { p.notas[m.id] = Math.max(p.notas[m.id] ?? 0, pct); });
   }
   else if (ruta === 'examen') quiz('🏁 Examen final: 25 preguntas al azar', mezclar(todas()).slice(0, 25), (p, pct) => { p.examen = Math.max(p.examen ?? 0, pct); });
-  else if (ruta === 'repaso') { const f = cargar().falladas; quiz('🔁 Repaso: preguntas que fallaste', mezclar(todas().filter(q => f[clave(q)]))); }
+  else if (ruta === 'repaso') {
+    const p = cargar(), pendientes = todas().filter(q => p.falladas[clave(q)]);
+    const proxima = pendientes.map(q => p.agenda[clave(q)]?.d).filter(Boolean).sort()[0];
+    quiz('🔁 Repaso de hoy', mezclar(pendientes.filter(q => tocaHoy(p, clave(q)))), null,
+      proxima ? `Nada para repasar hoy. Próximo repaso: ${proxima} (${pendientes.length} preguntas en agenda).` : 'No tenés preguntas falladas. 🎉');
+  }
   else inicio();
   scrollTo(0, 0);
 }
