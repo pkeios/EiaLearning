@@ -11,7 +11,7 @@ Leé las últimas líneas de `MEJORAS.md`.
 
 ## 2. Mejora de la app
 - Implementá la tarea con el cambio más chico que la resuelva por completo. Respetá el estilo de `public/app.js` y `public/styles.css`: JS sin dependencias ni build, y textos en español.
-- No rompas el progreso guardado del alumno (`localStorage` clave `progreso`): solo agregá campos nuevos y nunca renombres los existentes.
+- No rompas el progreso guardado del alumno (`localStorage` clave `progreso`): solo agregá campos nuevos y nunca renombres los existentes. Cada campo nuevo se suma también en `limpiarProgreso()`; si no, se pierde al importar.
 - Revisá la sintaxis con `node --check public/app.js`.
 - Marcá la tarea como hecha (`- [x]`) en `BACKLOG.md`.
 - Si se te ocurre una mejora valiosa para el alumno, agregala al final de `BACKLOG.md`, como máximo una por ejecución.

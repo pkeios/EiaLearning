@@ -264,6 +264,7 @@ for nombre, modelo in [("lineal", lineal), ("boosting", boosting)]:
     'Escribir prompts claros con contexto, ejemplos y formato de salida',
     'Usar system prompts, etiquetas XML, cadena de pensamiento y prompt chaining',
     'Iterar prompts con criterios de éxito y casos de prueba, como un ingeniero',
+    'Gestionar el contexto de agentes largos: compactación, recuperación just-in-time, notas y subagentes',
   ],
   lecciones: [
     { titulo: 'Las técnicas que realmente funcionan', html: `
@@ -291,15 +292,40 @@ Respondé solo con JSON: {"categoria": "...", "motivo": "una frase"}</code></pre
         <li><strong>Versioná los prompts</strong> como código (git) y guardá los resultados de cada versión.</li>
       </ol>
       <p>Los prompts suelen fallar por falta de contexto, no por falta de palabras mágicas. Si un humano experto no podría hacer la tarea con ese prompt, el modelo tampoco.</p>` },
+    { titulo: 'De prompt engineering a context engineering', html: `
+      <p>En agentes que trabajan durante muchos pasos, el problema deja de ser "qué palabras pongo en el prompt" y pasa a ser <strong>qué información hay en la ventana de contexto en cada momento</strong>: system prompt, herramientas, ejemplos, historial, resultados de herramientas, documentos. A eso se le llama <strong>context engineering</strong>.</p>
+      <p><strong>Por qué importa:</strong> a medida que crece el contexto, los modelos recuerdan y usan peor la información (<em>context rot</em>). El contexto es un recurso finito, un "presupuesto de atención": cada token irrelevante le resta foco a los relevantes. El objetivo es el <strong>conjunto más chico de tokens de alta señal</strong> que logra el resultado.</p>
+      <ul>
+        <li><strong>System prompt a la altura justa:</strong> ni una lista frágil de reglas if-else para cada caso borde, ni una guía vaga. Principios claros y heurísticas, organizados en secciones.</li>
+        <li><strong>Ejemplos canónicos:</strong> en vez de 40 reglas, unos pocos ejemplos variados que muestren el comportamiento esperado.</li>
+        <li><strong>Herramientas eficientes:</strong> pocas, sin solaparse, que devuelvan resultados concisos. Un set de herramientas inflado genera decisiones ambiguas.</li>
+        <li><strong>Recuperación just-in-time:</strong> el agente guarda referencias livianas (rutas de archivos, consultas, links) y carga el contenido con herramientas solo cuando lo necesita, en lugar de precargar todo.</li>
+        <li><strong>Compactación:</strong> cuando la conversación se acerca al límite, se resume y se sigue en una ventana nueva con ese resumen. Una versión liviana es borrar los resultados viejos de herramientas que ya se usaron.</li>
+        <li><strong>Notas estructuradas:</strong> el agente escribe su progreso fuera del contexto (una lista de tareas, un NOTES.md) y lo relee. Así sobrevive a la compactación en tareas de horas.</li>
+        <li><strong>Subagentes:</strong> un subagente explora a fondo en su propia ventana limpia y devuelve solo un resumen condensado al agente principal.</li>
+      </ul>
+      <pre><code>LIMITE = 100_000
+def preparar_contexto(mensajes, notas):
+    # 1) limpiar resultados de herramientas viejos (ya se usaron)
+    mensajes = [vaciar_si_tool_result_viejo(m, edad_max=10) for m in mensajes]
+    # 2) si igual nos pasamos, compactar el historial en un resumen
+    if contar_tokens(mensajes) &gt; LIMITE:
+        resumen = llamar_modelo("Resumí decisiones, estado y pendientes:", mensajes)
+        mensajes = [{"role": "user", "content": "Resumen hasta ahora: " + resumen}]
+    # 3) las notas persistentes siempre entran
+    return [{"role": "user", "content": "Notas: " + notas}] + mensajes</code></pre>
+      <p>Regla práctica: antes de agregar algo al contexto, preguntate si un experto humano necesitaría eso para el próximo paso. Si no, va a una herramienta o a un archivo de notas.</p>` },
   ],
   practica: [
     'Elegí una tarea real (resumir mails, clasificar gastos). Escribí 20 casos de prueba con la respuesta esperada y medí 3 versiones de prompt.',
     'Convertí un prompt largo de un solo paso en una cadena de 3 prompts y compará calidad y facilidad de depuración.',
     'Hacé el tutorial interactivo de prompt engineering de Anthropic de principio a fin.',
+    'Tomá el agente del módulo de agentes y registrá los tokens de contexto en cada paso. Agregá limpieza de resultados viejos de herramientas y un archivo NOTES.md, y compará tasa de éxito y tokens totales en 10 tareas largas antes y después.',
   ],
   recursos: [
     { t: 'Anthropic — Guía de prompt engineering', url: 'https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/overview' },
     { t: 'Anthropic — Tutorial interactivo de prompt engineering (GitHub)', url: 'https://github.com/anthropics/prompt-eng-interactive-tutorial' },
+    { t: 'Anthropic — Effective context engineering for AI agents', url: 'https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents' },
     { t: 'Prompting Guide (técnicas y papers)', url: 'https://www.promptingguide.ai/' },
   ],
   quiz: [
@@ -309,6 +335,11 @@ Respondé solo con JSON: {"categoria": "...", "motivo": "una frase"}</code></pre
     { q: '¿Qué es prompt chaining?', opciones: ['Repetir el mismo prompt varias veces', 'Unir varios modelos en uno', 'Concatenar todos los documentos', 'Dividir una tarea compleja en varias llamadas encadenadas'], correcta: 3, explicacion: 'Cada eslabón hace una subtarea y su salida alimenta al siguiente. Más fiable y más fácil de depurar.' },
     { q: '¿Qué conviene hacer antes de empezar a optimizar un prompt?', opciones: ['Probar con temperatura 2', 'Definir criterios de éxito y casos de prueba', 'Agregar "por favor" en cada línea', 'Hacer el prompt lo más largo posible'], correcta: 1, explicacion: 'Sin criterios ni casos de prueba no podés saber si un cambio mejora o empeora.' },
     { q: 'Un prompt falla sistemáticamente en un tipo de caso. ¿Qué hacés primero?', opciones: ['Leer los fallos, formular una hipótesis y cambiar una sola cosa', 'Cambiar de modelo inmediatamente', 'Reescribir todo el prompt desde cero', 'Subir la temperatura'], correcta: 0, explicacion: 'Cambiar una cosa por vez y medir te dice qué funcionó. Cambiar todo a la vez no enseña nada.' },
+    { q: 'Tu agente funciona bien al principio, pero después de dos horas, con 150.000 tokens de historial lleno de resultados de herramientas, empieza a olvidar instrucciones. ¿Qué hacés?', opciones: ['Bajar la temperatura', 'Reiniciar el servidor', 'Agregar más ejemplos few-shot al system prompt', 'Compactar el historial y borrar resultados viejos de herramientas'], correcta: 3, explicacion: 'Es context rot: con mucho contexto el modelo usa peor la información. Agregar ejemplos suma tokens y empeora el problema.' },
+    { q: 'Construís un agente de código para un repositorio de 2 millones de líneas. ¿Qué estrategia de contexto usás?', opciones: ['Cargar todo el repositorio en el contexto', 'Hacer fine-tuning del modelo con el repositorio', 'Resumir el repositorio una vez y trabajar solo con ese resumen', 'Darle herramientas para buscar y leer archivos cuando los necesita, guardando solo referencias'], correcta: 3, explicacion: 'Recuperación just-in-time: el agente navega como un desarrollador, con búsqueda y lectura de archivos. Un resumen fijo pierde los detalles que el código necesita.' },
+    { q: 'Tu system prompt tiene 40 reglas del tipo "si pasa X, hacé Y" y el agente falla en cada caso nuevo que no está en la lista. ¿Qué cambiás?', opciones: ['Reemplazás las reglas por principios claros y unos pocos ejemplos canónicos variados', 'Agregás una regla por cada caso nuevo', 'Escribís las reglas en mayúsculas', 'Borrás el system prompt'], correcta: 0, explicacion: 'Las listas de reglas frágiles no generalizan. Los principios y los ejemplos le dan al modelo heurísticas para casos que no previste. Sumar reglas agranda el problema.' },
+    { q: '¿Por qué conviene que un subagente devuelva un resumen de 1.000 a 2.000 tokens en lugar de todo lo que exploró?', opciones: ['Porque así el subagente usa un modelo más barato', 'Porque la API no permite respuestas más largas', 'Para que el contexto del agente principal quede limpio, mientras el subagente explora a fondo en su propia ventana', 'Para no tener que usar herramientas'], correcta: 2, explicacion: 'El subagente puede gastar decenas de miles de tokens explorando; al coordinador solo le sirve la conclusión. Separar ventanas protege el presupuesto de atención del principal.' },
+    { q: 'Un agente hace una migración de varias horas que no entra en una sola ventana de contexto. ¿Cómo evitás que pierda el progreso al compactar?', opciones: ['Usando siempre la ventana más grande disponible, con eso alcanza', 'Poniendo la temperatura en 0', 'Repitiendo el prompt inicial cada 10 pasos', 'Haciendo que escriba notas estructuradas fuera del contexto (lista de tareas, NOTES.md) y las relea'], correcta: 3, explicacion: 'Las notas persistentes sobreviven a la compactación y le dicen qué hizo y qué falta. Una ventana más grande solo retrasa el problema y además sufre context rot.' },
   ],
 },
 {
