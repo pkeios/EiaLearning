@@ -2,7 +2,7 @@ const T = window.TEMARIO;
 const app = document.getElementById('app');
 const APROBADO = 80;
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-const cargar = () => ({ leidas: {}, notas: {}, falladas: {}, apuntes: {}, agenda: {}, ...JSON.parse(localStorage.getItem('progreso') || '{}') });
+const cargar = () => ({ leidas: {}, notas: {}, falladas: {}, apuntes: {}, agenda: {}, dias: {}, ...JSON.parse(localStorage.getItem('progreso') || '{}') });
 const guardar = p => localStorage.setItem('progreso', JSON.stringify(p));
 const mezclar = a => a.map(x => [Math.random(), x]).sort((x, y) => x[0] - y[0]).map(x => x[1]);
 // La clave de una pregunta es su texto: sobrevive a reordenar o insertar preguntas.
@@ -13,6 +13,13 @@ const todas = () => T.flatMap(preguntasDe);
 const INTERVALOS = [1, 3, 7, 14];
 const dia = (mas = 0) => { const d = new Date(); d.setDate(d.getDate() + mas); return d.toLocaleDateString('sv'); }; // 'sv' da AAAA-MM-DD
 const tocaHoy = (p, k) => p.falladas[k] && (!p.agenda[k] || p.agenda[k].d <= dia());
+// Racha: días seguidos con al menos una actividad (lección leída o quiz). Si hoy todavía no estudiaste, cuenta hasta ayer.
+const estudiar = p => { p.dias[dia()] = (p.dias[dia()] || 0) + 1; };
+function racha(p) {
+  let n = 0;
+  for (let i = p.dias[dia()] ? 0 : 1; p.dias[dia(-i)]; i++) n++;
+  return n;
+}
 function registrar(p, k, ok) {
   if (!ok) { p.falladas[k] = true; p.agenda[k] = { n: 0, d: dia(INTERVALOS[0]) }; return; }
   if (!p.falladas[k]) return;
@@ -45,6 +52,7 @@ function inicio() {
         <div class="stat"><strong>${aprobados}/${T.length}</strong><span>módulos aprobados</span></div>
         <div class="stat"><strong>${leidas}</strong><span>lecciones leídas</span></div>
         <a class="stat" href="#/repaso"><strong>${todas().filter(q => tocaHoy(p, clave(q))).length}</strong><span>preguntas para repasar hoy</span></a>
+        <div class="stat"><strong>🔥 ${racha(p)}</strong><span>${racha(p) === 1 ? 'día' : 'días'} de racha · ${p.dias[dia()] ? 'meta de hoy cumplida ✔' : 'meta de hoy: 1 lección o 1 quiz'}</span></div>
         <a class="stat" href="#/examen"><strong>${p.examen != null ? p.examen + '%' : '—'}</strong><span>examen final</span></a>
       </div>
       <a class="boton" href="#/m/${siguiente.id}">${aprobados || leidas ? 'Continuar' : 'Empezar'}: ${icono(siguiente)} ${esc(siguiente.titulo)} →</a>
@@ -80,7 +88,7 @@ function exportar() {
 // Si agregás campos nuevos al progreso, sumalos acá también.
 function limpiarProgreso(d) {
   if (!d || typeof d !== 'object' || Array.isArray(d)) throw new Error('formato inválido');
-  const p = { leidas: {}, notas: {}, falladas: {}, apuntes: {}, agenda: {} };
+  const p = { leidas: {}, notas: {}, falladas: {}, apuntes: {}, agenda: {}, dias: {} };
   for (const k of ['leidas', 'falladas']) for (const c in d[k] || {}) p[k][c] = true;
   for (const c in d.notas || {}) p.notas[c] = Math.min(100, Math.max(0, Number(d.notas[c]) || 0));
   for (const c in d.apuntes || {}) p.apuntes[c] = String(d.apuntes[c]);
@@ -88,6 +96,7 @@ function limpiarProgreso(d) {
     const a = d.agenda[c] || {};
     p.agenda[c] = { n: Math.min(INTERVALOS.length - 1, Math.max(0, parseInt(a.n) || 0)), d: /^\d{4}-\d{2}-\d{2}$/.test(a.d) ? a.d : dia() };
   }
+  for (const c in d.dias || {}) if (/^\d{4}-\d{2}-\d{2}$/.test(c)) p.dias[c] = Math.max(0, parseInt(d.dias[c]) || 0);
   if (d.examen != null) p.examen = Math.min(100, Math.max(0, Number(d.examen) || 0));
   return p;
 }
@@ -136,7 +145,7 @@ function modulo(id) {
       ${next ? `<a href="#/m/${next.id}">${icono(next)} ${esc(next.titulo)} →</a>` : ''}
     </nav>`;
   app.querySelectorAll('[data-leida]').forEach(b => b.onclick = () => {
-    const p = cargar(); p.leidas[m.id + ':' + b.dataset.leida] = true; guardar(p); modulo(id);
+    const p = cargar(); p.leidas[m.id + ':' + b.dataset.leida] = true; estudiar(p); guardar(p); modulo(id);
   });
   app.querySelector('#apunte').oninput = e => { const p = cargar(); p.apuntes[m.id] = e.target.value; guardar(p); };
 }
@@ -174,6 +183,7 @@ function quiz(titulo, preguntas, alTerminar, vacio = 'No hay preguntas pendiente
     form.querySelectorAll('input, button').forEach(el => el.disabled = true);
     const pct = Math.round(100 * bien / preguntas.length);
     alTerminar?.(p, pct);
+    estudiar(p);
     guardar(p);
     const res = app.querySelector('#resultado');
     res.innerHTML = `<section class="card resultado ${pct >= APROBADO ? 'ok' : ''}">

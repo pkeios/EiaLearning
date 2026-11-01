@@ -11,3 +11,4 @@ Lo completa el comando `/mejorar`. Una línea por ejecución.
 - 2026-11-01 · app · repaso espaciado (1, 3, 7 y 14 días) con agenda por pregunta, contador "para repasar hoy" y test automático tools/test-app.js en CI
 - 2026-11-01 · rag · lección contexto largo vs RAG clásico vs RAG agéntico (caching, lost in the middle, permisos en retrieval, mejoras acumulativas), 5 preguntas, 1 práctica, 1 recurso · fuentes: https://www.anthropic.com/news/contextual-retrieval, https://arxiv.org/abs/2307.03172
 - 2026-11-01 · agentes · lección sistemas multi-agente (cuándo valen, costo en tokens, delegación, escalado de esfuerzo, evaluación por resultado), 5 preguntas, 1 práctica, 1 recurso · fuentes: https://www.anthropic.com/engineering/multi-agent-research-system
+- 2026-11-01 · app · racha de días de estudio y meta diaria (1 lección o 1 quiz) en el inicio, con tests

@@ -6,8 +6,8 @@ let guardado = null;
 const ctx = { window: {}, document: { getElementById: () => el }, localStorage: { getItem: () => guardado, setItem: (k, v) => { guardado = v; } }, location: { hash: '' }, addEventListener() {}, scrollTo() {}, Date };
 vm.createContext(ctx);
 vm.runInContext(leer('contenido.js'), ctx);
-vm.runInContext(leer('app.js') + ';this.X = { registrar, tocaHoy, dia, limpiarProgreso, cargar };', ctx);
-const { registrar, tocaHoy, dia, limpiarProgreso, cargar } = ctx.X;
+vm.runInContext(leer('app.js') + ';this.X = { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar };', ctx);
+const { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar } = ctx.X;
 const plano = o => JSON.parse(JSON.stringify(o));
 
 // Inicio renderiza con progreso vacío
@@ -29,11 +29,20 @@ assert.ok(!p.falladas['nunca-fallada']);
 p.falladas.vieja = true; // progreso de antes de la agenda: se repasa hoy
 assert.ok(tocaHoy(p, 'vieja'));
 
+// Racha: días seguidos; si hoy no estudiaste todavía, cuenta hasta ayer; un hueco la corta
+const r = cargar();
+assert.equal(racha(r), 0);
+r.dias[dia(-1)] = 1; r.dias[dia(-2)] = 3; r.dias[dia(-4)] = 1;
+assert.equal(racha(r), 2);
+estudiar(r); estudiar(r);
+assert.equal(r.dias[dia()], 2);
+assert.equal(racha(r), 3);
+
 // Importar: solo campos conocidos, con tipos y rangos válidos
 const l = limpiarProgreso({ leidas: { 'a:0': 1 }, notas: { a: '<img onerror=x>', b: 150, c: 85 }, apuntes: { a: 5 }, examen: '90', raro: 1,
-  falladas: { x: 1 }, agenda: { x: { n: '9', d: '<x>' }, y: { n: 1, d: '2026-12-01' } } });
+  falladas: { x: 1 }, agenda: { x: { n: '9', d: '<x>' }, y: { n: 1, d: '2026-12-01' } }, dias: { '2026-11-01': '2', 'malo': 5, '2026-10-31': -3 } });
 assert.deepStrictEqual(plano(l), { leidas: { 'a:0': true }, notas: { a: 0, b: 100, c: 85 }, falladas: { x: true }, apuntes: { a: '5' },
-  agenda: { x: { n: 3, d: dia() }, y: { n: 1, d: '2026-12-01' } }, examen: 90 });
+  agenda: { x: { n: 3, d: dia() }, y: { n: 1, d: '2026-12-01' } }, dias: { '2026-11-01': 2, '2026-10-31': 0 }, examen: 90 });
 for (const malo of [null, [], 5, 'x']) assert.throws(() => limpiarProgreso(malo));
 
 // Repaso vacío muestra un mensaje en lugar de un formulario
