@@ -642,6 +642,7 @@ for paso in range(10):                      # límite de pasos: siempre
     'Construir 5 proyectos de dificultad creciente que demuestren dominio real',
     'Armar un portafolio que muestre criterio de ingeniería, no solo demos',
     'Tener un sistema de aprendizaje continuo en un campo que cambia cada mes',
+    'Diseñar un sistema de IA de punta a punta y defenderlo en una entrevista de system design',
   ],
   lecciones: [
     { titulo: 'La ruta de proyectos', html: `
@@ -653,6 +654,23 @@ for paso in range(10):                      # límite de pasos: siempre
         <li><strong>Desplegado de punta a punta</strong>: backend, observabilidad, routing de modelos, defensas contra prompt injection y un informe de costo/latencia.</li>
       </ol>
       <p><strong>Qué hace destacar un proyecto:</strong> un README que explique el problema, las decisiones y sus alternativas, métricas de evaluación con números reales, una demo que funcione y lo que aprendiste de los fallos.</p>` },
+    { titulo: 'Diseñar un sistema de IA de punta a punta (y la entrevista de system design)', html: `
+      <p>Las entrevistas de AI engineering ya no piden solo sistemas distribuidos clásicos: te dan una consigna como "diseñá un chatbot RAG de soporte" o "un agente que procese reclamos de seguros controlando el costo de tokens" y tenés unos 60 minutos. El mismo método sirve para tus proyectos reales.</p>
+      <ol>
+        <li><strong>Aclarar requisitos antes de dibujar nada:</strong> quién lo usa, volumen (consultas por día o QPS), latencia aceptable, presupuesto, qué es una respuesta "correcta" y qué pasa si se equivoca (riesgo).</li>
+        <li><strong>Línea base simple:</strong> una llamada al modelo con buen prompt. Todo lo demás se justifica contra esto.</li>
+        <li><strong>Arquitectura:</strong> datos e ingestión, retrieval (híbrido + reranker), elección de modelo, herramientas, y dónde va la lógica determinista (código) vs la del modelo.</li>
+        <li><strong>Evals:</strong> cómo sabrías que funciona: dataset con casos reales, métrica por modo de fallo, monitoreo en producción.</li>
+        <li><strong>Costo y latencia con números:</strong> un cálculo rápido en la pizarra vale más que adjetivos.</li>
+        <li><strong>Guardrails y seguridad:</strong> prompt injection, permisos, humano en el bucle, datos personales.</li>
+        <li><strong>Operación:</strong> observabilidad, fallbacks, versionado, y cómo iterarías después del lanzamiento.</li>
+      </ol>
+      <p><strong>Ejemplo de cálculo de costo</strong> (precios hipotéticos: 3 USD por millón de tokens de entrada, 15 USD por millón de salida):</p>
+      <pre><code>100.000 consultas/día × 3.000 tokens entrada = 300M tokens → 300 × 3  = 900 USD/día
+100.000 consultas/día ×   300 tokens salida  =  30M tokens →  30 × 15 = 450 USD/día
+Total ≈ 1.350 USD/día ≈ 40.500 USD/mes</code></pre>
+      <p>Con ese número sobre la mesa aparecen las palancas obvias: si 2.000 de esos 3.000 tokens son un system prompt fijo, el <strong>prompt caching</strong> los abarata mucho; si el 70% de las consultas son simples, el <strong>routing</strong> a un modelo chico baja el costo; si hay preguntas repetidas, una cache de respuestas. Y cada palanca se valida con evals.</p>
+      <p><strong>Señales de nivel senior:</strong> preguntar antes de proponer, empezar simple, tratar costo y guardrails como restricciones de diseño (no como un agregado final), y decir explícitamente qué medirías y qué harías si la métrica sale mal.</p>` },
     { titulo: 'Cómo aprender más rápido que el resto', html: `
       <ul>
         <li><strong>Construí más de lo que leés.</strong> Por cada hora de teoría, dos de práctica.</li>
@@ -667,6 +685,7 @@ for paso in range(10):                      # límite de pasos: siempre
     'Elegí uno de los 5 proyectos y terminalo esta semana con README, evals y demo.',
     'Escribí un post explicando el concepto que más te costó de este temario.',
     'Elegí un paper reciente de arXiv sobre agentes o RAG, resumilo en una página y reproducí un experimento pequeño.',
+    'Escribí un design doc de una página para "asistente RAG sobre 10 millones de documentos a 1.000 consultas por segundo": requisitos, diagrama, costo mensual calculado, evals y riesgos. Después pedile a Claude que haga de entrevistador y te repregunte durante 30 minutos.',
   ],
   recursos: [
     { t: 'arXiv — Computation and Language (cs.CL), novedades', url: 'https://arxiv.org/list/cs.CL/recent' },
@@ -680,6 +699,11 @@ for paso in range(10):                      # límite de pasos: siempre
     { q: '¿Qué es la repetición espaciada?', opciones: ['Estudiar todo el mismo día', 'Releer los apuntes cada día', 'Repasar lo que fallás a intervalos crecientes', 'Estudiar con música'], correcta: 2, explicacion: 'Recuperar un recuerdo justo cuando está por olvidarse lo fija mucho más que releer.' },
     { q: '¿Cuál es la mejor forma de entender de verdad un paper?', opciones: ['Leer solo el abstract', 'Ver un video resumen', 'Leerlo dos veces seguidas', 'Implementar o reproducir una parte en código'], correcta: 3, explicacion: 'Implementar te obliga a enfrentar cada detalle que la lectura deja pasar.' },
     { q: '¿Qué orden conviene al construir una app con LLMs?', opciones: ['Fine-tuning primero, después prompts', 'Prompt simple + evals → RAG/herramientas → fine-tuning solo si hace falta', 'Multi-agente desde el día uno', 'Desplegar sin evals y ajustar después'], correcta: 1, explicacion: 'De lo más barato y simple a lo más caro, midiendo en cada paso si vale la pena avanzar.' },
+    { q: 'En una entrevista te piden "diseñá un chatbot RAG para soporte". ¿Qué hacés primero?', opciones: ['Elegir la base de datos vectorial', 'Dibujar una arquitectura multi-agente', 'Proponer fine-tuning del modelo', 'Aclarar requisitos: usuarios, volumen, latencia, presupuesto y qué cuenta como respuesta correcta'], correcta: 3, explicacion: 'Sin requisitos no podés justificar ninguna decisión. Saltar directo a elegir tecnología es la señal junior más común.' },
+    { q: '10.000 consultas por día, 2.000 tokens de entrada y 500 de salida cada una. Con precios de 3 USD por millón de entrada y 15 USD por millón de salida, ¿cuánto cuesta por día?', opciones: ['60 USD', '75 USD', '1.350 USD', '135 USD'], correcta: 3, explicacion: 'Entrada: 20M tokens × 3 = 60 USD. Salida: 5M tokens × 15 = 75 USD. Total 135 USD. La trampa es contar solo la entrada.' },
+    { q: 'En tu app, 1.500 de los 2.000 tokens de cada llamada son un system prompt y un manual fijos. ¿Qué palanca de costo probás primero?', opciones: ['Fine-tuning para eliminar el manual', 'Subir max_tokens', 'Prompt caching del prefijo fijo', 'Temperatura 0'], correcta: 2, explicacion: 'El prefijo se repite idéntico en cada llamada: es el caso ideal para caching, sin reentrenar nada. El fine-tuning podría servir, pero es mucho más caro de mantener.' },
+    { q: 'El requisito es que el usuario vea respuesta en menos de 1 segundo, y tu modelo tarda 4 segundos en completar. ¿Qué proponés?', opciones: ['Usar un modelo más grande', 'Agregar más documentos al contexto', 'Agregar un paso de verificación con otro LLM', 'Streaming y un modelo más chico para las consultas comunes, validado con evals'], correcta: 3, explicacion: 'El streaming baja la latencia percibida (primer token) y un modelo chico baja la total. Las otras opciones agregan latencia.' },
+    { q: 'El entrevistador pregunta: "¿cómo sabrías que tu sistema funciona?". ¿Cuál es la mejor respuesta?', opciones: ['Un dataset de evaluación con casos reales, métricas por modo de fallo y monitoreo en producción', 'Probándolo yo mismo varias veces', 'Usando el modelo más avanzado del mercado', 'Mirando los benchmarks públicos del modelo'], correcta: 0, explicacion: 'Los benchmarks públicos miden el modelo en tareas genéricas, no tu sistema con tus datos. Probar "a ojo" no detecta regresiones.' },
   ],
 },
 ];
