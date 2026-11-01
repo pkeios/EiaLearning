@@ -1,0 +1,29 @@
+:root { --bg: #0f1115; --panel: #181b22; --texto: #e6e6e6; --suave: #9aa3b2; --acento: #7aa2ff; --ok: #3fb950; --mal: #f85149; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--texto); font: 17px/1.65 system-ui, -apple-system, "Segoe UI", sans-serif; }
+header { display: flex; justify-content: space-between; align-items: center; padding: .8rem 1.5rem; background: var(--panel); position: sticky; top: 0; }
+header nav a { margin-left: 1.2rem; }
+a { color: var(--acento); text-decoration: none; }
+a:hover, a:focus-visible { text-decoration: underline; }
+.marca { font-weight: 700; color: var(--texto); }
+main { max-width: 860px; margin: 0 auto; padding: 1.5rem; }
+h1 { line-height: 1.2; }
+h2 { margin-top: 2rem; border-bottom: 1px solid #2a2f3a; padding-bottom: .3rem; }
+.intro { background: var(--panel); padding: 1rem 1.2rem; border-radius: 8px; }
+.modulos li { margin: .7rem 0; }
+.modulos small { display: block; color: var(--suave); }
+.modulos li.ok a::after { content: " ✔"; color: var(--ok); }
+details { background: var(--panel); border-radius: 8px; padding: .6rem 1rem; margin: .7rem 0; }
+summary { cursor: pointer; font-weight: 600; }
+pre { background: #0b0d10; padding: 1rem; border-radius: 6px; overflow-x: auto; font-size: .9rem; }
+code { font-family: ui-monospace, Consolas, monospace; }
+button, .boton { background: var(--acento); color: #0f1115; border: 0; border-radius: 6px; padding: .55rem 1.1rem; font: inherit; font-weight: 600; cursor: pointer; display: inline-block; }
+button:disabled { opacity: .5; cursor: default; }
+textarea { width: 100%; background: var(--panel); color: var(--texto); border: 1px solid #2a2f3a; border-radius: 6px; padding: .7rem; font: inherit; }
+fieldset { border: 1px solid #2a2f3a; border-radius: 8px; margin: 1rem 0; padding: .8rem 1rem; }
+fieldset.bien { border-color: var(--ok); }
+fieldset.mal { border-color: var(--mal); }
+legend { font-weight: 600; padding: 0 .3rem; }
+label { display: block; padding: .25rem 0; cursor: pointer; }
+.explicacion { color: var(--suave); }
+.resultado { font-size: 1.2rem; font-weight: 700; }
