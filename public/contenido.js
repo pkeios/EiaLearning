@@ -66,6 +66,7 @@ print(y.shape)</code></pre>
     'Distinguir aprendizaje supervisado, no supervisado y por refuerzo',
     'Detectar overfitting y usar bien train/validación/test',
     'Elegir la métrica correcta (accuracy, precision, recall, F1)',
+    'Usar ensembles de árboles (random forest, gradient boosting) y pipelines sin data leakage',
   ],
   lecciones: [
     { titulo: 'Qué es aprender a partir de datos', html: `
@@ -91,13 +92,43 @@ print(modelo.score(X_te, y_te))</code></pre>` },
       </ul>
       <p>Con clases desbalanceadas, la accuracy engaña: si el 99% de los casos son negativos, un modelo que siempre dice "negativo" tiene 99% de accuracy y no sirve para nada.</p>
       <p><strong>Data leakage:</strong> información que no tendrías en producción se cuela en el entrenamiento (por ejemplo, normalizar usando estadísticas del dataset completo antes de separar test). Da resultados irrealmente buenos.</p>` },
+    { titulo: 'Árboles, ensembles y pipelines: lo que gana en datos tabulares', html: `
+      <p>Aunque los LLMs dominan el texto, en <strong>datos tabulares</strong> (planillas, bases de datos de clientes, transacciones) los modelos basados en árboles siguen siendo la primera opción: un estudio de 2022 mostró que superan a las redes neuronales en la mayoría de los benchmarks tabulares de tamaño medio.</p>
+      <ul>
+        <li><strong>Árbol de decisión:</strong> preguntas del tipo "¿ingresos &gt; 50.000?" encadenadas. Interpretable, pero un árbol profundo hace overfitting con facilidad.</li>
+        <li><strong>Random forest (bagging):</strong> muchos árboles, cada uno entrenado con una muestra aleatoria de filas y de columnas, y se promedian. Reduce la <em>varianza</em>: los errores individuales se compensan.</li>
+        <li><strong>Gradient boosting:</strong> árboles chicos entrenados <em>en secuencia</em>; cada uno aprende a corregir los errores (el gradiente de la pérdida) de los anteriores. Suele ser el más preciso. Implementaciones: XGBoost, LightGBM, CatBoost y <code>HistGradientBoostingClassifier</code> de scikit-learn, que además maneja valores faltantes de forma nativa.</li>
+      </ul>
+      <p>El boosting puede hacer overfitting si sumás demasiados árboles: usá <strong>early stopping</strong> sobre un conjunto de validación y un learning rate moderado.</p>
+      <p><strong>Pipelines:</strong> todo el preprocesamiento (escalar, codificar categorías, imputar) va dentro de un <code>Pipeline</code>. Así, en validación cruzada, cada transformación se ajusta solo con el train de cada fold y no hay leakage. Además, el mismo objeto se usa en producción, sin reescribir el preprocesamiento.</p>
+      <pre><code>from sklearn.compose import make_column_transformer
+from sklearn.preprocessing import OneHotEncoder, StandardScaler
+from sklearn.pipeline import make_pipeline
+from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import HistGradientBoostingClassifier
+from sklearn.model_selection import cross_val_score
+
+prep = make_column_transformer(
+    (StandardScaler(), ["edad", "ingresos"]),
+    (OneHotEncoder(handle_unknown="ignore"), ["ciudad"]),
+)
+lineal = make_pipeline(prep, LogisticRegression(max_iter=1000))
+boosting = make_pipeline(prep, HistGradientBoostingClassifier(early_stopping=True))
+
+for nombre, modelo in [("lineal", lineal), ("boosting", boosting)]:
+    f1 = cross_val_score(modelo, X, y, cv=5, scoring="f1")
+    print(nombre, f1.mean().round(3), "±", f1.std().round(3))</code></pre>
+      <p>Regla práctica: empezá con un modelo lineal como línea base, después gradient boosting. Si el boosting no mejora claramente, el problema está en los datos o en las features, no en el algoritmo.</p>` },
   ],
   practica: [
     'Con scikit-learn y el dataset Titanic (o cualquiera de Kaggle), entrená una regresión logística y un random forest. Compará accuracy, precision, recall y F1 en test.',
     'Provocá overfitting a propósito con un árbol de decisión sin límite de profundidad y graficá error de train vs test según max_depth.',
+    'Con un dataset tabular de Kaggle, compará con validación cruzada de 5 folds una regresión logística en Pipeline, un random forest y HistGradientBoosting. Reportá F1 medio ± desvío de cada uno y justificá cuál pondrías en producción.',
   ],
   recursos: [
     { t: 'Guía de usuario de scikit-learn', url: 'https://scikit-learn.org/stable/user_guide.html' },
+    { t: 'scikit-learn — Ensembles: gradient boosting, random forests y más', url: 'https://scikit-learn.org/stable/modules/ensemble.html' },
+    { t: 'Why do tree-based models still outperform deep learning on tabular data? (paper)', url: 'https://arxiv.org/abs/2207.08815' },
     { t: 'Machine Learning Specialization (Andrew Ng)', url: 'https://www.coursera.org/specializations/machine-learning-introduction' },
     { t: 'Kaggle Learn (cursos cortos y prácticos)', url: 'https://www.kaggle.com/learn' },
   ],
@@ -108,6 +139,11 @@ print(modelo.score(X_te, y_te))</code></pre>` },
     { q: '¿Cuál es la fórmula del recall?', opciones: ['TP / (TP + FN)', 'TP / (TP + FP)', '(TP + TN) / total', 'FP / (FP + TN)'], correcta: 0, explicacion: 'Recall = de todos los positivos reales (TP + FN), cuántos detectaste (TP). TP / (TP + FP) es precision.' },
     { q: 'K-means es un algoritmo de...', opciones: ['Clasificación supervisada', 'Clustering no supervisado', 'Regresión lineal', 'Aprendizaje por refuerzo'], correcta: 1, explicacion: 'K-means agrupa datos sin etiquetas en k clusters según cercanía a centroides.' },
     { q: 'Normalizás todo el dataset con su media y desvío y después lo separás en train/test. ¿Qué problema tiene?', opciones: ['Ninguno', 'Underfitting', 'Data leakage: el train "ve" estadísticas del test', 'El modelo entrena más lento'], correcta: 2, explicacion: 'Las estadísticas de normalización deben calcularse solo con train. Si no, información del test se filtra al entrenamiento.' },
+    { q: '¿Qué hace un random forest para mejorar a un solo árbol de decisión?', opciones: ['Entrena árboles en secuencia, cada uno corrigiendo al anterior', 'Reemplaza los árboles por una red neuronal', 'Poda el árbol hasta dejarlo con una sola división', 'Promedia muchos árboles entrenados con muestras aleatorias de filas y columnas, reduciendo la varianza'], correcta: 3, explicacion: 'Bagging: árboles independientes cuyos errores se compensan al promediar. Entrenar en secuencia corrigiendo errores es boosting, no random forest.' },
+    { q: 'Tenés 50.000 filas de datos tabulares con columnas mixtas y valores faltantes. ¿Qué probás como primer modelo fuerte, después de la línea base?', opciones: ['Un Transformer entrenado desde cero', 'Una red convolucional', 'Gradient boosting (HistGradientBoosting, LightGBM o XGBoost)', 'K-means'], correcta: 2, explicacion: 'En datos tabulares de tamaño medio los árboles con boosting suelen ganar, y algunas implementaciones manejan faltantes de forma nativa. K-means no es supervisado.' },
+    { q: '¿Por qué conviene meter el escalado y la codificación dentro de un Pipeline al hacer validación cruzada?', opciones: ['Porque entrena más rápido', 'Porque scikit-learn no permite escalar fuera de un Pipeline', 'Para que el modelo use la GPU', 'Para que cada transformación se ajuste solo con el train de cada fold y no haya leakage'], correcta: 3, explicacion: 'Si escalás todo antes de la validación cruzada, cada fold de validación ya "vio" estadísticas de sí mismo. El Pipeline lo evita y además se reutiliza en producción.' },
+    { q: 'En gradient boosting, ¿qué aprende cada árbol nuevo?', opciones: ['A corregir los errores (el gradiente de la pérdida) del conjunto de árboles anteriores', 'Lo mismo que el anterior pero con otra muestra de datos', 'Una partición aleatoria sin mirar los errores', 'A decidir qué árbol anterior usar para cada fila'], correcta: 0, explicacion: 'El boosting es secuencial y aditivo: cada árbol apunta a lo que el conjunto todavía predice mal. Entrenar con otra muestra independiente es la idea del bagging.' },
+    { q: 'Tu gradient boosting mejora en train con cada iteración, pero la métrica de validación empeora a partir de la iteración 300. ¿Qué hacés?', opciones: ['Agregar más iteraciones', 'Subir el learning rate', 'Usar early stopping con el set de validación, o bajar el learning rate y limitar los árboles', 'Dejar de usar el set de validación'], correcta: 2, explicacion: 'Es overfitting: a partir de ese punto los árboles nuevos memorizan ruido. Early stopping corta en el mejor punto de validación. Más iteraciones o más learning rate lo empeoran.' },
   ],
 },
 {

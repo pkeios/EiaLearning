@@ -9,5 +9,6 @@ Es un sitio estático, sin build. El progreso se guarda en el navegador (localSt
   - `/mejorar`: mejora el módulo más flojo.
   - `/mejorar rag`: mejora un módulo concreto.
   - `/mejorar nuevo`: crea un módulo nuevo.
-  - `/loop 30m /mejorar`: lo repite cada 30 minutos mientras la sesión siga abierta.
+  - `/evolucionar`: un paso de mejora (contenido o una tarea de `BACKLOG.md`), validado y publicado.
+  - `/loop 30m /evolucionar`: mejora y publica sola cada 30 minutos mientras la sesión siga abierta.
 - **Historial de mejoras:** `MEJORAS.md`.
