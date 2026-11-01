@@ -351,6 +351,7 @@ def preparar_contexto(mensajes, notas):
     'Hacer llamadas a una API de LLM: mensajes, roles, system, max_tokens',
     'Usar streaming, salidas estructuradas, reintentos y caching',
     'Estimar y controlar costo y latencia',
+    'Escribir clientes robustos: salidas validadas, reintentos solo para errores transitorios e idempotencia',
   ],
   lecciones: [
     { titulo: 'Anatomía de una llamada', html: `
@@ -385,16 +386,61 @@ print(resp.usage)  # tokens de entrada y salida = lo que pagás</code></pre>
         <li><strong>Batch:</strong> para trabajos masivos no urgentes, las APIs de lotes son más baratas.</li>
         <li><strong>Timeouts y fallbacks:</strong> qué pasa si el proveedor no responde. Tu app tiene que degradar con elegancia.</li>
       </ul>` },
+    { titulo: 'Código robusto: salidas estructuradas, validación y reintentos', html: `
+      <p>Un demo llama al modelo y confía en lo que vuelve. Una app real asume que <strong>todo puede fallar</strong>: la red, el proveedor, el formato y el contenido.</p>
+      <p><strong>Salidas estructuradas nativas:</strong> varias APIs pueden restringir la generación a un JSON Schema (en Claude, con <code>output_config.format</code> de tipo <code>json_schema</code>). Así el JSON siempre se puede parsear. Pero el esquema garantiza la <em>forma</em>, no que los valores tengan sentido: un total negativo o una fecha 2026-02-31 pasan igual. Por eso validás las reglas de negocio en tu código.</p>
+      <p><strong>Qué reintentar y qué no:</strong></p>
+      <ul>
+        <li><strong>Sí:</strong> 429 (rate limit), 500/503/529 (errores o sobrecarga del proveedor), timeouts. Con <em>backoff exponencial y jitter</em>: el jitter evita que miles de clientes que fallaron juntos reintenten todos en el mismo instante.</li>
+        <li><strong>No:</strong> 400, 401, 403. Reintentar una petición mal armada o sin permisos da el mismo error; hay que registrarlo y corregirlo.</li>
+        <li><strong>Cuidado con los efectos:</strong> si una herramienta cobra, envía o borra, un reintento tras un timeout puede ejecutarla dos veces. Usá claves de idempotencia o verificá el estado antes de repetir.</li>
+      </ul>
+      <pre><code>import random, time
+from pydantic import BaseModel, ValidationError, field_validator
+
+class Factura(BaseModel):
+    proveedor: str
+    total: float
+    moneda: str
+
+    @field_validator("total")
+    def total_positivo(cls, v):
+        if v &lt;= 0:
+            raise ValueError("el total debe ser positivo")
+        return v
+
+def llamar_con_reintentos(mensajes, max_intentos=5):
+    for i in range(max_intentos):
+        try:
+            return llamar_modelo(mensajes, timeout=30)
+        except ErrorTransitorio:                          # 429, 5xx, timeout
+            time.sleep(min(60, 2 ** i) + random.random())  # backoff + jitter
+    return llamar_modelo(mensajes, modelo=MODELO_RESPALDO, timeout=30)  # fallback
+
+def extraer(texto, intentos=3):
+    mensajes = [{"role": "user", "content": "Extraé proveedor, total y moneda como JSON.\n&lt;factura&gt;" + texto + "&lt;/factura&gt;"}]
+    for _ in range(intentos):
+        salida = llamar_con_reintentos(mensajes)
+        try:
+            return Factura.model_validate_json(salida)
+        except ValidationError as e:                      # devolverle el error al modelo
+            mensajes += [{"role": "assistant", "content": salida},
+                         {"role": "user", "content": "Ese JSON no es válido: " + str(e) + ". Devolvé solo el JSON corregido."}]
+    raise ValueError("no se pudo extraer la factura")</code></pre>
+      <p>Fijate en los topes: intentos máximos de validación, de reintentos y un tiempo máximo de espera. Un bucle de reintentos sin límite es una forma rápida de gastar presupuesto y empeorar una caída del proveedor.</p>` },
   ],
   practica: [
     'Construí un chatbot de terminal con historial, streaming y un comando /reset. Mostrá tokens y costo estimado de cada turno.',
     'Hacé un extractor que reciba facturas en texto y devuelva JSON validado con Pydantic (o Zod). Si la validación falla, reintentá enviando el error al modelo.',
     'Medí la latencia hasta el primer token con y sin streaming, y con un modelo grande vs uno chico.',
+    'Escribí un cliente con timeout, reintentos con backoff y jitter solo para 429/5xx/timeout, y fallback a otro modelo. Probalo con un mock que falle al azar el 30% de las veces y verificá con tests que nunca reintenta un 400 y que respeta el máximo de intentos.',
   ],
   recursos: [
     { t: 'Documentación de la API de Claude', url: 'https://docs.claude.com/' },
     { t: 'Anthropic Cookbook (recetas con código)', url: 'https://github.com/anthropics/anthropic-cookbook' },
     { t: 'Documentación de la API de OpenAI', url: 'https://platform.openai.com/docs' },
+    { t: 'Claude — Structured outputs', url: 'https://platform.claude.com/docs/en/build-with-claude/structured-outputs' },
+    { t: 'Pydantic (validación de datos en Python)', url: 'https://docs.pydantic.dev/latest/' },
   ],
   quiz: [
     { q: 'Las APIs de chat son stateless. ¿Qué implica?', opciones: ['Que no guardan logs', 'Que hay que enviar el historial de la conversación en cada llamada', 'Que no se pueden usar en producción', 'Que la respuesta siempre es igual'], correcta: 1, explicacion: 'El modelo solo ve lo que mandás en esa petición. La "memoria" la gestiona tu aplicación.' },
@@ -403,6 +449,11 @@ print(resp.usage)  # tokens de entrada y salida = lo que pagás</code></pre>
     { q: '¿De qué depende el costo de una llamada?', opciones: ['Del número de palabras de la pregunta solamente', 'Del tiempo de respuesta', 'De la cantidad de usuarios', 'De los tokens de entrada y de salida'], correcta: 3, explicacion: 'Se cobra por token, con precios distintos para entrada y salida (y descuentos para tokens cacheados).' },
     { q: '¿Cuándo ayuda el prompt caching?', opciones: ['Cuando cada prompt es completamente distinto', 'Cuando reutilizás un prefijo largo (instrucciones o documentos) en muchas llamadas', 'Solo en modelos open source', 'Cuando usás temperatura 0'], correcta: 1, explicacion: 'Lo cacheado es el prefijo repetido; si no se repite nada, no hay nada que reutilizar.' },
     { q: '¿Dónde debe estar la API key en una app web?', opciones: ['En el JavaScript del frontend', 'En el repositorio para que el equipo la tenga', 'En el backend, leída de variables de entorno o un gestor de secretos', 'En la URL'], correcta: 2, explicacion: 'Todo lo que llega al navegador es público. La key en el frontend o en git termina filtrada.' },
+    { q: 'Usás salidas estructuradas nativas, que garantizan JSON válido según tu esquema. ¿Todavía hace falta validar en tu código?', opciones: ['No, nunca', 'Solo en desarrollo', 'Solo si la temperatura es alta', 'Sí: el esquema asegura la forma, no que los valores tengan sentido'], correcta: 3, explicacion: 'Un total negativo o una fecha imposible cumplen el esquema igual. Las reglas de negocio se validan en tu código.' },
+    { q: '¿Por qué se agrega jitter (un componente aleatorio) al backoff exponencial?', opciones: ['Para que muchos clientes que fallaron a la vez no reintenten todos en el mismo instante', 'Para que los reintentos sean más rápidos', 'Porque lo exige el protocolo HTTP', 'Para gastar menos tokens'], correcta: 0, explicacion: 'Sin jitter, los clientes que fallaron juntos vuelven juntos y generan picos que prolongan la caída.' },
+    { q: 'La API responde 400 invalid_request_error. ¿Qué hace tu cliente?', opciones: ['Reintenta con backoff exponencial', 'Pasa al modelo de respaldo', 'Espera un minuto y reintenta', 'No reintenta: registra el error y se corrige la petición'], correcta: 3, explicacion: 'Un 400 es un error de la petición; repetirla da el mismo resultado. Los reintentos son para errores transitorios como 429, 5xx y timeouts.' },
+    { q: 'El modelo devolvió un JSON que no pasa tu validación. ¿Cuál es la mejor estrategia?', opciones: ['Repetir exactamente el mismo prompt', 'Subir max_tokens al máximo', 'Reenviarle su salida junto con el error de validación y pedirle la corrección, con un tope de intentos', 'Mostrarle el JSON roto al usuario'], correcta: 2, explicacion: 'El mensaje de error le dice al modelo qué arreglar, y el tope evita bucles. Repetir el mismo prompt suele repetir el mismo error.' },
+    { q: 'Un agente llama a la herramienta cobrar_tarjeta, la llamada da timeout y tu código la reintenta automáticamente. ¿Qué riesgo hay?', opciones: ['Ninguno', 'Solo gastar algunos tokens más', 'Que el modelo aprenda un mal hábito', 'Cobrar dos veces: las acciones con efectos necesitan claves de idempotencia o verificar el estado antes de reintentar'], correcta: 3, explicacion: 'Un timeout no significa que la acción no se ejecutó. Las operaciones con efectos tienen que ser idempotentes o verificarse antes de repetirlas.' },
   ],
 },
 {
