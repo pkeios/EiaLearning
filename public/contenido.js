@@ -465,6 +465,7 @@ def extraer(texto, intentos=3):
     'Entender embeddings y búsqueda semántica',
     'Construir un pipeline RAG completo: ingestión, chunking, retrieval y generación',
     'Diagnosticar y mejorar un RAG: híbrido, reranking, evaluación del retrieval',
+    'Elegir entre contexto largo, RAG clásico y RAG agéntico, aplicando permisos en el retrieval',
   ],
   lecciones: [
     { titulo: 'Embeddings y búsqueda semántica', html: `
@@ -486,17 +487,41 @@ top = mas_cercanos(q_vec, docs_vec, k=5)</code></pre>
       </ol>
       <p><strong>Depuración:</strong> si la respuesta es mala, mirá primero si los chunks correctos fueron recuperados. Medí el retrieval por separado (recall@k) y la generación por separado (fidelidad al contexto, relevancia).</p>
       <p>Mejoras avanzadas: agregar contexto del documento a cada chunk antes de embeberlo (contextual retrieval), reescribir la consulta, metadatos para filtrar, y RAG agéntico (el modelo decide qué buscar y cuándo).</p>` },
+    { titulo: '¿RAG, contexto largo o RAG agéntico?', html: `
+      <p>Con ventanas de contexto de cientos de miles de tokens, RAG ya no es automático. Hay tres opciones y cada una gana en un escenario distinto.</p>
+      <p><strong>1. Todo en el contexto.</strong> Si tu base de conocimiento es chica (Anthropic sugiere menos de unos 200.000 tokens, unas 500 páginas), podés meterla entera en el prompt y usar <strong>prompt caching</strong>, que según Anthropic reduce la latencia más de 2x y el costo hasta un 90% en las llamadas repetidas. No hay fallos de retrieval porque no hay retrieval. Contras: pagás ese contexto en cada consulta y, con mucho contexto, los modelos pueden usar peor la información, sobre todo la que queda en el medio (<em>lost in the middle</em>). Poné lo importante al principio o al final, y medí.</p>
+      <p><strong>2. RAG clásico</strong> (una búsqueda, top-k, generación). Gana cuando la base es grande, cambia seguido, necesitás citar fuentes o <strong>cada usuario puede ver documentos distintos</strong>. Los permisos se aplican como filtro en el retrieval, antes de que el texto llegue al modelo: una instrucción en el prompt no protege nada.</p>
+      <p><strong>3. RAG agéntico.</strong> La búsqueda es una herramienta y el modelo decide cuándo usarla, reformula la consulta y busca varias veces. Gana en preguntas de <em>varios saltos</em> ("¿qué clientes del plan Pro reportaron el bug que se arregló en la versión posterior al incidente de marzo?"), donde una sola búsqueda no alcanza. Contras: más llamadas, más latencia y más costo.</p>
+      <pre><code>herramientas = [{
+    "name": "buscar_docs",
+    "description": "Busca en la documentación interna. Si el resultado no alcanza, "
+                   "volvé a buscar con otra consulta más específica.",
+    "input_schema": {"type": "object",
+                     "properties": {"consulta": {"type": "string"},
+                                    "producto": {"type": "string"}},
+                     "required": ["consulta"]},
+}]
+
+def buscar_docs(consulta, usuario, producto=None):
+    filtros = {"grupos_permitidos": usuario.grupos}   # el permiso se aplica acá, no en el prompt
+    if producto:
+        filtros["producto"] = producto
+    return busqueda_hibrida(consulta, filtros=filtros, k=8)</code></pre>
+      <p><strong>Las mejoras de retrieval se suman.</strong> En el experimento de Contextual Retrieval de Anthropic, la tasa de fallo del top-20 bajó 35% con embeddings contextuales, 49% al sumar BM25 contextual y 67% al agregar reranking. Lo importante es el método: cada técnica se agrega y se mide contra una métrica como tasa de fallo o recall@k.</p>
+      <p><strong>Regla práctica:</strong> empezá por lo más simple que funcione con tus datos (contexto completo si entra), pasá a RAG clásico cuando el tamaño, el costo o los permisos lo exijan, y a RAG agéntico solo para las preguntas que lo necesiten.</p>` },
   ],
   practica: [
     'Construí un RAG sobre tus propios apuntes (o la documentación de una librería): chunking, embeddings, pgvector o Chroma, y respuestas con citas.',
     'Creá 30 preguntas con el chunk correcto esperado y medí recall@5 con búsqueda vectorial, BM25 e híbrida.',
     'Agregá un reranker y medí cuánto cambia la calidad de las respuestas.',
+    'Sobre tus apuntes, compará tres variantes en 30 preguntas (5 de ellas de varios saltos): todo en el contexto con caching, RAG clásico y RAG agéntico. Medí exactitud, costo y latencia por pregunta, y escribí cuál elegirías y por qué.',
   ],
   recursos: [
     { t: 'Paper original de RAG (Lewis et al., 2020)', url: 'https://arxiv.org/abs/2005.11401' },
     { t: 'Anthropic — Contextual Retrieval', url: 'https://www.anthropic.com/news/contextual-retrieval' },
     { t: 'pgvector (búsqueda vectorial en Postgres)', url: 'https://github.com/pgvector/pgvector' },
     { t: 'Sentence Transformers (embeddings open source)', url: 'https://www.sbert.net/' },
+    { t: 'Lost in the Middle: How Language Models Use Long Contexts (paper)', url: 'https://arxiv.org/abs/2307.03172' },
   ],
   quiz: [
     { q: '¿Qué problema resuelve principalmente RAG?', opciones: ['Hacer el modelo más rápido', 'Dar al modelo conocimiento privado o actualizado sin reentrenarlo', 'Reducir el tamaño del modelo', 'Eliminar la necesidad de prompts'], correcta: 1, explicacion: 'Recupera información relevante en el momento de la consulta y la incluye en el contexto.' },
@@ -505,6 +530,11 @@ top = mas_cercanos(q_vec, docs_vec, k=5)</code></pre>
     { q: '¿Qué hace un reranker?', opciones: ['Genera la respuesta final', 'Divide los documentos en chunks', 'Calcula los embeddings', 'Reordena los candidatos recuperados con un modelo más preciso'], correcta: 3, explicacion: 'Un cross-encoder mira consulta y documento juntos: es más lento pero más preciso, así que se aplica solo sobre los top candidatos.' },
     { q: 'Tu RAG responde mal. ¿Qué revisás primero?', opciones: ['Si el retrieval trajo los documentos correctos', 'El color de la interfaz', 'Cambiar a un modelo más grande', 'Subir la temperatura'], correcta: 0, explicacion: 'Si el contexto no tiene la respuesta, ningún modelo puede darla bien. Separá fallos de retrieval de fallos de generación.' },
     { q: '¿Qué mide recall@k en retrieval?', opciones: ['La velocidad de la búsqueda', 'La proporción de documentos relevantes que aparecen entre los k primeros resultados', 'Cuántos tokens tiene la respuesta', 'La similitud media de los resultados'], correcta: 1, explicacion: 'Si el chunk correcto no está en el top-k, el generador nunca lo ve.' },
+    { q: 'Tu base de conocimiento son 300 páginas (unos 120.000 tokens), cambia una vez por mes y recibe 50 consultas por día. ¿Qué probás primero?', opciones: ['Un pipeline RAG con base vectorial y reranker', 'Fine-tuning mensual del modelo', 'Un agente de varios pasos', 'Incluir todo en el prompt con prompt caching y medirlo con evals'], correcta: 3, explicacion: 'Entra en el contexto y casi no cambia: lo más simple es incluirla completa y cachearla, sin fallos de retrieval. RAG se justifica si el costo, el tamaño o los permisos lo exigen.' },
+    { q: 'Preguntan: "¿qué clientes del plan Pro reportaron el bug que se arregló en la versión posterior al incidente de marzo?". Tu RAG de una sola búsqueda falla. ¿Por qué y qué hacés?', opciones: ['El modelo es chico: usás uno más grande', 'Es una pregunta de varios saltos: usás RAG agéntico, con la búsqueda como herramienta para encadenar consultas', 'Los chunks son muy chicos: los agrandás', 'Subís la temperatura'], correcta: 1, explicacion: 'Hay que encontrar el incidente, después la versión, después el bug y recién ahí los clientes. Ninguna consulta única trae todo; un modelo más grande no arregla un retrieval que no encuentra los datos.' },
+    { q: 'En el RAG interno de tu empresa, un vendedor recibe en una respuesta datos de sueldos de Recursos Humanos. ¿Cuál es el arreglo correcto?', opciones: ['Agregar al system prompt "no reveles sueldos"', 'Bajar el k del retrieval', 'Cambiar el modelo de embeddings', 'Filtrar por los permisos del usuario en el retrieval, antes de que los documentos lleguen al modelo'], correcta: 3, explicacion: 'Si el documento llega al contexto, el modelo puede filtrarlo, sobre todo ante prompt injection. El control de acceso tiene que estar en la búsqueda, no en una instrucción.' },
+    { q: 'Ponés 40 documentos en el contexto y el modelo ignora un dato clave que está en el documento 20. ¿Qué fenómeno es y cómo lo mitigás?', opciones: ['Overfitting: regularizás el modelo', 'Lost in the middle: ponés menos contexto pero más relevante, con lo importante al principio o al final', 'Alucinación: ponés temperatura 0', 'Rate limit: reintentás'], correcta: 1, explicacion: 'Los modelos tienden a usar peor la información en el medio de contextos largos. Recuperar menos y mejor, o reordenar, ayuda más que agregar documentos.' },
+    { q: 'En el experimento de Anthropic, combinar embeddings contextuales, BM25 contextual y reranking redujo 67% los fallos del top-20. ¿Qué lección práctica sacás?', opciones: ['Que los embeddings no sirven', 'Que siempre hay que usar el modelo más grande', 'Que las mejoras de retrieval se suman, y cada una se valida con una métrica como tasa de fallo o recall@k', 'Que BM25 quedó obsoleto'], correcta: 2, explicacion: 'Cada técnica aportó por separado y juntas sumaron. Al revés de lo que dice la opción sobre BM25: sumarlo mejoró el resultado.' },
   ],
 },
 {
