@@ -26,7 +26,7 @@ Sos el editor jefe del curso de AI Engineering de este repo. El contenido está 
 - Corré `node tools/validar.js` y arreglá hasta que diga OK.
 
 ## 5. Módulo nuevo (solo con `nuevo`, o si todos los módulos tienen ≥ 6 lecciones y ≥ 30 preguntas)
-Proponé el tema que más falte para un AI engineer de primer nivel (por ejemplo: multimodal, voz, computer use, sistemas de recomendación, infraestructura de GPUs, datos sintéticos) y crealo con el mismo formato: objetivos, 2 lecciones, 2 prácticas, recursos verificados y 6 preguntas. Insertalo antes del módulo `proyecto`.
+Proponé el tema que más falte para un AI engineer de primer nivel (por ejemplo: multimodal, voz, computer use, sistemas de recomendación, infraestructura de GPUs, datos sintéticos) y crealo con el mismo formato: `icono` (un emoji), objetivos, 2 lecciones, 2 prácticas, recursos verificados y 6 preguntas. Insertalo antes del módulo `proyecto`.
 
 ## 6. Registrar
 Agregá una línea al final de `MEJORAS.md`:

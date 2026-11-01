@@ -3,6 +3,7 @@
 window.TEMARIO = [
 {
   id: 'fundamentos',
+  icono: '🧮',
   titulo: 'Fundamentos: Python y matemáticas para IA',
   nivel: 'Básico',
   objetivos: [
@@ -58,6 +59,7 @@ print(y.shape)</code></pre>
 },
 {
   id: 'ml-clasico',
+  icono: '📊',
   titulo: 'Machine Learning clásico',
   nivel: 'Básico',
   objetivos: [
@@ -110,6 +112,7 @@ print(modelo.score(X_te, y_te))</code></pre>` },
 },
 {
   id: 'deep-learning',
+  icono: '🧠',
   titulo: 'Deep Learning y redes neuronales',
   nivel: 'Intermedio',
   objetivos: [
@@ -166,6 +169,7 @@ print(modelo.score(X_te, y_te))</code></pre>` },
 },
 {
   id: 'llms',
+  icono: '🤖',
   titulo: 'Transformers y LLMs por dentro',
   nivel: 'Intermedio',
   objetivos: [
@@ -217,6 +221,7 @@ print(modelo.score(X_te, y_te))</code></pre>` },
 },
 {
   id: 'prompting',
+  icono: '💬',
   titulo: 'Prompt engineering',
   nivel: 'Intermedio',
   objetivos: [
@@ -272,6 +277,7 @@ Respondé solo con JSON: {"categoria": "...", "motivo": "una frase"}</code></pre
 },
 {
   id: 'apis',
+  icono: '🔌',
   titulo: 'APIs de LLMs y desarrollo de aplicaciones',
   nivel: 'Intermedio',
   objetivos: [
@@ -334,6 +340,7 @@ print(resp.usage)  # tokens de entrada y salida = lo que pagás</code></pre>
 },
 {
   id: 'rag',
+  icono: '📚',
   titulo: 'Embeddings y RAG',
   nivel: 'Intermedio',
   objetivos: [
@@ -384,6 +391,7 @@ top = mas_cercanos(q_vec, docs_vec, k=5)</code></pre>
 },
 {
   id: 'agentes',
+  icono: '🛠️',
   titulo: 'Agentes, tool use y MCP',
   nivel: 'Avanzado',
   objetivos: [
@@ -437,6 +445,7 @@ for paso in range(10):                      # límite de pasos: siempre
 },
 {
   id: 'evals',
+  icono: '🧪',
   titulo: 'Evaluación de sistemas con LLMs (evals)',
   nivel: 'Avanzado',
   objetivos: [
@@ -485,6 +494,7 @@ for paso in range(10):                      # límite de pasos: siempre
 },
 {
   id: 'fine-tuning',
+  icono: '🎛️',
   titulo: 'Fine-tuning y modelos abiertos',
   nivel: 'Avanzado',
   objetivos: [
@@ -531,6 +541,7 @@ for paso in range(10):                      # límite de pasos: siempre
 },
 {
   id: 'produccion',
+  icono: '🚀',
   titulo: 'LLMOps: llevar a producción',
   nivel: 'Avanzado',
   objetivos: [
@@ -574,6 +585,7 @@ for paso in range(10):                      # límite de pasos: siempre
 },
 {
   id: 'seguridad',
+  icono: '🛡️',
   titulo: 'Seguridad, ética y riesgos',
   nivel: 'Avanzado',
   objetivos: [
@@ -623,6 +635,7 @@ for paso in range(10):                      # límite de pasos: siempre
 },
 {
   id: 'proyecto',
+  icono: '🏆',
   titulo: 'Proyectos, portafolio y cómo seguir siendo el mejor',
   nivel: 'Proyecto final',
   objetivos: [
