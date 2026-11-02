@@ -139,3 +139,4 @@ Lo completa el comando `/mejorar`. Una línea por ejecución.
 - 2026-11-02 · seguridad · metodología: 4 explicaciones más corrigen la trampa; el módulo pasa a 6/7
 - 2026-11-02 · apis · metodología: 2 preguntas nuevas de casos; el módulo pasa a 6/7
 - 2026-11-02 · produccion · metodología: 5 explicaciones más corrigen la trampa; el módulo pasa a 6/7
+- 2026-11-02 · proyecto · metodología: 5 preguntas nuevas de casos; el módulo pasa a 6/7
