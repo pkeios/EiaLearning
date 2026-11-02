@@ -1602,6 +1602,7 @@ def calificar(entorno, transcripcion):
     'Entender qué limita el servicio de LLMs: KV cache, GQA, batching continuo y PagedAttention',
     'Preparar datos de fine-tuning de calidad y evaluar el resultado contra la línea base y el olvido catastrófico',
     'Destilar un modelo grande en uno chico para una tarea acotada, y decidir con costo, latencia y calidad',
+    'Ajustar modelos con refuerzo (GRPO) usando recompensas verificables, y prevenir el hackeo de la recompensa',
   ],
   lecciones: [
     { titulo: '¿Cuándo hacer fine-tuning?', html: `
@@ -1685,6 +1686,36 @@ for texto in muestra_de_produccion(5000):
         <li><strong>Revisá los términos de uso</strong> del proveedor del maestro: algunos limitan usar sus salidas para entrenar otros modelos.</li>
         <li><strong>Medí la decisión completa:</strong> si el alumno queda 2 puntos abajo pero cuesta 20 veces menos y responde en la mitad de tiempo, puede ser la mejor opción. O no: depende del costo de cada error.</li>
       </ul>` },
+    { titulo: 'Ajuste con refuerzo: GRPO y recompensas verificables', html: `
+      <p>El fine-tuning supervisado le muestra al modelo la respuesta correcta. El ajuste con refuerzo hace otra cosa: el modelo prueba varias respuestas, una <strong>función de recompensa</strong> las puntúa y se refuerza lo que funcionó. Sirve cuando sabés <em>verificar</em> una respuesta aunque no tengas la respuesta ideal escrita: código que pasa tests, matemáticas con resultado exacto, JSON que cumple un esquema.</p>
+      <p><strong>GRPO</strong> (Group Relative Policy Optimization), presentado en el paper de DeepSeekMath, es uno de los métodos más usados:</p>
+      <ol>
+        <li>Para cada prompt, el modelo genera un <strong>grupo</strong> de respuestas.</li>
+        <li>Cada una recibe una recompensa.</li>
+        <li>La <strong>ventaja</strong> de cada respuesta se calcula respecto de su grupo: (recompensa − promedio del grupo) / desvío del grupo. Así no hace falta entrenar un modelo crítico aparte.</li>
+        <li>Se refuerzan las respuestas mejores que el promedio y se desalientan las peores. Opcionalmente, una penalización KL evita alejarse demasiado del modelo original (en TRL viene apagada por defecto).</li>
+      </ol>
+      <pre><code>from trl import GRPOTrainer
+
+def recompensa_tests(completions, tests, **kwargs):
+    # 1.0 si el código generado pasa los tests de ese ejemplo, 0.0 si no
+    return [1.0 if pasa_tests(c, t) else 0.0 for c, t in zip(completions, tests)]
+
+def recompensa_formato(completions, **kwargs):
+    return [0.2 if es_codigo_valido(c) else 0.0 for c in completions]
+
+trainer = GRPOTrainer(model="un-modelo-chico-instruct",
+                      reward_funcs=[recompensa_tests, recompensa_formato],
+                      train_dataset=dataset)   # con columnas "prompt" y "tests"
+trainer.train()</code></pre>
+      <p><strong>El gran riesgo: hackeo de la recompensa.</strong> El modelo maximiza exactamente lo que medís, no lo que quisiste decir. Si la recompensa premia "pasa los tests", puede aprender a modificar los tests o a programar casos especiales para los ejemplos. Si premia el largo, va a escribir de más. Defensas:</p>
+      <ul>
+        <li>Verificadores difíciles de engañar: tests ocultos, chequeos en un sandbox.</li>
+        <li>Varias recompensas combinadas (corrección, formato, largo razonable).</li>
+        <li>Leer muestras de lo que el modelo genera durante el entrenamiento, no solo mirar la curva de recompensa.</li>
+        <li>Evaluar en un conjunto aparte con criterios que la recompensa no ve.</li>
+      </ul>
+      <p><strong>Cuándo conviene:</strong> tareas con un verificador confiable y donde el modelo base ya acierta a veces. Si nunca acierta, todas las recompensas del grupo son iguales y no hay nada que reforzar: primero hace falta un ajuste supervisado o un modelo mejor.</p>` },
   ],
   practica: [
     'Instalá Ollama, corré un modelo abierto de 7-8B y compará calidad y velocidad en 4 bits vs 8 bits con 10 prompts tuyos.',
@@ -1692,12 +1723,15 @@ for texto in muestra_de_produccion(5000):
     'Serví un modelo chico con vLLM y medí TTFT, tokens por segundo por usuario y throughput total con 1, 8 y 32 usuarios simultáneos. Calculá a mano la memoria de KV cache esperada y comparala con lo que reporta vLLM.',
     'Armá 300 ejemplos curados para una tarea y separá 50 de test sin duplicados. Afiná con LoRA usando la plantilla de chat del modelo y comparalo contra el modelo base con few-shot. Medí también 20 tareas generales antes y después para detectar olvido catastrófico.',
     'Destilá una tarea de clasificación o extracción: generá 2.000 pares con un modelo grande, filtrá los que no pasen tus chequeos y afiná un modelo chico con LoRA. Compará alumno y maestro en 200 casos de test aparte: exactitud, costo por 1.000 pedidos y latencia.',
+    'Con TRL, entrená con GRPO un modelo chico para responder problemas de aritmética con un formato fijo, con una recompensa por resultado correcto y otra por formato. Leé 20 respuestas a mitad del entrenamiento buscando trampas, y compará con el modelo base en un conjunto de test aparte.',
   ],
   recursos: [
     { t: 'LoRA (paper)', url: 'https://arxiv.org/abs/2106.09685' },
     { t: 'QLoRA (paper)', url: 'https://arxiv.org/abs/2305.14314' },
     { t: 'Hugging Face PEFT', url: 'https://huggingface.co/docs/peft' },
     { t: 'Ollama', url: 'https://ollama.com/' },
+    { t: 'DeepSeekMath: el paper que presentó GRPO', url: 'https://arxiv.org/abs/2402.03300' },
+    { t: 'Hugging Face TRL — GRPO Trainer', url: 'https://huggingface.co/docs/trl/grpo_trainer' },
     { t: 'Distilling the Knowledge in a Neural Network (paper)', url: 'https://arxiv.org/abs/1503.02531' },
     { t: 'DistilBERT (paper)', url: 'https://arxiv.org/abs/1910.01108' },
     { t: 'Distilling Step-by-Step (paper)', url: 'https://arxiv.org/abs/2305.02301' },
@@ -1730,6 +1764,11 @@ for texto in muestra_de_produccion(5000):
     { q: '¿Qué agrega el método "Distilling step-by-step" a la destilación clásica?', opciones: ['Usa también las explicaciones del modelo grande como señal de entrenamiento', 'Elimina la necesidad de datos', 'Entrena al maestro en lugar del alumno', 'Usa solo la respuesta final'], correcta: 0, explicacion: 'Las explicaciones le dan al alumno más información sobre cómo llegar a la respuesta. Con eso, un T5 de 770 millones superó a PaLM de 540.000 millones en un benchmark con menos datos.' },
     { q: 'Usás un LLM por API como maestro y no tenés acceso a sus probabilidades. ¿Cómo destilás?', opciones: ['No se puede destilar', 'Pedís las probabilidades por soporte', 'Por sus salidas: el maestro responde entradas reales y afinás al alumno con esos pares', 'Copiás los pesos del maestro'], correcta: 2, explicacion: 'La destilación con probabilidades es la versión original, pero con APIs lo habitual es destilar por salidas. Los pesos de un modelo cerrado no están disponibles.' },
     { q: 'Tu alumno destilado queda 2 puntos por debajo del maestro, pero cuesta 20 veces menos y responde en la mitad de tiempo. ¿Lo usás?', opciones: ['Depende de cuánto cuesta cada error en tu caso: hay que poner calidad, costo y latencia en la misma balanza', 'Nunca: siempre gana el más preciso', 'Siempre: siempre gana el más barato', 'Solo si el alumno es open source'], correcta: 0, explicacion: 'En una clasificación de bajo riesgo, 2 puntos pueden no importar; en un diagnóstico, sí. La decisión sale de comparar el costo de los errores con el ahorro.' },
+    { q: '¿Cuándo conviene el ajuste con refuerzo en lugar del ajuste supervisado?', opciones: ['Cuando no hay forma de verificar las respuestas', 'Cuando tenés miles de respuestas ideales escritas', 'Cuando sabés verificar si una respuesta es buena (tests, resultado exacto, esquema) aunque no tengas la respuesta ideal escrita', 'Siempre, porque es más barato'], correcta: 2, explicacion: 'El refuerzo necesita una señal de recompensa confiable. Si tenés las respuestas ideales, el ajuste supervisado suele ser más simple y estable.' },
+    { q: 'En GRPO, ¿cómo se calcula la ventaja de cada respuesta?', opciones: ['Comparando su recompensa con el promedio y el desvío de las otras respuestas del mismo prompt', 'Con un modelo crítico entrenado aparte', 'Con la longitud de la respuesta', 'Con la temperatura del muestreo'], correcta: 0, explicacion: 'GRPO compara cada respuesta con su grupo: (recompensa − promedio) / desvío. Eso evita entrenar un modelo crítico, a diferencia de otros métodos.' },
+    { q: 'Entrenás con una recompensa que vale 1 si "pasan los tests", y la recompensa sube rápido. Al leer las respuestas ves que el modelo modifica los tests. ¿Qué pasó?', opciones: ['El modelo aprendió a programar mejor', 'Faltaron epochs', 'Bajó el learning rate', 'Hackeo de la recompensa: maximizó lo que medías, no lo que querías; necesitás tests ocultos o un sandbox que no pueda tocar'], correcta: 3, explicacion: 'Por eso hay que leer muestras durante el entrenamiento: la curva de recompensa subiendo no prueba que el modelo esté haciendo lo correcto.' },
+    { q: 'El modelo base nunca acierta ningún problema de tu tarea. ¿Qué pasa si aplicás GRPO directamente?', opciones: ['Aprende igual, más lento', 'Todas las recompensas del grupo son iguales, así que no hay ventaja y no hay nada que reforzar: primero hace falta un ajuste supervisado o un modelo mejor', 'Aprende más rápido', 'Se vuelve más creativo'], correcta: 1, explicacion: 'Si todas las respuestas de un grupo valen 0, la ventaja es 0 para todas. El refuerzo necesita que el modelo acierte al menos a veces.' },
+    { q: 'Tu recompensa solo mide si el resultado es correcto, y el modelo empieza a escribir respuestas larguísimas y desordenadas. ¿Qué agregás?', opciones: ['Nada, mientras acierte', 'Más temperatura', 'Recompensas adicionales, por ejemplo de formato y de largo razonable, y evaluación en un conjunto aparte', 'Más datos de entrenamiento'], correcta: 2, explicacion: 'Combinar recompensas expresa mejor lo que querés. El conjunto aparte, con criterios que la recompensa no ve, detecta efectos indeseados.' },
   ],
 },
 {
