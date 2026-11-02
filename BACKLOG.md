@@ -25,4 +25,5 @@
 - [x] Atajos de teclado en los quizzes: teclas 1 a 4 para elegir opción en la pregunta enfocada y Enter para corregir
 - [x] Tamaño de letra ajustable (A- / A+) en la cabecera, que se recuerde, para leer cómodo en cualquier pantalla
 - [x] Página "Novedades" que muestre las últimas lecciones agregadas al curso (a partir de MEJORAS.md o de una lista en contenido.js), para saber qué hay nuevo para leer
-- [ ] Lectura en voz alta de una lección con la síntesis de voz del navegador (speechSynthesis), con botón de play y pausa
+- [x] Lectura en voz alta de una lección con la síntesis de voz del navegador (speechSynthesis), con botón de play y pausa
+- [ ] Estadística de tiempo de estudio: registrar minutos activos por día y mostrar un gráfico de las últimas 4 semanas en la página de progreso

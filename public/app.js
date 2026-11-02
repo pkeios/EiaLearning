@@ -246,7 +246,7 @@ function modulo(id, abrir = null) {
       <details class="leccion ${leida(n) ? 'leida' : ''}" ${leida(n) && n !== abrir ? '' : 'open'}>
         <summary><span class="num">${leida(n) ? '✔' : n + 1}</span>${esc(l.titulo)}</summary>
         <div class="contenido">${l.html}</div>
-        ${leida(n) ? '' : `<button data-leida="${n}">✔ Marcar como leída</button>`}
+        <div class="acciones-leccion">${leida(n) ? '' : `<button data-leida="${n}">✔ Marcar como leída</button>`}${window.speechSynthesis ? `<button class="secundario" data-escuchar="${n}">🔊 Escuchar</button>` : ''}</div>
       </details>`).join('')}
     <h2>🛠️ Práctica</h2><ol class="practica">${m.practica.map((x, n) => `<li class="${p.practicas[clavePractica(m, x)] ? 'hecha' : ''}"><label><input type="checkbox" data-practica="${n}" ${p.practicas[clavePractica(m, x)] ? 'checked' : ''}> <span>${esc(x)}</span></label></li>`).join('')}</ol>
     <section class="card">
@@ -270,6 +270,24 @@ function modulo(id, abrir = null) {
       ${prev ? `<a href="#/m/${prev.id}">← ${icono(prev)} ${esc(prev.titulo)}</a>` : '<span></span>'}
       ${next ? `<a href="#/m/${next.id}">${icono(next)} ${esc(next.titulo)} →</a>` : ''}
     </nav>`;
+  app.querySelectorAll('[data-escuchar]').forEach(b => b.onclick = () => {
+    const hablando = speechSynthesis.speaking;
+    speechSynthesis.cancel();
+    app.querySelectorAll('[data-escuchar]').forEach(x => { x.textContent = '🔊 Escuchar'; });
+    if (hablando && b.dataset.activo) { delete b.dataset.activo; return; }
+    app.querySelectorAll('[data-escuchar]').forEach(x => { delete x.dataset.activo; });
+    // Sin los bloques de código: leídos en voz alta no se entienden
+    const copia = b.closest('details').querySelector('.contenido').cloneNode(true);
+    copia.querySelectorAll('pre').forEach(pre => pre.remove());
+    const trozos = trozosParaVoz(copia.textContent);
+    trozos.forEach((t, i) => {
+      const u = Object.assign(new SpeechSynthesisUtterance(t), { lang: 'es-ES' });
+      if (i === trozos.length - 1) u.onend = () => { b.textContent = '🔊 Escuchar'; delete b.dataset.activo; };
+      speechSynthesis.speak(u);
+    });
+    b.dataset.activo = '1';
+    b.textContent = '⏹ Detener';
+  });
   app.querySelectorAll('[data-leida]').forEach(b => b.onclick = () => {
     const p = cargar(); p.leidas[m.id + ':' + b.dataset.leida] = true; estudiar(p); guardar(p); modulo(id);
   });
@@ -480,6 +498,17 @@ function elegirNivel() {
 // Una pregunta sin responder (null) nunca cuenta como acierto, aunque la correcta sea la opción 0.
 const esCorrecta = (elegida, q) => elegida !== null && Number(elegida) === q.correcta;
 let temporizador = null;
+// Voz: algunos navegadores cortan los textos largos, así que se lee en trozos de una o pocas oraciones.
+function trozosParaVoz(texto, max = 220) {
+  const oraciones = texto.replace(/\s+/g, ' ').trim().match(/[^.!?:]+[.!?:]*/g) || [];
+  const trozos = [];
+  for (const o of oraciones.map(x => x.trim()).filter(Boolean)) {
+    const ultimo = trozos[trozos.length - 1];
+    if (ultimo && (ultimo + ' ' + o).length <= max) trozos[trozos.length - 1] = ultimo + ' ' + o;
+    else trozos.push(o);
+  }
+  return trozos;
+}
 // Teclado: la pregunta objetivo es la que tiene el foco; si ninguna lo tiene, la primera sin responder.
 function preguntaObjetivo(campos, activo) {
   const enfocada = campos.findIndex(c => c.contains(activo));
@@ -578,6 +607,7 @@ function render() {
   const [, ruta, id, leccion] = location.hash.split('/');
   clearInterval(temporizador); // si se sale de un examen con tiempo, el reloj no sigue corriendo
   document.onkeydown = null;   // los atajos del quiz solo valen dentro del quiz
+  window.speechSynthesis?.cancel(); // al cambiar de página se deja de leer
   scrollTo(0, 0);
   if (ruta === 'm') modulo(id, leccion != null && leccion !== '' ? Number(leccion) : null);
   else if (ruta === 'buscar') busqueda();
