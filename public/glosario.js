@@ -91,6 +91,7 @@ window.GLOSARIO = [
   { t: 'Tool use', d: 'El modelo pide llamar a una herramienta con ciertos argumentos y tu código la ejecuta.', m: 'agentes' },
   { t: 'Token visual', d: 'Bloque de una imagen (en Claude, de 28×28 píxeles) que el modelo procesa como un token. Determina el costo de la imagen.', m: 'apis' },
   { t: 'Traza (y span)', d: 'Registro del recorrido completo de un pedido como un árbol de pasos (spans), cada uno con duración, datos y errores.', m: 'produccion' },
+  { t: 'Transfer learning', d: 'Reutilizar un modelo preentrenado y adaptarlo a una tarea nueva con pocos datos, por ejemplo entrenando solo una capa final.', m: 'deep-learning' },
   { t: 'TTFT', d: 'Time to first token: tiempo hasta que llega el primer token de la respuesta.', m: 'produccion' },
   { t: 'ViT (Vision Transformer)', d: 'Transformer para imágenes que corta la imagen en parches y los procesa como si fueran tokens.', m: 'llms' },
   { t: 'Ventana de contexto', d: 'Máximo de tokens, entre entrada y salida, que el modelo puede procesar a la vez.', m: 'llms' },

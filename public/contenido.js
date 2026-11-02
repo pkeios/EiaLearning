@@ -389,6 +389,7 @@ puntaje_grupos = cross_val_score(modelo, X, y, cv=GroupKFold(n_splits=5), groups
     'Entrenar de forma estable (AdamW, warmup y coseno, clipping, bf16) y diagnosticar con las curvas de loss',
     'Entender el aprendizaje contrastivo con el que se entrenan los modelos de embeddings y CLIP',
     'Estimar la memoria de entrenamiento y usar acumulación de gradientes, checkpointing y paralelismo para entrar en el hardware',
+    'Aplicar transfer learning: congelar capas, entrenar una cabeza nueva y ajustar con learning rates diferenciados',
   ],
   lecciones: [
     { titulo: 'Cómo aprende una red neuronal', html: `
@@ -490,6 +491,36 @@ for i, (x, y) in enumerate(loader):
         <li><strong>Paralelismo de tensores y de pipeline:</strong> se divide cada capa entre GPUs, o se ponen distintas capas en distintas GPUs, para los modelos más grandes.</li>
       </ul>
       <p>Hacer esta cuenta antes de entrenar te dice si entra, cuánto va a costar y qué técnica necesitás, sin descubrirlo con un error de memoria a mitad de camino.</p>` },
+    { titulo: 'Transfer learning: no entrenes desde cero', html: `
+      <p>Casi nunca conviene entrenar un modelo desde cero. Un modelo preentrenado con millones de imágenes o miles de millones de palabras ya aprendió representaciones útiles: bordes y formas en visión, sintaxis y significado en texto. <strong>Transfer learning</strong> es reutilizar ese conocimiento y adaptarlo a tu tarea con pocos datos.</p>
+      <p><strong>Dos formas, de menor a mayor costo:</strong></p>
+      <ol>
+        <li><strong>Extractor de features:</strong> congelás todo el modelo y entrenás solo una capa final nueva (la "cabeza") para tus clases. Rápido, funciona con muy pocos datos y es difícil que haga overfitting.</li>
+        <li><strong>Ajuste fino completo o parcial:</strong> descongelás también algunas capas, o todas, con un learning rate <em>chico</em> (por ejemplo 10 veces menor que para la cabeza), para no destruir lo aprendido. Rinde más cuando tenés más datos o tu dominio es distinto.</li>
+      </ol>
+      <pre><code>import torch, torchvision
+
+modelo = torchvision.models.resnet18(weights="DEFAULT")   # preentrenado
+for p in modelo.parameters():
+    p.requires_grad = False                                # 1) congelar todo
+modelo.fc = torch.nn.Linear(modelo.fc.in_features, 3)      # cabeza nueva: 3 clases
+
+opt = torch.optim.AdamW(modelo.fc.parameters(), lr=1e-3)   # solo se entrena la cabeza
+
+# 2) más adelante, descongelar la última etapa con un learning rate más chico
+for p in modelo.layer4.parameters():
+    p.requires_grad = True
+opt = torch.optim.AdamW([
+    {"params": modelo.fc.parameters(), "lr": 1e-3},
+    {"params": modelo.layer4.parameters(), "lr": 1e-4},
+])</code></pre>
+      <p><strong>Detalles que suelen olvidarse:</strong></p>
+      <ul>
+        <li><strong>Usá el mismo preprocesamiento</strong> con que se entrenó el modelo (tamaño de imagen, normalización, tokenizador). Si no, las entradas le resultan extrañas.</li>
+        <li><strong>Separá validación antes de empezar</strong> y vigilá el overfitting: con pocos datos llega rápido.</li>
+        <li><strong>Empezá por la opción más barata</strong> (extractor de features) y subí solo si las métricas lo justifican.</li>
+      </ul>
+      <p>Es la misma idea que ya viste con LLMs: el fine-tuning y LoRA son transfer learning sobre un modelo de lenguaje, y los embeddings más un clasificador son la versión "extractor de features".</p>` },
   ],
   practica: [
     'Seguí "Neural Networks: Zero to Hero" de Andrej Karpathy hasta micrograd: implementá backpropagation desde cero.',
@@ -498,12 +529,14 @@ for i, (x, y) in enumerate(loader):
     'En tu modelo de MNIST: verificá la loss inicial, sobreajustá un batch de 32 ejemplos y después entrená con AdamW, warmup, coseno y clipping. Graficá las curvas contra SGD con learning rate fijo y explicá las diferencias.',
     'Afiná un modelo chico de Sentence Transformers con 1.000 pares consulta-documento de tu dominio, usando una loss contrastiva con los negativos del batch. Medí recall@5 sobre 100 consultas de test antes y después del ajuste.',
     'Estimá la memoria para entrenar completo un modelo de 1B y uno de 7B con Adam en precisión mixta, y compará con LoRA. Después, en un entrenamiento chico, activá acumulación de gradientes y comprobá que las curvas se parecen a las de un batch grande real.',
+    'Con unas 300 imágenes de 3 clases, entrená un clasificador sobre una ResNet preentrenada de dos formas: solo la cabeza nueva, y después también la última etapa con un learning rate más chico. Compará exactitud en validación y tiempo de entrenamiento contra entrenar la misma red desde cero.',
   ],
   recursos: [
     { t: 'Andrej Karpathy — Neural Networks: Zero to Hero', url: 'https://karpathy.ai/zero-to-hero.html' },
     { t: 'fast.ai — Practical Deep Learning', url: 'https://course.fast.ai/' },
     { t: 'Tutoriales oficiales de PyTorch', url: 'https://pytorch.org/tutorials/' },
     { t: 'Andrej Karpathy — A Recipe for Training Neural Networks', url: 'https://karpathy.github.io/2019/04/25/recipe/' },
+    { t: 'PyTorch — Tutorial de transfer learning', url: 'https://docs.pytorch.org/tutorials/beginner/transfer_learning_tutorial.html' },
     { t: 'ZeRO: optimizaciones de memoria para entrenar modelos enormes (paper)', url: 'https://arxiv.org/abs/1910.02054' },
     { t: 'PyTorch — FSDP (entrenamiento con sharding)', url: 'https://docs.pytorch.org/docs/stable/fsdp.html' },
     { t: 'CLIP: Learning Transferable Visual Models From Natural Language Supervision (paper)', url: 'https://arxiv.org/abs/2103.00020' },
@@ -534,6 +567,11 @@ for i, (x, y) in enumerate(loader):
     { q: 'Te quedás sin memoria por las activaciones al entrenar con secuencias largas. ¿Qué técnica probás?', opciones: ['Activation checkpointing: guardás menos activaciones y las recalculás en el backward, a cambio de más cómputo', 'Bajar el learning rate', 'Entrenar más epochs', 'Sacar la normalización'], correcta: 0, explicacion: 'Las activaciones crecen con el largo de la secuencia y el batch. Recalcularlas cambia memoria por tiempo de cómputo.' },
     { q: '¿Qué hace el sharding tipo ZeRO o FSDP?', opciones: ['Comprime el modelo a 4 bits', 'Entrena con una sola GPU', 'Duplica el modelo completo en cada GPU', 'Reparte pesos, gradientes y estados del optimizador entre GPUs, en lugar de que cada una tenga una copia completa'], correcta: 3, explicacion: 'Duplicar todo es el paralelismo de datos clásico, que no ahorra memoria por GPU. El sharding la divide entre todas.' },
     { q: '¿Por qué LoRA reduce tanto la memoria necesaria para afinar un modelo?', opciones: ['Porque usa menos datos de entrenamiento', 'Porque solo hay gradientes y estados del optimizador para los adaptadores chicos, no para los pesos congelados', 'Porque no usa la GPU', 'Porque no hace backward'], correcta: 1, explicacion: 'Los 12 bytes por parámetro del optimizador y los 2 de gradientes desaparecen para casi todo el modelo. El backward se hace igual, pero solo actualiza los adaptadores.' },
+    { q: 'Tenés 200 imágenes etiquetadas en 3 clases. ¿Qué probás primero?', opciones: ['Entrenar una red grande desde cero', 'Recolectar un millón de imágenes antes de empezar', 'Usar un modelo preentrenado congelado y entrenar solo una capa final nueva', 'Usar k-means'], correcta: 2, explicacion: 'Con tan pocos datos, entrenar desde cero hace overfitting. El modelo preentrenado ya trae representaciones útiles; alcanza con adaptar la cabeza.' },
+    { q: 'Al descongelar capas de un modelo preentrenado para ajustarlas, ¿qué learning rate usás para esas capas?', opciones: ['Uno más chico que el de la cabeza nueva, para no destruir lo que ya aprendieron', 'Uno más grande, para que cambien rápido', 'El mismo que si entrenaras desde cero', 'Cero'], correcta: 0, explicacion: 'Las capas preentrenadas ya están cerca de una buena solución. Un learning rate alto las aleja de ella; con cero, en cambio, quedarían congeladas.' },
+    { q: 'Tu modelo preentrenado da resultados pésimos con tus imágenes, aunque el código no tiene errores. ¿Qué revisás primero?', opciones: ['El learning rate', 'La cantidad de epochs', 'El tamaño del batch', 'Que el preprocesamiento (tamaño y normalización) sea el mismo con que se entrenó el modelo'], correcta: 3, explicacion: 'Si la normalización o el tamaño no coinciden, las entradas son distintas de todo lo que el modelo vio al entrenarse. Es un error muy común y silencioso.' },
+    { q: '¿Qué ventaja tiene usar el modelo preentrenado como extractor de features (todo congelado salvo la cabeza)?', opciones: ['Siempre da la mejor exactitud posible', 'Es rápido, funciona con muy pocos datos y es difícil que haga overfitting', 'No necesita datos etiquetados', 'No necesita GPU nunca'], correcta: 1, explicacion: 'Como se entrenan muy pocos parámetros, alcanza con pocos ejemplos. Cuando hay más datos, descongelar capas suele rendir más.' },
+    { q: '¿Qué relación tiene el transfer learning con lo que viste de LLMs?', opciones: ['Ninguna', 'Que los LLMs no se pueden ajustar', 'El fine-tuning y LoRA son transfer learning sobre un modelo de lenguaje, y embeddings con un clasificador son la versión de extractor de features', 'Que solo sirve para imágenes'], correcta: 2, explicacion: 'Es la misma idea en todos los dominios: reutilizar lo que aprendió un modelo grande y adaptarlo con pocos datos a tu tarea.' },
   ],
 },
 {
