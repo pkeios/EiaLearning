@@ -151,3 +151,4 @@ Lo completa el comando `/mejorar`. Una línea por ejecución.
 - 2026-11-02 · prompting · metodología: 13 explicaciones más corrigen la trampa; el módulo pasa a 6/7 y ya ninguno queda debajo
 - 2026-11-02 · apis · metodología: 2 prácticas nuevas con resultado medible; el módulo cumple las 7 metas
 - 2026-11-02 · app · versión para chicos: Repaso rápido en el inicio con preguntas de misiones ya terminadas
+- 2026-11-02 · produccion · metodología: 3 prácticas nuevas con resultado medible; el módulo cumple las 7 metas

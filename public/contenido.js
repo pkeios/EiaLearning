@@ -2389,6 +2389,9 @@ def responder(pregunta, usuario):
     'Auditá los logs de tu app: buscá emails, teléfonos y tarjetas en 1.000 trazas, agregá enmascarado antes de loguear y escribí un test que falle si una traza nueva contiene alguno de esos patrones.',
     'Instrumentá tu RAG o tu agente con OpenTelemetry (o Langfuse): un span por paso, con tokens, costo, latencia y motivo de fin. Con 50 pedidos reales, identificá qué paso consume más tiempo y más costo, y proponé una mejora concreta.',
     'Tomá 100 pedidos reales de tu app, etiquetá cuál es una buena respuesta y compará cuatro configuraciones: todo al modelo grande, todo al chico, routing por tipo de tarea y cascada con un verificador determinista. Armá una tabla de costo total, calidad y latencia p95, y elegí la configuración justificando el umbral.',
+    'Simulá una migración de modelo: corré tus evals sobre 50 casos con el modelo actual y con el candidato. Anotá en una tabla cuántos casos mejoran, empeoran y quedan igual, leé los que empeoran y escribí qué cambiarías del prompt antes de pasar a un canary.',
+    'Calculá el costo real de tu app con una semana de registros: tokens de entrada, de salida y cacheados por pedido, multiplicados por los precios vigentes. Compará el total con la factura del proveedor, anotá la diferencia y explicá de dónde sale.',
+    'Medí la latencia p50, p95 y p99 de tu app con 200 pedidos reales. Con las trazas, identificá qué paso explica la cola (los pedidos del p99), aplicá una mejora concreta y volvé a medir los tres percentiles.',
   ],
   recursos: [
     { t: 'Langfuse (observabilidad open source)', url: 'https://langfuse.com/docs' },
