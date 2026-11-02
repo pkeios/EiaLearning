@@ -183,6 +183,7 @@ for nombre, modelo in [("lineal", lineal), ("boosting", boosting)]:
     'Entender forward pass, función de pérdida, backpropagation y optimizadores',
     'Escribir un bucle de entrenamiento en PyTorch',
     'Conocer MLP, CNN y RNN y por qué los Transformers las desplazaron en lenguaje',
+    'Entrenar de forma estable (AdamW, warmup y coseno, clipping, bf16) y diagnosticar con las curvas de loss',
   ],
   lecciones: [
     { titulo: 'Cómo aprende una red neuronal', html: `
@@ -209,16 +210,50 @@ for nombre, modelo in [("lineal", lineal), ("boosting", boosting)]:
         <li><strong>Transformers (2017):</strong> la atención permite que cada token mire a todos los demás a la vez. Se paraleliza muy bien en GPU y escala con datos y cómputo: por eso son la base de los LLMs.</li>
       </ul>
       <p>Trucos que vas a ver en todos lados: <strong>normalización</strong> (LayerNorm), <strong>conexiones residuales</strong> (sumar la entrada a la salida para que el gradiente fluya), <strong>dropout</strong> (apagar neuronas al azar para regularizar).</p>` },
+    { titulo: 'Entrenar bien: AdamW, warmup, mixed precision y cómo leer las curvas', html: `
+      <p>Conocer la arquitectura es la mitad. La otra mitad es que el entrenamiento sea estable y saber diagnosticarlo cuando no lo es.</p>
+      <ul>
+        <li><strong>AdamW:</strong> Adam ajusta el paso de cada parámetro según promedios móviles del gradiente y de su cuadrado. AdamW separa el <em>weight decay</em> (regularización) de ese ajuste. Es el optimizador por defecto para Transformers.</li>
+        <li><strong>Warmup + decaimiento coseno:</strong> los primeros pasos suben el learning rate de a poco (al inicio, las estimaciones de Adam y los gradientes son inestables) y después lo bajan suavemente hasta el final.</li>
+        <li><strong>Gradient clipping:</strong> limitar la norma del gradiente (por ejemplo, a 1,0) evita que un batch raro haga explotar el entrenamiento.</li>
+        <li><strong>Mixed precision (bf16):</strong> calcular en 16 bits casi duplica la velocidad y ahorra memoria. bf16 tiene el mismo rango de exponente que fp32, así que rara vez desborda y no necesita el escalado de loss que pide fp16.</li>
+      </ul>
+      <pre><code>import math, torch
+
+opt = torch.optim.AdamW(model.parameters(), lr=3e-4, weight_decay=0.1)
+total, warmup = 10_000, 500
+factor = lambda s: min(1, (s + 1) / warmup) * 0.5 * (1 + math.cos(math.pi * min(1, s / total)))
+sched = torch.optim.lr_scheduler.LambdaLR(opt, factor)
+
+for x, y in loader:
+    with torch.autocast(device_type="cuda", dtype=torch.bfloat16):
+        loss = loss_fn(model(x), y)
+    opt.zero_grad()
+    loss.backward()
+    torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+    opt.step()
+    sched.step()</code></pre>
+      <p><strong>La receta de Karpathy para no perder días:</strong> verificá la loss inicial (un clasificador de 10 clases recién creado debería dar unos −ln(1/10) ≈ 2,3), y <strong>sobreajustá un solo batch chico</strong> hasta loss casi 0 antes de entrenar con todo. Si no puede memorizar 32 ejemplos, hay un bug.</p>
+      <p><strong>Cómo leer las curvas:</strong></p>
+      <ul>
+        <li>Train baja y validación sube: overfitting. Más datos, regularización o early stopping.</li>
+        <li>Las dos altas y planas: underfitting o learning rate muy bajo.</li>
+        <li>Picos o NaN de golpe: learning rate muy alto, falta clipping o warmup.</li>
+        <li>No se mueve nada: casi siempre un bug (parámetros congelados, etiquetas mal alineadas, falta zero_grad).</li>
+      </ul>` },
   ],
   practica: [
     'Seguí "Neural Networks: Zero to Hero" de Andrej Karpathy hasta micrograd: implementá backpropagation desde cero.',
     'Entrená en PyTorch un MLP sobre MNIST. Después cambiá a una CNN pequeña y compará accuracy y cantidad de parámetros.',
     'Rompé tu entrenamiento a propósito: learning rate 10x más alto, sin zero_grad(), sin activación. Anotá qué síntoma produce cada error.',
+    'En tu modelo de MNIST: verificá la loss inicial, sobreajustá un batch de 32 ejemplos y después entrená con AdamW, warmup, coseno y clipping. Graficá las curvas contra SGD con learning rate fijo y explicá las diferencias.',
   ],
   recursos: [
     { t: 'Andrej Karpathy — Neural Networks: Zero to Hero', url: 'https://karpathy.ai/zero-to-hero.html' },
     { t: 'fast.ai — Practical Deep Learning', url: 'https://course.fast.ai/' },
     { t: 'Tutoriales oficiales de PyTorch', url: 'https://pytorch.org/tutorials/' },
+    { t: 'Andrej Karpathy — A Recipe for Training Neural Networks', url: 'https://karpathy.github.io/2019/04/25/recipe/' },
+    { t: 'AdamW: Decoupled Weight Decay Regularization (paper)', url: 'https://arxiv.org/abs/1711.05101' },
     { t: 'Deep Learning Book (Goodfellow et al.)', url: 'https://www.deeplearningbook.org/' },
   ],
   quiz: [
@@ -229,6 +264,11 @@ for nombre, modelo in [("lineal", lineal), ("boosting", boosting)]:
     { q: '¿Para qué tipo de datos se diseñaron especialmente las CNN?', opciones: ['Datos tabulares', 'Imágenes y otros datos con estructura espacial local', 'Grafos sociales', 'Texto muy largo'], correcta: 1, explicacion: 'Los filtros convolucionales explotan la localidad y comparten pesos en toda la imagen.' },
     { q: '¿Qué ventaja clave tienen los Transformers sobre las RNN?', opciones: ['Usan menos memoria siempre', 'No necesitan datos de entrenamiento', 'Procesan la secuencia en paralelo y manejan mejor dependencias largas', 'No tienen parámetros'], correcta: 2, explicacion: 'La atención conecta cada posición con todas las demás en un paso, sin recorrer la secuencia de forma secuencial como una RNN.' },
     { q: '¿Qué es una epoch?', opciones: ['Una pasada completa por todo el dataset de entrenamiento', 'Un batch de 32 ejemplos', 'Una capa de la red', 'Una actualización de pesos'], correcta: 0, explicacion: 'Una epoch contiene muchos batches; cada batch produce una actualización de pesos.' },
+    { q: 'Creás un clasificador de 10 clases y, antes de entrenar, medís la loss de entropía cruzada. ¿Qué valor esperás?', opciones: ['0', 'Alrededor de 2,3', '10', '100'], correcta: 1, explicacion: 'Recién creado, el modelo reparte la probabilidad casi por igual: −ln(1/10) ≈ 2,3. Si da muy distinto, la inicialización o la loss están mal.' },
+    { q: 'Antes de entrenar con todo el dataset, ¿qué conviene hacer según la receta de Karpathy?', opciones: ['Entrenar 100 epochs directamente', 'Usar el modelo más grande posible', 'Subir el learning rate', 'Sobreajustar un solo batch chico hasta loss casi 0, para comprobar que el pipeline puede aprender'], correcta: 3, explicacion: 'Si el modelo no logra memorizar 32 ejemplos, hay un bug en datos, loss u optimización. Encontrarlo así lleva minutos en lugar de días.' },
+    { q: 'El entrenamiento va bien y de golpe la loss salta a NaN. ¿Qué probás primero?', opciones: ['Bajar el learning rate y agregar gradient clipping (y revisar el warmup)', 'Entrenar más epochs', 'Sacar el set de validación', 'Agregar más dropout'], correcta: 0, explicacion: 'Un NaN repentino suele ser una explosión de gradientes por pasos demasiado grandes. Dropout regulariza, pero no evita explosiones.' },
+    { q: '¿Por qué se usa warmup del learning rate al inicio del entrenamiento?', opciones: ['Para ahorrar memoria', 'Para aprender más rápido al final', 'Porque al principio los gradientes y las estimaciones de Adam son inestables, y un learning rate alto puede desestabilizar el entrenamiento', 'Para tokenizar mejor'], correcta: 2, explicacion: 'Los promedios móviles de Adam arrancan sin historia. Subir el learning rate de a poco da tiempo a que se estabilicen.' },
+    { q: '¿Qué ventaja tiene bf16 frente a fp16 para entrenar?', opciones: ['fp16 tiene más rango y por eso es mejor', 'bf16 tiene el mismo rango de exponente que fp32: rara vez desborda y no necesita escalado de loss', 'Son idénticos', 'bf16 usa 32 bits'], correcta: 1, explicacion: 'Los dos usan 16 bits. bf16 sacrifica precisión de la mantisa a cambio del rango de fp32; fp16 tiene menos rango y suele necesitar escalar la loss para no desbordar.' },
   ],
 },
 {
