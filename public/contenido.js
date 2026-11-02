@@ -1029,6 +1029,7 @@ def resumir_email(email_id, usuario):
     'Armar un portafolio que muestre criterio de ingeniería, no solo demos',
     'Tener un sistema de aprendizaje continuo en un campo que cambia cada mes',
     'Diseñar un sistema de IA de punta a punta y defenderlo en una entrevista de system design',
+    'Programar con agentes de código de forma efectiva y medir si de verdad te hacen más rápido',
   ],
   lecciones: [
     { titulo: 'La ruta de proyectos', html: `
@@ -1066,17 +1067,39 @@ Total ≈ 1.350 USD/día ≈ 40.500 USD/mes</code></pre>
         <li><strong>Construí en público:</strong> blog, GitHub, posts. Enseñar consolida y te conecta con gente mejor que vos.</li>
         <li><strong>Mantenete al día:</strong> changelogs de los proveedores, arXiv, blogs de ingeniería de los labs. Probá cada novedad relevante en un proyecto chico ese mismo día.</li>
       </ul>` },
+    { titulo: 'Programar con agentes de código (sin engañarte)', html: `
+      <p>Un AI engineer pasa buena parte del día trabajando con agentes de código como Claude Code. Antes del método, un dato para no confiar en la sensación: en un ensayo controlado de METR (16 desarrolladores experimentados, 246 tareas en sus propios proyectos, herramientas de principios de 2025), con IA tardaron <strong>19% más</strong>, aunque después creían haber ido un 20% más rápido. Las herramientas mejoran rápido, pero la lección queda: <strong>medí, no supongas</strong>.</p>
+      <p><strong>Lo que más rinde, según la guía oficial de Claude Code:</strong></p>
+      <ul>
+        <li><strong>Decile lo que no puede ver.</strong> El agente lee muy bien el código, pero no sabe del deploy que está en la cabeza de alguien ni de la variable de entorno que piden los tests. Eso va en un <code>CLAUDE.md</code> corto, con los comandos exactos para correr tests y typecheck, y las trampas del entorno. Lo que el agente puede descubrir solo no se escribe ahí.</li>
+        <li><strong>Prompt específico.</strong> No "arreglá el bug del login", sino "los usuarios reportan que el login falla cuando expira la sesión; mirá el refresh de tokens en src/auth/, escribí un test que lo reproduzca y después arreglalo".</li>
+        <li><strong>Dale un chequeo que pueda correr.</strong> Sin tests, el agente se detiene cuando el trabajo <em>parece</em> terminado, y vos terminás siendo el test. Con tests, cierra el ciclo solo: cambia, corre, lee el error, corrige. Pedile <strong>evidencia</strong>: el comando que corrió y su salida.</li>
+        <li><strong>Spec primero:</strong> para algo grande, armá un SPEC.md con el agente y construí desde una sesión nueva con esa definición de "terminado".</li>
+        <li><strong>Revisión de alguien que no lo escribió:</strong> otro agente o una persona que no vio la conversación encuentra lo que el autor no ve. Pedile que revise contra la spec y que ignore el estilo, o vas a terminar con abstracciones de más.</li>
+        <li><strong>Reglas sin excepción, en controles deterministas.</strong> Si "nunca commitear sin typecheck" se ignora aunque esté en CLAUDE.md con mayúsculas, no sumes énfasis: convertilo en un hook o en CI que bloquee.</li>
+      </ul>
+      <pre><code># CLAUDE.md (corto: solo lo que el agente no puede ver)
+# Comandos
+- Validar contenido: node tools/validar.js
+- Tests de la app: node tools/test-app.js
+# Trampas
+- Las lecciones son template literals: sin backticks adentro
+- El progreso del alumno se guarda por texto de pregunta: no lo cambies</code></pre>
+      <p>Este mismo sitio se construye así: <code>/mejorar</code> y <code>/evolucionar</code> le dan instrucciones al agente, y <code>validar.js</code> y <code>test-app.js</code> son los chequeos que corre antes de publicar, también en CI.</p>` },
   ],
   practica: [
     'Elegí uno de los 5 proyectos y terminalo esta semana con README, evals y demo.',
     'Escribí un post explicando el concepto que más te costó de este temario.',
     'Elegí un paper reciente de arXiv sobre agentes o RAG, resumilo en una página y reproducí un experimento pequeño.',
     'Escribí un design doc de una página para "asistente RAG sobre 10 millones de documentos a 1.000 consultas por segundo": requisitos, diagrama, costo mensual calculado, evals y riesgos. Después pedile a Claude que haga de entrevistador y te repregunte durante 30 minutos.',
+    'Usá un agente de código en uno de tus proyectos: escribí un CLAUDE.md de menos de 20 líneas, un SPEC.md para una funcionalidad y los tests que la verifican. Cronometrá la tarea y comparala con otra parecida hecha a mano.',
   ],
   recursos: [
     { t: 'arXiv — Computation and Language (cs.CL), novedades', url: 'https://arxiv.org/list/cs.CL/recent' },
     { t: 'Anthropic Engineering blog', url: 'https://www.anthropic.com/engineering' },
     { t: 'Simon Willison\'s Weblog (al día con LLMs)', url: 'https://simonwillison.net/' },
+    { t: 'Claude Code — Best practices', url: 'https://code.claude.com/docs/en/best-practices' },
+    { t: 'METR — Impacto de la IA en desarrolladores experimentados (paper)', url: 'https://arxiv.org/abs/2507.09089' },
     { t: 'Latent Space (podcast y newsletter de AI engineering)', url: 'https://www.latent.space/' },
   ],
   quiz: [
@@ -1090,6 +1113,11 @@ Total ≈ 1.350 USD/día ≈ 40.500 USD/mes</code></pre>
     { q: 'En tu app, 1.500 de los 2.000 tokens de cada llamada son un system prompt y un manual fijos. ¿Qué palanca de costo probás primero?', opciones: ['Fine-tuning para eliminar el manual', 'Subir max_tokens', 'Prompt caching del prefijo fijo', 'Temperatura 0'], correcta: 2, explicacion: 'El prefijo se repite idéntico en cada llamada: es el caso ideal para caching, sin reentrenar nada. El fine-tuning podría servir, pero es mucho más caro de mantener.' },
     { q: 'El requisito es que el usuario vea respuesta en menos de 1 segundo, y tu modelo tarda 4 segundos en completar. ¿Qué proponés?', opciones: ['Usar un modelo más grande', 'Agregar más documentos al contexto', 'Agregar un paso de verificación con otro LLM', 'Streaming y un modelo más chico para las consultas comunes, validado con evals'], correcta: 3, explicacion: 'El streaming baja la latencia percibida (primer token) y un modelo chico baja la total. Las otras opciones agregan latencia.' },
     { q: 'El entrevistador pregunta: "¿cómo sabrías que tu sistema funciona?". ¿Cuál es la mejor respuesta?', opciones: ['Un dataset de evaluación con casos reales, métricas por modo de fallo y monitoreo en producción', 'Probándolo yo mismo varias veces', 'Usando el modelo más avanzado del mercado', 'Mirando los benchmarks públicos del modelo'], correcta: 0, explicacion: 'Los benchmarks públicos miden el modelo en tareas genéricas, no tu sistema con tus datos. Probar "a ojo" no detecta regresiones.' },
+    { q: '¿Qué encontró el ensayo controlado de METR con desarrolladores experimentados y herramientas de IA de principios de 2025?', opciones: ['Que fueron un 50% más rápidos', 'Que no hubo ninguna diferencia', 'Que tardaron un 19% más, aunque creían haber ido un 20% más rápido', 'Que solo los juniors se beneficiaron'], correcta: 2, explicacion: 'La sensación de velocidad y la velocidad medida fueron opuestas. Por eso conviene medir el propio flujo de trabajo en lugar de confiar en la impresión.' },
+    { q: 'El agente de código dice "listo, todo funciona" y no es cierto. ¿Cuál es el mejor arreglo?', opciones: ['Pedirle que esté más seguro la próxima vez', 'Escribir la instrucción en mayúsculas', 'Cambiar de modelo', 'Darle un chequeo que pueda correr (tests, typecheck) y pedirle la evidencia: el comando y su salida'], correcta: 3, explicacion: 'Sin un chequeo, el agente se detiene cuando el trabajo parece terminado. Con tests puede verificar y corregir solo, y la evidencia te deja confirmarlo en segundos.' },
+    { q: 'Tu CLAUDE.md dice "IMPORTANTE: nunca commitear sin que pase el typecheck", y el agente a veces lo ignora. ¿Qué hacés?', opciones: ['Agregás más "IMPORTANTE"', 'Repetís la regla tres veces', 'La convertís en un control determinista, como un hook o CI, que bloquee el commit', 'Borrás el CLAUDE.md'], correcta: 2, explicacion: 'Lo que lee el modelo se sigue casi siempre, pero no siempre. Una regla que no admite excepciones tiene que estar en algo que se ejecuta siempre.' },
+    { q: '¿Qué conviene poner en el CLAUDE.md de un proyecto?', opciones: ['Todo el código importante', 'Lo que el agente puede descubrir leyendo el repositorio', 'Tus preferencias personales de estilo', 'Lo que no puede ver: comandos exactos de tests y typecheck, trampas del entorno, procedimientos del equipo'], correcta: 3, explicacion: 'CLAUDE.md se carga en cada sesión y cada línea consume atención. Lo descubrible se deja afuera, y las preferencias personales van en CLAUDE.local.md.' },
+    { q: '¿Cuál de estos prompts le da a un agente de código la mejor chance de resolver bien?', opciones: ['"Arreglá el bug del login"', '"Los usuarios reportan que el login falla cuando expira la sesión; mirá el refresh de tokens en src/auth/, escribí un test que lo reproduzca y después arreglalo"', '"Arreglá todo lo que esté mal"', '"Hacé que el login funcione mejor"'], correcta: 1, explicacion: 'Da el síntoma, dónde mirar y cómo verificar: un test que reproduce el bug es también el chequeo de que quedó arreglado.' },
   ],
 },
 ];
