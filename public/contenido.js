@@ -1703,6 +1703,7 @@ else:
     'Armar y etiquetar el dataset de evals: datos sintéticos por dimensiones, etiquetas binarias y un experto como referencia',
     'Evaluar agentes con tareas aisladas, calificación por resultado, lectura de transcripciones y evals de capacidad y de regresión',
     'Evaluar en producción con señales de usuarios, monitoreo de drift y tests A/B bien diseñados',
+    'Construir y validar un juez LLM: sesgos conocidos, etiquetas binarias con crítica y medición del acuerdo con un experto',
   ],
   lecciones: [
     { titulo: 'Por qué las evals son la habilidad número uno', html: `
@@ -1827,6 +1828,37 @@ def calificar(entorno, transcripcion):
         <li><strong>Métricas de control:</strong> que la variante no empeore la latencia, el costo ni las quejas.</li>
       </ul>
       <p><strong>Cerrá el ciclo:</strong> cada fallo que encuentres en producción pasa a ser un caso de tu dataset offline, para que no vuelva a pasar sin que lo detectes.</p>` },
+    { titulo: 'LLM como juez a fondo: construirlo, calibrarlo y no creerle de más', html: `
+      <p>Muchas cualidades no se pueden chequear con código: si la respuesta es útil, si el tono es el correcto, si respondió lo que se preguntó. Para eso se usa un <strong>LLM como juez</strong>: otro modelo lee la entrada y la salida y decide si pasa. Es escalable y barato, pero un juez sin validar es un número que parece objetivo y no lo es.</p>
+      <h3>Sesgos documentados</h3>
+      <p>El trabajo que presentó MT-Bench y Chatbot Arena (Zheng y otros, 2023) encontró que jueces fuertes alcanzan más de 80% de acuerdo con preferencias humanas, similar al acuerdo entre personas, pero también documentó sesgos:</p>
+      <ul>
+        <li><strong>De posición:</strong> al comparar dos respuestas, prefiere la que aparece en cierto lugar. Mitigación: evaluar en los dos órdenes y contar como empate si cambia el veredicto.</li>
+        <li><strong>De verbosidad:</strong> premia la respuesta más larga aunque no sea mejor. Mitigación: criterios explícitos que penalicen relleno.</li>
+        <li><strong>De autopreferencia:</strong> puede favorecer textos generados por su mismo modelo o familia.</li>
+        <li><strong>Razonamiento limitado:</strong> en matemática o código puede aprobar una respuesta incorrecta que suena convincente. Si hay forma de chequear con código, usala.</li>
+      </ul>
+      <h3>Construirlo bien: la "sombra de crítica"</h3>
+      <p>Hamel Husain describe un proceso concreto (<em>critique shadowing</em>):</p>
+      <ol>
+        <li>Un <strong>experto del dominio</strong> (no el desarrollador) es la referencia.</li>
+        <li>Para unos 30 casos variados, el experto decide <strong>pasa o no pasa</strong> y escribe una <strong>crítica</strong> que explique por qué, con detalle suficiente para que la siga alguien nuevo.</li>
+        <li>Esas críticas se usan como ejemplos en el prompt del juez.</li>
+        <li>Con casos <strong>separados</strong> (nunca los del prompt), medís cuánto coincide el juez con el experto.</li>
+        <li>Iterás el prompt hasta que el acuerdo sea aceptable, y repetís la medición cuando cambia el modelo.</li>
+      </ol>
+      <p><strong>Binario antes que escalas:</strong> nadie sabe qué separa un 3 de un 4 en una escala de 1 a 5, y esos puntajes suelen no correlacionar con lo que el experto juzga. Pasa/no pasa con crítica es accionable.</p>
+      <h3>Medir el acuerdo sin engañarte</h3>
+      <p>El porcentaje de acuerdo crudo engaña cuando las fallas son raras: si el 95% de las respuestas pasa, un juez que aprueba todo tiene 95% de acuerdo y no detecta ninguna falla. Reportá por separado:</p>
+      <pre><code>                    experto: pasa   experto: falla
+juez: pasa               VP              FP   ← fallas que se escapan
+juez: falla              FN              VN
+
+tasa de verdaderos positivos = VP / (VP + FN)   # aprueba lo que está bien
+tasa de verdaderos negativos = VN / (VN + FP)   # detecta lo que está mal</code></pre>
+      <p>Si la tasa de verdaderos negativos es baja, tu juez deja pasar justo lo que querés atrapar. Juntá suficientes casos de cada clase (Husain sugiere del orden de 30 a 50 por etiqueta en cada conjunto) para que la medición signifique algo.</p>
+      <p class="suave">Regla práctica: lo que se puede verificar con código (formato, que la cita exista, que el SQL corra) va con código; el juez LLM queda para lo subjetivo, y siempre con su acuerdo medido.</p>
+    ` },
   ],
   practica: [
     'Tomá tu RAG o chatbot, revisá 50 respuestas a mano y armá una taxonomía de errores con su frecuencia.',
@@ -1836,6 +1868,7 @@ def calificar(entorno, transcripcion):
     'Definí 3 dimensiones para tu app, generá 20 tuplas y convertilas en consultas con un LLM. Etiquetá vos las respuestas con pasa o falla, pedile a otra persona que etiquete 30 de las mismas y calculá el acuerdo con el kappa de Cohen.',
     'Armá 20 tareas para tu agente, cada una con estado inicial limpio y solución de referencia. Calificá por resultado con chequeos en código y un juez para lo subjetivo, corré 3 intentos por tarea y reportá pass@1, pass^3 y el diagnóstico de 5 transcripciones que hayas leído.',
     'Agregá a tu app un pulgar arriba o abajo y el registro de señales implícitas (reformulaciones, pedidos de hablar con una persona, respuestas copiadas). Después de una semana calculá las tasas, revisá 20 trazas con señales negativas y convertí los fallos en casos de eval.',
+    'Construí un juez LLM para una cualidad de tu app (por ejemplo, "responde exactamente lo que se preguntó"). Etiquetá con críticas 30 casos para el prompt y otros 60 aparte (al menos 20 que fallen). Medí las tasas de verdaderos positivos y negativos, probá el sesgo de posición evaluando pares en los dos órdenes y anotá cuántas iteraciones del prompt necesitaste.',
   ],
   recursos: [
     { t: 'Hamel Husain — Your AI Product Needs Evals', url: 'https://hamel.dev/blog/posts/evals/' },
@@ -1848,6 +1881,7 @@ def calificar(entorno, transcripcion):
     { t: 'Hamel Husain — Using LLM-as-a-Judge for evaluation', url: 'https://hamel.dev/blog/posts/llm-judge/' },
     { t: 'Anthropic — A statistical approach to model evaluations', url: 'https://www.anthropic.com/research/statistical-approach-to-model-evals' },
     { t: 'τ-bench: agentes con herramientas y usuarios (paper, introduce pass^k)', url: 'https://arxiv.org/abs/2406.12045' },
+    { t: 'Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena (paper)', url: 'https://arxiv.org/abs/2306.05685' },
   ],
   quiz: [
     { q: '¿Cuál es el primer paso recomendado para crear evals útiles?', opciones: ['Elegir una métrica genérica como BLEU', 'Leer trazas reales y hacer análisis de errores', 'Comprar una herramienta de evals', 'Pedirle al modelo que se evalúe solo'], correcta: 1, explicacion: 'Las métricas útiles salen de los fallos que realmente ocurren en tu sistema, no de una lista genérica.' },
@@ -1876,6 +1910,11 @@ def calificar(entorno, transcripcion):
     { q: 'Tu tasa de éxito es 30% y querés detectar que una variante la sube a 33%, con 80% de potencia y 5% de significancia. ¿Cuántos usuarios necesitás por variante?', opciones: ['Unos 3.800', 'Unos 100', 'Unos 38', 'Unos 380.000'], correcta: 0, explicacion: 'Las diferencias chicas exigen muestras grandes. Con 100 usuarios, una mejora de 3 puntos queda escondida en el ruido.' },
     { q: 'Mirás tu test A/B cada hora y lo cortás apenas el resultado sale significativo. ¿Qué problema tiene?', opciones: ['Ninguno', 'Que se gasta menos', 'Que es más rápido y también correcto', 'Es "peeking": multiplica los falsos positivos; hay que fijar el tamaño antes o usar un método secuencial'], correcta: 3, explicacion: 'Con muchas miradas, tarde o temprano el azar cruza el umbral. El 5% de error solo vale si mirás una vez, al tamaño planificado.' },
     { q: 'Descubrís en producción un tipo de pregunta en el que tu sistema falla. Además de arreglarlo, ¿qué hacés?', opciones: ['Nada más', 'Agregás esos casos a tu dataset de evals offline, para detectarlo si vuelve a pasar', 'Borrás las trazas', 'Subís la temperatura'], correcta: 1, explicacion: 'Así cada fallo real se vuelve una prueba de regresión. Con el tiempo, el dataset offline se parece cada vez más a la realidad.' },
+    { q: 'Tu juez LLM coincide 95% con el experto, pero el 95% de las respuestas del set pasan. ¿Qué concluís?', opciones: ['El juez es excelente', 'Todavía nada: un juez que aprueba todo también tendría 95%; mirás la tasa de verdaderos negativos', 'Que hay que usar una escala de 1 a 5', 'Que el experto se equivoca'], correcta: 1, explicacion: 'Con clases desbalanceadas, el acuerdo crudo engaña. Lo que importa es si detecta las fallas, que es lo que mide la tasa de verdaderos negativos.' },
+    { q: 'Al comparar las respuestas A y B, el juez elige A; al darlas en orden B, A, elige B. ¿Qué hacés?', opciones: ['Te quedás con el primer veredicto', 'Promediás los puntajes de 1 a 5', 'Lo contás como empate: es sesgo de posición, y evaluar en los dos órdenes lo detecta', 'Cambiás a un juez más chico'], correcta: 2, explicacion: 'El veredicto dependió del orden, no de la calidad. Quedarse con el primero es la trampa: esconde el sesgo en vez de controlarlo.' },
+    { q: '¿Por qué conviene que el juez decida pasa o no pasa con una crítica, en vez de un puntaje de 1 a 5?', opciones: ['Porque lo binario con crítica es accionable y calibrable; nadie sabe qué separa un 3 de un 4', 'Porque los modelos no saben contar hasta 5', 'Porque es más barato en tokens', 'Porque las escalas están prohibidas'], correcta: 0, explicacion: 'Las escalas sin calibrar suelen no correlacionar con el juicio del experto. El ahorro de tokens no es el motivo.' },
+    { q: 'Usaste los mismos 30 casos etiquetados como ejemplos en el prompt del juez y para medir su acuerdo con el experto. ¿Cuál es el problema?', opciones: ['Ninguno, son buenos casos', 'Que 30 son demasiados', 'Que el experto se cansa', 'El acuerdo queda inflado: el juez ya vio esas respuestas; la medición tiene que usar casos separados'], correcta: 3, explicacion: 'Es como tomar examen con las preguntas resueltas en clase. La medición vale solo con casos que el juez no vio en su prompt.' },
+    { q: 'Tenés que evaluar si una consulta SQL generada devuelve las filas correctas. ¿Usás un juez LLM?', opciones: ['Sí, siempre es lo más preciso', 'No: la corrés contra una base de prueba y comparás el resultado; el juez queda para lo que no se puede chequear con código', 'Sí, con escala de 1 a 10', 'No hace falta evaluar SQL'], correcta: 1, explicacion: 'Los jueces tienen razonamiento limitado y pueden aprobar algo incorrecto que suena bien. Si hay un chequeo determinista, gana.' },
   ],
 },
 {
