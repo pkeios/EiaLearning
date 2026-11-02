@@ -2159,7 +2159,13 @@ trainer.train()</code></pre>
       <p>En producción, si no lo registrás, no existió. Por cada llamada guardá: entrada, salida, modelo, versión del prompt, tokens, costo, latencia (total y hasta el primer token) y errores. En agentes, la <strong>traza</strong> completa: cada paso y cada llamada a herramientas.</p>
       <p>Herramientas típicas: OpenTelemetry, Langfuse, LangSmith, Arize Phoenix, o tu propia tabla en Postgres al principio.</p>
       <p><strong>Versioná prompts y configuración</strong> como código: te permite reproducir un resultado, comparar versiones con tus evals y hacer rollback. Desplegá cambios detrás de feature flags o con A/B tests.</p>
-      <p><strong>Privacidad:</strong> los logs contienen datos de usuarios. Enmascará PII, definí retención y controlá quién accede.</p>` },
+      <p><strong>Privacidad:</strong> los logs contienen datos de usuarios. Enmascará PII, definí retención y controlá quién accede.</p>
+      <p><strong>Ejemplo concreto.</strong> Así se ve un registro útil de una sola llamada:</p>
+      <pre><code>{"pedido": "a91f", "usuario": "u_2231", "modelo": "modelo-chico-v3",
+ "prompt_version": "soporte-v7", "tokens_entrada": 1840, "tokens_salida": 212,
+ "tokens_cacheados": 1500, "costo_usd": 0.0021, "ttft_ms": 380, "total_ms": 2140,
+ "fin": "end_turn", "error": null, "entrada": "Mi pedido [EMAIL] no llegó"}</code></pre>
+      <p>Con una semana de estos registros podés responder preguntas reales: "¿la versión soporte-v7 subió el costo frente a la v6?" (agrupás por <code>prompt_version</code>), "¿por qué algunos usuarios ven respuestas cortadas?" (filtrás <code>fin = max_tokens</code>) o "¿la caché está funcionando?" (mirás <code>tokens_cacheados</code>). Fijate que el email ya llega enmascarado: la privacidad se resuelve antes de guardar. En la lección de trazas vas a ver cómo extender esto a agentes con muchos pasos.</p>` },
     { titulo: 'Costo, latencia y fiabilidad', html: `
       <ul>
         <li><strong>Latencia:</strong> streaming, modelos más chicos para pasos simples, paralelizar llamadas independientes, cachear, prompts más cortos, limitar max_tokens.</li>
@@ -2168,7 +2174,13 @@ trainer.train()</code></pre>
         <li><strong>Guardrails:</strong> chequeos de entrada y salida (temas permitidos, PII, formato) antes de mostrar o ejecutar algo.</li>
         <li><strong>Rate limits:</strong> conocé tus límites, encolá picos de tráfico y limitá por usuario para evitar abusos.</li>
       </ul>
-      <p>Toda optimización se valida con tus evals: un modelo más barato que baja la calidad no es ahorro.</p>` },
+      <p>Toda optimización se valida con tus evals: un modelo más barato que baja la calidad no es ahorro.</p>
+      <p><strong>Ejemplo con números</strong> (precios inventados para que la cuenta sea simple): tu asistente recibe 100.000 consultas por mes, cada una con 2.000 tokens de entrada (1.500 son un manual fijo) y 300 de salida. Supongamos entrada a 3 USD y salida a 15 USD por millón de tokens, y lectura de caché al 10% del precio de entrada (ignoramos el costo de escribir la caché, que es chico si el manual se reutiliza miles de veces).</p>
+      <pre><code>                      entrada                 salida        total/mes
+sin caché     200 M tok × 3 = 600 USD    30 M × 15 = 450   1.050 USD
+con caché     150 M × 0,3 = 45  (manual)
+            +  50 M × 3   = 150 (resto)  30 M × 15 = 450     645 USD</code></pre>
+      <p>Solo cachear el manual baja el costo casi 40%, sin tocar la calidad. Fijate también que ahora la salida es la mayor parte del gasto: la próxima palanca es limitar <code>max_tokens</code> o pedir respuestas más cortas. Medir dónde está el costo antes de optimizar es la misma idea que mirar la traza antes de optimizar latencia.</p>` },
     { titulo: 'Cambiar de modelo o de prompt sin romper producción', html: `
       <p>Tu app depende de algo que no controlás: los modelos tienen fecha de vencimiento. Anthropic, por ejemplo, define un ciclo de vida (<em>active</em>, <em>legacy</em>, <em>deprecated</em>, <em>retired</em>), avisa con al menos 60 días de anticipación antes de retirar un modelo público, y las peticiones a un modelo retirado fallan.</p>
       <p>También cambian las APIs: la versión 2026-10-21 de la API de Claude eliminó <code>temperature</code>, <code>top_p</code> y <code>top_k</code>, que ahora devuelven error 400. Código que nadie tocó puede romperse al actualizar la versión.</p>
