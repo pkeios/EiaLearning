@@ -2,7 +2,7 @@ const T = window.TEMARIO;
 const app = document.getElementById('app');
 const APROBADO = 80;
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-const cargar = () => ({ leidas: {}, notas: {}, falladas: {}, apuntes: {}, agenda: {}, dias: {}, tarjetas: {}, aciertos: {}, practicas: {}, conocidas: {}, minutos: {}, ...JSON.parse(localStorage.getItem('progreso') || '{}') });
+const cargar = () => ({ leidas: {}, notas: {}, falladas: {}, apuntes: {}, agenda: {}, dias: {}, tarjetas: {}, aciertos: {}, practicas: {}, conocidas: {}, minutos: {}, metaSemanal: 120, ...JSON.parse(localStorage.getItem('progreso') || '{}') });
 const guardar = p => localStorage.setItem('progreso', JSON.stringify(p));
 const mezclar = a => a.map(x => [Math.random(), x]).sort((x, y) => x[0] - y[0]).map(x => x[1]);
 // La clave de una pregunta es su texto: sobrevive a reordenar o insertar preguntas.
@@ -137,6 +137,7 @@ function inicio() {
         <div class="stat"><strong>${aprobados}/${T.length}</strong><span>módulos aprobados</span></div>
         <div class="stat"><strong>${leidas}</strong><span>lecciones leídas</span></div>
         <a class="stat" href="#/repaso"><strong>${todas().filter(q => tocaHoy(p, clave(q))).length}</strong><span>preguntas para repasar hoy</span></a>
+        <a class="stat" href="#/progreso"><strong>⏱ ${minutosSemana(p)}/${p.metaSemanal}</strong><span>min en 7 días · meta semanal${minutosSemana(p) >= p.metaSemanal ? ' cumplida ✔' : ''}</span></a>
         <div class="stat"><strong>🔥 ${racha(p)}</strong><span>${racha(p) === 1 ? 'día' : 'días'} de racha · ${p.dias[dia()] ? 'meta de hoy cumplida ✔' : 'meta de hoy: 1 lección o 1 quiz'}</span></div>
         <a class="stat" href="#/examen"><strong>${p.examen != null ? p.examen + '%' : '—'}</strong><span>examen final</span></a>
       </div>
@@ -194,7 +195,7 @@ function descargarApuntes() {
 // Si agregás campos nuevos al progreso, sumalos acá también.
 function limpiarProgreso(d) {
   if (!d || typeof d !== 'object' || Array.isArray(d)) throw new Error('formato inválido');
-  const p = { leidas: {}, notas: {}, falladas: {}, apuntes: {}, agenda: {}, dias: {}, tarjetas: {}, aciertos: {}, practicas: {}, conocidas: {}, minutos: {} };
+  const p = { leidas: {}, notas: {}, falladas: {}, apuntes: {}, agenda: {}, dias: {}, tarjetas: {}, aciertos: {}, practicas: {}, conocidas: {}, minutos: {}, metaSemanal: 120 };
   for (const k of ['leidas', 'falladas']) for (const c in d[k] || {}) p[k][c] = true;
   for (const c in d.notas || {}) p.notas[c] = Math.min(100, Math.max(0, Number(d.notas[c]) || 0));
   for (const c in d.apuntes || {}) p.apuntes[c] = String(d.apuntes[c]);
@@ -204,6 +205,7 @@ function limpiarProgreso(d) {
   }
   for (const c in d.practicas || {}) if (d.practicas[c]) p.practicas[c] = true;
   for (const c in d.conocidas || {}) if (d.conocidas[c]) p.conocidas[c] = true;
+  if (d.metaSemanal != null) p.metaSemanal = Math.min(3000, Math.max(10, parseInt(d.metaSemanal) || 120));
   for (const c in d.minutos || {}) if (/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(c)) p.minutos[c] = Math.max(0, parseInt(d.minutos[c]) || 0);
   for (const c in d.aciertos || {}) {
     const a = d.aciertos[c] || {}, total = Math.max(0, parseInt(a.total) || 0);
@@ -420,12 +422,16 @@ const serieMinutos = (p, cantidad = 28) => Array.from({ length: cantidad }, (_, 
   return { d, m: p.minutos[d] || 0 };
 });
 
+const minutosSemana = p => serieMinutos(p, 7).reduce((s, x) => s + x.m, 0);
+
 function graficoTiempo(p) {
   const serie = serieMinutos(p), max = Math.max(1, ...serie.map(x => x.m));
   const semana = serie.slice(-7).reduce((s, x) => s + x.m, 0), total = serie.reduce((s, x) => s + x.m, 0);
   return `<section class="card">
       <h2>⏱ Tiempo de estudio por día</h2>
       <p class="suave">Últimos 7 días: <strong>${semana} min</strong> · Últimas 4 semanas: <strong>${total} min</strong></p>
+      <p><label>Meta semanal: <input id="meta-semanal" type="number" min="10" max="3000" step="10" value="${p.metaSemanal}" class="meta-input"> minutos</label></p>
+      ${barra(Math.min(100, Math.round(100 * semana / p.metaSemanal)))}
       <p class="suave" id="lectura-tiempo" aria-live="polite">Pasá el mouse o el foco por una barra para ver el día.</p>
       <div class="barras-tiempo">${serie.map(x => `<span tabindex="0" data-lectura="${x.d}: ${x.m} min"
         aria-label="${x.d}: ${x.m} minutos" class="${x.m ? '' : 'vacia'}" style="height:${x.m ? Math.max(4, Math.round(100 * x.m / max)) : 2}%"></span>`).join('')}</div>
@@ -453,6 +459,12 @@ function progreso() {
         ${barra(pct ?? 0)}
         <small class="suave">${a && a.total ? a.ok + ' de ' + a.total + ' respuestas correctas' : 'Sin respuestas todavía'} · <a href="#/quiz/${m.id}">Hacer el quiz</a></small>
       </section>`).join('')}`;
+  app.querySelector('#meta-semanal').onchange = e => {
+    const p = cargar();
+    p.metaSemanal = Math.min(3000, Math.max(10, parseInt(e.target.value) || 120));
+    guardar(p);
+    progreso();
+  };
   const lectura = app.querySelector('#lectura-tiempo');
   app.querySelectorAll('.barras-tiempo span').forEach(b => {
     b.onmouseenter = b.onfocus = () => { lectura.textContent = b.dataset.lectura; };

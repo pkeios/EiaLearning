@@ -127,6 +127,7 @@ mark { background: rgba(250, 204, 21, .4); color: inherit; border-radius: 3px; p
 .barras-tiempo span { flex: 1; background: var(--acento); border-radius: 4px 4px 0 0; cursor: default; }
 .barras-tiempo span.vacia { background: var(--borde); }
 .barras-tiempo span:hover, .barras-tiempo span:focus-visible { opacity: .75; outline: none; }
+.meta-input { width: 6rem; background: var(--bg); color: var(--texto); border: 1px solid var(--borde); border-radius: 8px; padding: .3rem .5rem; font: inherit; }
 .eje-tiempo { display: flex; justify-content: space-between; font-size: .8rem; margin-top: .3rem; }
 .tabla-tiempo { width: 100%; border-collapse: collapse; margin-top: .5rem; font-size: .9rem; }
 .tabla-tiempo td, .tabla-tiempo th { padding: .25rem .5rem; border-bottom: 1px solid var(--borde); text-align: left; }

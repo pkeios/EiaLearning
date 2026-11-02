@@ -8,8 +8,8 @@ const ctx = { window: {}, document: { getElementById: id => id === 'tema' ? boto
 vm.createContext(ctx);
 vm.runInContext(leer('contenido.js'), ctx);
 vm.runInContext(leer('glosario.js'), ctx);
-vm.runInContext(leer('app.js') + ';this.X = { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos, avance, clavePractica, registrarExamen, planDeHoy, apuntesMarkdown, esCorrecta, preguntasDeNivel, preguntaObjetivo, cambiarLetra, novedades, marcarConocidas, iniciarNovedades, todasLasLecciones, trozosParaVoz, sumarMinuto, serieMinutos };', ctx);
-const { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos, avance, clavePractica, registrarExamen, planDeHoy, apuntesMarkdown, esCorrecta, preguntasDeNivel, preguntaObjetivo, cambiarLetra, novedades, marcarConocidas, iniciarNovedades, todasLasLecciones, trozosParaVoz, sumarMinuto, serieMinutos } = ctx.X;
+vm.runInContext(leer('app.js') + ';this.X = { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos, avance, clavePractica, registrarExamen, planDeHoy, apuntesMarkdown, esCorrecta, preguntasDeNivel, preguntaObjetivo, cambiarLetra, novedades, marcarConocidas, iniciarNovedades, todasLasLecciones, trozosParaVoz, sumarMinuto, serieMinutos, minutosSemana };', ctx);
+const { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos, avance, clavePractica, registrarExamen, planDeHoy, apuntesMarkdown, esCorrecta, preguntasDeNivel, preguntaObjetivo, cambiarLetra, novedades, marcarConocidas, iniciarNovedades, todasLasLecciones, trozosParaVoz, sumarMinuto, serieMinutos, minutosSemana } = ctx.X;
 const plano = o => JSON.parse(JSON.stringify(o));
 
 // Inicio renderiza con progreso vacío
@@ -44,7 +44,7 @@ assert.equal(racha(r), 3);
 const l = limpiarProgreso({ leidas: { 'a:0': 1 }, notas: { a: '<img onerror=x>', b: 150, c: 85 }, apuntes: { a: 5 }, examen: '90', raro: 1,
   falladas: { x: 1 }, agenda: { x: { n: '9', d: '<x>' }, y: { n: 1, d: '2026-12-01' } }, dias: { '2026-11-01': '2', 'malo': 5, '2026-10-31': -3 } });
 assert.deepStrictEqual(plano(l), { leidas: { 'a:0': true }, notas: { a: 0, b: 100, c: 85 }, falladas: { x: true }, apuntes: { a: '5' },
-  agenda: { x: { n: 3, d: dia() }, y: { n: 1, d: '2026-12-01' } }, dias: { '2026-11-01': 2, '2026-10-31': 0 }, tarjetas: {}, aciertos: {}, practicas: {}, conocidas: {}, minutos: {}, examen: 90 });
+  agenda: { x: { n: 3, d: dia() }, y: { n: 1, d: '2026-12-01' } }, dias: { '2026-11-01': 2, '2026-10-31': 0 }, tarjetas: {}, aciertos: {}, practicas: {}, conocidas: {}, minutos: {}, metaSemanal: 120, examen: 90 });
 for (const malo of [null, [], 5, 'x']) assert.throws(() => limpiarProgreso(malo));
 
 // Buscador: sin tildes ni mayúsculas, todas las palabras deben aparecer
@@ -256,6 +256,14 @@ ctx.location.hash = '#/progreso';
 vm.runInContext('render()', ctx);
 assert.ok(el.h.includes('Tiempo de estudio') && el.h.includes('12 min') && el.h.includes('Ver como tabla'));
 guardado = null;
+
+// Meta semanal: suma solo los últimos 7 días y se acota al importar
+const ps = cargar();
+ps.minutos[dia()] = 30; ps.minutos[dia(-6)] = 20; ps.minutos[dia(-7)] = 500;
+assert.equal(minutosSemana(ps), 50);
+assert.equal(limpiarProgreso({ metaSemanal: '99999' }).metaSemanal, 3000);
+assert.equal(limpiarProgreso({ metaSemanal: 'x' }).metaSemanal, 120);
+assert.equal(cargar().metaSemanal, 120);
 
 // Repaso vacío muestra un mensaje en lugar de un formulario
 guardado = null;
