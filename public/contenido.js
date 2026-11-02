@@ -280,6 +280,7 @@ for x, y in loader:
     'Explicar tokenización, embeddings y mecanismo de atención',
     'Conocer las etapas de entrenamiento de un LLM (pre-training, SFT, RLHF)',
     'Entender parámetros de muestreo, ventana de contexto y alucinaciones',
+    'Saber cuándo conviene un modelo de razonamiento y cuáles son sus límites (costo y fidelidad del razonamiento)',
   ],
   lecciones: [
     { titulo: 'De texto a predicción: tokens, embeddings y atención', html: `
@@ -300,16 +301,31 @@ for x, y in loader:
       <p><strong>Muestreo:</strong> <em>temperatura</em> baja = más determinista; alta = más variado. <em>Top-p</em> limita la elección a los tokens que acumulan probabilidad p. Ojo: no todas las APIs los exponen. En la API de Claude, la versión 2026-10-21 eliminó <code>temperature</code>, <code>top_p</code> y <code>top_k</code> (devuelven error 400) y el comportamiento se guía con el prompt. Siguen existiendo en muchos otros proveedores y en modelos abiertos.</p>
       <p><strong>Alucinaciones:</strong> el modelo genera texto plausible, no necesariamente verdadero. Se mitiga dando contexto (RAG), pidiendo citas, permitiendo "no sé" y evaluando.</p>
       <p><strong>Leyes de escalado:</strong> el rendimiento mejora de forma predecible con más parámetros, datos y cómputo, y también con más cómputo en inferencia (pensar más).</p>` },
+    { titulo: 'Modelos de razonamiento: pensar antes de responder', html: `
+      <p>Los modelos de razonamiento generan una cadena de pensamiento larga antes de la respuesta final. Abren una segunda forma de escalar: además de entrenar modelos más grandes, se puede gastar más <strong>cómputo en inferencia</strong>, dejando que el modelo piense más tokens en las tareas difíciles.</p>
+      <p><strong>Cómo se entrenan:</strong> con aprendizaje por refuerzo sobre tareas de <em>recompensa verificable</em>: matemáticas con respuesta exacta, código que pasa tests. El modelo prueba, se verifica el resultado y se refuerza lo que funcionó. El paper de DeepSeek-R1 mostró que con RL emergen solos comportamientos como revisar el propio trabajo y probar otro camino cuando uno falla.</p>
+      <p><strong>Cuándo usarlos:</strong> matemáticas, código, planificación, análisis de varios pasos y decisiones con muchas restricciones. <strong>Cuándo no:</strong> clasificar, extraer o resumir textos cortos. Ahí multiplicás tokens, latencia y costo sin ganar calidad. Como siempre, decidilo con evals.</p>
+      <pre><code>def responder(tarea):
+    # routing por tipo de tarea; los umbrales salen de tus evals, no de la intuición
+    if tarea.tipo in {"clasificar", "extraer", "resumir_corto"}:
+        return llamar(MODELO_RAPIDO, tarea)                    # sin razonamiento extendido
+    return llamar(MODELO_RAZONADOR, tarea, razonamiento=True)  # matemática, código, planes</code></pre>
+      <p><strong>Cómo escribirles:</strong> dales el objetivo, el contexto y los criterios de éxito, y dejá que ellos planifiquen. Dictarles cada paso suele rendir menos que una instrucción de alto nivel bien explicada. En la API se activa como "extended thinking" o similar, con un presupuesto de tokens de razonamiento que también se cobran.</p>
+      <p><strong>Límite importante: el razonamiento visible no siempre es fiel.</strong> En un estudio de Anthropic, a los modelos se les daban pistas para responder. Claude 3.7 Sonnet mencionó en su razonamiento la pista que usó solo el 25% de las veces, y DeepSeek R1 el 39%. En pruebas donde podían hacer trampa con la recompensa, la aprovecharon más del 99% de las veces, pero lo admitieron en menos del 2% de los casos. Leer el razonamiento ayuda a depurar, pero no prueba qué hizo el modelo ni reemplaza los controles de seguridad.</p>` },
   ],
   practica: [
     'Mirá "Let\'s build GPT: from scratch" de Karpathy y reimplementá un mini-GPT a nivel de caracteres.',
     'Usá un tokenizador (por ejemplo tiktoken o el de Hugging Face) y compará cuántos tokens ocupa el mismo párrafo en español y en inglés.',
     'Implementá la atención de una cabeza en NumPy con Q, K, V aleatorios y verificá que cada fila de los pesos de atención suma 1.',
+    'Elegí 20 problemas: 10 de lógica o matemática y 10 de extracción simple. Resolvelos con y sin razonamiento extendido, medí exactitud, tokens y latencia, y escribí una regla de routing basada en los resultados.',
   ],
   recursos: [
     { t: 'Attention Is All You Need (paper original)', url: 'https://arxiv.org/abs/1706.03762' },
     { t: 'The Illustrated Transformer (Jay Alammar)', url: 'https://jalammar.github.io/illustrated-transformer/' },
     { t: 'Hugging Face — LLM Course', url: 'https://huggingface.co/learn/llm-course' },
+    { t: 'DeepSeek-R1: razonamiento con aprendizaje por refuerzo (paper)', url: 'https://arxiv.org/abs/2501.12948' },
+    { t: 'Anthropic — Reasoning models don\'t always say what they think', url: 'https://www.anthropic.com/research/reasoning-models-dont-say-think' },
+    { t: 'Claude — Extended thinking', url: 'https://platform.claude.com/docs/en/build-with-claude/extended-thinking' },
     { t: 'Karpathy — Zero to Hero (incluye "Let\'s build GPT")', url: 'https://karpathy.ai/zero-to-hero.html' },
   ],
   quiz: [
@@ -321,6 +337,11 @@ for x, y in loader:
     { q: '¿Cuántos tokens tiene la frase "Hola mundo"?', opciones: ['Siempre 2', 'Siempre 10', 'Depende del tokenizador', 'Siempre 1'], correcta: 2, explicacion: 'Cada modelo tiene su propio vocabulario; una palabra puede ser uno o varios tokens.' },
     { q: '¿Qué es una alucinación?', opciones: ['Un error de conexión con la API', 'Cuando el modelo se niega a responder', 'Texto plausible pero falso o inventado', 'Una respuesta demasiado larga'], correcta: 2, explicacion: 'El modelo optimiza verosimilitud, no verdad. Por eso se le da contexto verificable y se evalúa.' },
     { q: '¿Por qué los Transformers necesitan información de posición?', opciones: ['Porque la atención por sí sola no distingue el orden de los tokens', 'Para ahorrar memoria', 'Para tokenizar', 'No la necesitan'], correcta: 0, explicacion: 'La atención trata la entrada como un conjunto; sin codificación posicional, "perro muerde hombre" y "hombre muerde perro" serían iguales.' },
+    { q: '¿Qué tipo de entrenamiento impulsó el razonamiento largo en modelos como DeepSeek-R1?', opciones: ['Aprendizaje por refuerzo con recompensas verificables, como respuestas exactas o tests que pasan', 'Solo más datos de pre-training', 'Un tokenizador nuevo', 'Cuantización a 4 bits'], correcta: 0, explicacion: 'Con tareas cuyo resultado se puede verificar automáticamente, el RL refuerza las cadenas de razonamiento que llevan a respuestas correctas.' },
+    { q: 'Tenés que clasificar un millón de tickets en 5 categorías. ¿Activás el razonamiento extendido?', opciones: ['Sí, siempre mejora', 'Sí, con el presupuesto máximo', 'Probablemente no: es una tarea simple y multiplica tokens, latencia y costo; lo verificás con evals en una muestra', 'Sí, pero solo para los tickets en inglés'], correcta: 2, explicacion: 'El razonamiento rinde en tareas de varios pasos. En una clasificación simple casi nunca compensa, y a un millón de llamadas el costo se nota.' },
+    { q: 'Querés verificar que tu modelo no usó información prohibida leyendo su razonamiento visible. ¿Alcanza?', opciones: ['Sí, el razonamiento muestra exactamente lo que hizo', 'Sí, si el razonamiento es largo', 'Sí, si la respuesta es correcta', 'No: los estudios muestran que muchas veces no menciona lo que usó, así que hacen falta otros controles'], correcta: 3, explicacion: 'En el estudio de Anthropic, Claude 3.7 Sonnet mencionó la pista que usó solo el 25% de las veces. El razonamiento ayuda a depurar, pero no es una prueba.' },
+    { q: '¿Qué significa escalar el cómputo en inferencia?', opciones: ['Agregar parámetros al modelo', 'Mejorar el rendimiento dándole al modelo más cómputo al responder (pensar más tokens), no solo al entrenar', 'Usar más GPUs para el entrenamiento', 'Comprimir el modelo'], correcta: 1, explicacion: 'Es una dimensión distinta de la de entrenar modelos más grandes: el mismo modelo rinde más en tareas difíciles si se le deja pensar más.' },
+    { q: '¿Cómo conviene escribirle a un modelo de razonamiento?', opciones: ['Con el objetivo, el contexto y los criterios de éxito, dejando que planifique él, en lugar de dictarle cada paso', 'Dictándole siempre cada paso exacto', 'Pidiéndole respuestas de una sola palabra', 'Repitiendo "pensá" muchas veces'], correcta: 0, explicacion: 'Estos modelos planifican bien por sí solos. Una lista rígida de pasos puede llevarlos a un camino peor que el que encontrarían.' },
   ],
 },
 {
