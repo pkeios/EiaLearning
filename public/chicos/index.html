@@ -3,166 +3,193 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>IA para chicos — aprendé cómo piensan las máquinas</title>
+<title>IA para chicos — misiones</title>
 <style>
-  :root { --fondo: #fff8ec; --texto: #2b2340; --tarjeta: #ffffff; --acento: #ff7a59; --bien: #1f9d55; --mal: #d64545; --suave: #6b6280; }
+  :root { --fondo: #fff8ec; --texto: #2b2340; --suave: #6b6280; --bien: #1f9d55; --mal: #d64545; --color: #7b5cff; }
   * { box-sizing: border-box; }
-  body { margin: 0; font: 18px/1.6 system-ui, "Segoe UI", sans-serif; background: var(--fondo); color: var(--texto); }
-  header { background: linear-gradient(135deg, #7b5cff, #ff7a59); color: #fff; padding: 1.5rem 1rem; text-align: center; }
-  header h1 { margin: 0; font-size: 1.8rem; }
-  header p { margin: .3rem 0 0; }
-  header a { color: #fff; }
-  main { max-width: 760px; margin: 0 auto; padding: 1rem; }
-  .estrellas { font-size: 1.2rem; text-align: center; margin: .5rem 0 1rem; }
-  .misiones { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: .8rem; }
-  .mision { background: var(--tarjeta); border: 3px solid #eadfff; border-radius: 18px; padding: 1rem; cursor: pointer; text-align: left; font: inherit; color: inherit; }
-  .mision:hover, .mision:focus-visible { border-color: #7b5cff; }
-  .mision .emoji { font-size: 2.2rem; display: block; }
-  .mision small { color: var(--suave); }
-  article { background: var(--tarjeta); border-radius: 18px; padding: 1.2rem 1.4rem; margin-top: 1rem; }
-  .pregunta { margin: 1.2rem 0; }
-  .pregunta button { display: block; width: 100%; text-align: left; margin: .35rem 0; padding: .6rem .8rem; border-radius: 12px; border: 2px solid #eadfff; background: #fbf9ff; font: inherit; color: inherit; cursor: pointer; }
-  .pregunta button.bien { border-color: var(--bien); background: #e7f7ee; }
-  .pregunta button.mal { border-color: var(--mal); background: #fdecec; }
-  .pista { color: var(--suave); font-size: .95rem; }
-  .boton { display: inline-block; background: var(--acento); color: #fff; border: 0; border-radius: 999px; padding: .6rem 1.2rem; font: inherit; cursor: pointer; text-decoration: none; margin-top: .5rem; }
-  .ojo { background: #fff3c4; border-radius: 12px; padding: .6rem .9rem; }
-  footer { text-align: center; color: var(--suave); font-size: .9rem; padding: 2rem 1rem; }
+  body { margin: 0; font: 20px/1.5 system-ui, "Segoe UI", sans-serif; background: var(--fondo); color: var(--texto); }
+  header { background: linear-gradient(135deg, #7b5cff, #ff7a59); color: #fff; padding: 1rem; text-align: center; }
+  header h1 { margin: 0; font-size: 1.7rem; }
+  header a { color: #fff; text-decoration: none; }
+  main { max-width: 680px; margin: 0 auto; padding: 1rem; }
+  button { font: inherit; color: inherit; cursor: pointer; }
+  .estrellas { text-align: center; font-size: 1.3rem; margin: .5rem 0 1rem; }
+  .misiones { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: .9rem; }
+  .mision { background: #fff; border: 4px solid var(--c); border-radius: 22px; padding: 1rem; text-align: center; transition: transform .15s; }
+  .mision:hover, .mision:focus-visible { transform: scale(1.04); }
+  .mision .emoji { font-size: 3.2rem; display: block; }
+  .mision small { display: block; margin-top: .3rem; font-size: 1.1rem; }
+  .barra { display: flex; gap: .4rem; justify-content: center; margin: .5rem 0 1rem; }
+  .barra span { width: 14px; height: 14px; border-radius: 50%; background: #e4dcf7; }
+  .barra span.hecho { background: var(--color); }
+  .tarjeta { background: #fff; border-radius: 26px; padding: 1.5rem; text-align: center; border: 4px solid var(--color); box-shadow: 0 6px 0 var(--color); animation: entra .3s ease; }
+  @keyframes entra { from { transform: translateY(12px); opacity: 0; } }
+  .grande { font-size: 5rem; line-height: 1.1; margin: .2rem 0 .6rem; }
+  .texto { font-size: 1.35rem; font-weight: 600; margin: 0 0 .5rem; }
+  .opciones { display: grid; gap: .6rem; margin-top: 1rem; }
+  .opcion { padding: .8rem 1rem; border-radius: 18px; border: 3px solid #e4dcf7; background: #fbf9ff; font-size: 1.2rem; }
+  .opcion:hover:not(:disabled) { border-color: var(--color); }
+  .opcion.bien, .chip.bien { border-color: var(--bien); background: #e7f7ee; }
+  .opcion.mal, .chip.mal { border-color: var(--mal); background: #fdecec; animation: sacude .3s; }
+  @keyframes sacude { 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+  .chips { display: grid; gap: .6rem; margin-top: 1rem; text-align: left; }
+  .chip { display: flex; align-items: center; gap: .5rem; padding: .5rem .7rem; border-radius: 16px; border: 3px solid #e4dcf7; background: #fbf9ff; }
+  .chip span { flex: 1; }
+  .chip button { border: 0; border-radius: 12px; padding: .35rem .6rem; background: #efe9ff; font-size: 1.1rem; }
+  .chip button:disabled { opacity: .35; cursor: default; }
+  .aviso { min-height: 2.2rem; margin: .8rem 0 0; font-weight: 600; }
+  .aviso.bien { color: var(--bien); } .aviso.mal { color: var(--mal); }
+  .acciones { display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; gap: .5rem; }
+  .boton { background: #ff7a59; color: #fff; border: 0; border-radius: 999px; padding: .7rem 1.4rem; font-weight: 700; text-decoration: none; box-shadow: 0 4px 0 #d9583a; }
+  .boton:disabled { background: #cfc8dc; box-shadow: none; cursor: default; }
+  .chico { background: none; border: 0; font-size: 1.6rem; }
+  .volver { color: var(--suave); text-decoration: none; }
+  .fiesta { font-size: 3rem; letter-spacing: .3rem; }
+  footer { text-align: center; color: var(--suave); font-size: .85rem; padding: 2rem 1rem; }
 </style>
 </head>
 <body>
-<header>
-  <h1>🤖 IA para chicos</h1>
-  <p>Misiones cortas para entender la inteligencia artificial (de 10 a 13 años)</p>
-</header>
+<header><h1><a href="#/">🤖 IA para chicos</a></h1></header>
 <main id="app"></main>
-<footer>Para mamás, papás y docentes: cada misión dura unos 10 minutos y termina con preguntas. El progreso queda guardado solo en este navegador.<br><a href="../">Ir al curso completo de AI Engineering</a></footer>
+<footer>Para adultos: 6 misiones de unos 5 minutos, para chicos de 10 a 13 años. Las estrellas se guardan solo en este navegador.<br><a href="../">Curso completo de AI Engineering</a></footer>
 <script>
+// Pasos: idea (emoji + frase corta), elegir (una correcta) y clasificar (cada ítem en su grupo).
+// Cada misión tiene 3 ejercicios: una estrella por cada uno resuelto al primer intento.
 const MISIONES = [
-  {
-    emoji: '🧠', titulo: '¿Qué es la inteligencia artificial?',
-    texto: `<p>La <strong>inteligencia artificial (IA)</strong> son programas de computadora que hacen cosas que antes solo podían hacer las personas: reconocer una cara en una foto, entender lo que decís, traducir un idioma o recomendarte un video.</p>
-<p>Ya la usás todos los días aunque no te des cuenta:</p>
-<ul><li>El celular que se desbloquea al ver tu cara.</li><li>La app de música que adivina qué canción te puede gustar.</li><li>El mapa que te dice por dónde hay menos tránsito.</li></ul>
-<p>Pero ojo: la IA <strong>no piensa ni siente</strong> como vos. No está viva, no tiene ganas ni opiniones propias. Es una herramienta muy buena para encontrar patrones, como una calculadora gigante de ejemplos.</p>
-<p class="ojo">💡 Idea clave: la IA es una herramienta hecha por personas. Hace algunas cosas increíblemente bien y otras muy mal.</p>`,
-    preguntas: [
-      { q: '¿Cuál de estas cosas usa IA?', o: ['Una linterna', 'Una app que reconoce qué planta es por una foto', 'Una regla', 'Un lápiz'], c: 1, e: 'Reconocer una planta en una foto es encontrar un patrón en una imagen: eso es justo lo que hace bien la IA.' },
-      { q: '¿La IA tiene sentimientos?', o: ['Sí, se pone triste si la tratás mal', 'Solo los fines de semana', 'No, es un programa que encuentra patrones', 'Sí, igual que un perro'], c: 2, e: 'Aunque a veces escriba como si sintiera algo, la IA es un programa. No siente ni está viva.' },
-      { q: '¿Quién crea la IA?', o: ['Personas: programadores, científicos y diseñadores', 'Se crea sola en internet', 'Los robots del espacio', 'Nadie, siempre existió'], c: 0, e: 'La IA la construyen personas, y por eso también puede tener los errores de las personas que la hicieron.' }
-    ]
-  },
-  {
-    emoji: '🐶', titulo: '¿Cómo aprende una máquina?',
-    texto: `<p>¿Cómo le enseñarías a una computadora a distinguir un perro de un gato? Escribir todas las reglas ("si tiene orejas puntiagudas...") es casi imposible.</p>
-<p>Por eso se usa el <strong>aprendizaje automático</strong> (en inglés <em>machine learning</em>): le mostramos <strong>miles de ejemplos</strong> con su respuesta ("esta foto es un perro", "esta es un gato") y el programa va ajustándose solo hasta acertar la mayoría de las veces. Es parecido a cuando aprendés a reconocer la letra de tus amigos: nadie te dio reglas, viste muchos ejemplos.</p>
-<p>Los ejemplos se llaman <strong>datos de entrenamiento</strong>. Y acá viene lo importante: <strong>si los datos son malos, la IA aprende mal</strong>. Si solo le mostrás perros blancos, puede que no reconozca un perro negro.</p>
-<p class="ojo">🧪 Probalo vos: en <a href="https://teachablemachine.withgoogle.com/" target="_blank" rel="noopener">Teachable Machine</a> (de Google, gratis, con un adulto) podés entrenar tu propia IA con la cámara: por ejemplo, que reconozca cuando levantás la mano y cuando no. Probá darle pocos ejemplos y después muchos: ¿cuándo acierta más?</p>`,
-    preguntas: [
-      { q: '¿Cómo aprende la IA a reconocer gatos?', o: ['Le leen un cuento de gatos', 'Viendo muchísimas fotos de gatos con la etiqueta "gato"', 'Adivinando sin ver nada', 'Preguntándole a un gato'], c: 1, e: 'Aprende de ejemplos: miles de fotos con su respuesta correcta.' },
-      { q: 'Si entrenás una IA solo con fotos de perros blancos, ¿qué puede pasar?', o: ['Va a reconocer a todos los perros perfecto', 'Va a aprender a ladrar', 'Va a pintar los perros de blanco', 'Puede fallar con perros de otros colores'], c: 3, e: 'La IA aprende de lo que le mostrás. Si los ejemplos no son variados, falla con lo que nunca vio.' },
-      { q: '¿Cómo se llaman los ejemplos que usa la IA para aprender?', o: ['Datos de entrenamiento', 'Tareas para el hogar', 'Contraseñas', 'Emojis'], c: 0, e: 'Se llaman datos de entrenamiento. ¡Su calidad importa muchísimo!' }
-    ]
-  },
-  {
-    emoji: '💬', titulo: '¿Cómo funciona un chatbot?',
-    texto: `<p>Los <strong>chatbots</strong> como ChatGPT, Claude o Gemini parecen conversar, pero por dentro hacen algo sorprendente: <strong>adivinan cuál es la palabra que sigue</strong>, una y otra vez.</p>
-<p>Probá completar: "Había una vez una princesa que vivía en un...". Seguro pensaste "castillo". El chatbot hace lo mismo, pero aprendió leyendo una cantidad enorme de textos, así que se volvió muy bueno para predecir qué viene después. A estos programas se los llama <strong>modelos de lenguaje</strong>.</p>
-<p>Como predice palabras que "suenan bien", a veces escribe algo que <strong>suena muy seguro pero es falso</strong>. A eso se le dice que el modelo <strong>alucina</strong>: puede inventar un dato, una fecha o un libro que no existe.</p>
-<p class="ojo">⚠️ Por eso: nunca copies una respuesta de un chatbot sin revisarla en otra fuente, sobre todo para la escuela.</p>`,
-    preguntas: [
-      { q: '¿Qué hace un chatbot por dentro para escribir?', o: ['Busca la respuesta en un libro secreto', 'Llama por teléfono a un experto', 'Predice la siguiente palabra muchas veces seguidas', 'Copia lo que escribió otro chico'], c: 2, e: 'Un modelo de lenguaje genera el texto prediciendo la palabra que sigue, una tras otra.' },
-      { q: 'Un chatbot te dice muy seguro el nombre de un libro, pero el libro no existe. ¿Qué pasó?', o: ['El libro se borró de internet', 'El chatbot alucinó: inventó algo que suena creíble', 'Vos leíste mal', 'El chatbot te quiso engañar a propósito'], c: 1, e: 'Se llama alucinación. No es a propósito: el modelo genera texto que suena bien aunque no sea verdad.' },
-      { q: '¿Qué conviene hacer con un dato que te dio un chatbot para un trabajo práctico?', o: ['Copiarlo tal cual, siempre tiene razón', 'Revisarlo en otra fuente confiable', 'Inventar otro dato', 'Ignorar todo lo que dice'], c: 1, e: 'El chatbot puede ayudar, pero los datos se verifican en otra fuente (un libro, una página oficial o tu docente).' }
-    ]
-  },
-  {
-    emoji: '🎯', titulo: 'Cómo pedirle bien las cosas a una IA',
-    texto: `<p>Lo que le escribís a una IA se llama <strong>prompt</strong> (se pronuncia "prompt"). Un buen prompt es como una buena consigna: cuanto más clara, mejor el resultado.</p>
-<p>Comparalas:</p>
-<ul><li>❌ "Contame de los volcanes."</li><li>✅ "Explicame cómo se forma un volcán como si tuviera 11 años, en 5 oraciones, y terminá con un dato curioso."</li></ul>
-<p>El segundo dice <strong>qué</strong> querés, <strong>para quién</strong> es y <strong>cómo</strong> lo querés. Tres trucos que funcionan:</p>
-<ol><li><strong>Dale contexto:</strong> "Estoy estudiando para una prueba de ciencias de 6.º grado".</li><li><strong>Pedí un formato:</strong> una lista, una tabla, un resumen corto.</li><li><strong>Pedile que te enseñe, no que lo haga por vos:</strong> "Haceme 3 preguntas para ver si entendí la fotosíntesis".</li></ol>
-<p class="ojo">🌟 El tercer truco es el superpoder: usar la IA como un profe que te toma examen te hace aprender de verdad.</p>`,
-    preguntas: [
-      { q: '¿Qué es un prompt?', o: ['Un tipo de robot', 'Lo que le escribís a la IA para pedirle algo', 'Un virus de computadora', 'Una tecla del teclado'], c: 1, e: 'El prompt es tu pedido o consigna para la IA.' },
-      { q: '¿Cuál es el mejor prompt?', o: ['"Volcanes"', '"Decime algo"', '"Explicame cómo se forma un volcán para alguien de 11 años, en 5 oraciones"', '"Hola"'], c: 2, e: 'Dice qué querés, para quién y en qué formato. Así la IA sabe exactamente qué hacer.' },
-      { q: '¿Cuál es la forma más inteligente de usar la IA para estudiar?', o: ['Que haga toda la tarea por vos', 'Pedirle que te haga preguntas para practicar', 'No leer nada de lo que dice', 'Copiar y pegar sin mirar'], c: 1, e: 'Si te toma examen, sos vos quien aprende. Si hace la tarea por vos, aprende... nadie.' }
-    ]
-  },
-  {
-    emoji: '🛡️', titulo: 'Usar la IA de forma segura',
-    texto: `<p>Las reglas de seguridad de internet también valen con la IA:</p>
-<ul><li><strong>No compartas datos personales:</strong> tu nombre completo, dirección, escuela, teléfono, contraseñas ni fotos tuyas o de otros.</li><li><strong>Usala con un adulto:</strong> muchas apps de IA piden tener al menos 13 años o permiso de tus padres. Revisalo con ellos antes.</li><li><strong>Si algo te incomoda, cortá y avisá</strong> a un adulto de confianza.</li></ul>
-<p>Otro tema: con IA se pueden crear <strong>fotos, voces y videos falsos</strong> que parecen reales (se llaman <em>deepfakes</em>). Antes de creer o compartir algo sorprendente, preguntate: ¿quién lo publicó?, ¿lo dice algún medio confiable?</p>
-<p>Y nunca uses la IA para burlarte de alguien o hacer imágenes de otras personas sin su permiso: eso lastima, y puede ser grave.</p>
-<p class="ojo">🔐 Regla de oro: si no se lo dirías a un desconocido en la calle, no se lo escribas a una IA.</p>`,
-    preguntas: [
-      { q: '¿Qué está bien escribirle a un chatbot?', o: ['Tu dirección', 'Tu contraseña', 'Una pregunta sobre cómo funcionan los planetas', 'El teléfono de tu mamá'], c: 2, e: 'Preguntas sobre temas para aprender, sí. Datos personales, nunca.' },
-      { q: 'Ves un video de un famoso diciendo algo muy raro. ¿Qué hacés?', o: ['Lo comparto enseguida', 'Desconfío: puede ser un deepfake, y busco si lo confirma un medio confiable', 'Lo creo porque es un video', 'Le escribo insultos'], c: 1, e: 'La IA puede crear videos falsos muy realistas. Antes de creer o compartir, verificá.' },
-      { q: 'Un chat con IA te hace sentir incómodo. ¿Qué es lo mejor?', o: ['Seguir para ver qué pasa', 'No contarle a nadie', 'Cortar y avisarle a un adulto de confianza', 'Darle tus datos para que pare'], c: 2, e: 'Siempre podés cortar y pedir ayuda. Contarlo nunca es un problema.' }
-    ]
-  },
-  {
-    emoji: '⚖️', titulo: 'IA justa y honesta',
-    texto: `<p>Como la IA aprende de datos hechos por personas, también puede aprender sus <strong>prejuicios</strong>. Por ejemplo, si en los ejemplos casi todos los médicos son hombres, una IA que dibuja "un médico" puede dibujar siempre a un hombre. A eso se le llama <strong>sesgo</strong>.</p>
-<p>Los ingenieros que hacen IA trabajan para detectarlo y corregirlo, y vos podés notarlo también: si ves que una IA trata distinto a algunas personas, eso es un error, no "la verdad".</p>
-<p>La <strong>honestidad</strong> también importa: si usaste IA para un trabajo, decilo. Muchos docentes te dejan usarla para buscar ideas o practicar, pero entregar como propio algo que escribió una máquina no es justo para vos ni para tus compañeros. Y lo más importante: <strong>tu cerebro crece cuando lo usás</strong>.</p>
-<p class="ojo">🚀 El futuro: quienes entienden cómo funciona la IA pueden crearla y mejorarla. ¡Vos podés ser uno de ellos!</p>`,
-    preguntas: [
-      { q: 'Una IA siempre dibuja a los científicos como hombres. ¿Qué está pasando?', o: ['Es un sesgo que aprendió de sus datos', 'Es la verdad: solo hay científicos hombres', 'La IA está cansada', 'Es una regla de la ciencia'], c: 0, e: 'Es un sesgo: la IA repite los patrones (y los prejuicios) que había en sus ejemplos.' },
-      { q: 'Usaste IA para buscar ideas para tu trabajo. ¿Qué es lo honesto?', o: ['Esconderlo', 'Decirle a tu docente cómo la usaste', 'Decir que la IA lo hizo todo aunque no sea así', 'Borrar el trabajo'], c: 1, e: 'Contar cómo usaste la IA es honesto, y tu docente te puede ayudar a usarla mejor.' },
-      { q: '¿Por qué conviene hacer vos la tarea aunque la IA pueda hacerla?', o: ['Porque la IA cobra muy caro', 'Porque es más divertido sufrir', 'Porque la IA no sabe escribir', 'Porque tu cerebro aprende cuando lo usás'], c: 3, e: 'La tarea es para entrenar tu cerebro. Si la hace otro, el que no aprende sos vos.' }
-    ]
-  }
+  { emoji: '🧠', titulo: '¿Qué es la IA?', color: '#7b5cff', pasos: [
+    { idea: '🤖', t: 'La IA es un programa que aprende a encontrar patrones.' },
+    { idea: '📱 🎵 🗺️', t: 'Ya la usás: el celu que reconoce tu cara, la música que te recomienda, el mapa que esquiva el tránsito.' },
+    { clasificar: '¿Usa IA o no?', grupos: ['🤖 IA', '🔧 No'], items: [['📷 Cámara que reconoce caras', 0], ['🔦 Linterna', 1], ['🎬 App que te recomienda videos', 0], ['📏 Regla', 1], ['🗣️ Asistente que entiende tu voz', 0]] },
+    { idea: '💡', t: 'La IA no piensa ni siente. No está viva: es una herramienta.' },
+    { q: '¿La IA tiene sentimientos?', o: ['😢 Sí, se pone triste', '🙅 No, es un programa'], c: 1, e: 'Aunque a veces escriba como una persona, no siente nada.' },
+    { q: '¿Quién hace la IA?', o: ['👩‍💻 Personas', '🌧️ Aparece sola', '👽 Extraterrestres'], c: 0, e: 'La hacen personas. Por eso también puede tener sus errores.' },
+  ] },
+  { emoji: '🐶', titulo: '¿Cómo aprende?', color: '#ff7a59', pasos: [
+    { idea: '📚 👀', t: 'La máquina aprende viendo MUCHOS ejemplos. ¡Como vos!' },
+    { clasificar: 'Enseñale a la máquina: ¿perro o gato?', grupos: ['🐶 Perro', '🐱 Gato'], items: [['🐕', 0], ['🐈', 1], ['🐩', 0], ['🐈‍⬛', 1], ['🦮', 0]] },
+    { idea: '🏷️', t: 'Lo que hiciste se llama "etiquetar". Son los datos de entrenamiento.' },
+    { idea: '🔴 🔴 🔴 ❓', t: 'Si solo ve ejemplos parecidos, se confunde con lo nuevo.' },
+    { q: 'La máquina solo vio pelotas rojas 🔴. Le mostrás una azul 🔵. ¿Qué pasa?', o: ['😵 Puede confundirse', '🎯 Seguro acierta'], c: 0, e: 'Nunca vio una pelota azul. Aprende solo de lo que le mostraste.' },
+    { q: '¿Qué necesita para aprender mejor?', o: ['🍕 Pizza', '🌈 Ejemplos variados', '😴 Dormir'], c: 1, e: 'Ejemplos variados = una IA que se equivoca menos.' },
+  ] },
+  { emoji: '💬', titulo: 'Chatbots', color: '#1f9dd6', pasos: [
+    { idea: '🔮', t: 'Un chatbot adivina la palabra que sigue. Una y otra vez.' },
+    { q: 'Completá: "Había una vez una princesa en un gran..."', o: ['🥦 brócoli', '🚀 cohete', '🏰 castillo'], c: 2, e: '¡Eso hace un chatbot! Elige la palabra que más vio en los textos.' },
+    { idea: '🤥', t: 'A veces inventa cosas que suenan seguras... pero son falsas.' },
+    { q: 'El chatbot dice que en Marte viven pingüinos 🐧. ¿Qué hacés?', o: ['✅ Lo copio para la tarea', '🔍 Lo reviso en un libro o con mi profe'], c: 1, e: 'Siempre revisá los datos importantes en otra fuente.' },
+    { q: '¿El chatbot siempre tiene razón?', o: ['👎 No, puede equivocarse', '👍 Sí, siempre'], c: 0, e: 'Es muy útil, pero se equivoca. Vos sos quien revisa.' },
+  ] },
+  { emoji: '🎯', titulo: 'Pedir bien', color: '#e0a100', pasos: [
+    { idea: '✍️', t: 'Lo que le escribís a la IA se llama "prompt". Cuanto más claro, mejor.' },
+    { q: '¿Qué prompt es mejor?', o: ['😐 "Volcanes"', '🌋 "Explicame cómo se forma un volcán en 3 frases, para alguien de 11 años"'], c: 1, e: 'Dice qué querés, para quién y cómo.' },
+    { clasificar: '¿Esto ayuda a que la IA te entienda?', grupos: ['✅ Ayuda', '❌ No'], items: [['Decir para quién es', 0], ['Escribir una sola palabra', 1], ['Pedir una lista o 3 frases', 0], ['Escribir TODO EN MAYÚSCULAS', 1], ['Contar para qué lo necesitás', 0]] },
+    { idea: '🌟', t: 'Superpoder: pedile que te haga preguntas para practicar.' },
+    { q: '¿Qué te ayuda a aprender más?', o: ['📝 "Haceme la tarea"', '🧠 "Haceme 3 preguntas sobre las plantas"'], c: 1, e: 'Si te toma examen, aprendés vos.' },
+  ] },
+  { emoji: '🛡️', titulo: 'Seguridad', color: '#1f9d55', pasos: [
+    { idea: '🔐', t: 'Tus datos personales no se los des a una IA.' },
+    { clasificar: '¿Se lo puedo escribir a una IA?', grupos: ['👍 Sí', '🚫 No'], items: [['¿Por qué el cielo es azul?', 0], ['Mi dirección', 1], ['Mi contraseña', 1], ['Ideas para un cuento de dragones', 0], ['El teléfono de mi familia', 1]] },
+    { idea: '🎭', t: 'Con IA se pueden hacer fotos y videos falsos que parecen reales.' },
+    { q: 'Ves un video de un famoso diciendo algo rarísimo. ¿Qué hacés?', o: ['📤 Lo comparto ya', '🤔 Desconfío y le pregunto a un adulto'], c: 1, e: 'Puede ser falso. Antes de creer o compartir, preguntá.' },
+    { idea: '🙋', t: 'Si algo te hace sentir incómodo, cortá y contale a un adulto.' },
+    { q: 'Un chat te hace sentir incómodo. ¿Qué hacés?', o: ['🙋 Corto y le cuento a un adulto', '🤐 No le cuento a nadie'], c: 0, e: 'Contarlo siempre está bien.' },
+  ] },
+  { emoji: '⚖️', titulo: 'Justa y honesta', color: '#d6457a', pasos: [
+    { idea: '🪞', t: 'La IA copia lo que ve en sus ejemplos. También los errores de las personas.' },
+    { q: 'Una IA siempre dibuja a los científicos como hombres 👨‍🔬. ¿Está bien?', o: ['✅ Sí, es así', '❌ No, es un error: hay muchas científicas 👩‍🔬'], c: 1, e: 'Se llama sesgo. La IA repite lo que más vio, aunque no sea justo.' },
+    { idea: '🤝', t: 'Si usaste IA para un trabajo, contalo.' },
+    { q: 'Usaste IA para buscar ideas. ¿Qué hacés?', o: ['🗣️ Le cuento a mi profe cómo la usé', '🙈 Lo escondo'], c: 0, e: 'Ser honesto con la IA es igual que con todo lo demás.' },
+    { idea: '💪', t: 'Tu cerebro crece cuando lo usás. La IA ayuda, no te reemplaza.' },
+    { q: '¿Quién tiene que aprender en la escuela?', o: ['🤖 La IA', '🧒 ¡Yo!'], c: 1, e: '¡Exacto! La IA es tu ayudante.' },
+  ] },
 ];
 
 const app = document.getElementById('app');
-// Siguiente paso al terminar todas: el primer módulo del curso completo
-const SIGUIENTE = '<p>🚀 <strong>¿Querés ir más lejos?</strong> El curso completo de AI Engineering empieza por <a href="../#/m/fundamentos">Fundamentos</a>. Es para chicos más grandes y adultos, pero podés mirarlo con alguien que te acompañe.</p>';
 const cargar = () => { try { return JSON.parse(localStorage.getItem('chicos')) || {}; } catch { return {}; } };
 const guardar = p => localStorage.setItem('chicos', JSON.stringify(p));
+const SIGUIENTE = '<p>🚀 <strong>¿Querés más?</strong> Con alguien que te acompañe, podés mirar el primer módulo del <a href="../#/m/fundamentos">curso completo</a>.</p>';
+
+// Voz: español latino si el dispositivo tiene una
+function leer(texto) {
+  if (!window.speechSynthesis) return;
+  speechSynthesis.cancel();
+  const voces = speechSynthesis.getVoices().filter(v => /^es/i.test(v.lang));
+  const voz = voces.find(v => /^es[-_](419|AR|MX|US|CO|CL|PE|UY)/i.test(v.lang)) || voces.find(v => !/^es[-_]ES/i.test(v.lang)) || voces[0];
+  speechSynthesis.speak(Object.assign(new SpeechSynthesisUtterance(texto.replace(/\p{Extended_Pictographic}/gu, '')), { lang: 'es-419', voice: voz || null, rate: .95 }));
+}
 
 function inicio() {
-  const p = cargar();
-  const total = Object.values(p).reduce((a, b) => a + b, 0);
-  app.innerHTML = `<p class="estrellas">⭐ Tenés <strong>${total}</strong> de ${MISIONES.length * 3} estrellas</p>
+  const p = cargar(), total = Object.values(p).reduce((a, b) => a + b, 0);
+  app.innerHTML = `<p class="estrellas">⭐ <strong>${total}</strong> de ${MISIONES.length * 3} estrellas</p>
     ${Object.keys(p).length === MISIONES.length ? SIGUIENTE : ''}
-    <div class="misiones">${MISIONES.map((m, i) => `<button class="mision" data-i="${i}"><span class="emoji">${m.emoji}</span><strong>Misión ${i + 1}</strong><br>${m.titulo}<br><small>${'⭐'.repeat(p[i] || 0) || 'Sin empezar'}</small></button>`).join('')}</div>`;
+    <div class="misiones">${MISIONES.map((m, i) => `<button class="mision" style="--c:${m.color}" data-i="${i}">
+      <span class="emoji">${m.emoji}</span><strong>${i + 1}. ${m.titulo}</strong><small>${p[i] != null ? '⭐'.repeat(p[i]) + '☆'.repeat(3 - p[i]) : '▶️ Jugar'}</small></button>`).join('')}</div>`;
   app.querySelectorAll('.mision').forEach(b => b.onclick = () => { location.hash = '#/' + b.dataset.i; });
 }
 
 function mision(i) {
   const m = MISIONES[i];
-  let aciertos = 0, respondidas = 0;
-  app.innerHTML = `<a href="#/" class="pista">← Volver a las misiones</a>
-    <article><h2>${m.emoji} Misión ${i + 1}: ${m.titulo}</h2>${m.texto}
-    <h3>🎮 ¿Lo entendiste?</h3>
-    ${m.preguntas.map((q, k) => `<div class="pregunta" data-k="${k}"><strong>${k + 1}. ${q.q}</strong>${q.o.map((o, j) => `<button data-j="${j}">${o}</button>`).join('')}<p class="pista" hidden></p></div>`).join('')}
-    <p id="final"></p></article>`;
-  app.querySelectorAll('.pregunta').forEach(div => {
-    const q = m.preguntas[div.dataset.k];
-    div.querySelectorAll('button').forEach(b => b.onclick = () => {
-      if (div.dataset.hecha) return;
-      div.dataset.hecha = '1';
-      const bien = Number(b.dataset.j) === q.c;
-      b.classList.add(bien ? 'bien' : 'mal');
-      div.querySelectorAll('button')[q.c].classList.add('bien');
-      const pista = div.querySelector('.pista');
-      pista.hidden = false;
-      pista.textContent = (bien ? '¡Bien! ' : 'Casi. ') + q.e;
-      aciertos += bien; respondidas++;
-      if (respondidas === m.preguntas.length) {
-        const p = cargar(); p[i] = Math.max(p[i] || 0, aciertos); guardar(p);
-        const sig = i + 1 < MISIONES.length ? `<a class="boton" href="#/${i + 1}">Siguiente misión →</a>` : '<a class="boton" href="#/">🏆 ¡Terminaste todas! Ver mis estrellas</a>' + SIGUIENTE;
-        app.querySelector('#final').innerHTML = `<strong>Ganaste ${'⭐'.repeat(aciertos) || '0 estrellas'}</strong> (${aciertos} de ${m.preguntas.length}). ${aciertos < 3 ? 'Podés volver a intentarlo cuando quieras.' : '¡Perfecto!'}<br>${sig}`;
+  document.documentElement.style.setProperty('--color', m.color);
+  let paso = 0, estrellas = 0;
+  const mostrar = () => {
+    if (paso === m.pasos.length) return final();
+    const s = m.pasos[paso], ejercicio = !s.idea;
+    let primerIntento = true;
+    const dicho = s.idea ? s.t : s.q || s.clasificar;
+    app.innerHTML = `<a class="volver" href="#/">← Misiones</a>
+      <div class="barra">${m.pasos.map((_, k) => `<span class="${k <= paso ? 'hecho' : ''}"></span>`).join('')}</div>
+      <section class="tarjeta">
+        ${s.idea ? `<div class="grande">${s.idea}</div><p class="texto">${s.t}</p>` : ''}
+        ${s.q ? `<p class="texto">${s.q}</p><div class="opciones">${s.o.map((o, j) => `<button class="opcion" data-j="${j}">${o}</button>`).join('')}</div>` : ''}
+        ${s.clasificar ? `<p class="texto">${s.clasificar}</p><div class="chips">${s.items.map(([t], k) => `<div class="chip" data-k="${k}"><span>${t}</span>${s.grupos.map((g, j) => `<button data-g="${j}">${g}</button>`).join('')}</div>`).join('')}</div>` : ''}
+        <p class="aviso" aria-live="polite"></p>
+        <div class="acciones"><button class="chico" id="oir" aria-label="Escuchar">🔊</button><button class="boton" id="seguir" ${ejercicio ? 'disabled' : ''}>Seguir →</button></div>
+      </section>`;
+    const aviso = app.querySelector('.aviso'), seguir = app.querySelector('#seguir');
+    const listo = () => { if (primerIntento) estrellas++; seguir.disabled = false; seguir.focus(); };
+    app.querySelector('#oir').onclick = () => leer(dicho + (s.o ? '. ' + s.o.join('. ') : ''));
+    seguir.onclick = () => { paso++; mostrar(); };
+    app.querySelectorAll('.opcion').forEach(b => b.onclick = () => {
+      if (Number(b.dataset.j) === s.c) {
+        b.classList.add('bien');
+        app.querySelectorAll('.opcion').forEach(x => x.disabled = true);
+        aviso.className = 'aviso bien'; aviso.textContent = '🎉 ¡Bien! ' + s.e;
+        listo();
+      } else {
+        primerIntento = false;
+        b.classList.add('mal'); b.disabled = true;
+        aviso.className = 'aviso mal'; aviso.textContent = '🤔 Casi... ¡probá otra!';
       }
     });
-  });
+    let faltan = s.items?.length || 0;
+    app.querySelectorAll('.chip').forEach(chip => chip.querySelectorAll('button').forEach(b => b.onclick = () => {
+      const bien = Number(b.dataset.g) === s.items[chip.dataset.k][1];
+      chip.classList.remove('mal'); void chip.offsetWidth;
+      chip.classList.add(bien ? 'bien' : 'mal');
+      if (!bien) { primerIntento = false; aviso.className = 'aviso mal'; aviso.textContent = '🤔 Ese no va ahí. ¡Probá el otro!'; return; }
+      chip.querySelectorAll('button').forEach(x => x.disabled = true);
+      aviso.className = 'aviso bien'; aviso.textContent = '✅ ¡Bien!';
+      if (--faltan === 0) { aviso.textContent = '🎉 ¡Todos en su lugar!'; listo(); }
+    }));
+  };
+  const final = () => {
+    const p = cargar(); p[i] = Math.max(p[i] || 0, estrellas); guardar(p);
+    const todas = Object.keys(p).length === MISIONES.length;
+    app.innerHTML = `<section class="tarjeta">
+      <div class="fiesta">🎉🎊🎉</div>
+      <p class="texto">¡Misión ${i + 1} cumplida!</p>
+      <div class="grande">${'⭐'.repeat(estrellas) + '☆'.repeat(3 - estrellas)}</div>
+      <p>${estrellas === 3 ? '¡Perfecto, todo al primer intento!' : 'Podés volver a jugarla para ganar más estrellas.'}</p>
+      ${todas ? SIGUIENTE : ''}
+      <div class="acciones"><a class="volver" href="#/">← Misiones</a>${i + 1 < MISIONES.length ? `<a class="boton" href="#/${i + 1}">Siguiente misión →</a>` : '<a class="boton" href="#/">🏆 Ver mis estrellas</a>'}</div>
+    </section>`;
+  };
+  mostrar();
   scrollTo(0, 0);
 }
 
 function rutear() {
+  window.speechSynthesis?.cancel();
   const i = Number(location.hash.slice(2));
   if (location.hash.length > 2 && MISIONES[i]) mision(i); else inicio();
 }

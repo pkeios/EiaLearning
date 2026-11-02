@@ -32,4 +32,4 @@
 - [x] Comparar dos intentos del mismo quiz: mostrar qué preguntas pasaron de mal a bien y cuáles siguen fallando
 - [x] Ver en cada módulo la fecha y nota de los últimos intentos del quiz, para ver la evolución
 - [x] Juntar la versión para chicos y el curso: que al terminar las 6 misiones se sugiera un "siguiente paso" (el módulo Fundamentos) y que las misiones aparezcan en Novedades
-- [ ] Versión para chicos: leer cada misión en voz alta con el mismo botón 🔊 del curso (voz en español latino), para chicos que leen más lento
+- [x] Versión para chicos: leer cada misión en voz alta con el mismo botón 🔊 del curso (voz en español latino), para chicos que leen más lento
