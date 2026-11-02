@@ -113,3 +113,4 @@ Lo completa el comando `/mejorar`. Una línea por ejecución.
 - 2026-11-02 · proyecto · metodología: 5 preguntas nuevas de aplicación con casos reales y la trampa explicada
 - 2026-11-02 · app · versión para chicos: Taller con 3 actividades prácticas en el navegador (entrenar un clasificador de frases alegres o tristes con ejemplos propios, autocompletar que aprende de un texto de la escuela, programar un robot con secuencias de flechas en 3 niveles), con test propio en CI (pedido del usuario)
 - 2026-11-02 · apis · metodología: 5 preguntas nuevas de casos con la trampa explicada
+- 2026-11-02 · fine-tuning · metodología: ejemplos con números en las 2 lecciones base (decisión de cuándo afinar, cuenta de LoRA y memoria)

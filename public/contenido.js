@@ -1947,13 +1947,30 @@ tasa de verdaderos negativos = VN / (VN + FP)   # detecta lo que está mal</code
         <li>Destilar: entrenar un modelo chico con salidas de uno grande.</li>
       </ul>
       <p><strong>Mal uso:</strong> agregar conocimiento que cambia seguido (para eso, RAG) o tapar un prompt mal hecho.</p>
-      <p><strong>Tipos:</strong> <em>SFT</em> (pares instrucción → respuesta ideal) y <em>ajuste por preferencias</em> como DPO (pares respuesta preferida / rechazada, sin entrenar un modelo de recompensa aparte).</p>` },
+      <p><strong>Tipos:</strong> <em>SFT</em> (pares instrucción → respuesta ideal) y <em>ajuste por preferencias</em> como DPO (pares respuesta preferida / rechazada, sin entrenar un modelo de recompensa aparte).</p>
+      <p><strong>Ejemplo de decisión</strong> (números ilustrativos): tenés que clasificar 50.000 tickets por día en 12 categorías.</p>
+      <pre><code>paso                                    exactitud   costo/día   ¿seguir?
+1. modelo grande, prompt simple            81%        40 USD     sí: falta calidad
+2. + 20 ejemplos few-shot bien elegidos    92%        55 USD     calidad OK, caro
+3. modelo chico + mismo prompt             84%         6 USD     barato, flojo
+4. modelo chico afinado con 3.000          93%         6 USD     ✅ fine-tuning gana
+   tickets etiquetados por el paso 2</code></pre>
+      <p>El fine-tuning se justificó recién en el paso 4, y contra una línea base medida: iguala la calidad del paso 2 a una fracción del costo. Fijate que es una tarea estrecha, repetida y estable: si las categorías cambiaran cada mes, el costo de reentrenar se comería el ahorro. Y el paso 4 es una destilación: el modelo grande hizo de maestro (lo vas a ver en la lección de destilación).</p>` },
     { titulo: 'LoRA, cuantización e inferencia local', html: `
       <p><strong>LoRA:</strong> en vez de actualizar todos los pesos, congelás el modelo y entrenás matrices pequeñas de bajo rango que se suman a ciertas capas. Entrenás menos del 1% de parámetros, con mucha menos memoria, y el adaptador pesa megas.</p>
       <p><strong>QLoRA:</strong> LoRA sobre un modelo base cuantizado a 4 bits: permite afinar modelos grandes en una sola GPU.</p>
       <p><strong>Cuantización:</strong> representar los pesos con menos bits (16 → 8 → 4). Menos memoria y más velocidad, con alguna pérdida de calidad. Formatos comunes: GGUF (llama.cpp / Ollama), AWQ, GPTQ.</p>
       <p><strong>Inferencia local y servidores:</strong> Ollama y llama.cpp para tu máquina; vLLM o TGI para servir con alto rendimiento en producción.</p>
-      <p>Regla para estimar memoria de los pesos: parámetros × bytes por parámetro. Un modelo de 8B en 16 bits ≈ 16 GB; en 4 bits ≈ 4-5 GB (más la memoria del contexto, la KV cache).</p>` },
+      <p>Regla para estimar memoria de los pesos: parámetros × bytes por parámetro. Un modelo de 8B en 16 bits ≈ 16 GB; en 4 bits ≈ 4-5 GB (más la memoria del contexto, la KV cache).</p>
+      <p><strong>Ejemplo con números: por qué LoRA entrena tan poco.</strong> Una matriz de pesos de 4096 × 4096 tiene 16.777.216 parámetros. LoRA con rango 8 la deja congelada y entrena dos matrices chicas, A (4096 × 8) y B (8 × 4096):</p>
+      <pre><code>W congelada:   4096 × 4096        = 16.777.216 parámetros
+LoRA (r = 8):  4096 × 8 + 8 × 4096 =     65.536 parámetros  (0,39%)
+salida:        W·x + B·(A·x)       ← se suma el "delta" aprendido</code></pre>
+      <p>Y la memoria de los pesos de un modelo de 8B según la precisión:</p>
+      <pre><code>16 bits (2 bytes)   → 16 GB   GPU grande
+ 8 bits (1 byte)    →  8 GB   GPU de gama media
+ 4 bits (0,5 bytes) →  4 GB   + algo de overhead: entra en una laptop con buena GPU</code></pre>
+      <p>Por eso QLoRA (base en 4 bits + adaptador LoRA) permite afinar en una sola GPU: los pesos grandes ocupan poco y lo único que se entrena son esas matrices chicas.</p>` },
     { titulo: 'Servir modelos: KV cache, batching continuo y PagedAttention', html: `
       <p>Si vas a servir un modelo abierto, entender qué consume memoria y tiempo te ahorra mucha GPU.</p>
       <p><strong>Dos fases:</strong> el <em>prefill</em> procesa todo el prompt en paralelo (rápido por token, domina el tiempo hasta el primer token) y el <em>decode</em> genera token por token (cada paso depende del anterior, domina la duración total).</p>
