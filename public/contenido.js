@@ -1861,6 +1861,7 @@ tasas = tasa_por_categoria([(a["cat"], ataque_exitoso(a["cat"], sistema(a))) for
     'Diseñar un sistema de IA de punta a punta y defenderlo en una entrevista de system design',
     'Programar con agentes de código de forma efectiva y medir si de verdad te hacen más rápido',
     'Construir de punta a punta un asistente RAG evaluado, con resultados medidos para cada versión',
+    'Leer papers con método y criterio: tres pasadas y preguntas clave para resultados de ML',
   ],
   lecciones: [
     { titulo: 'La ruta de proyectos', html: `
@@ -1948,6 +1949,28 @@ Total ≈ 1.350 USD/día ≈ 40.500 USD/mes</code></pre>
 | + híbrida          |   0,90   |   0,83    |     0,96      |   1/5   |    1,45     |
 | + reranker         |   0,93   |   0,87    |     0,97      |   0/5   |    1,60     |</code></pre>
       <p>Los números del ejemplo son ilustrativos; los tuyos van a ser otros. Lo que importa es que cualquiera que lea el README pueda ver qué probaste, qué funcionó, cuánto cuesta y dónde falla. Eso es lo que distingue a un AI engineer de alguien que armó un demo.</p>` },
+    { titulo: 'Leer papers sin ahogarse: el método de las tres pasadas', html: `
+      <p>Salen decenas de papers de IA por día. No se trata de leerlos todos, sino de filtrar rápido y entender a fondo los pocos que importan. Un método clásico es el de las tres pasadas, de S. Keshav ("How to Read a Paper").</p>
+      <ol>
+        <li><strong>Primera pasada (5 a 10 minutos):</strong> título, resumen, introducción, títulos de secciones, conclusiones y figuras. Al terminar tenés que poder responder las <strong>cinco C</strong>: categoría (qué tipo de paper es), contexto (con qué trabajos se relaciona), correctitud (si los supuestos parecen válidos), contribuciones (qué aporta) y claridad (si está bien escrito). Con eso decidís si seguís.</li>
+        <li><strong>Segunda pasada (hasta una hora):</strong> leés con cuidado, salteando las demostraciones. Mirás bien figuras y tablas: qué miden los ejes, contra qué se compara, en qué datos. Anotás las referencias que te faltan.</li>
+        <li><strong>Tercera pasada (horas):</strong> recreás el trabajo: lo reimplementás o rehacés el razonamiento. Ahí aparecen los supuestos ocultos y los detalles que el texto no dice.</li>
+      </ol>
+      <p><strong>Preguntas que conviene hacerle a cualquier resultado de ML:</strong></p>
+      <ul>
+        <li>¿Contra qué línea base compara, y con el mismo cómputo y los mismos datos?</li>
+        <li>¿La mejora supera la variación entre corridas? ¿Cuántas corridas hicieron? (lo que viste en evals)</li>
+        <li>¿Puede haber <strong>contaminación</strong>, es decir, que las preguntas del benchmark estuvieran en los datos de entrenamiento?</li>
+        <li>¿Hay código y datos para reproducirlo?</li>
+        <li>¿Cambia algo de lo que vos construís?</li>
+      </ul>
+      <pre><code>Paper:
+Problema (1 frase):
+Idea clave (1 frase):
+Evidencia: contra qué compara, en qué datos, cuánto mejora y con cuántas corridas
+Dudas y supuestos:
+¿Lo aplicaría? Dónde, y cómo lo mediría:</code></pre>
+      <p><strong>Una rutina que se sostiene:</strong> un paper por semana con esta plantilla en tus apuntes, y un experimento chico por mes para reproducir algo. Es mucho más valioso que leer veinte resúmenes por semana sin quedarte con nada.</p>` },
   ],
   practica: [
     'Elegí uno de los 5 proyectos y terminalo esta semana con README, evals y demo.',
@@ -1956,11 +1979,15 @@ Total ≈ 1.350 USD/día ≈ 40.500 USD/mes</code></pre>
     'Escribí un design doc de una página para "asistente RAG sobre 10 millones de documentos a 1.000 consultas por segundo": requisitos, diagrama, costo mensual calculado, evals y riesgos. Después pedile a Claude que haga de entrevistador y te repregunte durante 30 minutos.',
     'Usá un agente de código en uno de tus proyectos: escribí un CLAUDE.md de menos de 20 líneas, un SPEC.md para una funcionalidad y los tests que la verifican. Cronometrá la tarea y comparala con otra parecida hecha a mano.',
     'Hacé el proyecto guiado del asistente RAG completo y publicá el repositorio con resultados.md y el README. Después usá el prompt de tutor de este módulo para que Claude revise tu README como si fuera un entrevistador.',
+    'Elegí un paper de la lista de tendencias de Hugging Face, hacé la primera pasada en 10 minutos y completá la plantilla. Si pasa el filtro, hacé la segunda pasada y anotá contra qué compara y si la mejora supera el ruido.',
   ],
   recursos: [
     { t: 'arXiv — Computation and Language (cs.CL), novedades', url: 'https://arxiv.org/list/cs.CL/recent' },
     { t: 'Anthropic Engineering blog', url: 'https://www.anthropic.com/engineering' },
     { t: 'Simon Willison\'s Weblog (al día con LLMs)', url: 'https://simonwillison.net/' },
+    { t: 'S. Keshav — How to Read a Paper (PDF)', url: 'https://web.stanford.edu/class/ee384m/Handouts/HowtoReadPaper.pdf' },
+    { t: 'Hugging Face — Papers en tendencia', url: 'https://huggingface.co/papers/trending' },
+    { t: 'alphaXiv — leer y discutir papers de arXiv', url: 'https://www.alphaxiv.org/' },
     { t: 'Claude Code — Best practices', url: 'https://code.claude.com/docs/en/best-practices' },
     { t: 'METR — Impacto de la IA en desarrolladores experimentados (paper)', url: 'https://arxiv.org/abs/2507.09089' },
     { t: 'Latent Space (podcast y newsletter de AI engineering)', url: 'https://www.latent.space/' },
@@ -1986,6 +2013,11 @@ Total ≈ 1.350 USD/día ≈ 40.500 USD/mes</code></pre>
     { q: '¿Por qué conviene medir recall@5 por separado de la exactitud de las respuestas?', opciones: ['Porque es obligatorio', 'Para saber si un error viene de la búsqueda o de la generación', 'Porque es más barato de calcular', 'No hace falta: con la exactitud alcanza'], correcta: 1, explicacion: 'Si la fuente correcta no se recuperó, el problema es la búsqueda; si se recuperó y la respuesta igual está mal, es la generación. Se arreglan de formas distintas.' },
     { q: '¿Qué hace que el README de este proyecto se destaque frente a un entrevistador?', opciones: ['Una lista larga de tecnologías', 'Capturas de pantalla lindas', 'Una explicación extensa de qué es RAG', 'Una tabla de métricas por versión, el costo por consulta, las decisiones con sus alternativas y fallos analizados'], correcta: 3, explicacion: 'Muestra criterio de ingeniería: qué mediste, qué probaste y qué aprendiste. La lista de tecnologías no dice nada sobre cómo pensás.' },
     { q: 'Tus documentos son 80 páginas. ¿Qué usás como línea base antes de construir el RAG?', opciones: ['Un RAG agéntico', 'Fine-tuning del modelo', 'Los documentos completos en el contexto con caching, para tener contra qué comparar el RAG', 'Ninguna línea base'], correcta: 2, explicacion: '80 páginas entran en el contexto de los modelos actuales. Si el RAG no supera a esa opción simple en calidad o costo, no se justifica.' },
+    { q: '¿Qué hacés en la primera pasada de lectura de un paper?', opciones: ['Leés título, resumen, introducción, títulos de secciones y conclusiones en 5 a 10 minutos, para decidir si vale la pena seguir', 'Lo reimplementás completo', 'Leés cada demostración en detalle', 'Leés solo la lista de referencias'], correcta: 0, explicacion: 'La primera pasada es un filtro. Reimplementar es la tercera pasada, y solo tiene sentido con los pocos papers que pasan el filtro.' },
+    { q: 'Un paper reporta 2 puntos de mejora sobre el estado del arte, con una sola corrida. ¿Qué te preguntás?', opciones: ['Nada: si es mejor, es mejor', 'Si la mejora supera la variación entre corridas y si la comparación usa el mismo cómputo y los mismos datos', 'Si el título es atractivo', 'Cuántas páginas tiene'], correcta: 1, explicacion: 'Con una sola corrida, 2 puntos pueden ser ruido. Y una comparación con más cómputo o más datos no es justa.' },
+    { q: '¿Qué significa que un benchmark esté contaminado?', opciones: ['Que tiene errores de ortografía', 'Que es antiguo', 'Que sus ejemplos aparecieron en los datos de entrenamiento del modelo, lo que infla el resultado', 'Que es privado'], correcta: 2, explicacion: 'Si el modelo vio las preguntas al entrenar, el benchmark mide memoria y no capacidad. Es un riesgo grande con modelos entrenados con internet.' },
+    { q: '¿En qué consiste la tercera pasada del método de Keshav?', opciones: ['Releer el resumen', 'Leer los comentarios sobre el paper', 'Traducirlo', 'Recrear el trabajo, reimplementándolo o rehaciendo el razonamiento, para entender sus supuestos y detalles'], correcta: 3, explicacion: 'Recrear obliga a enfrentar cada detalle que la lectura deja pasar. Es la pasada más larga y solo se hace con los papers clave.' },
+    { q: '¿Qué rutina de lectura es más sostenible y útil?', opciones: ['Un paper por semana con un resumen corto en plantilla, y un experimento chico por mes', 'Veinte resúmenes por semana sin tomar notas', 'Leer solo cuando sobra tiempo', 'Esperar a que salgan videos explicativos'], correcta: 0, explicacion: 'La constancia y el resumen propio fijan lo aprendido. Leer mucho sin procesar deja poco.' },
   ],
 },
 ];
