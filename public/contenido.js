@@ -1783,6 +1783,7 @@ trainer.train()</code></pre>
     'Migrar modelos y prompts en producción con shadow, canary y rollback',
     'Proteger costo y disponibilidad con cuotas, límites de entrada y salida, topes de gasto y detección de abuso',
     'Manejar datos personales en producción: minimizar, enmascarar, separar por usuario y retener poco',
+    'Instrumentar trazas en apps con LLMs y agentes para depurar, optimizar latencia y medir costos',
   ],
   lecciones: [
     { titulo: 'Observabilidad y versionado', html: `
@@ -1885,6 +1886,34 @@ def enmascarar(texto):
 
 log.info({"usuario": hash_id(usuario), "prompt": enmascarar(prompt), "tokens": uso})</code></pre>
       <p>Los patrones simples fallan con formatos raros y no detectan nombres ni direcciones; por eso se combinan con detectores más completos y con controles de acceso. Y como advierte OWASP, una instrucción del tipo "nunca reveles datos personales" en el prompt ayuda, pero se puede saltear: los datos sensibles se protegen <em>antes</em> de que lleguen al modelo o a los logs.</p>` },
+    { titulo: 'Trazas: ver qué pasó dentro de cada pedido', html: `
+      <p>Cuando un usuario dice "me respondió cualquier cosa", necesitás ver qué pasó por dentro: qué recuperó el RAG, qué le mandaste al modelo, qué herramienta llamó el agente y qué le devolvió. Para eso están las <strong>trazas</strong>: un árbol de pasos (<em>spans</em>) por cada pedido, con duración, datos y errores de cada paso.</p>
+      <p><strong>Qué registrar en cada llamada al modelo:</strong> modelo y versión del prompt; tokens de entrada, de salida y de caché; costo; latencia y tiempo hasta el primer token; <strong>motivo de fin</strong> (si es max_tokens, la respuesta se cortó); herramientas pedidas y sus argumentos; errores. Y en el pedido completo, ids de sesión y de usuario, enmascarados.</p>
+      <pre><code>from opentelemetry import trace
+tracer = trace.get_tracer("asistente")
+
+def responder(pregunta, usuario):
+    with tracer.start_as_current_span("pedido") as pedido:
+        pedido.set_attribute("usuario.hash", hash_id(usuario))
+        with tracer.start_as_current_span("retrieval") as s:
+            docs = buscar(pregunta)
+            s.set_attribute("retrieval.cantidad", len(docs))
+        with tracer.start_as_current_span("llm") as s:
+            resp = llamar_modelo(pregunta, docs)
+            s.set_attribute("llm.modelo", resp.model)
+            s.set_attribute("llm.tokens_entrada", resp.usage.input_tokens)
+            s.set_attribute("llm.tokens_salida", resp.usage.output_tokens)
+            s.set_attribute("llm.motivo_fin", resp.stop_reason)
+        return resp</code></pre>
+      <p>Los nombres de atributos del ejemplo son ilustrativos. OpenTelemetry tiene <strong>convenciones específicas para IA generativa</strong> (atributos con prefijo <code>gen_ai</code>), mantenidas en un repositorio propio y todavía en evolución; usarlas permite instrumentar una vez y mandar las trazas a distintas herramientas (Langfuse, Arize Phoenix, tu propio backend) sin depender de un proveedor.</p>
+      <p><strong>Para qué las vas a usar:</strong></p>
+      <ul>
+        <li><strong>Depurar un caso concreto:</strong> ver si el problema fue la búsqueda, el prompt o una herramienta.</li>
+        <li><strong>Optimizar latencia:</strong> antes de cambiar el modelo, mirá qué paso domina el tiempo. A veces es la búsqueda o una herramienta lenta.</li>
+        <li><strong>Costo por funcionalidad:</strong> sumar tokens y costo por tipo de pedido.</li>
+        <li><strong>Alimentar evals:</strong> las trazas con señales negativas son tu mejor fuente de casos de prueba.</li>
+      </ul>
+      <p><strong>Cuidados:</strong> las trazas tienen los mismos datos sensibles que los logs (enmascará antes de guardar), pueden ser enormes (muestreá si el volumen es alto) y nunca deben incluir claves ni secretos.</p>` },
   ],
   practica: [
     'Agregá a tu app un log por llamada (Postgres o Langfuse) con tokens, costo, latencia y versión de prompt. Hacé un dashboard simple.',
@@ -1892,10 +1921,13 @@ log.info({"usuario": hash_id(usuario), "prompt": enmascarar(prompt), "tokens": u
     'Agregá a tu app un canary configurable (porcentaje, modelo y versión de prompt) con hash estable por usuario, y un tablero que compare tasa de éxito, latencia y costo entre estable y canary. Simulá un rollback cambiando solo la configuración.',
     'Agregá a tu app una cuota diaria de tokens por usuario, un límite de tamaño de entrada y una alerta cuando el gasto de la última hora supere el doble del promedio. Simulá un usuario abusivo con un script y verificá que el sistema lo frena.',
     'Auditá los logs de tu app: buscá emails, teléfonos y tarjetas en 1.000 trazas, agregá enmascarado antes de loguear y escribí un test que falle si una traza nueva contiene alguno de esos patrones.',
+    'Instrumentá tu RAG o tu agente con OpenTelemetry (o Langfuse): un span por paso, con tokens, costo, latencia y motivo de fin. Con 50 pedidos reales, identificá qué paso consume más tiempo y más costo, y proponé una mejora concreta.',
   ],
   recursos: [
     { t: 'Langfuse (observabilidad open source)', url: 'https://langfuse.com/docs' },
     { t: 'OpenTelemetry', url: 'https://opentelemetry.io/docs/' },
+    { t: 'OpenTelemetry — Qué son las trazas', url: 'https://opentelemetry.io/docs/concepts/signals/traces/' },
+    { t: 'OpenTelemetry — Convenciones para IA generativa (repositorio)', url: 'https://github.com/open-telemetry/semantic-conventions-genai' },
     { t: 'OWASP — LLM02:2025 Sensitive Information Disclosure', url: 'https://genai.owasp.org/llmrisk/llm022025-sensitive-information-disclosure/' },
     { t: 'Presidio — detección y anonimización de datos personales', url: 'https://github.com/data-privacy-stack/presidio' },
     { t: 'OWASP — LLM10:2025 Unbounded Consumption', url: 'https://genai.owasp.org/llmrisk/llm102025-unbounded-consumption/' },
@@ -1924,6 +1956,11 @@ log.info({"usuario": hash_id(usuario), "prompt": enmascarar(prompt), "tokens": u
     { q: 'Un usuario ve en una respuesta datos de otro cliente. ¿Cuál es una causa típica y cómo se arregla?', opciones: ['Una alucinación: se baja la temperatura', 'Retrieval o caché sin separar por usuario: se filtra por permisos y se aísla la caché', 'Un modelo demasiado chico', 'Un rate limit'], correcta: 1, explicacion: 'Si el dato existe y es real, no es una alucinación: el sistema se lo entregó al modelo. El arreglo está en el control de acceso, no en el modelo.' },
     { q: 'Tenés que extraer la fecha de un turno de una historia clínica. ¿Qué principio aplicás antes de llamar al modelo?', opciones: ['Ninguno: el modelo necesita todo el contexto', 'Cifrar la respuesta del modelo', 'Agregar más contexto para mejorar la precisión', 'Minimización: le mandás solo la parte necesaria para la tarea'], correcta: 3, explicacion: 'Cuantos menos datos sensibles pasen por el modelo, por los logs y por el proveedor, menor es el riesgo si algo se filtra.' },
     { q: '¿Alcanza con una instrucción del tipo "nunca reveles datos personales" en el system prompt?', opciones: ['Sí, los modelos la cumplen siempre', 'Sí, si está en inglés', 'Ayuda, pero se puede saltear con prompt injection: los datos sensibles se protegen antes de que lleguen al modelo', 'No sirve para nada en ningún caso'], correcta: 2, explicacion: 'OWASP advierte que esas restricciones no siempre se respetan. Son una capa más, no la defensa principal.' },
+    { q: '¿Qué es una traza en una app con LLMs?', opciones: ['Un árbol de pasos (spans) de un pedido, con duración, datos y errores de cada uno: búsqueda, llamadas al modelo, herramientas', 'Un archivo con los errores del día', 'Un gráfico de costos mensuales', 'Un resumen diario de uso'], correcta: 0, explicacion: 'La traza muestra el recorrido completo de un pedido. Eso permite ver dónde falló o dónde se fue el tiempo, algo que un log de errores suelto no muestra.' },
+    { q: 'Los usuarios reciben respuestas cortadas a la mitad. ¿Qué dato de la traza mirás primero?', opciones: ['La latencia', 'El motivo de fin de la llamada al modelo: si dice max_tokens, la respuesta se cortó por ese límite', 'El nombre del modelo', 'El id del usuario'], correcta: 1, explicacion: 'Una respuesta cortada casi siempre es el límite de tokens de salida. El motivo de fin lo confirma en segundos.' },
+    { q: 'La latencia total de tu asistente es de 9 segundos. ¿Cómo decidís qué optimizar?', opciones: ['Cambiando a un modelo más rápido', 'Bajando max_tokens a ciegas', 'Mirando en las trazas qué paso domina el tiempo (búsqueda, modelo o herramienta) antes de tocar nada', 'Agregando caché en todos lados'], correcta: 2, explicacion: 'Si 6 de los 9 segundos son una herramienta lenta, cambiar el modelo no ayuda. La traza muestra dónde está el tiempo.' },
+    { q: '¿Qué ventaja tiene instrumentar con un estándar como OpenTelemetry?', opciones: ['Que es obligatorio', 'Que acelera el modelo', 'Que reduce los tokens', 'Que instrumentás una vez y podés mandar las trazas a distintas herramientas, sin depender de un proveedor'], correcta: 3, explicacion: 'Con un estándar, cambiar de herramienta de observabilidad no obliga a reescribir la instrumentación de tu app.' },
+    { q: 'Tus trazas son enormes y contienen datos personales. ¿Qué hacés?', opciones: ['Muestreás, enmascarás los datos personales antes de guardar y definís cuánto tiempo se guardan', 'Guardás todo para siempre', 'Dejás de registrar', 'Guardás solo los errores, sin contexto'], correcta: 0, explicacion: 'Sin trazas no podés depurar; con todo sin filtrar, creás un riesgo de privacidad y de costo. Muestreo, enmascarado y retención equilibran las dos cosas.' },
   ],
 },
 {
