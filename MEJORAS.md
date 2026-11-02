@@ -124,3 +124,4 @@ Lo completa el comando `/mejorar`. Una línea por ejecución.
 - 2026-11-02 · proyecto · metodología: 3 explicaciones más corrigen la opción tentadora (el módulo supera la meta)
 - 2026-11-02 · rag · metodología: 5 explicaciones ahora corrigen la opción tentadora
 - 2026-11-02 · deep-learning · metodología: 5 explicaciones ahora corrigen la opción tentadora
+- 2026-11-02 · fundamentos · metodología: 5 explicaciones ahora corrigen la opción tentadora
