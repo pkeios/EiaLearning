@@ -26,4 +26,5 @@
 - [x] Tamaño de letra ajustable (A- / A+) en la cabecera, que se recuerde, para leer cómodo en cualquier pantalla
 - [x] Página "Novedades" que muestre las últimas lecciones agregadas al curso (a partir de MEJORAS.md o de una lista en contenido.js), para saber qué hay nuevo para leer
 - [x] Lectura en voz alta de una lección con la síntesis de voz del navegador (speechSynthesis), con botón de play y pausa
-- [ ] Estadística de tiempo de estudio: registrar minutos activos por día y mostrar un gráfico de las últimas 4 semanas en la página de progreso
+- [x] Estadística de tiempo de estudio: registrar minutos activos por día y mostrar un gráfico de las últimas 4 semanas en la página de progreso
+- [ ] Meta semanal configurable (por ejemplo, 120 minutos) con barra de avance en el inicio

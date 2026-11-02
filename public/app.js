@@ -2,7 +2,7 @@ const T = window.TEMARIO;
 const app = document.getElementById('app');
 const APROBADO = 80;
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-const cargar = () => ({ leidas: {}, notas: {}, falladas: {}, apuntes: {}, agenda: {}, dias: {}, tarjetas: {}, aciertos: {}, practicas: {}, conocidas: {}, ...JSON.parse(localStorage.getItem('progreso') || '{}') });
+const cargar = () => ({ leidas: {}, notas: {}, falladas: {}, apuntes: {}, agenda: {}, dias: {}, tarjetas: {}, aciertos: {}, practicas: {}, conocidas: {}, minutos: {}, ...JSON.parse(localStorage.getItem('progreso') || '{}') });
 const guardar = p => localStorage.setItem('progreso', JSON.stringify(p));
 const mezclar = a => a.map(x => [Math.random(), x]).sort((x, y) => x[0] - y[0]).map(x => x[1]);
 // La clave de una pregunta es su texto: sobrevive a reordenar o insertar preguntas.
@@ -145,7 +145,7 @@ function inicio() {
         ${novedades(p).length ? `<a class="boton secundario" href="#/novedades">🆕 Novedades (${novedades(p).length})</a>` : ''}
         <a class="boton secundario" href="#/hoy">📋 Qué estudiar hoy</a>
         <a class="boton secundario" href="#/nivel">🎯 Quiz por nivel</a>
-        <a class="boton secundario" href="#/progreso">📊 Progreso por módulo</a>
+        <a class="boton secundario" href="#/progreso">📊 Progreso</a>
         ${p.examen >= APROBADO ? '<a class="boton secundario" href="#/certificado">🎓 Certificado</a>' : ''}
         <button class="secundario" id="apuntes">📝 Descargar mis apuntes</button>
         <button class="secundario" id="exportar">⬇ Exportar progreso</button>
@@ -194,7 +194,7 @@ function descargarApuntes() {
 // Si agregás campos nuevos al progreso, sumalos acá también.
 function limpiarProgreso(d) {
   if (!d || typeof d !== 'object' || Array.isArray(d)) throw new Error('formato inválido');
-  const p = { leidas: {}, notas: {}, falladas: {}, apuntes: {}, agenda: {}, dias: {}, tarjetas: {}, aciertos: {}, practicas: {}, conocidas: {} };
+  const p = { leidas: {}, notas: {}, falladas: {}, apuntes: {}, agenda: {}, dias: {}, tarjetas: {}, aciertos: {}, practicas: {}, conocidas: {}, minutos: {} };
   for (const k of ['leidas', 'falladas']) for (const c in d[k] || {}) p[k][c] = true;
   for (const c in d.notas || {}) p.notas[c] = Math.min(100, Math.max(0, Number(d.notas[c]) || 0));
   for (const c in d.apuntes || {}) p.apuntes[c] = String(d.apuntes[c]);
@@ -204,6 +204,7 @@ function limpiarProgreso(d) {
   }
   for (const c in d.practicas || {}) if (d.practicas[c]) p.practicas[c] = true;
   for (const c in d.conocidas || {}) if (d.conocidas[c]) p.conocidas[c] = true;
+  for (const c in d.minutos || {}) if (/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(c)) p.minutos[c] = Math.max(0, parseInt(d.minutos[c]) || 0);
   for (const c in d.aciertos || {}) {
     const a = d.aciertos[c] || {}, total = Math.max(0, parseInt(a.total) || 0);
     p.aciertos[c] = { ok: Math.min(total, Math.max(0, parseInt(a.ok) || 0)), total };
@@ -412,12 +413,38 @@ function tarjetas() {
   pintar();
 }
 
+// Tiempo de estudio: un minuto cuenta si la pestaña está visible y hubo actividad en los últimos 2 minutos.
+const sumarMinuto = p => { p.minutos[dia()] = (p.minutos[dia()] || 0) + 1; };
+const serieMinutos = (p, cantidad = 28) => Array.from({ length: cantidad }, (_, i) => {
+  const d = dia(i - cantidad + 1);
+  return { d, m: p.minutos[d] || 0 };
+});
+
+function graficoTiempo(p) {
+  const serie = serieMinutos(p), max = Math.max(1, ...serie.map(x => x.m));
+  const semana = serie.slice(-7).reduce((s, x) => s + x.m, 0), total = serie.reduce((s, x) => s + x.m, 0);
+  return `<section class="card">
+      <h2>⏱ Tiempo de estudio por día</h2>
+      <p class="suave">Últimos 7 días: <strong>${semana} min</strong> · Últimas 4 semanas: <strong>${total} min</strong></p>
+      <p class="suave" id="lectura-tiempo" aria-live="polite">Pasá el mouse o el foco por una barra para ver el día.</p>
+      <div class="barras-tiempo">${serie.map(x => `<span tabindex="0" data-lectura="${x.d}: ${x.m} min"
+        aria-label="${x.d}: ${x.m} minutos" class="${x.m ? '' : 'vacia'}" style="height:${x.m ? Math.max(4, Math.round(100 * x.m / max)) : 2}%"></span>`).join('')}</div>
+      <div class="eje-tiempo suave"><span>hace 4 semanas</span><span>hoy</span></div>
+      <details><summary>Ver como tabla</summary>
+        <table class="tabla-tiempo"><thead><tr><th>Día</th><th>Minutos</th></tr></thead>
+        <tbody>${serie.slice().reverse().map(x => `<tr><td>${x.d}</td><td>${x.m}</td></tr>`).join('')}</tbody></table>
+      </details>
+    </section>`;
+}
+
 function progreso() {
   const p = cargar();
   // Primero los más flojos; los que no tienen respuestas van al final.
   const filas = T.map(m => ({ m, a: p.aciertos[m.id], pct: pctAciertos(p.aciertos[m.id]) }))
     .sort((x, y) => (x.pct ?? 101) - (y.pct ?? 101));
-  app.innerHTML = `<a class="volver" href="#/">← Temario</a><h1>📊 Progreso por módulo</h1>
+  app.innerHTML = `<a class="volver" href="#/">← Temario</a><h1>📊 Progreso</h1>
+    ${graficoTiempo(p)}
+    <h2>Aciertos por módulo</h2>
     <p class="suave">Porcentaje de aciertos en todos los quizzes, examen y repaso incluidos. Arriba, tus puntos más flojos: empezá por ahí.</p>
     ${filas.map(({ m, a, pct }) => `
       <section class="card fila-progreso">
@@ -426,6 +453,10 @@ function progreso() {
         ${barra(pct ?? 0)}
         <small class="suave">${a && a.total ? a.ok + ' de ' + a.total + ' respuestas correctas' : 'Sin respuestas todavía'} · <a href="#/quiz/${m.id}">Hacer el quiz</a></small>
       </section>`).join('')}`;
+  const lectura = app.querySelector('#lectura-tiempo');
+  app.querySelectorAll('.barras-tiempo span').forEach(b => {
+    b.onmouseenter = b.onfocus = () => { lectura.textContent = b.dataset.lectura; };
+  });
 }
 
 function certificado() {
@@ -674,5 +705,11 @@ function avisarContenidoNuevo() {
 }
 
 iniciarNovedades();
+let ultimaActividad = Date.now();
+['click', 'keydown', 'scroll', 'touchstart'].forEach(ev => addEventListener(ev, () => { ultimaActividad = Date.now(); }, { passive: true }));
+setInterval(() => {
+  if (document.visibilityState !== 'visible' || Date.now() - ultimaActividad > 2 * 60 * 1000) return;
+  const p = cargar(); sumarMinuto(p); guardar(p);
+}, 60 * 1000);
 addEventListener('hashchange', render);
 render();

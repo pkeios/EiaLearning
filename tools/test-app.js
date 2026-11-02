@@ -8,8 +8,8 @@ const ctx = { window: {}, document: { getElementById: id => id === 'tema' ? boto
 vm.createContext(ctx);
 vm.runInContext(leer('contenido.js'), ctx);
 vm.runInContext(leer('glosario.js'), ctx);
-vm.runInContext(leer('app.js') + ';this.X = { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos, avance, clavePractica, registrarExamen, planDeHoy, apuntesMarkdown, esCorrecta, preguntasDeNivel, preguntaObjetivo, cambiarLetra, novedades, marcarConocidas, iniciarNovedades, todasLasLecciones, trozosParaVoz };', ctx);
-const { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos, avance, clavePractica, registrarExamen, planDeHoy, apuntesMarkdown, esCorrecta, preguntasDeNivel, preguntaObjetivo, cambiarLetra, novedades, marcarConocidas, iniciarNovedades, todasLasLecciones, trozosParaVoz } = ctx.X;
+vm.runInContext(leer('app.js') + ';this.X = { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos, avance, clavePractica, registrarExamen, planDeHoy, apuntesMarkdown, esCorrecta, preguntasDeNivel, preguntaObjetivo, cambiarLetra, novedades, marcarConocidas, iniciarNovedades, todasLasLecciones, trozosParaVoz, sumarMinuto, serieMinutos };', ctx);
+const { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos, avance, clavePractica, registrarExamen, planDeHoy, apuntesMarkdown, esCorrecta, preguntasDeNivel, preguntaObjetivo, cambiarLetra, novedades, marcarConocidas, iniciarNovedades, todasLasLecciones, trozosParaVoz, sumarMinuto, serieMinutos } = ctx.X;
 const plano = o => JSON.parse(JSON.stringify(o));
 
 // Inicio renderiza con progreso vacío
@@ -44,7 +44,7 @@ assert.equal(racha(r), 3);
 const l = limpiarProgreso({ leidas: { 'a:0': 1 }, notas: { a: '<img onerror=x>', b: 150, c: 85 }, apuntes: { a: 5 }, examen: '90', raro: 1,
   falladas: { x: 1 }, agenda: { x: { n: '9', d: '<x>' }, y: { n: 1, d: '2026-12-01' } }, dias: { '2026-11-01': '2', 'malo': 5, '2026-10-31': -3 } });
 assert.deepStrictEqual(plano(l), { leidas: { 'a:0': true }, notas: { a: 0, b: 100, c: 85 }, falladas: { x: true }, apuntes: { a: '5' },
-  agenda: { x: { n: 3, d: dia() }, y: { n: 1, d: '2026-12-01' } }, dias: { '2026-11-01': 2, '2026-10-31': 0 }, tarjetas: {}, aciertos: {}, practicas: {}, conocidas: {}, examen: 90 });
+  agenda: { x: { n: 3, d: dia() }, y: { n: 1, d: '2026-12-01' } }, dias: { '2026-11-01': 2, '2026-10-31': 0 }, tarjetas: {}, aciertos: {}, practicas: {}, conocidas: {}, minutos: {}, examen: 90 });
 for (const malo of [null, [], 5, 'x']) assert.throws(() => limpiarProgreso(malo));
 
 // Buscador: sin tildes ni mayúsculas, todas las palabras deben aparecer
@@ -242,6 +242,20 @@ const largo = 'Una oración bastante larga para la prueba. '.repeat(20);
 const tz = trozosParaVoz(largo);
 assert.ok(tz.length > 1 && tz.every(t => t.length <= 220) && tz.join(' ') === largo.trim());
 assert.equal(trozosParaVoz('').length, 0);
+
+// Tiempo de estudio: suma minutos de hoy, arma 28 días terminando hoy, limpia al importar
+const pm = cargar();
+sumarMinuto(pm); sumarMinuto(pm);
+const serie = serieMinutos(pm);
+assert.equal(serie.length, 28);
+assert.deepStrictEqual(plano(serie[27]), { d: dia(), m: 2 });
+assert.equal(serie[0].d, dia(-27));
+assert.deepStrictEqual(plano(limpiarProgreso({ minutos: { '2026-11-01': '30', malo: 5, '2026-10-01': -4 } }).minutos), { '2026-11-01': 30, '2026-10-01': 0 });
+guardado = JSON.stringify({ minutos: { [dia()]: 12 } });
+ctx.location.hash = '#/progreso';
+vm.runInContext('render()', ctx);
+assert.ok(el.h.includes('Tiempo de estudio') && el.h.includes('12 min') && el.h.includes('Ver como tabla'));
+guardado = null;
 
 // Repaso vacío muestra un mensaje en lugar de un formulario
 guardado = null;

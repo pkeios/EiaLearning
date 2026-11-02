@@ -122,6 +122,15 @@ mark { background: rgba(250, 204, 21, .4); color: inherit; border-radius: 3px; p
 .plan li a { display: block; background: var(--card); border: 1px solid var(--borde); border-radius: 12px; padding: .9rem 1.1rem; margin: .6rem 0; color: var(--texto); }
 .plan li a:hover { border-color: var(--acento); text-decoration: none; }
 
+/* Tiempo de estudio: una serie, barras finas con extremo redondeado y separación de 2px */
+.barras-tiempo { display: flex; align-items: flex-end; gap: 2px; height: 110px; border-bottom: 1px solid var(--borde); margin-top: .5rem; }
+.barras-tiempo span { flex: 1; background: var(--acento); border-radius: 4px 4px 0 0; cursor: default; }
+.barras-tiempo span.vacia { background: var(--borde); }
+.barras-tiempo span:hover, .barras-tiempo span:focus-visible { opacity: .75; outline: none; }
+.eje-tiempo { display: flex; justify-content: space-between; font-size: .8rem; margin-top: .3rem; }
+.tabla-tiempo { width: 100%; border-collapse: collapse; margin-top: .5rem; font-size: .9rem; }
+.tabla-tiempo td, .tabla-tiempo th { padding: .25rem .5rem; border-bottom: 1px solid var(--borde); text-align: left; }
+
 /* Glosario */
 .glosario { margin: 0; }
 .glosario > div { background: var(--card); border: 1px solid var(--borde); border-radius: 12px; padding: .8rem 1.1rem; margin: .6rem 0; }
