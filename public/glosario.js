@@ -15,6 +15,7 @@ window.GLOSARIO = [
   { t: 'BPE (byte pair encoding)', d: 'Algoritmo de tokenización que fusiona una y otra vez el par de símbolos más frecuente para armar el vocabulario de subpalabras.', m: 'llms' },
   { t: 'Broadcasting', d: 'Regla de NumPy y PyTorch para operar arrays de formas distintas estirando las dimensiones de tamaño 1. Útil, pero fuente de bugs silenciosos.', m: 'fundamentos' },
   { t: 'Calibración', d: 'Que las probabilidades de un modelo coincidan con la frecuencia real: de los casos con 0,8, que acierte cerca del 80%.', m: 'ml-clasico' },
+  { t: 'Cascada de modelos', d: 'Responder primero con un modelo barato y escalar a uno más capaz solo si un verificador decide que la respuesta no alcanza.', m: 'produccion' },
   { t: 'Canary', d: 'Dar la versión nueva a un porcentaje chico de usuarios antes de liberarla para todos.', m: 'produccion' },
   { t: 'Chunking', d: 'Partir documentos en trozos para indexarlos y recuperarlos en un RAG.', m: 'rag' },
   { t: 'Arranque en frío (cold start)', d: 'Problema de recomendar ítems o atender usuarios nuevos sin historial de interacciones.', m: 'ml-clasico' },

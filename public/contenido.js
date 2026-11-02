@@ -2113,6 +2113,7 @@ trainer.train()</code></pre>
     'Proteger costo y disponibilidad con cuotas, límites de entrada y salida, topes de gasto y detección de abuso',
     'Manejar datos personales en producción: minimizar, enmascarar, separar por usuario y retener poco',
     'Instrumentar trazas en apps con LLMs y agentes para depurar, optimizar latencia y medir costos',
+    'Bajar costo sin perder calidad con routing y cascadas de modelos, calibrados con evals',
   ],
   lecciones: [
     { titulo: 'Observabilidad y versionado', html: `
@@ -2243,6 +2244,33 @@ def responder(pregunta, usuario):
         <li><strong>Alimentar evals:</strong> las trazas con señales negativas son tu mejor fuente de casos de prueba.</li>
       </ul>
       <p><strong>Cuidados:</strong> las trazas tienen los mismos datos sensibles que los logs (enmascará antes de guardar), pueden ser enormes (muestreá si el volumen es alto) y nunca deben incluir claves ni secretos.</p>` },
+    { titulo: 'Routing y cascadas: el modelo justo para cada pedido', html: `
+      <p>Mandar todo al modelo más capaz es lo más simple, y casi siempre lo más caro. En la mayoría de las apps, buena parte de los pedidos son fáciles ("¿cuál es el horario?", "resumí este mail corto") y un modelo chico los resuelve igual de bien, más rápido y por una fracción del precio. Los precios entre modelos pueden diferir en uno o dos órdenes de magnitud, así que elegir bien el modelo por pedido es una de las palancas de costo más grandes.</p>
+      <h3>Tres estrategias</h3>
+      <ul>
+        <li><strong>Routing por reglas:</strong> el tipo de tarea decide el modelo. Clasificar o extraer, al modelo chico; redactar un informe o razonar sobre código, al grande. Simple y predecible.</li>
+        <li><strong>Router aprendido:</strong> un clasificador (un modelo chico, o uno entrenado con tus datos) estima si el pedido es difícil y lo manda a donde corresponde. RouteLLM (2024) entrenó routers con datos de preferencias humanas y reportó reducciones de costo de más de 2 veces sin perder calidad en varios benchmarks.</li>
+        <li><strong>Cascada:</strong> primero responde el modelo barato; un verificador decide si la respuesta alcanza y, si no, se escala al modelo grande. FrugalGPT (2023) mostró que una cascada bien aprendida puede igualar al modelo más caro con una fracción del costo.</li>
+      </ul>
+      <h3>El verificador es la clave de la cascada</h3>
+      <p>Una cascada solo ahorra si sabés cuándo la respuesta barata es buena. Opciones, de más a menos confiable: <strong>chequeos deterministas</strong> (el JSON valida, el código compila y pasa tests, la cita existe en el documento), un <strong>modelo juez</strong> con una rúbrica corta, o la señal del propio modelo ("respondé NO_SE si no tenés la información"). Pedirle al modelo chico que se autoevalúe con un número de confianza suele estar mal calibrado: medilo antes de confiar.</p>
+      <pre><code>def responder(pedido):
+    if pedido.tipo in ("clasificar", "extraer"):          # routing por reglas
+        return llamar(MODELO_CHICO, pedido)
+    borrador = llamar(MODELO_CHICO, pedido)                 # cascada
+    if verificar(borrador, pedido):                         # determinista primero
+        metricas.contar("resuelto_chico")
+        return borrador
+    metricas.contar("escalado")
+    return llamar(MODELO_GRANDE, pedido)</code></pre>
+      <h3>Las cuentas y las trampas</h3>
+      <ul>
+        <li><strong>El escalado cuesta doble:</strong> cuando la cascada escala, pagaste el modelo chico <em>y</em> el grande, y sumaste latencia. Si escalás el 70% de los pedidos, probablemente te convenga ir directo al grande para esa categoría.</li>
+        <li><strong>Calibrá con evals, no con intuición:</strong> armá un set de pedidos reales etiquetados, medí calidad y costo de cada configuración (todo al grande, todo al chico, router, cascada) y elegí el umbral en la curva costo-calidad.</li>
+        <li><strong>Vigilá la deriva:</strong> si cambian los usuarios o los modelos, la proporción de escalados cambia. Monitoreá la tasa de escalado y la calidad por ruta, y re-evaluá cuando actualices un modelo.</li>
+        <li><strong>El caché de prompts cambia la cuenta:</strong> si el modelo grande trabaja con un prefijo largo cacheado, puede salir más barato de lo que parece. Compará con precios reales de tu tráfico.</li>
+      </ul>
+    ` },
   ],
   practica: [
     'Agregá a tu app un log por llamada (Postgres o Langfuse) con tokens, costo, latencia y versión de prompt. Hacé un dashboard simple.',
@@ -2251,6 +2279,7 @@ def responder(pregunta, usuario):
     'Agregá a tu app una cuota diaria de tokens por usuario, un límite de tamaño de entrada y una alerta cuando el gasto de la última hora supere el doble del promedio. Simulá un usuario abusivo con un script y verificá que el sistema lo frena.',
     'Auditá los logs de tu app: buscá emails, teléfonos y tarjetas en 1.000 trazas, agregá enmascarado antes de loguear y escribí un test que falle si una traza nueva contiene alguno de esos patrones.',
     'Instrumentá tu RAG o tu agente con OpenTelemetry (o Langfuse): un span por paso, con tokens, costo, latencia y motivo de fin. Con 50 pedidos reales, identificá qué paso consume más tiempo y más costo, y proponé una mejora concreta.',
+    'Tomá 100 pedidos reales de tu app, etiquetá cuál es una buena respuesta y compará cuatro configuraciones: todo al modelo grande, todo al chico, routing por tipo de tarea y cascada con un verificador determinista. Armá una tabla de costo total, calidad y latencia p95, y elegí la configuración justificando el umbral.',
   ],
   recursos: [
     { t: 'Langfuse (observabilidad open source)', url: 'https://langfuse.com/docs' },
@@ -2262,6 +2291,8 @@ def responder(pregunta, usuario):
     { t: 'OWASP — LLM10:2025 Unbounded Consumption', url: 'https://genai.owasp.org/llmrisk/llm102025-unbounded-consumption/' },
     { t: 'Claude — Ciclo de vida y retiro de modelos', url: 'https://platform.claude.com/docs/en/about-claude/model-deprecations' },
     { t: 'Documentación de prompt caching de Claude', url: 'https://docs.claude.com/en/docs/build-with-claude/prompt-caching' },
+    { t: 'RouteLLM — Learning to Route LLMs with Preference Data (paper)', url: 'https://arxiv.org/abs/2406.18665' },
+    { t: 'FrugalGPT — reducir costo con cascadas de LLMs (paper)', url: 'https://arxiv.org/abs/2305.05176' },
   ],
   quiz: [
     { q: '¿Qué conviene registrar por cada llamada al LLM?', opciones: ['Solo los errores', 'Entrada, salida, modelo, versión de prompt, tokens, costo y latencia', 'Solo el costo mensual', 'Nada, por privacidad'], correcta: 1, explicacion: 'Sin estos datos no podés depurar, optimizar ni comparar versiones. La privacidad se resuelve enmascarando y con retención, no dejando de registrar.' },
@@ -2290,6 +2321,11 @@ def responder(pregunta, usuario):
     { q: 'La latencia total de tu asistente es de 9 segundos. ¿Cómo decidís qué optimizar?', opciones: ['Cambiando a un modelo más rápido', 'Bajando max_tokens a ciegas', 'Mirando en las trazas qué paso domina el tiempo (búsqueda, modelo o herramienta) antes de tocar nada', 'Agregando caché en todos lados'], correcta: 2, explicacion: 'Si 6 de los 9 segundos son una herramienta lenta, cambiar el modelo no ayuda. La traza muestra dónde está el tiempo.' },
     { q: '¿Qué ventaja tiene instrumentar con un estándar como OpenTelemetry?', opciones: ['Que es obligatorio', 'Que acelera el modelo', 'Que reduce los tokens', 'Que instrumentás una vez y podés mandar las trazas a distintas herramientas, sin depender de un proveedor'], correcta: 3, explicacion: 'Con un estándar, cambiar de herramienta de observabilidad no obliga a reescribir la instrumentación de tu app.' },
     { q: 'Tus trazas son enormes y contienen datos personales. ¿Qué hacés?', opciones: ['Muestreás, enmascarás los datos personales antes de guardar y definís cuánto tiempo se guardan', 'Guardás todo para siempre', 'Dejás de registrar', 'Guardás solo los errores, sin contexto'], correcta: 0, explicacion: 'Sin trazas no podés depurar; con todo sin filtrar, creás un riesgo de privacidad y de costo. Muestreo, enmascarado y retención equilibran las dos cosas.' },
+    { q: 'En tu cascada, el modelo chico responde y un verificador decide si escalar. Medís que se escala el 75% de los pedidos de análisis legal. ¿Qué hacés con esa categoría?', opciones: ['Nada, la cascada siempre ahorra', 'Bajás el umbral del verificador para escalar menos, sin medir', 'Le pedís al modelo chico que se esfuerce más', 'Mandarla directo al modelo grande: escalar casi siempre paga los dos modelos y suma latencia'], correcta: 3, explicacion: 'Cada escalado cuesta el modelo chico más el grande. Bajar el umbral sin medir es la trampa: ahorra plata a costa de dejar pasar respuestas malas.' },
+    { q: '¿Qué verificador es más confiable para decidir si la respuesta barata alcanza en una tarea que genera código?', opciones: ['Preguntarle al modelo chico qué tan seguro está, del 1 al 10', 'Que la respuesta sea larga', 'Compilar y correr los tests: un chequeo determinista', 'Que no tenga errores de ortografía'], correcta: 2, explicacion: 'Cuando hay un chequeo determinista, gana. La autoevaluación numérica del modelo chico es tentadora pero suele estar mal calibrada.' },
+    { q: 'Querés elegir entre "todo al grande", router y cascada. ¿Cómo decidís?', opciones: ['Con un set de pedidos reales etiquetados, midiendo costo, calidad y latencia de cada configuración', 'Por el precio por token publicado, nada más', 'Eligiendo siempre la cascada porque es la más sofisticada', 'Preguntándole al modelo grande cuál prefiere'], correcta: 0, explicacion: 'La decisión es un punto en la curva costo-calidad de tu tráfico real. Mirar solo el precio por token ignora escalados, reintentos y caché.' },
+    { q: 'Tu router manda el 80% del tráfico al modelo chico. Un mes después la calidad percibida bajó, aunque nadie tocó el código. ¿Qué revisás primero?', opciones: ['El color de la interfaz', 'La deriva: cambió el tipo de pedidos o el modelo, y el router ya no está calibrado; mirás calidad y tasa por ruta', 'El tamaño de la base de datos', 'Nada: el router fue validado al lanzarlo'], correcta: 1, explicacion: 'Los routers se calibran con una distribución de pedidos que cambia con el tiempo. La trampa es creer que la validación de lanzamiento vale para siempre.' },
+    { q: '¿Cuál es la diferencia principal entre un router y una cascada?', opciones: ['El router usa modelos grandes y la cascada chicos', 'No hay diferencia', 'La cascada solo sirve para imágenes', 'El router decide el modelo antes de generar; la cascada genera con el barato y decide después si escalar'], correcta: 3, explicacion: 'El router decide antes de responder, así que nunca paga dos modelos por pedido; la cascada decide mirando la respuesta, por lo que puede pagar dos.' },
   ],
 },
 {
