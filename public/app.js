@@ -435,9 +435,13 @@ function hoy() {
       : '<section class="card"><p>No queda nada pendiente. 🎉 Volvé mañana para el repaso.</p></section>'}`;
 }
 
-function quiz(titulo, preguntas, alTerminar, vacio = 'No hay preguntas pendientes. 🎉') {
-  app.innerHTML = `<a class="volver" href="#/">← Temario</a><h1>${esc(titulo)}</h1>
-    ${preguntas.length ? `<div class="quiz-estado"><span id="contador">0/${preguntas.length} respondidas</span>${barra(0)}</div>` : `<section class="card"><p>${esc(vacio)}</p></section>`}
+// Una pregunta sin responder (null) nunca cuenta como acierto, aunque la correcta sea la opción 0.
+const esCorrecta = (elegida, q) => elegida !== null && Number(elegida) === q.correcta;
+let temporizador = null;
+
+function quiz(titulo, preguntas, alTerminar, vacio = 'No hay preguntas pendientes. 🎉', { segundos = 0, aviso = '' } = {}) {
+  app.innerHTML = `<a class="volver" href="#/">← Temario</a><h1>${esc(titulo)}</h1>${aviso}
+    ${preguntas.length ? `<div class="quiz-estado"><span id="contador">0/${preguntas.length} respondidas</span><span id="reloj"></span>${barra(0)}</div>` : `<section class="card"><p>${esc(vacio)}</p></section>`}
     <form id="quiz">${preguntas.map((q, i) => `
       <fieldset class="pregunta"><legend><span class="num">${i + 1}</span>${esc(q.q)}</legend>
         ${q.opciones.map((o, j) => `<label class="opcion"><input type="radio" name="p${i}" value="${j}" required><span>${esc(o)}</span></label>`).join('')}
@@ -452,19 +456,20 @@ function quiz(titulo, preguntas, alTerminar, vacio = 'No hay preguntas pendiente
   };
   form.onsubmit = e => {
     e.preventDefault();
+    clearInterval(temporizador);
     const datos = new FormData(form), p = cargar(), campos = form.querySelectorAll('fieldset');
     let bien = 0;
     const fallas = [];
     preguntas.forEach((q, i) => {
-      const elegida = Number(datos.get('p' + i)), ok = elegida === q.correcta, opciones = campos[i].querySelectorAll('.opcion');
+      const elegida = datos.get('p' + i), ok = esCorrecta(elegida, q), opciones = campos[i].querySelectorAll('.opcion');
       bien += ok;
       if (!ok) fallas.push(q);
       campos[i].classList.add(ok ? 'bien' : 'mal');
       opciones[q.correcta].classList.add('correcta');
-      if (!ok) opciones[elegida].classList.add('incorrecta');
+      if (!ok && elegida !== null) opciones[Number(elegida)].classList.add('incorrecta');
       const exp = campos[i].querySelector('.explicacion');
       exp.hidden = false;
-      exp.innerHTML = (ok ? '✔ ' : `✘ La correcta era: <strong>${esc(q.opciones[q.correcta])}</strong>. `) + esc(q.explicacion);
+      exp.innerHTML = (ok ? '✔ ' : `✘ ${elegida === null ? 'Sin responder. ' : ''}La correcta era: <strong>${esc(q.opciones[q.correcta])}</strong>. `) + esc(q.explicacion);
       registrar(p, clave(q), ok);
       contarAcierto(p, q, ok);
     });
@@ -483,10 +488,22 @@ function quiz(titulo, preguntas, alTerminar, vacio = 'No hay preguntas pendiente
     </section>`;
     res.scrollIntoView({ behavior: 'smooth' });
   };
+  if (segundos && preguntas.length) {
+    // Al llegar a cero se corrige solo: lo que quedó sin responder cuenta como error.
+    let resta = segundos;
+    const reloj = app.querySelector('#reloj');
+    const tic = () => {
+      reloj.textContent = ` · ⏱ ${Math.floor(resta / 60)}:${String(resta % 60).padStart(2, '0')}`;
+      if (resta-- <= 0) { clearInterval(temporizador); form.onsubmit({ preventDefault() {} }); }
+    };
+    tic();
+    temporizador = setInterval(tic, 1000);
+  }
 }
 
 function render() {
   const [, ruta, id, leccion] = location.hash.split('/');
+  clearInterval(temporizador); // si se sale de un examen con tiempo, el reloj no sigue corriendo
   scrollTo(0, 0);
   if (ruta === 'm') modulo(id, leccion != null && leccion !== '' ? Number(leccion) : null);
   else if (ruta === 'buscar') busqueda();
@@ -499,7 +516,10 @@ function render() {
     const m = T.find(x => x.id === id);
     quiz(`${icono(m)} Quiz: ${m.titulo}`, mezclar(preguntasDe(m)), (p, pct) => { p.notas[m.id] = Math.max(p.notas[m.id] ?? 0, pct); });
   }
-  else if (ruta === 'examen') quiz('🏁 Examen final: 25 preguntas al azar', mezclar(todas()).slice(0, 25), registrarExamen);
+  else if (ruta === 'examen') quiz('🏁 Examen final: 25 preguntas al azar', mezclar(todas()).slice(0, 25), registrarExamen, undefined,
+    { aviso: '<p><a href="#/examen-tiempo">⏱ Prefiero hacerlo con tiempo límite (1 minuto por pregunta)</a></p>' });
+  else if (ruta === 'examen-tiempo') quiz('⏱ Examen final con tiempo: 25 preguntas, 25 minutos', mezclar(todas()).slice(0, 25), registrarExamen, undefined,
+    { segundos: 25 * 60, aviso: '<p class="suave">Al terminar el tiempo se corrige solo; lo que quede sin responder cuenta como error.</p>' });
   else if (ruta === 'repaso') {
     const p = cargar(), pendientes = todas().filter(q => p.falladas[clave(q)]);
     const proxima = pendientes.map(q => p.agenda[clave(q)]?.d).filter(Boolean).sort()[0];

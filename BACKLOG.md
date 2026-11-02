@@ -19,4 +19,5 @@
 - [x] Instalable y sin conexión (PWA): manifest y service worker para estudiar desde el celular sin internet
 - [x] Aviso discreto "Hay contenido nuevo, recargá" cuando el service worker descarga una versión nueva del curso
 - [x] Descargar todos tus apuntes "Explicalo con tus palabras" en un archivo Markdown, ordenados por módulo
-- [ ] Modo examen por módulo con tiempo límite (por ejemplo, 1 minuto por pregunta) para practicar bajo presión, opcional
+- [x] Modo examen por módulo con tiempo límite (por ejemplo, 1 minuto por pregunta) para practicar bajo presión, opcional
+- [ ] Revisión del examen final: al terminar, poder ver solo las preguntas falladas con su explicación, en una lista compacta

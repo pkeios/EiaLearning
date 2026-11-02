@@ -4,12 +4,12 @@ const leer = f => fs.readFileSync(path.join(__dirname, '..', 'public', f), 'utf8
 const el = { querySelector: () => el, querySelectorAll: () => [], focus() {}, value: '', h: '', set innerHTML(v) { this.h = v; }, get innerHTML() { return this.h; } };
 const botonTema = {};
 let guardado = null;
-const ctx = { window: {}, document: { getElementById: id => id === 'tema' ? botonTema : el, documentElement: { dataset: { tema: 'oscuro' } } }, localStorage: { getItem: () => guardado, setItem: (k, v) => { guardado = v; } }, location: { hash: '' }, addEventListener() {}, scrollTo() {}, Date, URL };
+const ctx = { window: {}, document: { getElementById: id => id === 'tema' ? botonTema : el, documentElement: { dataset: { tema: 'oscuro' } } }, localStorage: { getItem: () => guardado, setItem: (k, v) => { guardado = v; } }, location: { hash: '' }, addEventListener() {}, scrollTo() {}, Date, URL, setInterval: () => 1, clearInterval() {} };
 vm.createContext(ctx);
 vm.runInContext(leer('contenido.js'), ctx);
 vm.runInContext(leer('glosario.js'), ctx);
-vm.runInContext(leer('app.js') + ';this.X = { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos, avance, clavePractica, registrarExamen, planDeHoy, apuntesMarkdown };', ctx);
-const { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos, avance, clavePractica, registrarExamen, planDeHoy, apuntesMarkdown } = ctx.X;
+vm.runInContext(leer('app.js') + ';this.X = { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos, avance, clavePractica, registrarExamen, planDeHoy, apuntesMarkdown, esCorrecta };', ctx);
+const { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos, avance, clavePractica, registrarExamen, planDeHoy, apuntesMarkdown, esCorrecta } = ctx.X;
 const plano = o => JSON.parse(JSON.stringify(o));
 
 // Inicio renderiza con progreso vacío
@@ -180,6 +180,16 @@ const [ma, mb] = ctx.window.TEMARIO;
 pa.apuntes[mb.id] = ' segundo '; pa.apuntes[ma.id] = 'primero'; pa.apuntes.inexistente = 'x';
 const md = apuntesMarkdown(pa);
 assert.ok(md.startsWith('# Mis apuntes') && md.indexOf(ma.titulo) < md.indexOf(mb.titulo) && md.includes('segundo\n') && !md.includes(' segundo '));
+
+// Corrección: sin responder nunca es acierto, aunque la correcta sea la opción 0
+assert.equal(esCorrecta(null, { correcta: 0 }), false);
+assert.equal(esCorrecta('0', { correcta: 0 }), true);
+assert.equal(esCorrecta('2', { correcta: 1 }), false);
+// Examen con tiempo: muestra el reloj arrancando en 25:00
+guardado = null;
+ctx.location.hash = '#/examen-tiempo';
+vm.runInContext('render()', ctx);
+assert.ok(el.h.includes('id="reloj"') && el.textContent.includes('25:00'));
 
 // Repaso vacío muestra un mensaje en lugar de un formulario
 guardado = null;
