@@ -158,3 +158,4 @@ Lo completa el comando `/mejorar`. Una línea por ejecución.
 - 2026-11-02 · app · versión para chicos: aviso claro de por qué Seguir está bloqueado en las actividades, con id propio
 - 2026-11-02 · fine-tuning · metodología: 7 preguntas nuevas de casos; el módulo cumple las 7 metas
 - 2026-11-02 · ml-clasico · metodología: 7 preguntas nuevas de casos; el módulo cumple las 7 metas
+- 2026-11-02 · fundamentos · metodología: 6 preguntas nuevas que aplican matemática y Python a casos reales
