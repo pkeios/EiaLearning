@@ -101,3 +101,4 @@ Lo completa el comando `/mejorar`. Una línea por ejecución.
 - 2026-11-02 · app · versión para chicos rehecha: tarjetas visuales con emojis grandes y frases cortas, ejercicios interactivos (elegir y clasificar tocando), estrella por ejercicio al primer intento, botón 🔊 con voz latina y sin links externos (pedido del usuario)
 - 2026-11-02 · produccion · metodología: 5 explicaciones del quiz ahora corrigen la opción más tentadora (routing vs balanceo, batch vs latencia, reintento con error, TTFT vs tokenización, temperatura 0 no limita gasto)
 - 2026-11-02 · proyecto · metodología: 5 explicaciones del quiz ahora corrigen la opción más tentadora
+- 2026-11-02 · apis · metodología: 5 explicaciones del quiz ahora corrigen la opción más tentadora
