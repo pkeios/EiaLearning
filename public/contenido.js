@@ -1260,6 +1260,7 @@ registrar(final.stop_reason, final.usage)</code></pre>
     'Elegir modelo de embeddings e índice vectorial, y ajustar el equilibrio entre recall y latencia',
     'Responder preguntas sobre datos estructurados con text-to-SQL seguro, y saber cuándo usar GraphRAG',
     'Evaluar un RAG por partes: retrieval, fidelidad, relevancia, exactitud y abstención',
+    'Elegir y evaluar estrategias de chunking según el tipo de documentos y de preguntas',
   ],
   lecciones: [
     { titulo: 'Embeddings y búsqueda semántica', html: `
@@ -1370,6 +1371,25 @@ respuesta = llm(f"Pregunta: {pregunta}\\nResultado: {filas}\\nRespondé en una f
         <li>La respuesta no estaba en ningún documento: problema de <strong>cobertura</strong>, que se arregla agregando datos, no tocando el modelo.</li>
       </ul>
       <p><strong>Sin respuestas de referencia:</strong> frameworks como RAGAS proponen métricas que no necesitan etiquetas humanas, como la fidelidad calculada con un juez. Sirven para monitorear tráfico real de producción, pero son jueces LLM: calibralos contra etiquetas humanas antes de confiar en ellos.</p>` },
+    { titulo: 'Chunking a fondo: estrategias y cómo elegir', html: `
+      <p>Cómo partís los documentos define qué puede encontrar la búsqueda. Un buen criterio, según la guía de Pinecone: <strong>cada chunk debería tener sentido para una persona sin el texto de alrededor</strong>.</p>
+      <p><strong>Estrategias, de la más simple a la más elaborada:</strong></p>
+      <ul>
+        <li><strong>Tamaño fijo</strong> en tokens, con algo de solapamiento. Simple y, para muchos casos, suficiente como punto de partida.</li>
+        <li><strong>División recursiva:</strong> intenta cortar primero por párrafos, después por líneas, después por espacios, hasta quedar cerca del tamaño buscado. No parte oraciones a la mitad.</li>
+        <li><strong>Por estructura:</strong> usa los títulos de Markdown o HTML, las secciones de un PDF, los bloques de código. Ideal para documentación y manuales.</li>
+        <li><strong>Semántica:</strong> agrupa oraciones vecinas y corta donde los embeddings muestran un cambio de tema.</li>
+        <li><strong>Con contexto agregado:</strong> un LLM escribe una línea que ubica cada chunk dentro del documento y se embebe junto con él (el contextual retrieval que ya viste).</li>
+        <li><strong>Expansión al recuperar:</strong> buscás con chunks chicos y precisos, pero al modelo le pasás también los vecinos, el párrafo o la sección completa (a veces llamado padre-hijo).</li>
+      </ul>
+      <pre><code>def chunks_por_seccion(markdown, max_tokens=400):
+    secciones = dividir_por_titulos(markdown)          # cada "## Título" con su texto
+    for titulo, texto in secciones:
+        for parte in dividir_recursivo(texto, max_tokens):
+            # el título viaja con cada parte: el chunk se entiende solo
+            yield {"texto": f"{titulo}\\n{parte}", "seccion": titulo}</code></pre>
+      <p><strong>Cómo elegir el tamaño:</strong> depende del contenido, del modelo de embeddings y del tipo de preguntas. Los chunks chicos (128 a 256 tokens) captan detalles puntuales; los grandes (512 a 1.024) dan más contexto. No lo adivines: indexá el mismo corpus con 2 o 3 tamaños o estrategias, corré las mismas preguntas y compará recall@k y la calidad de las respuestas.</p>
+      <p><strong>Señales de mal chunking:</strong> respuestas a las que les falta "la otra mitad" (cortaste en el lugar equivocado), fragmentos que mezclan temas (demasiado grandes) o chunks que no se entienden solos, como una tabla sin sus encabezados o un "esto" sin saber qué es.</p>` },
   ],
   practica: [
     'Construí un RAG sobre tus propios apuntes (o la documentación de una librería): chunking, embeddings, pgvector o Chroma, y respuestas con citas.',
@@ -1379,12 +1399,14 @@ respuesta = llm(f"Pregunta: {pregunta}\\nResultado: {filas}\\nRespondé en una f
     'Indexá 100.000 chunks en pgvector. Medí recall@10 y latencia con búsqueda exacta y con HNSW usando ef_search de 40, 100 y 200, graficá recall contra latencia y elegí el punto para tu caso.',
     'Armá text-to-SQL sobre una base SQLite de ejemplo con un usuario de solo lectura. Escribí 20 preguntas con su resultado esperado y medí cuántas acierta comparando resultados; después agregá descripciones de columnas y 3 ejemplos pregunta → SQL y volvé a medir.',
     'Tomá 30 preguntas para tu RAG, 5 de ellas sin respuesta en los documentos. Calculá recall@5, fidelidad con un juez por afirmación, relevancia y tasa de abstención correcta, y clasificá cada fallo como de retrieval, de generación o de cobertura.',
+    'Indexá la misma documentación con tres estrategias: tamaño fijo de 256 tokens, tamaño fijo de 1.024 y por secciones de Markdown con el título en cada chunk. Corré las mismas 30 preguntas y compará recall@5 y la calidad de las respuestas de cada una.',
   ],
   recursos: [
     { t: 'Paper original de RAG (Lewis et al., 2020)', url: 'https://arxiv.org/abs/2005.11401' },
     { t: 'Anthropic — Contextual Retrieval', url: 'https://www.anthropic.com/news/contextual-retrieval' },
     { t: 'pgvector (búsqueda vectorial en Postgres)', url: 'https://github.com/pgvector/pgvector' },
     { t: 'Sentence Transformers (embeddings open source)', url: 'https://www.sbert.net/' },
+    { t: 'Pinecone — Estrategias de chunking', url: 'https://www.pinecone.io/learn/chunking-strategies/' },
     { t: 'RAGAS: evaluación automática de RAG (paper)', url: 'https://arxiv.org/abs/2309.15217' },
     { t: 'RAGAS — Documentación', url: 'https://docs.ragas.io/en/stable/' },
     { t: 'GraphRAG: From Local to Global (paper)', url: 'https://arxiv.org/abs/2404.16130' },
@@ -1420,6 +1442,11 @@ respuesta = llm(f"Pregunta: {pregunta}\\nResultado: {filas}\\nRespondé en una f
     { q: 'La respuesta es correcta en el mundo real, pero no aparece en los documentos recuperados. ¿Cómo queda su fidelidad?', opciones: ['Alta, porque es correcta', 'No importa', 'Baja: no está respaldada por el contexto, y eso es un riesgo aunque esta vez acierte', 'Perfecta'], correcta: 2, explicacion: 'Si el modelo responde con lo que "sabe" en lugar de lo recuperado, la próxima vez puede inventar con la misma seguridad. En un RAG se exige respaldo.' },
     { q: '¿Qué ventaja tienen las métricas sin referencia, como las que propone RAGAS?', opciones: ['Son siempre exactas', 'No usan ningún modelo', 'Reemplazan por completo a los humanos', 'Se pueden aplicar a tráfico real sin respuestas etiquetadas, aunque conviene calibrarlas contra humanos'], correcta: 3, explicacion: 'Sirven para monitorear a escala. Pero usan jueces LLM, que tienen sesgos y errores, y por eso se validan contra etiquetas humanas.' },
     { q: 'Te hacen una pregunta cuya respuesta no está en ningún documento de tu base. ¿Qué comportamiento medís como correcto?', opciones: ['Que se abstenga y diga que no figura en los documentos, en lugar de inventar', 'Que responda con conocimiento general', 'Que pida más tokens', 'Que repita la pregunta'], correcta: 0, explicacion: 'La abstención correcta es parte de la calidad de un RAG. Por eso conviene incluir preguntas sin respuesta en el dataset de evals.' },
+    { q: '¿Qué criterio práctico sirve para saber si un chunk está bien armado?', opciones: ['Que tenga exactamente 500 tokens', 'Que tenga sentido para una persona sin el texto de alrededor', 'Que empiece con mayúscula', 'Que tenga muchas palabras clave'], correcta: 1, explicacion: 'Si una persona no entiende el fragmento solo, el embedding tampoco va a capturar bien de qué trata, y el modelo va a recibir contexto incompleto.' },
+    { q: 'Tu documentación es Markdown con secciones bien tituladas. ¿Qué estrategia de chunking probás primero?', opciones: ['Cortar cada 100 caracteres', 'Una sola pieza por documento', 'Por estructura: por secciones, con el título incluido en cada chunk', 'Al azar'], correcta: 2, explicacion: 'La estructura que ya tiene el documento marca cortes naturales. El título en cada chunk hace que se entienda solo.' },
+    { q: 'Las respuestas de tu RAG suelen quedarse con "la mitad" de la información: el resto estaba en el chunk siguiente. ¿Qué probás?', opciones: ['Subir la temperatura', 'Cambiar de modelo', 'Usar menos documentos', 'Expandir al recuperar: buscar con chunks chicos y pasarle al modelo también los vecinos o la sección completa'], correcta: 3, explicacion: 'Los chunks chicos encuentran con precisión y la expansión recupera el contexto completo. También podés revisar dónde estás cortando.' },
+    { q: '¿Cómo elegís el tamaño de los chunks?', opciones: ['Indexando el mismo corpus con 2 o 3 tamaños o estrategias y comparando recall@k y la calidad de las respuestas con las mismas preguntas', 'Siempre 512 tokens', 'El más grande que acepte el modelo', 'El más chico posible'], correcta: 0, explicacion: 'El mejor tamaño depende de tu contenido y tus preguntas. Ninguna regla fija reemplaza medirlo.' },
+    { q: 'Una tabla quedó partida y un chunk tiene filas de números sin los encabezados. ¿Qué problema genera?', opciones: ['Ninguno', 'El chunk no se entiende solo: ni el embedding ni el modelo saben qué significan esos números', 'Solo hace la búsqueda más lenta', 'Mejora la precisión'], correcta: 1, explicacion: 'Las tablas, el código y las listas necesitan cortes que respeten su estructura, o repetir los encabezados en cada parte.' },
   ],
 },
 {
