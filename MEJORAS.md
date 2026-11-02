@@ -123,3 +123,4 @@ Lo completa el comando `/mejorar`. Una línea por ejecución.
 - 2026-11-02 · app · versión para chicos: al terminar un taller suelto aparece un cierre con festejo y botón al siguiente taller, y al volver a entrar se avisa que ya está hecho (pedido del usuario)
 - 2026-11-02 · proyecto · metodología: 3 explicaciones más corrigen la opción tentadora (el módulo supera la meta)
 - 2026-11-02 · rag · metodología: 5 explicaciones ahora corrigen la opción tentadora
+- 2026-11-02 · deep-learning · metodología: 5 explicaciones ahora corrigen la opción tentadora
