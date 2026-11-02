@@ -12,6 +12,7 @@ window.TEMARIO = [
     'Leer probabilidad básica: distribuciones y softmax',
     'Entender entropía, entropía cruzada, KL y perplexity: la matemática de la loss de un LLM',
     'Usar Python asíncrono para llamar APIs en paralelo, con límites de concurrencia y manejo de errores',
+    'Aplicar probabilidad y estadística para decidir: Bayes, valor esperado, percentiles y tamaño de muestra',
   ],
   lecciones: [
     { titulo: 'Python para IA: lo imprescindible', html: `
@@ -87,6 +88,20 @@ fallidos = [t for t, r in zip(textos, resultados) if isinstance(r, Exception)]</
       <p><strong>Ojo: async no acelera todo.</strong> Sirve para superponer esperas de entrada y salida (red, disco). Un cálculo pesado de CPU, como multiplicar matrices grandes, no tiene esperas que superponer; ahí ayudan NumPy, la GPU o varios procesos.</p>
       <p><strong>Streaming con generadores:</strong> para mostrar la respuesta mientras llega, un generador (<code>yield</code>, o <code>async for</code> en código asíncrono) entrega cada fragmento apenas está disponible, sin esperar al final.</p>
       <p>Si tenés miles de tareas que no son urgentes, compará contra la API batch del proveedor: suele ser más barata que lanzarlas en paralelo.</p>` },
+    { titulo: 'Probabilidad y estadística para decidir: Bayes, valor esperado y percentiles', html: `
+      <p>Cuatro ideas de probabilidad y estadística que aparecen todo el tiempo en AI engineering, y que evitan decisiones equivocadas.</p>
+      <p><strong>1. Teorema de Bayes: cuidado con los eventos raros.</strong> Tu detector de prompt injection encuentra el 95% de los ataques y da falsa alarma en el 5% de los mensajes normales. Solo el 1% de los mensajes son ataques. Si suena la alarma, ¿qué probabilidad hay de que sea un ataque de verdad?</p>
+      <pre><code>P(ataque | alarma) = P(alarma | ataque) · P(ataque) / P(alarma)
+                   = 0,95 · 0,01 / (0,95 · 0,01 + 0,05 · 0,99)
+                   = 0,0095 / 0,059 ≈ 0,16</code></pre>
+      <p>Solo un 16%: la mayoría de las alarmas son falsas, porque los mensajes normales son muchísimos más. Por eso, con eventos raros, un detector "bueno" puede generar más ruido que señal. Mirá siempre la precision, no solo el recall.</p>
+      <p><strong>2. Valor esperado: costo promedio por consulta.</strong> Si el 70% de las consultas va a un modelo que cuesta 0,001 USD y el 30% a uno de 0,02 USD, el costo esperado es 0,7 · 0,001 + 0,3 · 0,02 = 0,0067 USD por consulta. Multiplicado por tu volumen, es tu presupuesto.</p>
+      <p><strong>3. Percentiles: el promedio esconde lo que molesta.</strong> Una latencia promedio de 800 ms puede ocultar que una de cada veinte respuestas tarda 8 segundos. Medí la mediana (p50), el p95 y el p99.</p>
+      <pre><code>import numpy as np
+lat = np.array(latencias_ms)
+print("promedio", lat.mean())
+print("p50, p95, p99", np.percentile(lat, [50, 95, 99]))</code></pre>
+      <p><strong>4. Tamaño de muestra: pocos casos, mucho ruido.</strong> Con 10 casos, cada uno mueve la nota 10 puntos. Un 90% con 10 casos y un 90% con 500 no significan lo mismo. Ya lo viste en el módulo de evals con el error estándar: antes de celebrar una mejora, mirá cuántos casos la respaldan.</p>` },
   ],
   practica: [
     'Implementá producto punto, similitud coseno y softmax solo con NumPy y comprobá los resultados a mano con vectores pequeños.',
@@ -94,12 +109,15 @@ fallidos = [t for t, r in zip(textos, resultados) if isinstance(r, Exception)]</
     'Mirá los 4 primeros videos de la serie de redes neuronales de 3Blue1Brown y escribí un resumen de una página.',
     'Con un modelo chico de Hugging Face (por ejemplo GPT-2), calculá la perplexity de tres textos: uno en inglés, uno en español y uno con palabras al azar. Explicá por qué dan distinto.',
     'Clasificá 200 textos con un LLM: primero uno por uno y después con asyncio.gather y un Semaphore de 5, 10 y 20. Medí el tiempo total y la cantidad de errores 429 en cada caso, y elegí el límite.',
+    'Medí la latencia de 200 llamadas a tu app: calculá promedio, p50, p95 y p99 y graficá el histograma. Después calculá con Bayes qué proporción de las alertas de un detector serían verdaderas si los casos reales son el 2%.',
   ],
   recursos: [
     { t: 'Tutorial oficial de Python (español)', url: 'https://docs.python.org/es/3/tutorial/' },
     { t: '3Blue1Brown — Redes neuronales (visual)', url: 'https://www.3blue1brown.com/topics/neural-networks' },
     { t: 'Khan Academy — Álgebra lineal', url: 'https://www.khanacademy.org/math/linear-algebra' },
     { t: 'Dive into Deep Learning (libro gratis, con código)', url: 'https://d2l.ai/' },
+    { t: 'Seeing Theory — probabilidad y estadística visual (Brown University)', url: 'https://seeing-theory.brown.edu/' },
+    { t: 'Khan Academy — Estadística y probabilidad', url: 'https://www.khanacademy.org/math/statistics-probability' },
     { t: 'Python — Corrutinas y tareas (asyncio)', url: 'https://docs.python.org/es/3/library/asyncio-task.html' },
     { t: 'Dive into Deep Learning — Teoría de la información', url: 'https://d2l.ai/chapter_appendix-mathematics-for-deep-learning/information-theory.html' },
   ],
@@ -121,6 +139,11 @@ fallidos = [t for t, r in zip(textos, resultados) if isinstance(r, Exception)]</
     { q: 'Lanzás 500 llamadas con asyncio.gather, una falla y perdés todos los resultados. ¿Qué cambiás?', opciones: ['Volvés a hacerlas una por una', 'Sacás el manejo de errores', 'Usás return_exceptions=True (o capturás el error en cada tarea) y reintentás solo las fallidas', 'Subís la concurrencia'], correcta: 2, explicacion: 'Con return_exceptions=True, cada fallo queda como un resultado más y el resto se conserva. Volver a lo secuencial resuelve el síntoma a costa de 10 veces más tiempo.' },
     { q: '¿Por qué asyncio acelera las llamadas a un LLM pero no un cálculo pesado con NumPy?', opciones: ['Porque asyncio usa la GPU', 'Porque NumPy no funciona con Python asíncrono', 'Es al revés: acelera NumPy y no las llamadas', 'Porque async superpone esperas de entrada y salida, y un cálculo de CPU no tiene esperas que superponer'], correcta: 3, explicacion: 'Mientras una llamada espera la red, otra puede avanzar. Un cálculo de CPU está ocupado todo el tiempo; para eso sirven la vectorización, la GPU o varios procesos.' },
     { q: 'Querés mostrar la respuesta del modelo en tu programa de terminal a medida que llega. ¿Qué herramienta de Python usás?', opciones: ['Un generador (yield o async for) que entrega cada fragmento apenas llega', 'Una lista que se imprime al final', 'Un hilo nuevo por cada token', 'Un time.sleep entre palabras'], correcta: 0, explicacion: 'El generador produce fragmentos a medida que la API los manda. Juntar todo en una lista elimina justamente la ventaja del streaming.' },
+    { q: 'Tu detector de prompt injection encuentra el 95% de los ataques y da falsa alarma en el 5% de los mensajes normales. Solo el 1% de los mensajes son ataques. Si suena la alarma, ¿qué probabilidad hay de que sea un ataque?', opciones: ['95%', 'Alrededor de 16%', '5%', '1%'], correcta: 1, explicacion: 'Por Bayes: 0,0095 / (0,0095 + 0,0495) ≈ 0,16. Como los mensajes normales son muchísimos más, la mayoría de las alarmas son falsas. El 95% es el recall, no la probabilidad pedida.' },
+    { q: 'El 70% de tus consultas va a un modelo de 0,001 USD y el 30% a uno de 0,02 USD. ¿Cuál es el costo esperado por consulta?', opciones: ['0,0105 USD', '0,021 USD', '0,0067 USD', '0,02 USD'], correcta: 2, explicacion: '0,7 × 0,001 + 0,3 × 0,02 = 0,0007 + 0,006 = 0,0067. Promediar los dos precios sin pesar por la proporción daría 0,0105, que es incorrecto.' },
+    { q: 'La latencia promedio de tu app es 800 ms, pero los usuarios se quejan de que a veces tarda muchísimo. ¿Qué mirás?', opciones: ['El promedio otra vez, con más datos', 'La latencia mínima', 'Solo la mediana', 'Los percentiles altos (p95, p99): unas pocas respuestas muy lentas casi no mueven el promedio'], correcta: 3, explicacion: 'Si 1 de cada 20 respuestas tarda 8 segundos, el promedio casi no lo muestra, pero el p95 sí. La mediana tampoco ve la cola.' },
+    { q: 'Probaste un prompt nuevo con 10 casos y acertó 9. ¿Qué tan seguro estás de que acierta el 90%?', opciones: ['Muy seguro', 'Poco: con 10 casos cada uno mueve la nota 10 puntos y la estimación es muy ruidosa', 'Totalmente seguro', 'Depende de la temperatura'], correcta: 1, explicacion: 'El margen de error con 10 casos es enorme: un solo caso más o menos cambia la nota en 10 puntos. Hacen falta muchos más casos para afirmar algo.' },
+    { q: '¿Qué dice el teorema de Bayes, en palabras?', opciones: ['Que toda probabilidad es 50%', 'Que todos los eventos son independientes', 'Cómo actualizar la probabilidad de una hipótesis al ver evidencia, combinando qué tan probable era antes con qué tan bien explica esa evidencia', 'Que la media siempre es igual a la mediana'], correcta: 2, explicacion: 'La probabilidad previa importa: una evidencia fuerte de algo muy raro puede seguir dejando más probable la explicación común.' },
   ],
 },
 {
