@@ -314,6 +314,7 @@ const CUENTO = 'Había una vez un robot que quería aprender. El robot leía lib
 function montarTaller(id, cont, alLograr) {
   if (id === 'entrenar') {
     let ejemplos = [];
+    const probadas = new Set(); // hace falta probar 3 frases distintas para terminar
     cont.innerHTML = (`<div class="grande">🧪</div>
       <p class="texto">Enseñale a la máquina: escribí frases y decile si son alegres o tristes.</p>
       <input type="text" id="frase" placeholder="Ej: hoy jugué con mi perro" aria-label="Frase de ejemplo">
@@ -343,7 +344,9 @@ function montarTaller(id, cont, alLograr) {
         <div class="prob">😢 <div style="width:${Math.round(prob[1] * 70)}%"></div> ${Math.round(prob[1] * 100)}%</div>
         <p>Me fijé en: ${claves.map(([w, g]) => `<strong>${esc(w)}</strong> ${g ? '😢' : '😀'}`).join(', ')}</p>
         <p class="suave">Si se equivocó, enseñale más ejemplos con esas palabras y probá de nuevo.</p>`;
-      alLograr(true);
+      probadas.add(frase.trim().toLowerCase());
+      res.innerHTML += probadas.size < 3 ? `<p>🧪 Probaste ${probadas.size} de 3 frases. ¡Probá otra distinta!</p>` : '<p>🏅 ¡Probaste 3 frases! Ya entrenaste y probaste tu propia IA.</p>';
+      if (probadas.size >= 3) alLograr(true);
     };
   } else if (id === 'palabras') {
     cont.innerHTML = (`<div class="grande">✍️</div>
@@ -353,7 +356,7 @@ function montarTaller(id, cont, alLograr) {
       <input type="text" id="inicio" value="el" aria-label="Palabra para empezar">
       <div class="fila"><button class="opcion" id="sigue">🔮 ¿Qué sigue?</button><button class="opcion" id="sola">✍️ Que escriba sola</button></div>
       <div id="resultado" class="aviso" aria-live="polite"></div>`);
-    const res = cont.querySelector('#resultado');
+    const res = cont.querySelector('#resultado'), usadas = new Set();
     const datos = () => [aprenderTexto(cont.querySelector('#texto').value), palabrasDe(cont.querySelector('#inicio').value, 1)[0] || ''];
     cont.querySelector('#sigue').onclick = () => {
       const [sig, w] = datos(), ops = siguientes(sig, w).slice(0, 4), tot = ops.reduce((s, [, c]) => s + c, 0);
@@ -364,9 +367,11 @@ function montarTaller(id, cont, alLograr) {
     cont.querySelector('#sola').onclick = () => {
       const [sig, w] = datos();
       res.className = 'aviso';
-      res.innerHTML = siguientes(sig, w).length ? `📝 ${esc(escribirSola(sig, w))}...<p class="suave">Tocá de nuevo: cada vez sale distinto. Un chatbot hace esto mismo, pero aprendió de millones de textos.</p>`
-        : `🤷 "${esc(w)}" no aparece en el texto. ¡Probá otra palabra!`;
-      alLograr(true);
+      if (!siguientes(sig, w).length) { res.innerHTML = `🤷 "${esc(w)}" no aparece en el texto. ¡Probá otra palabra!`; return; }
+      usadas.add(w);
+      res.innerHTML = `📝 ${esc(escribirSola(sig, w))}...<p class="suave">Tocá de nuevo: cada vez sale distinto. Un chatbot hace esto mismo, pero aprendió de millones de textos.</p>`
+        + (usadas.size < 2 ? '<p>✍️ Ahora cambiá la palabra de arriba y hacela escribir de nuevo.</p>' : '<p>🏅 ¡Hiciste escribir a tu mini chatbot desde 2 palabras distintas!</p>');
+      if (usadas.size >= 2) alLograr(true);
     };
   } else if (id === 'tapar') {
     let faltan = MENSAJE.filter(([, x]) => x === 1).length;

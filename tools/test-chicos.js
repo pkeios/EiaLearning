@@ -56,4 +56,6 @@ X.REGLAS.forEach(R => R.otras.forEach(o => {
 assert.deepStrictEqual(Object.keys(X.NOMBRE_DIR), Object.keys(X.DIR));
 assert.equal(X.NOMBRE_SESGO.length, X.SESGO_AGREGAR.length);
 assert(!/aria-label="Agregar (paso|ejemplo)"/.test(h), 'etiqueta repetida para botones distintos');
+// Práctica suficiente: entrenar pide 3 frases distintas y autocompletar 2 palabras, y solo cuentan los intentos que funcionan.
+assert(/probadas\.size >= 3\) alLograr/.test(h) && /usadas\.size >= 2\) alLograr/.test(h));
 console.log('test-chicos OK');
