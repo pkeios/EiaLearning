@@ -68,6 +68,7 @@
 const MISIONES = [
   { emoji: '🧠', titulo: '¿Qué es la IA?', color: '#7b5cff', pasos: [
     { idea: '🤖', t: 'La IA es un programa que aprende a encontrar patrones.' },
+    { taller: 'patron', t: '¡Tu turno! Sé la máquina: descubrí la regla secreta mirando ejemplos.' },
     { idea: '📱 🎵 🗺️', t: 'Ya la usás: el celu que reconoce tu cara, la música que te recomienda, el mapa que esquiva el tránsito.' },
     { clasificar: '¿Usa IA o no?', grupos: ['🤖 IA', '🔧 No'], items: [['📷 Cámara que reconoce caras', 0], ['🔦 Linterna', 1], ['🎬 App que te recomienda videos', 0], ['📏 Regla', 1], ['🗣️ Asistente que entiende tu voz', 0]] },
     { idea: '💡', t: 'La IA no piensa ni siente. No está viva: es una herramienta.' },
@@ -216,6 +217,7 @@ const TALLER = [
   { id: 'robot', emoji: '🤖', titulo: 'Programá el robot', color: '#1f9d55' },
   { id: 'tapar', emoji: '🕵️', titulo: 'Tapá los datos', color: '#d6457a' },
   { id: 'sesgo', emoji: '⚖️', titulo: 'Arreglá el sesgo', color: '#e0a100' },
+  { id: 'patron', emoji: '🔍', titulo: 'Sé la máquina', color: '#7b5cff' },
 ];
 const cargarTaller = () => { try { return JSON.parse(localStorage.getItem('chicos-taller')) || {}; } catch { return {}; } };
 const logro = id => { const t = cargarTaller(); t[id] = true; localStorage.setItem('chicos-taller', JSON.stringify(t)); };
@@ -290,6 +292,16 @@ const SESGO_INICIO = ['👨‍🔬', '👨‍🔬', '👨‍🔬', '👨‍🔬'
 const SESGO_AGREGAR = ['👩‍🔬', '👩🏽‍🔬', '👩🏿‍🔬', '👨🏾‍🔬'];
 const dibujarIA = (datos, n = 5) => Array.from({ length: n }, (_, i) => datos[Math.floor((i + 0.5) * datos.length / n)]);
 const masComun = datos => Math.max(...datos.map(x => datos.filter(y => y === x).length)) / datos.length;
+// Sé la máquina: descubrir una regla secreta mirando ejemplos, como hace la IA.
+const REGLAS = [
+  { ok: 'Son múltiplos de 3', f: n => n % 3 === 0, ejemplos: [3, 4, 6, 7, 9, 10], otras: ['Son números pares', 'Son mayores que 5'] },
+  { ok: 'Terminan en 0 o en 5', f: n => n % 5 === 0, ejemplos: [5, 7, 10, 12, 15, 18], otras: ['Son números impares', 'Son menores que 16'] },
+  { ok: 'Son mayores que 10', f: n => n > 10, ejemplos: [3, 12, 8, 15, 20, 1], otras: ['Son números pares', 'Son múltiplos de 3'] },
+];
+const OTRAS_F = {
+  'Son números pares': n => n % 2 === 0, 'Son mayores que 5': n => n > 5,
+  'Son números impares': n => n % 2 === 1, 'Son menores que 16': n => n < 16, 'Son múltiplos de 3': n => n % 3 === 0,
+};
 const DEMO = [
   ['hoy gané el partido de fútbol', 0], ['me encanta jugar con mis amigos', 0], ['saqué un diez en la prueba', 0], ['mañana vamos a la playa', 0],
   ['se me rompió el juguete', 1], ['perdí mi cartuchera nueva', 1], ['hoy llueve y no puedo salir', 1], ['me peleé con mi amigo', 1],
@@ -389,6 +401,36 @@ function montarTaller(id, cont, alLograr) {
     };
     cont.querySelectorAll('[data-e]').forEach(b => b.onclick = () => { datos.push(b.dataset.e); pintar(); });
     pintar();
+  } else if (id === 'patron') {
+    let r = 0;
+    const ronda = () => {
+      const R = REGLAS[r], ops = [R.ok, ...R.otras].sort();
+      cont.innerHTML = (`<div class="grande">🔍</div>
+        <p class="texto">Hay una regla secreta. Los ✅ la cumplen y los ❌ no:</p>
+        <p class="programa">${R.ejemplos.map(n => n + (R.f(n) ? '✅' : '❌')).join(' ')}</p>
+        <p class="texto">Probá un número y mirá qué te dice la máquina:</p>
+        <div class="fila"><input type="text" inputmode="numeric" id="num" aria-label="Número para probar" style="max-width:8rem"><button class="opcion" id="probar">Probar</button></div>
+        <p id="prueba" class="programa"></p>
+        <p class="texto">¿Cuál es la regla?</p>
+        <div class="opciones">${ops.map(o => `<button class="opcion" data-o="${o}">${o}</button>`).join('')}</div>
+        <div id="resultado" class="aviso" aria-live="polite"></div>`);
+      const res = cont.querySelector('#resultado'), num = cont.querySelector('#num');
+      cont.querySelector('#probar').onclick = () => {
+        const n = parseInt(num.value, 10);
+        if (Number.isNaN(n)) return num.focus();
+        cont.querySelector('#prueba').textContent += ` ${n}${R.f(n) ? '✅' : '❌'}`;
+        num.value = ''; num.focus();
+      };
+      cont.querySelectorAll('[data-o]').forEach(b => b.onclick = () => {
+        if (b.dataset.o !== R.ok) { b.classList.add('mal'); res.className = 'aviso mal'; res.textContent = '🤔 Mirá los ejemplos: esa regla no encaja con todos. ¡Probá más números!'; return; }
+        b.classList.add('bien');
+        res.className = 'aviso bien';
+        res.innerHTML = '🎉 ¡Encontraste el patrón mirando ejemplos! Eso mismo hace una IA, pero con millones de ejemplos.' + (r + 1 < REGLAS.length ? ' <button class="boton" id="otra">Otra regla →</button>' : '');
+        cont.querySelector('#otra')?.addEventListener('click', () => { r++; ronda(); });
+        alLograr(true);
+      });
+    };
+    ronda();
   } else {
     let nivel = 0, prog = [];
     const pintar = (pos = null) => {

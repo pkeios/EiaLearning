@@ -12,17 +12,17 @@ M.forEach((m, i) => {
   assert.equal(ej.length, 3, 'misión ' + i);
   ej.forEach(s => { if (s.q) assert(s.c < s.o.length); else s.items.forEach(([, g]) => assert(g < s.grupos.length)); });
   m.pasos.filter(s => s.idea || s.taller).forEach(s => assert(s.t.split(' ').length <= 22, 'texto largo: ' + s.t));
-  m.pasos.filter(s => s.taller).forEach(s => assert(['entrenar', 'palabras', 'robot', 'tapar', 'sesgo'].includes(s.taller), 'actividad inexistente: ' + s.taller));
+  m.pasos.filter(s => s.taller).forEach(s => assert(['entrenar', 'palabras', 'robot', 'tapar', 'sesgo', 'patron'].includes(s.taller), 'actividad inexistente: ' + s.taller));
   // Intercalado: nunca más de 2 preguntas seguidas sin una idea o una práctica en el medio.
   let seguidas = 0;
   m.pasos.forEach(s => { seguidas = s.q || s.clasificar ? seguidas + 1 : 0; assert(seguidas <= 2, 'misión ' + i + ': más de 2 preguntas seguidas'); });
 });
-assert(M.filter(m => m.pasos.some(s => s.taller)).length >= 5, 'al menos 5 misiones con práctica adentro');
+assert(M.filter(m => m.pasos.some(s => s.taller)).length >= 6, 'todas las misiones con práctica adentro');
 assert(!/https?:\/\/(?!atacante)/.test(h), 'no tiene que haber links a sitios externos');
 
 // Taller: solo las funciones puras (sin tocar el DOM).
 const taller = js.split('// ---------- Taller')[1].split('function taller(')[0].replace(/^[^\n]*\n/, '');
-const X = new Function(js.split('const app =')[0] + taller + ';return { SESGO_INICIO, SESGO_AGREGAR, dibujarIA, masComun, MENSAJE, predecir, aprenderTexto, siguientes, escribirSola, correrRobot, NIVELES, DEMO, palabrasDe }')();
+const X = new Function(js.split('const app =')[0] + taller + ';return { REGLAS, OTRAS_F, SESGO_INICIO, SESGO_AGREGAR, dibujarIA, masComun, MENSAJE, predecir, aprenderTexto, siguientes, escribirSola, correrRobot, NIVELES, DEMO, palabrasDe }')();
 
 const ej = X.DEMO.map(([t, g]) => ({ t, g }));
 assert(X.predecir(ej, 'gané la prueba').prob[0] > 0.5);
@@ -47,4 +47,9 @@ assert(X.MENSAJE.some(([, x]) => x === 1) && X.MENSAJE.some(([, x]) => x === 2))
 assert(X.masComun(X.SESGO_INICIO) > 0.5);
 assert.equal(X.dibujarIA([...X.SESGO_INICIO].sort()).filter(e => e === X.SESGO_INICIO[0]).length, 4);
 assert(X.masComun([...X.SESGO_INICIO, ...X.SESGO_AGREGAR]) <= 0.5);
+// Sé la máquina: cada regla incorrecta tiene que contradecir al menos un ejemplo, así se puede descubrir mirándolos.
+X.REGLAS.forEach(R => R.otras.forEach(o => {
+  assert(X.OTRAS_F[o], 'regla sin función: ' + o);
+  assert(R.ejemplos.some(n => X.OTRAS_F[o](n) !== R.f(n)), `"${o}" no se distingue de "${R.ok}" con los ejemplos`);
+}));
 console.log('test-chicos OK');
