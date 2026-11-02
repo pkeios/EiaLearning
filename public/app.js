@@ -285,5 +285,16 @@ function render() {
   scrollTo(0, 0);
 }
 
+// El tema se aplica en index.html antes de pintar, para evitar un parpadeo; acá solo el botón.
+const botonTema = document.getElementById('tema');
+const iconoTema = () => { botonTema.textContent = document.documentElement.dataset.tema === 'claro' ? '🌙' : '☀️'; };
+botonTema.onclick = () => {
+  const tema = document.documentElement.dataset.tema === 'claro' ? 'oscuro' : 'claro';
+  document.documentElement.dataset.tema = tema;
+  localStorage.setItem('tema', tema);
+  iconoTema();
+};
+iconoTema();
+
 addEventListener('hashchange', render);
 render();

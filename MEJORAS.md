@@ -20,3 +20,4 @@ Lo completa el comando `/mejorar`. Una línea por ejecución.
 - 2026-11-01 · app · botón "Copiar prompt de tutor" en cada módulo (examen oral con Claude, incluye la explicación Feynman del alumno), con fallback si no hay portapapeles y tests
 - 2026-11-01 · fundamentos · lección de entropía, entropía cruzada, KL y perplexity (con cálculo y trampa del tokenizador), 5 preguntas, 1 práctica, 1 recurso · fuentes: https://d2l.ai/chapter_appendix-mathematics-for-deep-learning/information-theory.html
 - 2026-11-01 · deep-learning · lección de entrenamiento estable (AdamW, warmup+coseno, clipping, bf16, receta de Karpathy, lectura de curvas), 5 preguntas, 1 práctica, 2 recursos · fuentes: https://karpathy.github.io/2019/04/25/recipe/, https://arxiv.org/abs/1711.05101
+- 2026-11-01 · app · modo claro/oscuro con botón en la cabecera (respeta la preferencia del sistema y recuerda la elección), con tests

@@ -2,8 +2,9 @@
 const fs = require('fs'), path = require('path'), vm = require('vm'), assert = require('assert');
 const leer = f => fs.readFileSync(path.join(__dirname, '..', 'public', f), 'utf8');
 const el = { querySelector: () => el, querySelectorAll: () => [], focus() {}, value: '', h: '', set innerHTML(v) { this.h = v; }, get innerHTML() { return this.h; } };
+const botonTema = {};
 let guardado = null;
-const ctx = { window: {}, document: { getElementById: () => el }, localStorage: { getItem: () => guardado, setItem: (k, v) => { guardado = v; } }, location: { hash: '' }, addEventListener() {}, scrollTo() {}, Date, URL };
+const ctx = { window: {}, document: { getElementById: id => id === 'tema' ? botonTema : el, documentElement: { dataset: { tema: 'oscuro' } } }, localStorage: { getItem: () => guardado, setItem: (k, v) => { guardado = v; } }, location: { hash: '' }, addEventListener() {}, scrollTo() {}, Date, URL };
 vm.createContext(ctx);
 vm.runInContext(leer('contenido.js'), ctx);
 vm.runInContext(leer('app.js') + ';this.X = { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor };', ctx);
@@ -65,6 +66,15 @@ assert.ok(promptTutor(mod, 'Un vector es una lista').includes('Un vector es una 
 ctx.location.hash = '#/m/' + mod.id;
 vm.runInContext('render()', ctx);
 assert.ok(el.h.includes('id="tutor"'));
+
+// Tema: el botón alterna y recuerda la elección
+assert.equal(botonTema.textContent, '☀️');
+botonTema.onclick();
+assert.equal(ctx.document.documentElement.dataset.tema, 'claro');
+assert.equal(botonTema.textContent, '🌙');
+assert.equal(guardado, 'claro');
+botonTema.onclick();
+assert.equal(ctx.document.documentElement.dataset.tema, 'oscuro');
 
 // Repaso vacío muestra un mensaje en lugar de un formulario
 guardado = null;
