@@ -323,6 +323,7 @@ for c in sorted(set(etiquetas) - {-1}):
     'Conocer MLP, CNN y RNN y por qué los Transformers las desplazaron en lenguaje',
     'Entrenar de forma estable (AdamW, warmup y coseno, clipping, bf16) y diagnosticar con las curvas de loss',
     'Entender el aprendizaje contrastivo con el que se entrenan los modelos de embeddings y CLIP',
+    'Estimar la memoria de entrenamiento y usar acumulación de gradientes, checkpointing y paralelismo para entrar en el hardware',
   ],
   lecciones: [
     { titulo: 'Cómo aprende una red neuronal', html: `
@@ -398,6 +399,32 @@ loss = F.cross_entropy(logits, etiquetas)</code></pre>
       </ul>
       <p><strong>CLIP</strong> (OpenAI, 2021) aplicó esta idea a imágenes y texto: entrenó un codificador de imágenes y uno de texto con unos 400 millones de pares imagen-descripción, con la loss en las dos direcciones. Así, imágenes y textos quedan en el mismo espacio y se puede <strong>clasificar sin entrenar</strong> (zero-shot): comparás el embedding de una imagen con los de textos como "una foto de un perro" o "una foto de un gato" y elegís el más parecido.</p>
       <p>Por eso, cuando un modelo de embeddings genérico no distingue bien los conceptos de tu dominio, una opción es afinarlo con pares propios y negativos difíciles. Librerías como Sentence Transformers traen estas losses listas.</p>` },
+    { titulo: 'Entrenar modelos grandes: memoria, acumulación de gradientes y paralelismo', html: `
+      <p>Entrenar consume mucha más memoria que usar el modelo. Además de los pesos, hay que guardar los <strong>gradientes</strong>, los <strong>estados del optimizador</strong> y las <strong>activaciones</strong> de cada capa para el backward.</p>
+      <p><strong>Una cuenta que conviene saber de memoria.</strong> El paper de ZeRO la usa como punto de partida: con Adam en precisión mixta, cada parámetro ocupa unos <strong>16 bytes</strong>: 2 de pesos en 16 bits, 2 de gradientes y 12 del optimizador (una copia de los pesos en 32 bits más el momento y la varianza).</p>
+      <pre><code>1.000 millones de parámetros × 16 bytes ≈ 16 GB   (los pesos solos en 16 bits: 2 GB)
+7.000 millones de parámetros × 16 bytes ≈ 112 GB  (más las activaciones)</code></pre>
+      <p><strong>Técnicas para que entre en tu hardware:</strong></p>
+      <ul>
+        <li><strong>Acumulación de gradientes:</strong> si querés un batch de 256 y solo entran 32, procesás 8 micro-batches y actualizás una vez. El resultado se parece al batch grande, a costa de más tiempo por paso.</li>
+        <li><strong>Activation checkpointing:</strong> guardás menos activaciones y las recalculás en el backward. Ahorra mucha memoria, sobre todo con secuencias largas, a cambio de más cómputo.</li>
+        <li><strong>LoRA y QLoRA:</strong> los pesos originales quedan congelados, así que solo hay gradientes y estados del optimizador para los adaptadores chicos. Por eso un 7B se puede afinar en una sola GPU.</li>
+        <li><strong>Optimizadores de 8 bits:</strong> guardan los estados de Adam con menos precisión.</li>
+      </ul>
+      <pre><code>pasos_acum = 8                                   # batch efectivo = 8 × micro-batch
+for i, (x, y) in enumerate(loader):
+    loss = loss_fn(model(x), y) / pasos_acum     # dividir para que sea un promedio
+    loss.backward()                              # los gradientes se suman entre micro-batches
+    if (i + 1) % pasos_acum == 0:
+        opt.step()
+        opt.zero_grad()</code></pre>
+      <p><strong>Cuando una GPU no alcanza:</strong></p>
+      <ul>
+        <li><strong>Paralelismo de datos (DDP):</strong> cada GPU tiene el modelo completo, procesa datos distintos y promedian los gradientes. Acelera, pero no reduce la memoria por GPU.</li>
+        <li><strong>Sharding (ZeRO, FSDP):</strong> en lugar de que cada GPU tenga todo, se reparten pesos, gradientes y estados del optimizador. Así entran modelos que no cabrían en una sola.</li>
+        <li><strong>Paralelismo de tensores y de pipeline:</strong> se divide cada capa entre GPUs, o se ponen distintas capas en distintas GPUs, para los modelos más grandes.</li>
+      </ul>
+      <p>Hacer esta cuenta antes de entrenar te dice si entra, cuánto va a costar y qué técnica necesitás, sin descubrirlo con un error de memoria a mitad de camino.</p>` },
   ],
   practica: [
     'Seguí "Neural Networks: Zero to Hero" de Andrej Karpathy hasta micrograd: implementá backpropagation desde cero.',
@@ -405,12 +432,15 @@ loss = F.cross_entropy(logits, etiquetas)</code></pre>
     'Rompé tu entrenamiento a propósito: learning rate 10x más alto, sin zero_grad(), sin activación. Anotá qué síntoma produce cada error.',
     'En tu modelo de MNIST: verificá la loss inicial, sobreajustá un batch de 32 ejemplos y después entrená con AdamW, warmup, coseno y clipping. Graficá las curvas contra SGD con learning rate fijo y explicá las diferencias.',
     'Afiná un modelo chico de Sentence Transformers con 1.000 pares consulta-documento de tu dominio, usando una loss contrastiva con los negativos del batch. Medí recall@5 sobre 100 consultas de test antes y después del ajuste.',
+    'Estimá la memoria para entrenar completo un modelo de 1B y uno de 7B con Adam en precisión mixta, y compará con LoRA. Después, en un entrenamiento chico, activá acumulación de gradientes y comprobá que las curvas se parecen a las de un batch grande real.',
   ],
   recursos: [
     { t: 'Andrej Karpathy — Neural Networks: Zero to Hero', url: 'https://karpathy.ai/zero-to-hero.html' },
     { t: 'fast.ai — Practical Deep Learning', url: 'https://course.fast.ai/' },
     { t: 'Tutoriales oficiales de PyTorch', url: 'https://pytorch.org/tutorials/' },
     { t: 'Andrej Karpathy — A Recipe for Training Neural Networks', url: 'https://karpathy.github.io/2019/04/25/recipe/' },
+    { t: 'ZeRO: optimizaciones de memoria para entrenar modelos enormes (paper)', url: 'https://arxiv.org/abs/1910.02054' },
+    { t: 'PyTorch — FSDP (entrenamiento con sharding)', url: 'https://docs.pytorch.org/docs/stable/fsdp.html' },
     { t: 'CLIP: Learning Transferable Visual Models From Natural Language Supervision (paper)', url: 'https://arxiv.org/abs/2103.00020' },
     { t: 'Sentence Transformers — Cómo entrenar modelos de embeddings', url: 'https://www.sbert.net/docs/sentence_transformer/training_overview.html' },
     { t: 'AdamW: Decoupled Weight Decay Regularization (paper)', url: 'https://arxiv.org/abs/1711.05101' },
@@ -434,6 +464,11 @@ loss = F.cross_entropy(logits, etiquetas)</code></pre>
     { q: '¿Cómo se clasifica una imagen sin entrenar (zero-shot) con CLIP?', opciones: ['Se reentrena el modelo con tus clases', 'Se agrupan las imágenes con k-means', 'Se le pide al modelo que genere una descripción', 'Se compara el embedding de la imagen con los de textos como "una foto de un perro" y se elige el más parecido'], correcta: 3, explicacion: 'Imágenes y textos comparten espacio vectorial, así que cada clase se describe con un texto y gana la más similar. No hace falta entrenar ni generar texto.' },
     { q: 'Tu modelo de embeddings confunde "contrato de alquiler" con "contrato de trabajo". ¿Qué datos de ajuste ayudan más?', opciones: ['Más pares elegidos al azar', 'Negativos difíciles: pares parecidos en la superficie pero distintos en significado', 'Textos más largos', 'Menos datos'], correcta: 1, explicacion: 'Los negativos al azar ya son fáciles de separar. Los difíciles obligan al modelo a aprender justo la distinción que hoy no hace.' },
     { q: '¿Qué hace la temperatura en logits = similitudes / temperatura?', opciones: ['Controla la aleatoriedad del texto generado', 'Normaliza los vectores', 'Ajusta qué tan "picuda" es la softmax sobre las similitudes y cuánto se castiga a los negativos cercanos', 'Define la dimensión de los embeddings'], correcta: 2, explicacion: 'Una temperatura chica amplifica las diferencias de similitud. Los vectores se normalizan aparte, antes de calcularlas.' },
+    { q: 'Con Adam en precisión mixta, ¿cuánta memoria ocupan aproximadamente los pesos, gradientes y estados del optimizador de un modelo de 7.000 millones de parámetros?', opciones: ['Unos 112 GB (unos 16 bytes por parámetro)', 'Unos 14 GB', 'Unos 7 GB', 'Unos 28 GB'], correcta: 0, explicacion: '2 bytes de pesos + 2 de gradientes + 12 del optimizador = 16 bytes por parámetro. Los 14 GB son solo los pesos en 16 bits, que es lo que necesitás para usarlo, no para entrenarlo.' },
+    { q: 'Querés entrenar con un batch de 256, pero en tu GPU solo entran 32 ejemplos. ¿Qué hacés?', opciones: ['Bajás el batch a 32 y no cambiás nada más', 'Comprás otra GPU', 'Subís el learning rate', 'Usás acumulación de gradientes: 8 micro-batches de 32 antes de cada actualización'], correcta: 3, explicacion: 'Acumulando, el gradiente de cada actualización equivale al de un batch de 256. Solo cambia el tiempo, no la memoria.' },
+    { q: 'Te quedás sin memoria por las activaciones al entrenar con secuencias largas. ¿Qué técnica probás?', opciones: ['Activation checkpointing: guardás menos activaciones y las recalculás en el backward, a cambio de más cómputo', 'Bajar el learning rate', 'Entrenar más epochs', 'Sacar la normalización'], correcta: 0, explicacion: 'Las activaciones crecen con el largo de la secuencia y el batch. Recalcularlas cambia memoria por tiempo de cómputo.' },
+    { q: '¿Qué hace el sharding tipo ZeRO o FSDP?', opciones: ['Comprime el modelo a 4 bits', 'Entrena con una sola GPU', 'Duplica el modelo completo en cada GPU', 'Reparte pesos, gradientes y estados del optimizador entre GPUs, en lugar de que cada una tenga una copia completa'], correcta: 3, explicacion: 'Duplicar todo es el paralelismo de datos clásico, que no ahorra memoria por GPU. El sharding la divide entre todas.' },
+    { q: '¿Por qué LoRA reduce tanto la memoria necesaria para afinar un modelo?', opciones: ['Porque usa menos datos de entrenamiento', 'Porque solo hay gradientes y estados del optimizador para los adaptadores chicos, no para los pesos congelados', 'Porque no usa la GPU', 'Porque no hace backward'], correcta: 1, explicacion: 'Los 12 bytes por parámetro del optimizador y los 2 de gradientes desaparecen para casi todo el modelo. El backward se hace igual, pero solo actualiza los adaptadores.' },
   ],
 },
 {
