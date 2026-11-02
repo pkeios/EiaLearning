@@ -8,8 +8,8 @@ const ctx = { window: {}, document: { getElementById: id => id === 'tema' ? boto
 vm.createContext(ctx);
 vm.runInContext(leer('contenido.js'), ctx);
 vm.runInContext(leer('glosario.js'), ctx);
-vm.runInContext(leer('app.js') + ';this.X = { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos, avance, clavePractica, registrarExamen };', ctx);
-const { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos, avance, clavePractica, registrarExamen } = ctx.X;
+vm.runInContext(leer('app.js') + ';this.X = { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos, avance, clavePractica, registrarExamen, planDeHoy };', ctx);
+const { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos, avance, clavePractica, registrarExamen, planDeHoy } = ctx.X;
 const plano = o => JSON.parse(JSON.stringify(o));
 
 // Inicio renderiza con progreso vacío
@@ -159,6 +159,19 @@ guardado = JSON.stringify({ examen: 50 });
 vm.runInContext('render()', ctx);
 assert.ok(el.h.includes('se habilita al aprobar'));
 guardado = null;
+
+// Qué estudiar hoy: sin progreso, sugiere tarjetas, la primera lección y la primera práctica del primer módulo
+const m0 = ctx.window.TEMARIO[0], h0 = planDeHoy(cargar()).map(x => x.href);
+assert.deepStrictEqual(plano(h0), ['#/tarjetas', '#/m/' + m0.id + '/0', '#/m/' + m0.id]);
+const hp = cargar();
+m0.lecciones.forEach((_, i) => { hp.leidas[m0.id + ':' + i] = true; });
+hp.falladas['x|y'] = true;
+const h1 = planDeHoy(hp).map(x => x.href);
+assert.ok(h1.includes('#/quiz/' + m0.id) && !h1.includes('#/m/' + m0.id + '/0'));
+guardado = null;
+ctx.location.hash = '#/hoy';
+vm.runInContext('render()', ctx);
+assert.ok(el.h.includes('Qué estudiar hoy') && el.h.includes('class="plan"'));
 
 // Repaso vacío muestra un mensaje en lugar de un formulario
 guardado = null;

@@ -118,6 +118,10 @@ textarea { width: 100%; background: var(--bg); color: var(--texto); border: 1px 
 
 mark { background: rgba(250, 204, 21, .4); color: inherit; border-radius: 3px; padding: 0 .1em; }
 
+.plan { padding: 0; list-style: none; }
+.plan li a { display: block; background: var(--card); border: 1px solid var(--borde); border-radius: 12px; padding: .9rem 1.1rem; margin: .6rem 0; color: var(--texto); }
+.plan li a:hover { border-color: var(--acento); text-decoration: none; }
+
 /* Glosario */
 .glosario { margin: 0; }
 .glosario > div { background: var(--card); border: 1px solid var(--borde); border-radius: 12px; padding: .8rem 1.1rem; margin: .6rem 0; }

@@ -117,6 +117,7 @@ function inicio() {
       </div>
       <a class="boton" href="#/m/${siguiente.id}">${aprobados || leidas ? 'Continuar' : 'Empezar'}: ${icono(siguiente)} ${esc(siguiente.titulo)} →</a>
       <div class="datos">
+        <a class="boton secundario" href="#/hoy">📋 Qué estudiar hoy</a>
         <a class="boton secundario" href="#/progreso">📊 Progreso por módulo</a>
         ${p.examen >= APROBADO ? '<a class="boton secundario" href="#/certificado">🎓 Certificado</a>' : ''}
         <button class="secundario" id="exportar">⬇ Exportar progreso</button>
@@ -390,6 +391,34 @@ function certificado() {
   app.querySelector('#imprimir').onclick = () => print();
 }
 
+// Plan corto para hoy: repaso y tarjetas que tocan, y lo siguiente del primer módulo sin aprobar.
+function planDeHoy(p) {
+  const plan = [];
+  const repaso = todas().filter(q => tocaHoy(p, clave(q))).length;
+  if (repaso) plan.push({ texto: `🔁 Repasar ${repaso} ${repaso === 1 ? 'pregunta fallada' : 'preguntas falladas'}`, href: '#/repaso' });
+  const tarjetasHoy = (window.GLOSARIO || []).filter(g => tarjetaToca(p, g.t)).length;
+  if (tarjetasHoy) plan.push({ texto: `🃏 Repasar las tarjetas del glosario (${tarjetasHoy} para hoy)`, href: '#/tarjetas' });
+  const m = T.find(x => !aprobado(x, p));
+  if (m) {
+    const n = m.lecciones.findIndex((_, i) => !p.leidas[m.id + ':' + i]);
+    if (n >= 0) plan.push({ texto: `📖 Leer "${m.lecciones[n].titulo}" (${m.titulo})`, href: `#/m/${m.id}/${n}` });
+    const practica = m.practica.find(x => !p.practicas[clavePractica(m, x)]);
+    if (practica) plan.push({ texto: '🛠️ Práctica: ' + practica, href: `#/m/${m.id}` });
+    if (n < 0) plan.push({ texto: `📝 Hacer el quiz de ${m.titulo}`, href: `#/quiz/${m.id}` });
+  } else if (!(p.examen >= APROBADO)) plan.push({ texto: '🏁 Rendir el examen final', href: '#/examen' });
+  return plan;
+}
+
+function hoy() {
+  const p = cargar(), plan = planDeHoy(p);
+  const corto = t => t.length > 140 ? t.slice(0, 140) + '…' : t;
+  app.innerHTML = `<a class="volver" href="#/">← Temario</a><h1>📋 Qué estudiar hoy</h1>
+    <p class="suave">${p.dias[dia()] ? 'Meta de hoy cumplida ✔. Si querés seguir, esto es lo que viene:' : 'Con hacer uno de estos ya cumplís la meta del día.'}</p>
+    ${plan.length
+      ? `<ol class="plan">${plan.map(x => `<li><a href="${x.href}">${esc(corto(x.texto))}</a></li>`).join('')}</ol>`
+      : '<section class="card"><p>No queda nada pendiente. 🎉 Volvé mañana para el repaso.</p></section>'}`;
+}
+
 function quiz(titulo, preguntas, alTerminar, vacio = 'No hay preguntas pendientes. 🎉') {
   app.innerHTML = `<a class="volver" href="#/">← Temario</a><h1>${esc(titulo)}</h1>
     ${preguntas.length ? `<div class="quiz-estado"><span id="contador">0/${preguntas.length} respondidas</span>${barra(0)}</div>` : `<section class="card"><p>${esc(vacio)}</p></section>`}
@@ -449,6 +478,7 @@ function render() {
   else if (ruta === 'tarjetas') tarjetas();
   else if (ruta === 'progreso') progreso();
   else if (ruta === 'certificado') certificado();
+  else if (ruta === 'hoy') hoy();
   else if (ruta === 'quiz' && T.some(m => m.id === id)) {
     const m = T.find(x => x.id === id);
     quiz(`${icono(m)} Quiz: ${m.titulo}`, mezclar(preguntasDe(m)), (p, pct) => { p.notas[m.id] = Math.max(p.notas[m.id] ?? 0, pct); });

@@ -15,4 +15,5 @@
 - [x] Página de progreso con el porcentaje de aciertos por módulo (de todos los quizzes hechos) para ver los puntos débiles de un vistazo
 - [x] Casillas para marcar cada ejercicio de práctica como hecho, que cuenten en el avance del módulo
 - [x] Al terminar el examen final con 80% o más, mostrar un certificado de finalización imprimible con la fecha y la nota
-- [ ] Página "Qué estudiar hoy" que junte en una lista corta: repaso pendiente, tarjetas del día, la próxima lección sin leer y la próxima práctica sin hacer del módulo actual
+- [x] Página "Qué estudiar hoy" que junte en una lista corta: repaso pendiente, tarjetas del día, la próxima lección sin leer y la próxima práctica sin hacer del módulo actual
+- [ ] Instalable y sin conexión (PWA): manifest y service worker para estudiar desde el celular sin internet
