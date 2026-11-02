@@ -513,6 +513,7 @@ Si los documentos no lo dicen, respondé "No figura en los documentos".</code></
     'Usar streaming, salidas estructuradas, reintentos y caching',
     'Estimar y controlar costo y latencia',
     'Escribir clientes robustos: salidas validadas, reintentos solo para errores transitorios e idempotencia',
+    'Trabajar con imágenes y PDFs en la API: costo en tokens, preparación y limitaciones',
   ],
   lecciones: [
     { titulo: 'Anatomía de una llamada', html: `
@@ -589,18 +590,42 @@ def extraer(texto, intentos=3):
                          {"role": "user", "content": "Ese JSON no es válido: " + str(e) + ". Devolvé solo el JSON corregido."}]
     raise ValueError("no se pudo extraer la factura")</code></pre>
       <p>Fijate en los topes: intentos máximos de validación, de reintentos y un tiempo máximo de espera. Un bucle de reintentos sin límite es una forma rápida de gastar presupuesto y empeorar una caída del proveedor.</p>` },
+    { titulo: 'Más allá del texto: imágenes y PDFs en la API', html: `
+      <p>Muchas tareas reales llegan como imagen o PDF: recibos, capturas de pantalla, formularios escaneados, informes con gráficos. Los modelos actuales los entienden, pero tienen costo y límites propios.</p>
+      <p><strong>Cuánto cuesta una imagen.</strong> En la API de Claude, la imagen se procesa en bloques de 28×28 píxeles y cada bloque es un token visual: <code>tokens = ⌈ancho/28⌉ × ⌈alto/28⌉</code>. Una imagen de 1000×1000 son unos 1.296 tokens. Las imágenes más grandes que el máximo del modelo se reducen antes de procesarse: 1.568 px de lado largo en los modelos estándar y 2.576 px en los de alta resolución.</p>
+      <pre><code>import math
+
+def tokens_imagen(ancho, alto):
+    # válido dentro de los límites del modelo; las imágenes más grandes se reducen antes
+    return math.ceil(ancho / 28) * math.ceil(alto / 28)
+
+tokens_imagen(1000, 1000)   # 1296
+tokens_imagen(200, 200)     # 64
+# 1.000 imágenes de 1000×1000 a 1 USD por millón de tokens ≈ 1,30 USD</code></pre>
+      <p><strong>Cómo prepararlas:</strong></p>
+      <ul>
+        <li><strong>Imagen primero, pregunta después</strong>, igual que con los documentos largos.</li>
+        <li><strong>Recortá la región útil.</strong> Si solo te importa el total de un recibo, mandar solo esa zona baja el costo y suele mejorar la precisión.</li>
+        <li><strong>Resolución suficiente</strong> para que el texto siga legible. Si es demasiado baja, el modelo adivina; si es demasiado alta, se reduce igual y pagás por nada.</li>
+        <li><strong>Enderezá y limpiá:</strong> las imágenes rotadas, borrosas o de menos de 200 px generan más errores.</li>
+      </ul>
+      <p><strong>Limitaciones documentadas:</strong> contar muchos objetos chicos es aproximado; las coordenadas y la ubicación de elementos son aproximadas y hay que verificarlas; no puede determinar si una imagen fue generada por IA; y no identifica personas por su cara.</p>
+      <p><strong>PDFs:</strong> la API puede recibir PDFs directamente y analizar el texto junto con el contenido visual de las páginas (tablas, gráficos). Si el PDF es solo texto y el volumen es alto, extraer el texto antes puede salir más barato. Medí las dos opciones con tus evals.</p>` },
   ],
   practica: [
     'Construí un chatbot de terminal con historial, streaming y un comando /reset. Mostrá tokens y costo estimado de cada turno.',
     'Hacé un extractor que reciba facturas en texto y devuelva JSON validado con Pydantic (o Zod). Si la validación falla, reintentá enviando el error al modelo.',
     'Medí la latencia hasta el primer token con y sin streaming, y con un modelo grande vs uno chico.',
     'Escribí un cliente con timeout, reintentos con backoff y jitter solo para 429/5xx/timeout, y fallback a otro modelo. Probalo con un mock que falle al azar el 30% de las veces y verificá con tests que nunca reintenta un 400 y que respeta el máximo de intentos.',
+    'Armá un extractor de totales a partir de 30 fotos de recibos. Calculá tokens y costo por imagen, compará la foto completa contra un recorte de la zona del total (exactitud y costo) y anotá qué casos fallan, como fotos rotadas o borrosas.',
   ],
   recursos: [
     { t: 'Documentación de la API de Claude', url: 'https://docs.claude.com/' },
     { t: 'Anthropic Cookbook (recetas con código)', url: 'https://github.com/anthropics/anthropic-cookbook' },
     { t: 'Documentación de la API de OpenAI', url: 'https://platform.openai.com/docs' },
     { t: 'Claude — Structured outputs', url: 'https://platform.claude.com/docs/en/build-with-claude/structured-outputs' },
+    { t: 'Claude — Visión (imágenes)', url: 'https://platform.claude.com/docs/en/build-with-claude/vision' },
+    { t: 'Claude — Soporte de PDF', url: 'https://platform.claude.com/docs/en/build-with-claude/pdf-support' },
     { t: 'Pydantic (validación de datos en Python)', url: 'https://docs.pydantic.dev/latest/' },
   ],
   quiz: [
@@ -615,6 +640,11 @@ def extraer(texto, intentos=3):
     { q: 'La API responde 400 invalid_request_error. ¿Qué hace tu cliente?', opciones: ['Reintenta con backoff exponencial', 'Pasa al modelo de respaldo', 'Espera un minuto y reintenta', 'No reintenta: registra el error y se corrige la petición'], correcta: 3, explicacion: 'Un 400 es un error de la petición; repetirla da el mismo resultado. Los reintentos son para errores transitorios como 429, 5xx y timeouts.' },
     { q: 'El modelo devolvió un JSON que no pasa tu validación. ¿Cuál es la mejor estrategia?', opciones: ['Repetir exactamente el mismo prompt', 'Subir max_tokens al máximo', 'Reenviarle su salida junto con el error de validación y pedirle la corrección, con un tope de intentos', 'Mostrarle el JSON roto al usuario'], correcta: 2, explicacion: 'El mensaje de error le dice al modelo qué arreglar, y el tope evita bucles. Repetir el mismo prompt suele repetir el mismo error.' },
     { q: 'Un agente llama a la herramienta cobrar_tarjeta, la llamada da timeout y tu código la reintenta automáticamente. ¿Qué riesgo hay?', opciones: ['Ninguno', 'Solo gastar algunos tokens más', 'Que el modelo aprenda un mal hábito', 'Cobrar dos veces: las acciones con efectos necesitan claves de idempotencia o verificar el estado antes de reintentar'], correcta: 3, explicacion: 'Un timeout no significa que la acción no se ejecutó. Las operaciones con efectos tienen que ser idempotentes o verificarse antes de repetirlas.' },
+    { q: 'En la API de Claude, ¿cuántos tokens visuales ocupa aproximadamente una imagen de 1000×1000 píxeles?', opciones: ['Alrededor de 1.296', '1.000.000', '1.000', '28'], correcta: 0, explicacion: 'Se procesa en bloques de 28×28: ⌈1000/28⌉ = 36, y 36 × 36 = 1.296. No se cobra por píxel.' },
+    { q: 'Procesás 100.000 fotos de recibos de 4000×3000 y solo te interesa el total, que está abajo a la derecha. ¿Cómo bajás el costo sin perder precisión?', opciones: ['Mandás cada foto dos veces y comparás', 'Subís la resolución', 'Recortás la zona útil antes de enviar, con resolución suficiente para que el texto se lea', 'Convertís cada foto a PDF'], correcta: 2, explicacion: 'Menos píxeles irrelevantes es menos tokens y menos distracción. A esa resolución la imagen se reduce igual, así que mandarla completa es pagar por nada.' },
+    { q: 'Tu app tiene que contar cajas en fotos de un depósito con cientos de cajas chicas. ¿Qué riesgo tiene usar un modelo de visión general?', opciones: ['Ninguno', 'Que sea demasiado caro', 'Que sea demasiado lento', 'Que el conteo sea aproximado con muchos objetos chicos: validalo con evals o usá un detector especializado'], correcta: 3, explicacion: 'La documentación avisa que los conteos son aproximados, sobre todo con muchos objetos pequeños. Para conteos exactos conviene un modelo de detección entrenado para eso.' },
+    { q: 'Te piden usar Claude para detectar si una imagen fue generada por IA. ¿Qué respondés?', opciones: ['Que no es confiable: la documentación aclara que no puede determinarlo y puede equivocarse', 'Que funciona perfecto', 'Que funciona solo en alta resolución', 'Que funciona si la imagen viene en un PDF'], correcta: 0, explicacion: 'Es una limitación documentada. Construir un producto sobre esa capacidad daría resultados poco fiables.' },
+    { q: 'Mandás una imagen y una pregunta sobre ella. ¿En qué orden conviene ponerlas?', opciones: ['La pregunta primero y la imagen después', 'Da exactamente igual', 'La imagen primero y la pregunta después, como con los documentos largos', 'La imagen en un mensaje y la pregunta en otra llamada'], correcta: 2, explicacion: 'Igual que con los documentos largos, el contenido arriba y la consulta al final da mejores resultados. Separarlo en otra llamada haría que el modelo no vea la imagen.' },
   ],
 },
 {

@@ -50,6 +50,7 @@ window.GLOSARIO = [
   { t: 'Umbral de decisión', d: 'Probabilidad a partir de la cual el clasificador dice "positivo". Se elige según el costo de cada tipo de error.', m: 'ml-clasico' },
   { t: 'Token', d: 'Trozo de texto, a menudo parte de una palabra, que procesa el modelo. Es la unidad de costo y de contexto.', m: 'llms' },
   { t: 'Tool use', d: 'El modelo pide llamar a una herramienta con ciertos argumentos y tu código la ejecuta.', m: 'agentes' },
+  { t: 'Token visual', d: 'Bloque de una imagen (en Claude, de 28×28 píxeles) que el modelo procesa como un token. Determina el costo de la imagen.', m: 'apis' },
   { t: 'TTFT', d: 'Time to first token: tiempo hasta que llega el primer token de la respuesta.', m: 'produccion' },
   { t: 'Ventana de contexto', d: 'Máximo de tokens, entre entrada y salida, que el modelo puede procesar a la vez.', m: 'llms' },
 ];
