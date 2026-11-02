@@ -832,6 +832,7 @@ Más efectivo:
     'Escribir clientes robustos: salidas validadas, reintentos solo para errores transitorios e idempotencia',
     'Trabajar con imágenes y PDFs en la API: costo en tokens, preparación y limitaciones',
     'Procesar grandes volúmenes con la API de lotes: costo, tiempos y emparejado de resultados',
+    'Diseñar prompts que aprovechen el prompt caching y verificarlo con las métricas de uso',
   ],
   lecciones: [
     { titulo: 'Anatomía de una llamada', html: `
@@ -959,6 +960,31 @@ if client.messages.batches.retrieve(lote.id).processing_status == "ended":
       <p><strong>Cuándo sí:</strong> trabajos masivos sin apuro: clasificar o resumir datos históricos, generar datos sintéticos, correr evals grandes cada noche.</p>
       <p><strong>Cuándo no:</strong> cualquier cosa con un usuario esperando, como un chat o una búsqueda en vivo. Ahí van las llamadas normales, con streaming.</p>
       <p>Diseñá el flujo para que sea asíncrono de verdad: guardá el id del lote, revisá el estado cada tanto (o con una tarea programada), procesá los resultados cuando estén y reintentá solo los que fallaron.</p>` },
+    { titulo: 'Prompt caching en detalle: cómo aprovecharlo de verdad', html: `
+      <p>Ya viste que el prompt caching abarata los prefijos repetidos. Para que funcione en serio hay que entender cómo decide qué se reutiliza. Así funciona en la API de Claude:</p>
+      <ul>
+        <li><strong>Prefijo idéntico:</strong> se cachea el prompt en este orden: herramientas, system y mensajes, hasta el bloque marcado con <code>cache_control</code>. Para que haya acierto, todo ese prefijo tiene que ser idéntico. Se pueden marcar hasta 4 puntos, o usar el modo automático.</li>
+        <li><strong>Duración:</strong> 5 minutos por defecto, y se renueva gratis cada vez que se usa. Hay una opción de 1 hora, más cara de escribir.</li>
+        <li><strong>Precio:</strong> escribir en la caché cuesta 1,25 veces la entrada normal (2 veces con la caché de 1 hora); leer de la caché cuesta 0,1 veces por defecto, y algunos modelos recientes cobran todavía menos.</li>
+        <li><strong>Mínimo:</strong> según el modelo, el prefijo tiene que tener entre 512 y 4.096 tokens. Si es más corto, se procesa sin caché, y sin ningún error que te avise.</li>
+        <li><strong>Qué la invalida:</strong> cambiar una herramienta invalida todo lo que viene después (system y mensajes); cambiar el system invalida el system y los mensajes.</li>
+      </ul>
+      <pre><code>resp = client.messages.create(
+    model="claude-sonnet-5-5", max_tokens=1024,
+    system=[{"type": "text", "text": MANUAL_LARGO,               # lo fijo, primero
+             "cache_control": {"type": "ephemeral"}}],
+    messages=[{"role": "user", "content": pregunta}],            # lo variable, al final
+)
+u = resp.usage
+print(u.cache_creation_input_tokens, u.cache_read_input_tokens, u.input_tokens)
+# si los dos primeros son 0 en todas las llamadas, no estás cacheando nada</code></pre>
+      <p><strong>Cuánto ahorra:</strong> con un system prompt de 10.000 tokens y 1.000 consultas por hora seguidas, sin caché procesás 10 millones de tokens de entrada a precio completo. Con caché, una escritura (10.000 × 1,25) y casi todo el resto como lectura (unos 10 millones × 0,1): alrededor de 1 millón de tokens a precio completo, cerca de un 90% menos. Además, baja el tiempo hasta el primer token.</p>
+      <p><strong>Errores típicos:</strong></p>
+      <ul>
+        <li>Poner la fecha, la hora o el id del usuario al <em>principio</em> del system prompt: cambia el prefijo en cada llamada y la caché nunca acierta. Lo variable va al final.</li>
+        <li>Reordenar o reescribir las herramientas entre llamadas.</li>
+        <li>Usar la caché de 5 minutos con consultas cada 20 minutos: expira antes de reutilizarse. Ahí conviene la de 1 hora.</li>
+      </ul>` },
   ],
   practica: [
     'Construí un chatbot de terminal con historial, streaming y un comando /reset. Mostrá tokens y costo estimado de cada turno.',
@@ -967,12 +993,14 @@ if client.messages.batches.retrieve(lote.id).processing_status == "ended":
     'Escribí un cliente con timeout, reintentos con backoff y jitter solo para 429/5xx/timeout, y fallback a otro modelo. Probalo con un mock que falle al azar el 30% de las veces y verificá con tests que nunca reintenta un 400 y que respeta el máximo de intentos.',
     'Armá un extractor de totales a partir de 30 fotos de recibos. Calculá tokens y costo por imagen, compará la foto completa contra un recorte de la zona del total (exactitud y costo) y anotá qué casos fallan, como fotos rotadas o borrosas.',
     'Mandá 500 clasificaciones por la API de lotes y las mismas 500 en tiempo real, con concurrencia limitada. Compará costo total, tiempo hasta tener todos los resultados y errores, y emparejá los resultados del lote por custom_id.',
+    'Agregá caching a una app con un system prompt largo. En 20 llamadas seguidas medí cache_creation_input_tokens, cache_read_input_tokens, costo y tiempo hasta el primer token, con y sin caché. Después agregá la hora al principio del prompt y observá qué pasa.',
   ],
   recursos: [
     { t: 'Documentación de la API de Claude', url: 'https://docs.claude.com/' },
     { t: 'Anthropic Cookbook (recetas con código)', url: 'https://github.com/anthropics/anthropic-cookbook' },
     { t: 'Documentación de la API de OpenAI', url: 'https://platform.openai.com/docs' },
     { t: 'Claude — Structured outputs', url: 'https://platform.claude.com/docs/en/build-with-claude/structured-outputs' },
+    { t: 'Claude — Prompt caching', url: 'https://platform.claude.com/docs/en/build-with-claude/prompt-caching' },
     { t: 'Claude — Procesamiento por lotes (Message Batches API)', url: 'https://platform.claude.com/docs/en/build-with-claude/batch-processing' },
     { t: 'Claude — Visión (imágenes)', url: 'https://platform.claude.com/docs/en/build-with-claude/vision' },
     { t: 'Claude — Soporte de PDF', url: 'https://platform.claude.com/docs/en/build-with-claude/pdf-support' },
@@ -1000,6 +1028,11 @@ if client.messages.batches.retrieve(lote.id).processing_status == "ended":
     { q: 'Procesás los resultados de un lote suponiendo que vienen en el mismo orden en que mandaste los pedidos, y las etiquetas quedan mezcladas. ¿Qué pasó?', opciones: ['Es un bug del modelo', 'Los resultados pueden volver en cualquier orden: hay que emparejarlos por custom_id', 'Usaste el modelo equivocado', 'El lote expiró'], correcta: 1, explicacion: 'La documentación advierte que el orden no está garantizado. Por eso cada pedido lleva un custom_id único.' },
     { q: '¿Usarías la API de lotes para el chat en vivo de tu app?', opciones: ['Sí, porque es más barata', 'Sí, con un custom_id por mensaje', 'Sí, combinada con caching', 'No: los resultados pueden tardar hasta 24 horas; los lotes son para trabajos no urgentes'], correcta: 3, explicacion: 'Aunque la mayoría de los lotes termina en menos de una hora, no hay garantía de inmediatez. Un usuario que chatea necesita respuesta en segundos.' },
     { q: '¿Durante cuánto tiempo se pueden descargar los resultados de un lote?', opciones: ['Para siempre', '1 hora', '29 días desde su creación', '24 horas'], correcta: 2, explicacion: 'Después de 29 días el lote se puede ver, pero sus resultados ya no se descargan. Las 24 horas son el plazo máximo de procesamiento, no de disponibilidad.' },
+    { q: 'Pusiste la fecha y la hora actuales al principio del system prompt, y la caché nunca acierta. ¿Por qué?', opciones: ['Porque la caché está rota', 'Porque el prefijo cambia en cada llamada y la caché exige que sea idéntico hasta el punto marcado: lo variable va al final', 'Porque falta la caché de 1 hora', 'Por la temperatura'], correcta: 1, explicacion: 'La caché reutiliza prefijos exactos. Un dato que cambia al principio arruina todo lo que viene después.' },
+    { q: 'Por defecto, ¿cuánto cuesta leer tokens de la caché comparado con el precio normal de entrada?', opciones: ['Lo mismo', 'El doble', '1,25 veces', 'Alrededor de 0,1 veces'], correcta: 3, explicacion: 'Leer de la caché cuesta cerca del 10% del precio normal. El 1,25 es el costo de escribirla la primera vez (con la caché de 5 minutos).' },
+    { q: 'Tu system prompt tiene 300 tokens y nunca ves lecturas de caché. ¿Por qué?', opciones: ['Es un bug de la API', 'Está por debajo del mínimo cacheable del modelo (entre 512 y 4.096 tokens según el modelo), así que se procesa sin caché y sin error', 'Falta configurar la duración', 'Es demasiado largo'], correcta: 1, explicacion: 'Los prefijos cortos no se cachean y la API no avisa. Por eso conviene mirar los campos de uso: si las lecturas son siempre 0, no estás cacheando.' },
+    { q: 'Cambiás la descripción de una de tus herramientas. ¿Qué parte de la caché se invalida?', opciones: ['Nada', 'Solo los mensajes', 'Solo el system prompt', 'Todo: herramientas, system y mensajes, porque las herramientas están al principio del prefijo'], correcta: 3, explicacion: 'El orden es herramientas, system y mensajes. Cambiar algo al principio invalida todo lo que viene después.' },
+    { q: 'Tus usuarios hacen una consulta cada 20 minutos, siempre sobre el mismo manual largo. ¿Qué duración de caché elegís?', opciones: ['La de 1 hora: la de 5 minutos expiraría entre una consulta y la siguiente', 'La de 5 minutos', 'Ninguna', 'Da igual'], correcta: 0, explicacion: 'Con 5 minutos pagarías una escritura en cada consulta sin reutilizar nunca. La de 1 hora cuesta más de escribir, pero se aprovecha.' },
   ],
 },
 {
