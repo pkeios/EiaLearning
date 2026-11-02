@@ -10,6 +10,7 @@ window.TEMARIO = [
     'Manejar Python, entornos virtuales y NumPy con soltura',
     'Entender vectores, matrices, producto punto y gradientes',
     'Leer probabilidad básica: distribuciones y softmax',
+    'Entender entropía, entropía cruzada, KL y perplexity: la matemática de la loss de un LLM',
   ],
   lecciones: [
     { titulo: 'Python para IA: lo imprescindible', html: `
@@ -35,17 +36,39 @@ print(y.shape)</code></pre>
       <pre><code>def softmax(z):
     e = np.exp(z - z.max())   # restar el máximo evita overflow
     return e / e.sum()</code></pre>` },
+    { titulo: 'Entropía, entropía cruzada y perplexity: la matemática de la loss', html: `
+      <p>Cuando entrenás o evaluás un LLM vas a ver "loss", "cross-entropy" y "perplexity" en todos lados. Vienen de la teoría de la información y son más simples de lo que parecen.</p>
+      <ul>
+        <li><strong>Sorpresa de un evento:</strong> <code>−log p</code>. Algo con probabilidad 1 no sorprende (0); algo muy improbable sorprende mucho.</li>
+        <li><strong>Entropía</strong> <code>H(p) = −Σ p·log p</code>: la sorpresa promedio, o cuánta incertidumbre hay. Una moneda justa tiene 1 bit; una que sale cara el 99% de las veces, casi 0.</li>
+        <li><strong>Entropía cruzada</strong> <code>H(p, q) = −Σ p·log q</code>: cuánta sorpresa te llevás si la realidad sigue p pero vos predecís con q (tu modelo). Cuando la respuesta correcta es una sola (como el siguiente token), se reduce a <code>−log q(correcto)</code>. <strong>Esa es la loss</strong> de clasificación y de pre-training de un LLM.</li>
+        <li><strong>Divergencia KL</strong> <code>KL(p‖q) = H(p, q) − H(p)</code>: la sorpresa extra por usar q en vez de p. Siempre es ≥ 0 y no es simétrica. Aparece en RLHF y DPO (para que el modelo ajustado no se aleje demasiado del original) y en destilación.</li>
+        <li><strong>Perplexity</strong> = <code>exp(entropía cruzada media por token)</code>: el "número efectivo de opciones" entre las que duda el modelo. Perplexity 1 es predicción perfecta; perplexity 10 es como dudar entre 10 tokens equiprobables.</li>
+      </ul>
+      <pre><code>import numpy as np
+
+# El modelo le da estas probabilidades a 3 tokens posibles; el correcto es el 0
+p_modelo = np.array([0.7, 0.2, 0.1])
+loss = -np.log(p_modelo[0])                 # ≈ 0,357 nats
+
+# En una secuencia: probabilidad que el modelo le dio a cada token correcto
+p_correctos = np.array([0.7, 0.5, 0.9, 0.2])
+entropia_cruzada = -np.log(p_correctos).mean()   # ≈ 0,691
+perplexity = np.exp(entropia_cruzada)            # ≈ 2,0</code></pre>
+      <p><strong>Trampa común:</strong> la perplexity depende del tokenizador. Un modelo que corta el texto en más tokens, más chicos, tiene una perplexity por token distinta para el mismo texto. Para comparar modelos con tokenizadores diferentes hay que normalizar por carácter o por byte.</p>` },
   ],
   practica: [
     'Implementá producto punto, similitud coseno y softmax solo con NumPy y comprobá los resultados a mano con vectores pequeños.',
     'Implementá descenso de gradiente para minimizar f(x) = (x - 3)^2 empezando en x = 0. Probá learning rates 0.01, 0.1 y 1.1 y explicá qué pasa.',
     'Mirá los 4 primeros videos de la serie de redes neuronales de 3Blue1Brown y escribí un resumen de una página.',
+    'Con un modelo chico de Hugging Face (por ejemplo GPT-2), calculá la perplexity de tres textos: uno en inglés, uno en español y uno con palabras al azar. Explicá por qué dan distinto.',
   ],
   recursos: [
     { t: 'Tutorial oficial de Python (español)', url: 'https://docs.python.org/es/3/tutorial/' },
     { t: '3Blue1Brown — Redes neuronales (visual)', url: 'https://www.3blue1brown.com/topics/neural-networks' },
     { t: 'Khan Academy — Álgebra lineal', url: 'https://www.khanacademy.org/math/linear-algebra' },
     { t: 'Dive into Deep Learning (libro gratis, con código)', url: 'https://d2l.ai/' },
+    { t: 'Dive into Deep Learning — Teoría de la información', url: 'https://d2l.ai/chapter_appendix-mathematics-for-deep-learning/information-theory.html' },
   ],
   quiz: [
     { q: '¿Cuánto vale el producto punto de [1, 2, 3] y [4, 5, 6]?', opciones: ['32', '21', '[4, 10, 18]', '15'], correcta: 0, explicacion: '1·4 + 2·5 + 3·6 = 4 + 10 + 18 = 32. [4, 10, 18] es el producto elemento a elemento, que no se suma.' },
@@ -55,6 +78,11 @@ print(y.shape)</code></pre>
     { q: '¿Por qué se usa NumPy en vez de listas de Python para cálculo numérico?', opciones: ['Porque las operaciones vectorizadas corren en código compilado y son mucho más rápidas', 'Porque las listas no pueden guardar números decimales', 'Porque NumPy usa siempre la GPU', 'Porque Python no tiene bucles'], correcta: 0, explicacion: 'NumPy ejecuta las operaciones sobre arrays en C, sin el costo del intérprete por elemento. No usa GPU por sí solo (para eso existen PyTorch o CuPy).' },
     { q: '¿Qué mide la similitud coseno entre dos vectores?', opciones: ['La distancia euclídea', 'El ángulo entre ellos, sin importar su longitud', 'La suma de sus elementos', 'Cuántos elementos son iguales'], correcta: 1, explicacion: 'Coseno = producto punto dividido por el producto de las normas: solo depende de la dirección. Por eso se usa para comparar embeddings.' },
     { q: 'En softmax, ¿por qué se resta el máximo antes de exponenciar?', opciones: ['Para que el resultado sume 0', 'Para que sea más aleatorio', 'Para evitar overflow numérico; el resultado no cambia', 'Para eliminar valores negativos'], correcta: 2, explicacion: 'Restar una constante a todos los logits no cambia el resultado de softmax, pero evita calcular exp() de números enormes.' },
+    { q: 'El modelo le asigna probabilidad 0,25 al token correcto. ¿Cuánto vale la loss de entropía cruzada para ese token (logaritmo natural)?', opciones: ['0,25', '0,75', 'Aproximadamente 1,39', '4'], correcta: 2, explicacion: '−ln(0,25) ≈ 1,386. El 4 es la perplexity de ese token (1/0,25), no la loss.' },
+    { q: '¿Qué significa una perplexity de 1?', opciones: ['Que el modelo le asigna probabilidad 1 a cada token correcto: predicción perfecta', 'Que el modelo duda entre todos los tokens del vocabulario', 'Que es el peor resultado posible', 'Que el modelo no se entrenó'], correcta: 0, explicacion: 'Perplexity = exp(loss). Loss 0 solo ocurre si cada token correcto tiene probabilidad 1, y exp(0) = 1. Cuanto más alta, más duda el modelo.' },
+    { q: 'El modelo A tiene perplexity 8 y el B 12, pero usan tokenizadores distintos. ¿A es mejor?', opciones: ['Sí, siempre', 'No necesariamente: la perplexity por token depende del tokenizador; hay que normalizar por carácter o por byte', 'No: mayor perplexity es mejor', 'Son equivalentes'], correcta: 1, explicacion: 'Si A corta el texto en más tokens, cada uno es más fácil de predecir y su perplexity por token baja sin que el modelo sea mejor. Mayor perplexity es peor, no mejor.' },
+    { q: '¿Por qué RLHF y DPO incluyen una penalización de divergencia KL respecto del modelo de referencia?', opciones: ['Para entrenar más rápido', 'Para usar menos tokens', 'Para mejorar la tokenización', 'Para que el modelo ajustado no se aleje demasiado del original y no explote fallas de la recompensa perdiendo calidad'], correcta: 3, explicacion: 'Sin ese ancla, el modelo puede encontrar respuestas raras que puntúan alto en la recompensa pero son peores. La KL mide cuánto se alejó.' },
+    { q: 'Una moneda justa y otra que sale cara el 99% de las veces. ¿Cuál tiene más entropía?', opciones: ['La cargada', 'Las dos igual', 'La justa: 1 bit, la máxima incertidumbre para dos resultados', 'Ninguna tiene entropía'], correcta: 2, explicacion: 'La entropía mide incertidumbre. Con la cargada casi siempre sabés qué va a salir, así que su entropía es casi 0 (unos 0,08 bits).' },
   ],
 },
 {
