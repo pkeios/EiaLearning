@@ -136,3 +136,4 @@ Lo completa el comando `/mejorar`. Una línea por ejecución.
 - 2026-11-02 · evals · metodología: 4 explicaciones más corrigen la trampa; el módulo pasa a 6/7
 - 2026-11-02 · evals · metodología: ejemplos concretos en las 2 lecciones base (análisis de errores y pipeline en CI); el módulo cumple las 7 metas
 - 2026-11-02 · app · versión para chicos: nombres accesibles distintos para los botones del robot y de Arreglá el sesgo
+- 2026-11-02 · seguridad · metodología: 4 explicaciones más corrigen la trampa; el módulo pasa a 6/7
