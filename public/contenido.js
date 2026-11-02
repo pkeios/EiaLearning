@@ -1470,6 +1470,7 @@ for texto in muestra_de_produccion(5000):
     'Hacer sistemas fiables: validación, fallbacks, versionado',
     'Migrar modelos y prompts en producción con shadow, canary y rollback',
     'Proteger costo y disponibilidad con cuotas, límites de entrada y salida, topes de gasto y detección de abuso',
+    'Manejar datos personales en producción: minimizar, enmascarar, separar por usuario y retener poco',
   ],
   lecciones: [
     { titulo: 'Observabilidad y versionado', html: `
@@ -1546,16 +1547,45 @@ def atender(usuario, mensaje):
         alertar("gasto anómalo")   # además del tope duro en el panel del proveedor
     return resp.texto</code></pre>
       <p>Pensalo como cualquier otro recurso caro: nadie deja una base de datos sin límites de conexiones, y un LLM merece el mismo cuidado.</p>` },
+    { titulo: 'Datos personales en producción: minimizar, enmascarar y retener poco', html: `
+      <p>En una app con LLMs, los datos personales aparecen en lugares que no siempre miramos: los mensajes de los usuarios, los documentos que recupera el RAG, los logs y trazas, la caché y los datasets de evals o de fine-tuning. OWASP incluye la divulgación de información sensible en su Top 10 para aplicaciones LLM, con casos como un usuario que ve datos de otro por una mala separación.</p>
+      <p><strong>Principios prácticos:</strong></p>
+      <ul>
+        <li><strong>Minimizar:</strong> mandale al modelo solo lo que la tarea necesita. Para extraer una fecha de turno no hace falta la historia clínica completa.</li>
+        <li><strong>Enmascarar antes de loguear</strong> (y, si se puede, antes de enviar): emails, teléfonos, documentos, tarjetas. Las librerías como Microsoft Presidio combinan patrones con modelos de reconocimiento de entidades.</li>
+        <li><strong>Separar por usuario:</strong> el retrieval filtra por permisos y la caché nunca se comparte entre usuarios con datos distintos.</li>
+        <li><strong>Retener poco:</strong> definí cuánto tiempo guardás trazas y datasets, quién accede y cómo se borra.</li>
+        <li><strong>Nada de secretos en el prompt:</strong> una credencial en el system prompt puede filtrarse con prompt injection. Las credenciales viven en tu código y en tus herramientas, nunca en el texto que lee el modelo.</li>
+        <li><strong>Transparencia:</strong> avisá qué se guarda y para qué, y ofrecé una forma de no participar. Revisá también la política de retención y de uso de datos de tu proveedor.</li>
+      </ul>
+      <pre><code>import re
+
+PATRONES = {
+    "EMAIL": r"[\\w.+-]+@[\\w-]+\\.[\\w.]+",
+    "TARJETA": r"\\b(?:\\d[ -]?){13,16}\\b",
+    "TELEFONO": r"\\+?\\d[\\d -]{7,}\\d",
+}
+
+def enmascarar(texto):
+    for etiqueta, patron in PATRONES.items():
+        texto = re.sub(patron, f"&lt;{etiqueta}&gt;", texto)
+    return texto
+
+log.info({"usuario": hash_id(usuario), "prompt": enmascarar(prompt), "tokens": uso})</code></pre>
+      <p>Los patrones simples fallan con formatos raros y no detectan nombres ni direcciones; por eso se combinan con detectores más completos y con controles de acceso. Y como advierte OWASP, una instrucción del tipo "nunca reveles datos personales" en el prompt ayuda, pero se puede saltear: los datos sensibles se protegen <em>antes</em> de que lleguen al modelo o a los logs.</p>` },
   ],
   practica: [
     'Agregá a tu app un log por llamada (Postgres o Langfuse) con tokens, costo, latencia y versión de prompt. Hacé un dashboard simple.',
     'Implementá routing: un clasificador barato decide si la consulta va al modelo chico o al grande. Medí ahorro y calidad con tus evals.',
     'Agregá a tu app un canary configurable (porcentaje, modelo y versión de prompt) con hash estable por usuario, y un tablero que compare tasa de éxito, latencia y costo entre estable y canary. Simulá un rollback cambiando solo la configuración.',
     'Agregá a tu app una cuota diaria de tokens por usuario, un límite de tamaño de entrada y una alerta cuando el gasto de la última hora supere el doble del promedio. Simulá un usuario abusivo con un script y verificá que el sistema lo frena.',
+    'Auditá los logs de tu app: buscá emails, teléfonos y tarjetas en 1.000 trazas, agregá enmascarado antes de loguear y escribí un test que falle si una traza nueva contiene alguno de esos patrones.',
   ],
   recursos: [
     { t: 'Langfuse (observabilidad open source)', url: 'https://langfuse.com/docs' },
     { t: 'OpenTelemetry', url: 'https://opentelemetry.io/docs/' },
+    { t: 'OWASP — LLM02:2025 Sensitive Information Disclosure', url: 'https://genai.owasp.org/llmrisk/llm022025-sensitive-information-disclosure/' },
+    { t: 'Presidio — detección y anonimización de datos personales', url: 'https://github.com/data-privacy-stack/presidio' },
     { t: 'OWASP — LLM10:2025 Unbounded Consumption', url: 'https://genai.owasp.org/llmrisk/llm102025-unbounded-consumption/' },
     { t: 'Claude — Ciclo de vida y retiro de modelos', url: 'https://platform.claude.com/docs/en/about-claude/model-deprecations' },
     { t: 'Documentación de prompt caching de Claude', url: 'https://docs.claude.com/en/docs/build-with-claude/prompt-caching' },
@@ -1577,6 +1607,11 @@ def atender(usuario, mensaje):
     { q: 'Un agente con un bug entró en bucle y gastó 400 USD en una noche. ¿Qué le faltaba?', opciones: ['Más GPU', 'Un máximo de pasos y de tokens por tarea, y alertas de gasto anómalo', 'Más contexto', 'Temperatura 0'], correcta: 1, explicacion: 'Un tope por tarea corta el bucle y una alerta avisa a tiempo. El resto de las opciones no limita nada.' },
     { q: 'Un usuario manda una y otra vez mensajes de 300.000 caracteres. ¿Qué hacés?', opciones: ['Los aceptás: es su derecho', 'Subís max_tokens', 'Cambiás de modelo', 'Validás un tamaño máximo de entrada y aplicás una cuota por usuario'], correcta: 3, explicacion: 'Es el patrón de inundación con entradas largas. max_tokens limita la salida, no la entrada, que es lo que se está abusando.' },
     { q: 'Alguien hace millones de consultas variadas a tu modelo afinado, aparentemente para copiarlo. ¿Qué riesgo es y cómo lo mitigás?', opciones: ['Extracción del modelo: rate limits, detección de anomalías en el uso y no exponer logprobs', 'Data leakage: separás mejor train y test', 'Alucinación: pedís citas', 'Overfitting: regularizás el modelo'], correcta: 0, explicacion: 'Las salidas de tu modelo pueden servir como datos para entrenar una copia. Limitar el volumen y detectar patrones raros lo hace mucho más caro.' },
+    { q: 'Tu app guarda en los logs los prompts completos, y ahí aparecen emails y números de tarjeta. ¿Qué hacés?', opciones: ['Nada: los logs son internos', 'Enmascarás los datos personales antes de loguear, retenés poco tiempo y restringís quién accede a los logs', 'Borrás todos los logs', 'Cifrás solo el modelo'], correcta: 1, explicacion: 'Los logs suelen tener más acceso y más retención que la base principal. Borrarlos todos te deja sin forma de depurar; enmascarar resuelve los dos problemas.' },
+    { q: 'Un compañero pone la clave de una API interna en el system prompt "porque el modelo la necesita". ¿Qué le decís?', opciones: ['Que está bien si agrega "no la reveles"', 'Que está bien si la escribe en mayúsculas', 'Que está bien si el modelo es chico', 'Que está mal: puede filtrarse con prompt injection; las credenciales van en tu código o en las herramientas, nunca en el texto que lee el modelo'], correcta: 3, explicacion: 'Todo lo que lee el modelo puede terminar en una respuesta. La herramienta puede usar la credencial sin que el modelo la vea nunca.' },
+    { q: 'Un usuario ve en una respuesta datos de otro cliente. ¿Cuál es una causa típica y cómo se arregla?', opciones: ['Una alucinación: se baja la temperatura', 'Retrieval o caché sin separar por usuario: se filtra por permisos y se aísla la caché', 'Un modelo demasiado chico', 'Un rate limit'], correcta: 1, explicacion: 'Si el dato existe y es real, no es una alucinación: el sistema se lo entregó al modelo. El arreglo está en el control de acceso, no en el modelo.' },
+    { q: 'Tenés que extraer la fecha de un turno de una historia clínica. ¿Qué principio aplicás antes de llamar al modelo?', opciones: ['Ninguno: el modelo necesita todo el contexto', 'Cifrar la respuesta del modelo', 'Agregar más contexto para mejorar la precisión', 'Minimización: le mandás solo la parte necesaria para la tarea'], correcta: 3, explicacion: 'Cuantos menos datos sensibles pasen por el modelo, por los logs y por el proveedor, menor es el riesgo si algo se filtra.' },
+    { q: '¿Alcanza con una instrucción del tipo "nunca reveles datos personales" en el system prompt?', opciones: ['Sí, los modelos la cumplen siempre', 'Sí, si está en inglés', 'Ayuda, pero se puede saltear con prompt injection: los datos sensibles se protegen antes de que lleguen al modelo', 'No sirve para nada en ningún caso'], correcta: 2, explicacion: 'OWASP advierte que esas restricciones no siempre se respetan. Son una capa más, no la defensa principal.' },
   ],
 },
 {
