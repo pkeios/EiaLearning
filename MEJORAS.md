@@ -117,3 +117,4 @@ Lo completa el comando `/mejorar`. Una línea por ejecución.
 - 2026-11-02 · app · versión para chicos: práctica intercalada dentro de las misiones (no solo al final); /validar-aprendizaje revisa también la versión para chicos (pedido del usuario)
 - 2026-11-02 · proyecto · metodología: 5 explicaciones más corrigen la opción tentadora
 - 2026-11-02 · apis · metodología: 5 explicaciones más corrigen la opción tentadora (el módulo supera la meta de retroalimentación)
+- 2026-11-02 · llms · metodología: 5 explicaciones ahora corrigen la opción tentadora
