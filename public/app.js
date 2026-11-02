@@ -2,7 +2,7 @@ const T = window.TEMARIO;
 const app = document.getElementById('app');
 const APROBADO = 80;
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-const cargar = () => ({ leidas: {}, notas: {}, falladas: {}, apuntes: {}, agenda: {}, dias: {}, tarjetas: {}, aciertos: {}, practicas: {}, conocidas: {}, minutos: {}, metaSemanal: 120, intentos: {}, ...JSON.parse(localStorage.getItem('progreso') || '{}') });
+const cargar = () => ({ leidas: {}, notas: {}, falladas: {}, apuntes: {}, agenda: {}, dias: {}, tarjetas: {}, aciertos: {}, practicas: {}, conocidas: {}, minutos: {}, metaSemanal: 120, intentos: {}, historial: {}, ...JSON.parse(localStorage.getItem('progreso') || '{}') });
 const guardar = p => localStorage.setItem('progreso', JSON.stringify(p));
 const mezclar = a => a.map(x => [Math.random(), x]).sort((x, y) => x[0] - y[0]).map(x => x[1]);
 // La clave de una pregunta es su texto: sobrevive a reordenar o insertar preguntas.
@@ -196,7 +196,7 @@ function descargarApuntes() {
 // Si agregás campos nuevos al progreso, sumalos acá también.
 function limpiarProgreso(d) {
   if (!d || typeof d !== 'object' || Array.isArray(d)) throw new Error('formato inválido');
-  const p = { leidas: {}, notas: {}, falladas: {}, apuntes: {}, agenda: {}, dias: {}, tarjetas: {}, aciertos: {}, practicas: {}, conocidas: {}, minutos: {}, metaSemanal: 120, intentos: {} };
+  const p = { leidas: {}, notas: {}, falladas: {}, apuntes: {}, agenda: {}, dias: {}, tarjetas: {}, aciertos: {}, practicas: {}, conocidas: {}, minutos: {}, metaSemanal: 120, intentos: {}, historial: {} };
   for (const k of ['leidas', 'falladas']) for (const c in d[k] || {}) p[k][c] = true;
   for (const c in d.notas || {}) p.notas[c] = Math.min(100, Math.max(0, Number(d.notas[c]) || 0));
   for (const c in d.apuntes || {}) p.apuntes[c] = String(d.apuntes[c]);
@@ -209,6 +209,10 @@ function limpiarProgreso(d) {
   for (const c in d.intentos || {}) {
     const x = d.intentos[c] || {};
     if (/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(x.d) && Array.isArray(x.f)) p.intentos[c] = { d: x.d, f: x.f.map(Number).filter(i => Number.isInteger(i) && i >= 0) };
+  }
+  for (const c in d.historial || {}) {
+    const h = lista(d.historial[c]).filter(x => /^\d{4}-\d{2}-\d{2}$/.test(x?.d)).map(x => ({ d: x.d, n: Math.min(100, Math.max(0, Number(x.n) || 0)) }));
+    if (h.length) p.historial[c] = h.slice(-HISTORIAL);
   }
   if (d.metaSemanal != null) p.metaSemanal = Math.min(3000, Math.max(10, parseInt(d.metaSemanal) || 120));
   for (const c in d.minutos || {}) if (/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(c)) p.minutos[c] = Math.max(0, parseInt(d.minutos[c]) || 0);
@@ -267,6 +271,7 @@ function modulo(id, abrir = null) {
     <div class="cta">
       <a class="boton" href="#/quiz/${m.id}">📝 Hacer el quiz (${m.quiz.length} preguntas)</a>
       <span class="suave">${p.notas[m.id] != null ? 'Mejor nota: ' + p.notas[m.id] + '%' : 'Necesitás ' + APROBADO + '% para aprobar'}</span>
+      ${p.historial[m.id]?.length ? `<span class="suave">Últimos intentos: ${p.historial[m.id].map(x => `${x.d.slice(8)}/${x.d.slice(5, 7)} ${x.n}%`).join(' → ')}</span>` : ''}
     </div>
     <section class="card">
       <h2>🎓 Examen oral con Claude</h2>
@@ -561,14 +566,14 @@ function empaquetar(p) {
       return p.falladas[k] ? [[i, p.agenda[k]?.n ?? 0, p.agenda[k]?.d ?? '']] : [];
     })),
     t: p.tarjetas, no: p.notas, a: p.aciertos, di: p.dias, mi: p.minutos,
-    me: p.metaSemanal, in: p.intentos, ex: p.examen, ef: p.examenFecha, nom: p.nombre,
+    me: p.metaSemanal, in: p.intentos, hi: p.historial, ex: p.examen, ef: p.examenFecha, nom: p.nombre,
   };
 }
 function desempaquetar(d, apuntes = {}) {
   if (!d || d.v !== 1) throw new Error('formato desconocido');
   const p = { leidas: {}, conocidas: {}, practicas: {}, falladas: {}, agenda: {}, apuntes,
     tarjetas: d.t, notas: d.no, aciertos: d.a, dias: d.di, minutos: d.mi,
-    metaSemanal: d.me, intentos: d.in, examen: d.ex, examenFecha: d.ef, nombre: d.nom };
+    metaSemanal: d.me, intentos: d.in, historial: d.hi, examen: d.ex, examenFecha: d.ef, nombre: d.nom };
   for (const m of T) {
     lista(d.l?.[m.id]).forEach(i => { if (m.lecciones[i]) p.leidas[m.id + ':' + i] = true; });
     lista(d.c?.[m.id]).forEach(i => { if (m.lecciones[i]) p.conocidas[claveLeccion(m, m.lecciones[i])] = true; });
@@ -635,6 +640,11 @@ async function traerProgreso(datos) {
 }
 
 let temporizador = null;
+// Nota y fecha de los últimos intentos del quiz de cada módulo, para ver la evolución.
+const HISTORIAL = 5;
+function sumarIntento(p, id, pct) {
+  p.historial[id] = [...(p.historial[id] || []), { d: dia(), n: pct }].slice(-HISTORIAL);
+}
 // Diferencias entre dos intentos: listas de posiciones de preguntas falladas
 function compararIntentos(anterior, ahora) {
   const antes = new Set(anterior), hoy = new Set(ahora);
@@ -715,6 +725,7 @@ function quiz(titulo, preguntas, alTerminar, vacio = 'No hay preguntas pendiente
         comparacion = `<p class="suave">Contra tu intento anterior (${anterior.d}): ✔ ${c.corregidas} que antes fallaste ahora están bien · ✘ ${c.siguen} seguís fallando · ⚠ ${c.nuevas} nuevas falladas</p>`;
       }
       p.intentos[intento] = { d: dia(), f: ahora };
+      sumarIntento(p, intento, pct);
     }
     estudiar(p);
     guardar(p);

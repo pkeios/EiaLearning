@@ -10,8 +10,8 @@ vm.runInContext(leer('contenido.js'), ctx);
 vm.runInContext(leer('glosario.js'), ctx);
 vm.runInContext(leer('vendor/qrcode.js') + ';this.qrcode = qrcode;', ctx);
 ctx.window.qrcode = ctx.qrcode;
-vm.runInContext(leer('app.js') + ';this.X = { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos, avance, clavePractica, registrarExamen, planDeHoy, apuntesMarkdown, esCorrecta, preguntasDeNivel, preguntaObjetivo, cambiarLetra, novedades, marcarConocidas, iniciarNovedades, todasLasLecciones, trozosParaVoz, vozLatina, sumarMinuto, serieMinutos, minutosSemana, textoLogro, empaquetar, desempaquetar, comprimir, descomprimir, compararIntentos };', ctx);
-const { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos, avance, clavePractica, registrarExamen, planDeHoy, apuntesMarkdown, esCorrecta, preguntasDeNivel, preguntaObjetivo, cambiarLetra, novedades, marcarConocidas, iniciarNovedades, todasLasLecciones, trozosParaVoz, vozLatina, sumarMinuto, serieMinutos, minutosSemana, textoLogro, empaquetar, desempaquetar, comprimir, descomprimir, compararIntentos } = ctx.X;
+vm.runInContext(leer('app.js') + ';this.X = { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos, avance, clavePractica, registrarExamen, planDeHoy, apuntesMarkdown, esCorrecta, preguntasDeNivel, preguntaObjetivo, cambiarLetra, novedades, marcarConocidas, iniciarNovedades, todasLasLecciones, trozosParaVoz, vozLatina, sumarMinuto, serieMinutos, minutosSemana, textoLogro, empaquetar, desempaquetar, comprimir, descomprimir, compararIntentos, sumarIntento };', ctx);
+const { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos, avance, clavePractica, registrarExamen, planDeHoy, apuntesMarkdown, esCorrecta, preguntasDeNivel, preguntaObjetivo, cambiarLetra, novedades, marcarConocidas, iniciarNovedades, todasLasLecciones, trozosParaVoz, vozLatina, sumarMinuto, serieMinutos, minutosSemana, textoLogro, empaquetar, desempaquetar, comprimir, descomprimir, compararIntentos, sumarIntento } = ctx.X;
 const plano = o => JSON.parse(JSON.stringify(o));
 
 // Inicio renderiza con progreso vacío
@@ -46,7 +46,7 @@ assert.equal(racha(r), 3);
 const l = limpiarProgreso({ leidas: { 'a:0': 1 }, notas: { a: '<img onerror=x>', b: 150, c: 85 }, apuntes: { a: 5 }, examen: '90', raro: 1,
   falladas: { x: 1 }, agenda: { x: { n: '9', d: '<x>' }, y: { n: 1, d: '2026-12-01' } }, dias: { '2026-11-01': '2', 'malo': 5, '2026-10-31': -3 } });
 assert.deepStrictEqual(plano(l), { leidas: { 'a:0': true }, notas: { a: 0, b: 100, c: 85 }, falladas: { x: true }, apuntes: { a: '5' },
-  agenda: { x: { n: 3, d: dia() }, y: { n: 1, d: '2026-12-01' } }, dias: { '2026-11-01': 2, '2026-10-31': 0 }, tarjetas: {}, aciertos: {}, practicas: {}, conocidas: {}, minutos: {}, metaSemanal: 120, intentos: {}, examen: 90 });
+  agenda: { x: { n: 3, d: dia() }, y: { n: 1, d: '2026-12-01' } }, dias: { '2026-11-01': 2, '2026-10-31': 0 }, tarjetas: {}, aciertos: {}, practicas: {}, conocidas: {}, minutos: {}, metaSemanal: 120, intentos: {}, historial: {}, examen: 90 });
 for (const malo of [null, [], 5, 'x']) assert.throws(() => limpiarProgreso(malo));
 
 // Buscador: sin tildes ni mayúsculas, todas las palabras deben aparecer
@@ -276,6 +276,12 @@ assert.equal(cargar().metaSemanal, 120);
 const tl = textoLogro('el módulo "RAG"', 92, 'https://ejemplo.dev/curso/');
 assert.ok(tl.includes('el módulo "RAG"') && tl.includes('92%') && tl.endsWith('https://ejemplo.dev/curso/'));
 
+// Historial de intentos: guarda los últimos 5 y se valida al importar
+const ph = { historial: {} };
+for (let i = 1; i <= 7; i++) sumarIntento(ph, 'rag', i * 10);
+assert.deepStrictEqual(plano(ph.historial.rag.map(x => x.n)), [30, 40, 50, 60, 70]);
+assert.equal(ph.historial.rag[0].d, dia());
+assert.deepStrictEqual(plano(limpiarProgreso({ historial: { rag: [{ d: '2026-11-01', n: 150 }, { d: 'ayer', n: 50 }, null], x: 'no' } }).historial), { rag: [{ d: '2026-11-01', n: 100 }] });
 // Comparar intentos: corregidas, las que siguen fallando y las nuevas
 assert.deepStrictEqual(plano(compararIntentos([1, 2, 3], [3, 5])), { corregidas: 2, siguen: 1, nuevas: 1 });
 assert.deepStrictEqual(plano(compararIntentos([], [])), { corregidas: 0, siguen: 0, nuevas: 0 });
@@ -302,9 +308,10 @@ TP.forEach(m => {
 for (let i = 1; i <= 28; i++) { const d = '2026-10-' + String(i).padStart(2, '0'); pesado.dias[d] = 2; pesado.minutos[d] = 25; }
 pesado.apuntes[TP[0].id] = 'apunte del origen';
 pesado.intentos[TP[0].id] = { d: '2026-11-01', f: [1, 4] };
+pesado.historial[TP[0].id] = [{ d: '2026-10-30', n: 60 }, { d: '2026-11-01', n: 85 }];
 const paquete = JSON.parse(JSON.stringify(empaquetar(pesado)));
 const traido = desempaquetar(paquete, { destino: 'apunte del destino' });
-for (const k of ['leidas', 'conocidas', 'practicas', 'falladas', 'agenda', 'notas', 'aciertos', 'minutos', 'dias', 'intentos']) {
+for (const k of ['leidas', 'conocidas', 'practicas', 'falladas', 'agenda', 'notas', 'aciertos', 'minutos', 'dias', 'intentos', 'historial']) {
   assert.deepStrictEqual(plano(traido[k]), plano(pesado[k]), 'se perdió ' + k);
 }
 assert.deepStrictEqual(plano(traido.apuntes), { destino: 'apunte del destino' });
