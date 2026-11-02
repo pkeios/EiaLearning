@@ -687,6 +687,7 @@ optimizado = dspy.BootstrapFewShot(metric=metrica).compile(programa, trainset=ej
     'Estimar y controlar costo y latencia',
     'Escribir clientes robustos: salidas validadas, reintentos solo para errores transitorios e idempotencia',
     'Trabajar con imágenes y PDFs en la API: costo en tokens, preparación y limitaciones',
+    'Procesar grandes volúmenes con la API de lotes: costo, tiempos y emparejado de resultados',
   ],
   lecciones: [
     { titulo: 'Anatomía de una llamada', html: `
@@ -784,6 +785,36 @@ tokens_imagen(200, 200)     # 64
       </ul>
       <p><strong>Limitaciones documentadas:</strong> contar muchos objetos chicos es aproximado; las coordenadas y la ubicación de elementos son aproximadas y hay que verificarlas; no puede determinar si una imagen fue generada por IA; y no identifica personas por su cara.</p>
       <p><strong>PDFs:</strong> la API puede recibir PDFs directamente y analizar el texto junto con el contenido visual de las páginas (tablas, gráficos). Si el PDF es solo texto y el volumen es alto, extraer el texto antes puede salir más barato. Medí las dos opciones con tus evals.</p>` },
+    { titulo: 'Procesamiento por lotes: la mitad del precio para lo que no es urgente', html: `
+      <p>Clasificar dos millones de tickets históricos, correr una eval grande o enriquecer un catálogo no necesitan respuesta inmediata. Para eso existen las APIs de lotes. En la de Claude (Message Batches API):</p>
+      <ul>
+        <li>Cuesta <strong>50% menos</strong> que las llamadas estándar.</li>
+        <li>Cada lote admite hasta 100.000 pedidos o 256 MB, lo que se alcance primero.</li>
+        <li>La mayoría termina en menos de una hora; los resultados están disponibles cuando terminan todos los pedidos o a las 24 horas, lo que pase primero.</li>
+        <li>Los resultados quedan disponibles 29 días.</li>
+        <li><strong>Los resultados pueden volver en cualquier orden.</strong> Cada pedido lleva un <code>custom_id</code> para emparejarlo con su resultado.</li>
+        <li>Se puede combinar con prompt caching. Como los pedidos se procesan en paralelo y sin orden fijo, los aciertos de caché no están garantizados; la documentación sugiere la caché de 1 hora para mejorar las chances.</li>
+      </ul>
+      <pre><code>import anthropic
+client = anthropic.Anthropic()
+
+lote = client.messages.batches.create(requests=[
+    {"custom_id": f"ticket-{t.id}",
+     "params": {"model": "claude-haiku-5-5", "max_tokens": 20,
+                "messages": [{"role": "user", "content": "Categoría (una palabra) de: " + t.texto}]}}
+    for t in tickets
+])
+
+# Más tarde (minutos u horas): consultás el estado y, si terminó, bajás los resultados
+if client.messages.batches.retrieve(lote.id).processing_status == "ended":
+    for r in client.messages.batches.results(lote.id):
+        if r.result.type == "succeeded":
+            guardar(r.custom_id, r.result.message.content[0].text)   # emparejar por custom_id
+        else:
+            reintentar_despues(r.custom_id)</code></pre>
+      <p><strong>Cuándo sí:</strong> trabajos masivos sin apuro: clasificar o resumir datos históricos, generar datos sintéticos, correr evals grandes cada noche.</p>
+      <p><strong>Cuándo no:</strong> cualquier cosa con un usuario esperando, como un chat o una búsqueda en vivo. Ahí van las llamadas normales, con streaming.</p>
+      <p>Diseñá el flujo para que sea asíncrono de verdad: guardá el id del lote, revisá el estado cada tanto (o con una tarea programada), procesá los resultados cuando estén y reintentá solo los que fallaron.</p>` },
   ],
   practica: [
     'Construí un chatbot de terminal con historial, streaming y un comando /reset. Mostrá tokens y costo estimado de cada turno.',
@@ -791,12 +822,14 @@ tokens_imagen(200, 200)     # 64
     'Medí la latencia hasta el primer token con y sin streaming, y con un modelo grande vs uno chico.',
     'Escribí un cliente con timeout, reintentos con backoff y jitter solo para 429/5xx/timeout, y fallback a otro modelo. Probalo con un mock que falle al azar el 30% de las veces y verificá con tests que nunca reintenta un 400 y que respeta el máximo de intentos.',
     'Armá un extractor de totales a partir de 30 fotos de recibos. Calculá tokens y costo por imagen, compará la foto completa contra un recorte de la zona del total (exactitud y costo) y anotá qué casos fallan, como fotos rotadas o borrosas.',
+    'Mandá 500 clasificaciones por la API de lotes y las mismas 500 en tiempo real, con concurrencia limitada. Compará costo total, tiempo hasta tener todos los resultados y errores, y emparejá los resultados del lote por custom_id.',
   ],
   recursos: [
     { t: 'Documentación de la API de Claude', url: 'https://docs.claude.com/' },
     { t: 'Anthropic Cookbook (recetas con código)', url: 'https://github.com/anthropics/anthropic-cookbook' },
     { t: 'Documentación de la API de OpenAI', url: 'https://platform.openai.com/docs' },
     { t: 'Claude — Structured outputs', url: 'https://platform.claude.com/docs/en/build-with-claude/structured-outputs' },
+    { t: 'Claude — Procesamiento por lotes (Message Batches API)', url: 'https://platform.claude.com/docs/en/build-with-claude/batch-processing' },
     { t: 'Claude — Visión (imágenes)', url: 'https://platform.claude.com/docs/en/build-with-claude/vision' },
     { t: 'Claude — Soporte de PDF', url: 'https://platform.claude.com/docs/en/build-with-claude/pdf-support' },
     { t: 'Pydantic (validación de datos en Python)', url: 'https://docs.pydantic.dev/latest/' },
@@ -818,6 +851,11 @@ tokens_imagen(200, 200)     # 64
     { q: 'Tu app tiene que contar cajas en fotos de un depósito con cientos de cajas chicas. ¿Qué riesgo tiene usar un modelo de visión general?', opciones: ['Ninguno', 'Que sea demasiado caro', 'Que sea demasiado lento', 'Que el conteo sea aproximado con muchos objetos chicos: validalo con evals o usá un detector especializado'], correcta: 3, explicacion: 'La documentación avisa que los conteos son aproximados, sobre todo con muchos objetos pequeños. Para conteos exactos conviene un modelo de detección entrenado para eso.' },
     { q: 'Te piden usar Claude para detectar si una imagen fue generada por IA. ¿Qué respondés?', opciones: ['Que no es confiable: la documentación aclara que no puede determinarlo y puede equivocarse', 'Que funciona perfecto', 'Que funciona solo en alta resolución', 'Que funciona si la imagen viene en un PDF'], correcta: 0, explicacion: 'Es una limitación documentada. Construir un producto sobre esa capacidad daría resultados poco fiables.' },
     { q: 'Mandás una imagen y una pregunta sobre ella. ¿En qué orden conviene ponerlas?', opciones: ['La pregunta primero y la imagen después', 'Da exactamente igual', 'La imagen primero y la pregunta después, como con los documentos largos', 'La imagen en un mensaje y la pregunta en otra llamada'], correcta: 2, explicacion: 'Igual que con los documentos largos, el contenido arriba y la consulta al final da mejores resultados. Separarlo en otra llamada haría que el modelo no vea la imagen.' },
+    { q: '¿Cuánto más barata es la API de lotes de Claude frente a las llamadas estándar?', opciones: ['10%', '50% de descuento', '90%', 'Cuesta lo mismo'], correcta: 1, explicacion: 'La documentación indica una reducción del 50% a cambio de procesamiento asíncrono, con resultados en hasta 24 horas.' },
+    { q: 'Tenés que clasificar 2 millones de tickets históricos para un informe del mes que viene. ¿Qué usás?', opciones: ['Streaming', 'Llamadas en tiempo real con la máxima concurrencia posible', 'Llamadas una por una', 'La API de lotes: no es urgente, cuesta la mitad y tiene más capacidad'], correcta: 3, explicacion: 'Sin un usuario esperando, pagar el precio de tiempo real no tiene sentido. La concurrencia máxima además choca con los rate limits.' },
+    { q: 'Procesás los resultados de un lote suponiendo que vienen en el mismo orden en que mandaste los pedidos, y las etiquetas quedan mezcladas. ¿Qué pasó?', opciones: ['Es un bug del modelo', 'Los resultados pueden volver en cualquier orden: hay que emparejarlos por custom_id', 'Usaste el modelo equivocado', 'El lote expiró'], correcta: 1, explicacion: 'La documentación advierte que el orden no está garantizado. Por eso cada pedido lleva un custom_id único.' },
+    { q: '¿Usarías la API de lotes para el chat en vivo de tu app?', opciones: ['Sí, porque es más barata', 'Sí, con un custom_id por mensaje', 'Sí, combinada con caching', 'No: los resultados pueden tardar hasta 24 horas; los lotes son para trabajos no urgentes'], correcta: 3, explicacion: 'Aunque la mayoría de los lotes termina en menos de una hora, no hay garantía de inmediatez. Un usuario que chatea necesita respuesta en segundos.' },
+    { q: '¿Durante cuánto tiempo se pueden descargar los resultados de un lote?', opciones: ['Para siempre', '1 hora', '29 días desde su creación', '24 horas'], correcta: 2, explicacion: 'Después de 29 días el lote se puede ver, pero sus resultados ya no se descargan. Las 24 horas son el plazo máximo de procesamiento, no de disponibilidad.' },
   ],
 },
 {

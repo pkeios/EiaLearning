@@ -7,6 +7,7 @@ window.GLOSARIO = [
   { t: 'Atención', d: 'Mecanismo por el que cada token pondera la información de los demás según la similitud entre su query y las keys de los otros.', m: 'llms' },
   { t: 'Backoff exponencial', d: 'Esperar cada vez más entre reintentos, con algo de azar (jitter), para no saturar a un servicio caído.', m: 'apis' },
   { t: 'Backpropagation', d: 'Algoritmo que calcula el gradiente de la loss respecto de cada parámetro aplicando la regla de la cadena.', m: 'deep-learning' },
+  { t: 'API de lotes (batch)', d: 'Forma de enviar muchos pedidos juntos para procesarlos de manera asíncrona, más barata que las llamadas en tiempo real. Para trabajos sin apuro.', m: 'apis' },
   { t: 'Batching continuo', d: 'Servir varias secuencias a la vez dejando que los pedidos entren y salgan del lote en cada paso de generación.', m: 'fine-tuning' },
   { t: 'BM25', d: 'Búsqueda léxica clásica que puntúa documentos por coincidencia de términos. Muy buena para nombres y códigos exactos.', m: 'rag' },
   { t: 'Calibración', d: 'Que las probabilidades de un modelo coincidan con la frecuencia real: de los casos con 0,8, que acierte cerca del 80%.', m: 'ml-clasico' },
