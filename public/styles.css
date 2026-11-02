@@ -120,6 +120,9 @@ mark { background: rgba(250, 204, 21, .4); color: inherit; border-radius: 3px; p
 .glosario dt { font-weight: 800; }
 .glosario dd { margin: .2rem 0 0; color: var(--suave); }
 
+.tarjeta-glosario { text-align: center; padding: 2.5rem 1.5rem; min-height: 180px; }
+.tarjeta-glosario p { color: var(--suave); font-size: 1.1rem; }
+
 /* Quiz */
 .quiz-estado { position: sticky; top: 62px; z-index: 5; background: var(--cabecera); backdrop-filter: blur(8px); padding: .5rem 0; color: var(--suave); font-size: .9rem; }
 .pregunta { background: var(--card); border: 1px solid var(--borde); border-radius: var(--radio); margin: 1rem 0; padding: 1.2rem 1.3rem; }

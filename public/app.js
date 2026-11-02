@@ -2,7 +2,7 @@ const T = window.TEMARIO;
 const app = document.getElementById('app');
 const APROBADO = 80;
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-const cargar = () => ({ leidas: {}, notas: {}, falladas: {}, apuntes: {}, agenda: {}, dias: {}, ...JSON.parse(localStorage.getItem('progreso') || '{}') });
+const cargar = () => ({ leidas: {}, notas: {}, falladas: {}, apuntes: {}, agenda: {}, dias: {}, tarjetas: {}, ...JSON.parse(localStorage.getItem('progreso') || '{}') });
 const guardar = p => localStorage.setItem('progreso', JSON.stringify(p));
 const mezclar = a => a.map(x => [Math.random(), x]).sort((x, y) => x[0] - y[0]).map(x => x[1]);
 // La clave de una pregunta es su texto: sobrevive a reordenar o insertar preguntas.
@@ -58,6 +58,12 @@ function racha(p) {
   let n = 0;
   for (let i = p.dias[dia()] ? 0 : 1; p.dias[dia(-i)]; i++) n++;
   return n;
+}
+// Tarjetas del glosario: "la sabía" la aleja 1, 3, 7 y 14 días; "no la sabía" la deja para hoy.
+const tarjetaToca = (p, t) => !p.tarjetas[t] || p.tarjetas[t].d <= dia();
+function calificarTarjeta(p, t, sabia) {
+  const n = sabia ? (p.tarjetas[t]?.n ?? -1) + 1 : 0;
+  p.tarjetas[t] = { n, d: sabia ? dia(INTERVALOS[Math.min(n, INTERVALOS.length - 1)]) : dia() };
 }
 function registrar(p, k, ok) {
   if (!ok) { p.falladas[k] = true; p.agenda[k] = { n: 0, d: dia(INTERVALOS[0]) }; return; }
@@ -127,13 +133,17 @@ function exportar() {
 // Si agregás campos nuevos al progreso, sumalos acá también.
 function limpiarProgreso(d) {
   if (!d || typeof d !== 'object' || Array.isArray(d)) throw new Error('formato inválido');
-  const p = { leidas: {}, notas: {}, falladas: {}, apuntes: {}, agenda: {}, dias: {} };
+  const p = { leidas: {}, notas: {}, falladas: {}, apuntes: {}, agenda: {}, dias: {}, tarjetas: {} };
   for (const k of ['leidas', 'falladas']) for (const c in d[k] || {}) p[k][c] = true;
   for (const c in d.notas || {}) p.notas[c] = Math.min(100, Math.max(0, Number(d.notas[c]) || 0));
   for (const c in d.apuntes || {}) p.apuntes[c] = String(d.apuntes[c]);
   for (const c in d.agenda || {}) {
     const a = d.agenda[c] || {};
     p.agenda[c] = { n: Math.min(INTERVALOS.length - 1, Math.max(0, parseInt(a.n) || 0)), d: /^\d{4}-\d{2}-\d{2}$/.test(a.d) ? a.d : dia() };
+  }
+  for (const c in d.tarjetas || {}) {
+    const a = d.tarjetas[c] || {};
+    p.tarjetas[c] = { n: Math.max(0, parseInt(a.n) || 0), d: /^\d{4}-\d{2}-\d{2}$/.test(a.d) ? a.d : dia() };
   }
   for (const c in d.dias || {}) if (/^\d{4}-\d{2}-\d{2}$/.test(c)) p.dias[c] = Math.max(0, parseInt(d.dias[c]) || 0);
   if (d.examen != null) p.examen = Math.min(100, Math.max(0, Number(d.examen) || 0));
@@ -256,6 +266,7 @@ function busqueda() {
 function glosario() {
   const G = [...(window.GLOSARIO || [])].sort((a, b) => a.t.localeCompare(b.t, 'es'));
   app.innerHTML = `<a class="volver" href="#/">← Temario</a><h1>📖 Glosario</h1>
+    <p><a class="boton" href="#/tarjetas">🃏 Repasar con tarjetas</a></p>
     <input id="filtro" type="search" class="buscador" placeholder="Filtrar términos..." aria-label="Filtrar el glosario">
     <dl class="glosario">${G.map(g => {
       const m = T.find(x => x.id === g.m);
@@ -272,6 +283,39 @@ function glosario() {
 
 // Agrupa las preguntas falladas por módulo, en el orden del temario: [[modulo, cantidad], ...]
 const modulosAFallas = fallas => T.map(m => [m, fallas.filter(q => q.m === m.id).length]).filter(([, n]) => n);
+
+function tarjetas() {
+  const mazo = mezclar((window.GLOSARIO || []).filter(g => tarjetaToca(cargar(), g.t)));
+  let i = 0, vuelta = false;
+  const pintar = () => {
+    if (i >= mazo.length) {
+      const proximas = Object.values(cargar().tarjetas).map(x => x.d).filter(d => d > dia()).sort();
+      app.innerHTML = `<a class="volver" href="#/glosario">← Glosario</a><h1>🃏 Tarjetas</h1>
+        <section class="card"><p>No hay más tarjetas para hoy. 🎉${proximas.length ? ' Próximo repaso: ' + proximas[0] + '.' : ''}</p></section>`;
+      return;
+    }
+    const g = mazo[i];
+    app.innerHTML = `<a class="volver" href="#/glosario">← Glosario</a><h1>🃏 Tarjetas</h1>
+      <p class="suave">${mazo.length - i} para hoy. Pensá la definición antes de dar vuelta la tarjeta.</p>
+      <section class="card tarjeta-glosario"><h2>${esc(g.t)}</h2>${vuelta ? `<p>${esc(g.d)}</p>` : ''}</section>
+      ${vuelta
+        ? '<button id="no-sabia" class="secundario">✘ No la sabía</button> <button id="sabia">✔ La sabía</button>'
+        : '<button id="dar-vuelta">Dar vuelta</button>'}`;
+    const calificar = sabia => {
+      const p = cargar();
+      calificarTarjeta(p, g.t, sabia);
+      estudiar(p);
+      guardar(p);
+      if (!sabia) mazo.push(g); // vuelve al final del mazo en esta misma sesión
+      i++; vuelta = false; pintar();
+    };
+    if (vuelta) {
+      app.querySelector('#sabia').onclick = () => calificar(true);
+      app.querySelector('#no-sabia').onclick = () => calificar(false);
+    } else app.querySelector('#dar-vuelta').onclick = () => { vuelta = true; pintar(); };
+  };
+  pintar();
+}
 
 function quiz(titulo, preguntas, alTerminar, vacio = 'No hay preguntas pendientes. 🎉') {
   app.innerHTML = `<a class="volver" href="#/">← Temario</a><h1>${esc(titulo)}</h1>
@@ -328,6 +372,7 @@ function render() {
   if (ruta === 'm') modulo(id, leccion != null && leccion !== '' ? Number(leccion) : null);
   else if (ruta === 'buscar') busqueda();
   else if (ruta === 'glosario') glosario();
+  else if (ruta === 'tarjetas') tarjetas();
   else if (ruta === 'quiz' && T.some(m => m.id === id)) {
     const m = T.find(x => x.id === id);
     quiz(`${icono(m)} Quiz: ${m.titulo}`, mezclar(preguntasDe(m)), (p, pct) => { p.notas[m.id] = Math.max(p.notas[m.id] ?? 0, pct); });
