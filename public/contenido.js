@@ -259,6 +259,7 @@ def clasificar(texto):
     'Escribir un bucle de entrenamiento en PyTorch',
     'Conocer MLP, CNN y RNN y por qué los Transformers las desplazaron en lenguaje',
     'Entrenar de forma estable (AdamW, warmup y coseno, clipping, bf16) y diagnosticar con las curvas de loss',
+    'Entender el aprendizaje contrastivo con el que se entrenan los modelos de embeddings y CLIP',
   ],
   lecciones: [
     { titulo: 'Cómo aprende una red neuronal', html: `
@@ -316,18 +317,39 @@ for x, y in loader:
         <li>Picos o NaN de golpe: learning rate muy alto, falta clipping o warmup.</li>
         <li>No se mueve nada: casi siempre un bug (parámetros congelados, etiquetas mal alineadas, falta zero_grad).</li>
       </ul>` },
+    { titulo: 'Aprendizaje contrastivo: cómo se entrenan los embeddings (y CLIP)', html: `
+      <p>Los modelos de embeddings que usás en RAG no se entrenan para predecir el siguiente token, sino con <strong>aprendizaje contrastivo</strong>: acercar en el espacio vectorial lo que va junto y alejar lo que no.</p>
+      <p><strong>La idea:</strong> tomás un batch de N pares positivos, por ejemplo (consulta, documento que la responde). Calculás la similitud de cada consulta con <em>todos</em> los documentos del batch: eso da una matriz N×N. Los pares correctos están en la <strong>diagonal</strong>; el resto funcionan como negativos gratis. La loss es una entropía cruzada que, en cada fila, premia elegir la diagonal (se la conoce como InfoNCE).</p>
+      <pre><code>import torch
+import torch.nn.functional as F
+
+a = F.normalize(codificar(consultas), dim=-1)    # (N, d)
+b = F.normalize(codificar(documentos), dim=-1)   # (N, d); b[i] es el par de a[i]
+logits = a @ b.T / 0.05                          # similitudes divididas por la temperatura
+etiquetas = torch.arange(len(a))                 # el positivo de la fila i está en la columna i
+loss = F.cross_entropy(logits, etiquetas)</code></pre>
+      <ul>
+        <li><strong>Batch grande:</strong> cada ejemplo se compara contra más negativos, y la señal de entrenamiento es más informativa.</li>
+        <li><strong>Temperatura:</strong> dividir por un número chico vuelve más "picuda" la softmax y castiga más a los negativos que quedan cerca del positivo.</li>
+        <li><strong>Negativos difíciles:</strong> pares que se parecen en la superficie pero significan otra cosa ("contrato de alquiler" contra "contrato de trabajo"). Son los que más le enseñan al modelo a distinguir.</li>
+      </ul>
+      <p><strong>CLIP</strong> (OpenAI, 2021) aplicó esta idea a imágenes y texto: entrenó un codificador de imágenes y uno de texto con unos 400 millones de pares imagen-descripción, con la loss en las dos direcciones. Así, imágenes y textos quedan en el mismo espacio y se puede <strong>clasificar sin entrenar</strong> (zero-shot): comparás el embedding de una imagen con los de textos como "una foto de un perro" o "una foto de un gato" y elegís el más parecido.</p>
+      <p>Por eso, cuando un modelo de embeddings genérico no distingue bien los conceptos de tu dominio, una opción es afinarlo con pares propios y negativos difíciles. Librerías como Sentence Transformers traen estas losses listas.</p>` },
   ],
   practica: [
     'Seguí "Neural Networks: Zero to Hero" de Andrej Karpathy hasta micrograd: implementá backpropagation desde cero.',
     'Entrená en PyTorch un MLP sobre MNIST. Después cambiá a una CNN pequeña y compará accuracy y cantidad de parámetros.',
     'Rompé tu entrenamiento a propósito: learning rate 10x más alto, sin zero_grad(), sin activación. Anotá qué síntoma produce cada error.',
     'En tu modelo de MNIST: verificá la loss inicial, sobreajustá un batch de 32 ejemplos y después entrená con AdamW, warmup, coseno y clipping. Graficá las curvas contra SGD con learning rate fijo y explicá las diferencias.',
+    'Afiná un modelo chico de Sentence Transformers con 1.000 pares consulta-documento de tu dominio, usando una loss contrastiva con los negativos del batch. Medí recall@5 sobre 100 consultas de test antes y después del ajuste.',
   ],
   recursos: [
     { t: 'Andrej Karpathy — Neural Networks: Zero to Hero', url: 'https://karpathy.ai/zero-to-hero.html' },
     { t: 'fast.ai — Practical Deep Learning', url: 'https://course.fast.ai/' },
     { t: 'Tutoriales oficiales de PyTorch', url: 'https://pytorch.org/tutorials/' },
     { t: 'Andrej Karpathy — A Recipe for Training Neural Networks', url: 'https://karpathy.github.io/2019/04/25/recipe/' },
+    { t: 'CLIP: Learning Transferable Visual Models From Natural Language Supervision (paper)', url: 'https://arxiv.org/abs/2103.00020' },
+    { t: 'Sentence Transformers — Cómo entrenar modelos de embeddings', url: 'https://www.sbert.net/docs/sentence_transformer/training_overview.html' },
     { t: 'AdamW: Decoupled Weight Decay Regularization (paper)', url: 'https://arxiv.org/abs/1711.05101' },
     { t: 'Deep Learning Book (Goodfellow et al.)', url: 'https://www.deeplearningbook.org/' },
   ],
@@ -344,6 +366,11 @@ for x, y in loader:
     { q: 'El entrenamiento va bien y de golpe la loss salta a NaN. ¿Qué probás primero?', opciones: ['Bajar el learning rate y agregar gradient clipping (y revisar el warmup)', 'Entrenar más epochs', 'Sacar el set de validación', 'Agregar más dropout'], correcta: 0, explicacion: 'Un NaN repentino suele ser una explosión de gradientes por pasos demasiado grandes. Dropout regulariza, pero no evita explosiones.' },
     { q: '¿Por qué se usa warmup del learning rate al inicio del entrenamiento?', opciones: ['Para ahorrar memoria', 'Para aprender más rápido al final', 'Porque al principio los gradientes y las estimaciones de Adam son inestables, y un learning rate alto puede desestabilizar el entrenamiento', 'Para tokenizar mejor'], correcta: 2, explicacion: 'Los promedios móviles de Adam arrancan sin historia. Subir el learning rate de a poco da tiempo a que se estabilicen.' },
     { q: '¿Qué ventaja tiene bf16 frente a fp16 para entrenar?', opciones: ['fp16 tiene más rango y por eso es mejor', 'bf16 tiene el mismo rango de exponente que fp32: rara vez desborda y no necesita escalado de loss', 'Son idénticos', 'bf16 usa 32 bits'], correcta: 1, explicacion: 'Los dos usan 16 bits. bf16 sacrifica precisión de la mantisa a cambio del rango de fp32; fp16 tiene menos rango y suele necesitar escalar la loss para no desbordar.' },
+    { q: 'En la loss contrastiva con un batch de N pares, ¿dónde están los pares positivos dentro de la matriz de similitud N×N?', opciones: ['En la primera fila', 'En la diagonal: la fila i se corresponde con la columna i', 'En todas las celdas', 'Fuera de la diagonal'], correcta: 1, explicacion: 'Cada consulta i va con su documento i. Las demás columnas de la fila son los negativos que se obtienen gratis del batch.' },
+    { q: '¿Por qué en aprendizaje contrastivo suele ayudar usar batches más grandes?', opciones: ['Porque usan menos memoria', 'Porque el entrenamiento es más rápido', 'Porque cada ejemplo se compara contra más negativos y la señal es más informativa', 'Porque bajan la temperatura'], correcta: 2, explicacion: 'Los negativos salen del propio batch: más ejemplos, más comparaciones. El costo es justamente más memoria, no menos.' },
+    { q: '¿Cómo se clasifica una imagen sin entrenar (zero-shot) con CLIP?', opciones: ['Se reentrena el modelo con tus clases', 'Se agrupan las imágenes con k-means', 'Se le pide al modelo que genere una descripción', 'Se compara el embedding de la imagen con los de textos como "una foto de un perro" y se elige el más parecido'], correcta: 3, explicacion: 'Imágenes y textos comparten espacio vectorial, así que cada clase se describe con un texto y gana la más similar. No hace falta entrenar ni generar texto.' },
+    { q: 'Tu modelo de embeddings confunde "contrato de alquiler" con "contrato de trabajo". ¿Qué datos de ajuste ayudan más?', opciones: ['Más pares elegidos al azar', 'Negativos difíciles: pares parecidos en la superficie pero distintos en significado', 'Textos más largos', 'Menos datos'], correcta: 1, explicacion: 'Los negativos al azar ya son fáciles de separar. Los difíciles obligan al modelo a aprender justo la distinción que hoy no hace.' },
+    { q: '¿Qué hace la temperatura en logits = similitudes / temperatura?', opciones: ['Controla la aleatoriedad del texto generado', 'Normaliza los vectores', 'Ajusta qué tan "picuda" es la softmax sobre las similitudes y cuánto se castiga a los negativos cercanos', 'Define la dimensión de los embeddings'], correcta: 2, explicacion: 'Una temperatura chica amplifica las diferencias de similitud. Los vectores se normalizan aparte, antes de calcularlas.' },
   ],
 },
 {

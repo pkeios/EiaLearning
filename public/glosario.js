@@ -2,6 +2,7 @@
 // Validar con: node tools/validar.js
 window.GLOSARIO = [
   { t: 'AdamW', d: 'Optimizador Adam con weight decay desacoplado. Es el estándar para entrenar Transformers.', m: 'deep-learning' },
+  { t: 'Aprendizaje contrastivo', d: 'Entrenamiento que acerca en el espacio vectorial los pares que van juntos y aleja los que no. Así se entrenan los modelos de embeddings y CLIP.', m: 'deep-learning' },
   { t: 'Alucinación', d: 'Respuesta plausible pero falsa o inventada. Se reduce dando contexto, pidiendo citas y permitiendo decir "no sé".', m: 'llms' },
   { t: 'Atención', d: 'Mecanismo por el que cada token pondera la información de los demás según la similitud entre su query y las keys de los otros.', m: 'llms' },
   { t: 'Backoff exponencial', d: 'Esperar cada vez más entre reintentos, con algo de azar (jitter), para no saturar a un servicio caído.', m: 'apis' },
@@ -38,6 +39,7 @@ window.GLOSARIO = [
   { t: 'LoRA', d: 'Fine-tuning que entrena matrices de bajo rango añadidas y deja congelados los pesos originales.', m: 'fine-tuning' },
   { t: 'MCP', d: 'Model Context Protocol: estándar abierto para conectar aplicaciones de IA con herramientas y fuentes de datos.', m: 'agentes' },
   { t: 'Modelo de razonamiento', d: 'Modelo entrenado para generar una cadena de razonamiento larga antes de responder.', m: 'llms' },
+  { t: 'Negativo difícil', d: 'Ejemplo que se parece al positivo en la superficie pero significa otra cosa. Es el que más enseña en el aprendizaje contrastivo.', m: 'deep-learning' },
   { t: 'Olvido catastrófico', d: 'Pérdida de capacidades generales que sufre un modelo al afinarlo para una tarea específica.', m: 'fine-tuning' },
   { t: 'Overfitting', d: 'El modelo memoriza los datos de entrenamiento y generaliza mal a datos nuevos.', m: 'ml-clasico' },
   { t: 'pass@k', d: 'Probabilidad de que al menos uno de k intentos salga bien.', m: 'evals' },
