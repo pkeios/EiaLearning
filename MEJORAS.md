@@ -162,3 +162,4 @@ Lo completa el comando `/mejorar`. Una línea por ejecución.
 - 2026-11-02 · deep-learning · metodología: 6 preguntas nuevas de diagnóstico de entrenamiento
 - 2026-11-02 · app · versión para chicos: nivel 4 del robot que enseña bucles con bloques de repetición
 - 2026-11-02 · llms · metodología: 6 preguntas nuevas de casos
+- 2026-11-02 · fundamentos · metodología: 7 preguntas nuevas que aplican fundamentos a casos
