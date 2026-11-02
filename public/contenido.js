@@ -1019,6 +1019,7 @@ tests. Si un test parece incorrecto, avisame en lugar de esquivarlo.
     'Trabajar con imágenes y PDFs en la API: costo en tokens, preparación y limitaciones',
     'Procesar grandes volúmenes con la API de lotes: costo, tiempos y emparejado de resultados',
     'Diseñar prompts que aprovechen el prompt caching y verificarlo con las métricas de uso',
+    'Implementar streaming robusto: eventos, argumentos de herramientas parciales, errores a mitad del stream y arquitectura web',
   ],
   lecciones: [
     { titulo: 'Anatomía de una llamada', html: `
@@ -1171,6 +1172,24 @@ print(u.cache_creation_input_tokens, u.cache_read_input_tokens, u.input_tokens)
         <li>Reordenar o reescribir las herramientas entre llamadas.</li>
         <li>Usar la caché de 5 minutos con consultas cada 20 minutos: expira antes de reutilizarse. Ahí conviene la de 1 hora.</li>
       </ul>` },
+    { titulo: 'Streaming en detalle: eventos, herramientas y errores a mitad de camino', html: `
+      <p>Con <code>stream: true</code>, la API manda la respuesta por partes con <em>server-sent events</em> (SSE). Para mostrar texto alcanza con el helper del SDK, pero una app real necesita entender qué llega y en qué orden. Según la documentación de Claude:</p>
+      <ol>
+        <li><code>message_start</code>: un mensaje con el contenido todavía vacío.</li>
+        <li>Por cada bloque de contenido: <code>content_block_start</code>, uno o más <code>content_block_delta</code> y <code>content_block_stop</code>.</li>
+        <li>Uno o más <code>message_delta</code>, con el <code>stop_reason</code> y el uso de tokens (acumulado).</li>
+        <li><code>message_stop</code>. En el medio pueden llegar eventos <code>ping</code>, que se ignoran.</li>
+      </ol>
+      <p><strong>Tipos de delta:</strong> <code>text_delta</code> trae texto, que mostrás a medida que llega. <code>input_json_delta</code> trae los argumentos de una herramienta como <em>JSON parcial</em>: lo acumulás y lo parseás recién en <code>content_block_stop</code>, porque antes no es JSON válido.</p>
+      <p><strong>Errores a mitad del stream:</strong> la API puede mandar un evento de error en medio de la respuesta, por ejemplo <code>overloaded_error</code> en momentos de alta demanda. Tu app no puede asumir que lo que empezó termina bien: mostrá lo recibido marcado como incompleto y ofrecé reintentar con backoff.</p>
+      <pre><code>with client.messages.stream(model="claude-sonnet-5-5", max_tokens=1024,
+                            messages=[{"role": "user", "content": pregunta}]) as stream:
+    for texto in stream.text_stream:
+        enviar_al_navegador(texto)          # por ejemplo, como evento SSE desde tu backend
+    final = stream.get_final_message()       # mensaje completo, con stop_reason y usage
+registrar(final.stop_reason, final.usage)</code></pre>
+      <p><strong>Arquitectura web:</strong> el navegador nunca llama a la API con tu clave. Tu backend abre el stream con la API y reenvía los fragmentos al navegador (con SSE o WebSockets), y ahí también podés aplicar límites, registrar trazas y cortar si el usuario cancela.</p>
+      <p><strong>Detalles que conviene registrar:</strong> el <code>stop_reason</code> final (si es <code>max_tokens</code>, la respuesta se cortó) y el uso de tokens del mensaje final, para tus métricas de costo.</p>` },
   ],
   practica: [
     'Construí un chatbot de terminal con historial, streaming y un comando /reset. Mostrá tokens y costo estimado de cada turno.',
@@ -1180,6 +1199,7 @@ print(u.cache_creation_input_tokens, u.cache_read_input_tokens, u.input_tokens)
     'Armá un extractor de totales a partir de 30 fotos de recibos. Calculá tokens y costo por imagen, compará la foto completa contra un recorte de la zona del total (exactitud y costo) y anotá qué casos fallan, como fotos rotadas o borrosas.',
     'Mandá 500 clasificaciones por la API de lotes y las mismas 500 en tiempo real, con concurrencia limitada. Compará costo total, tiempo hasta tener todos los resultados y errores, y emparejá los resultados del lote por custom_id.',
     'Agregá caching a una app con un system prompt largo. En 20 llamadas seguidas medí cache_creation_input_tokens, cache_read_input_tokens, costo y tiempo hasta el primer token, con y sin caché. Después agregá la hora al principio del prompt y observá qué pasa.',
+    'Armá en tu backend un endpoint que reenvíe por SSE el streaming de Claude al navegador. Simulá un error a mitad del stream y mostrá la respuesta parcial con un botón de reintentar; registrá el stop_reason y los tokens del mensaje final.',
   ],
   recursos: [
     { t: 'Documentación de la API de Claude', url: 'https://docs.claude.com/' },
@@ -1187,6 +1207,7 @@ print(u.cache_creation_input_tokens, u.cache_read_input_tokens, u.input_tokens)
     { t: 'Documentación de la API de OpenAI', url: 'https://platform.openai.com/docs' },
     { t: 'Claude — Structured outputs', url: 'https://platform.claude.com/docs/en/build-with-claude/structured-outputs' },
     { t: 'Claude — Prompt caching', url: 'https://platform.claude.com/docs/en/build-with-claude/prompt-caching' },
+    { t: 'Claude — Streaming de mensajes', url: 'https://platform.claude.com/docs/en/build-with-claude/streaming' },
     { t: 'Claude — Procesamiento por lotes (Message Batches API)', url: 'https://platform.claude.com/docs/en/build-with-claude/batch-processing' },
     { t: 'Claude — Visión (imágenes)', url: 'https://platform.claude.com/docs/en/build-with-claude/vision' },
     { t: 'Claude — Soporte de PDF', url: 'https://platform.claude.com/docs/en/build-with-claude/pdf-support' },
@@ -1219,6 +1240,11 @@ print(u.cache_creation_input_tokens, u.cache_read_input_tokens, u.input_tokens)
     { q: 'Tu system prompt tiene 300 tokens y nunca ves lecturas de caché. ¿Por qué?', opciones: ['Es un bug de la API', 'Está por debajo del mínimo cacheable del modelo (entre 512 y 4.096 tokens según el modelo), así que se procesa sin caché y sin error', 'Falta configurar la duración', 'Es demasiado largo'], correcta: 1, explicacion: 'Los prefijos cortos no se cachean y la API no avisa. Por eso conviene mirar los campos de uso: si las lecturas son siempre 0, no estás cacheando.' },
     { q: 'Cambiás la descripción de una de tus herramientas. ¿Qué parte de la caché se invalida?', opciones: ['Nada', 'Solo los mensajes', 'Solo el system prompt', 'Todo: herramientas, system y mensajes, porque las herramientas están al principio del prefijo'], correcta: 3, explicacion: 'El orden es herramientas, system y mensajes. Cambiar algo al principio invalida todo lo que viene después.' },
     { q: 'Tus usuarios hacen una consulta cada 20 minutos, siempre sobre el mismo manual largo. ¿Qué duración de caché elegís?', opciones: ['La de 1 hora: la de 5 minutos expiraría entre una consulta y la siguiente', 'La de 5 minutos', 'Ninguna', 'Da igual'], correcta: 0, explicacion: 'Con 5 minutos pagarías una escritura en cada consulta sin reutilizar nunca. La de 1 hora cuesta más de escribir, pero se aprovecha.' },
+    { q: 'En el streaming de Claude, ¿en qué orden llegan los eventos?', opciones: ['message_start; por cada bloque, content_block_start, deltas y content_block_stop; después message_delta y message_stop', 'Todo en un único evento al final', 'Primero el uso de tokens y después el texto', 'En un orden aleatorio'], correcta: 0, explicacion: 'Conocer el orden te permite saber cuándo un bloque está completo y dónde buscar el motivo de fin y los tokens.' },
+    { q: 'Los argumentos de una herramienta llegan como input_json_delta. ¿Cuándo los parseás?', opciones: ['En cada delta, apenas llega', 'Cuando termina el bloque (content_block_stop), con el JSON acumulado completo', 'Nunca, se usan como texto', 'Al principio del mensaje'], correcta: 1, explicacion: 'Cada delta trae un pedazo de JSON que por sí solo no es válido. Recién al cerrar el bloque tenés el objeto entero.' },
+    { q: 'A mitad del stream llega un evento overloaded_error. ¿Qué hace tu app?', opciones: ['Lo ignora', 'Muestra lo recibido como si estuviera completo', 'Lo trata como error: muestra lo recibido marcado como incompleto y ofrece reintentar con backoff', 'Recarga la página'], correcta: 2, explicacion: 'Un stream que empezó bien puede cortarse. Mostrar una respuesta incompleta como completa engaña al usuario.' },
+    { q: 'En una respuesta por streaming, ¿dónde encontrás el stop_reason y el uso de tokens?', opciones: ['En message_start', 'En cada text_delta', 'En los eventos ping', 'En message_delta (los tokens son acumulados) o en el mensaje final que arma el SDK'], correcta: 3, explicacion: 'message_start todavía no sabe cómo termina. El motivo de fin y el uso final llegan al final, en message_delta.' },
+    { q: '¿Cómo armás el streaming en una app web?', opciones: ['Tu backend llama a la API con la clave y reenvía los fragmentos al navegador, por ejemplo con SSE', 'El navegador llama directo a la API con tu clave', 'Sin streaming, siempre', 'El navegador consulta al backend cada segundo'], correcta: 0, explicacion: 'La clave nunca puede llegar al navegador. El backend además es el lugar para aplicar límites, registrar trazas y manejar la cancelación.' },
   ],
 },
 {

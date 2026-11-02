@@ -82,6 +82,7 @@ window.GLOSARIO = [
   { t: 'RLHF', d: 'Ajustar un modelo con aprendizaje por refuerzo a partir de preferencias humanas.', m: 'llms' },
   { t: 'RoPE', d: 'Rotary position embedding: codifica la posición rotando queries y keys, para que la atención dependa de la distancia relativa entre tokens.', m: 'llms' },
   { t: 'Safetensors', d: 'Formato para guardar pesos de modelos que contiene solo tensores, sin código: cargarlo no puede ejecutar nada, a diferencia de pickle.', m: 'seguridad' },
+  { t: 'SSE (server-sent events)', d: 'Forma de que un servidor mande datos al cliente de a partes sobre una conexión abierta. La usan las APIs de LLMs para el streaming.', m: 'apis' },
   { t: 'Shadow', d: 'Mandar una copia del tráfico real a una versión nueva sin mostrarle sus respuestas a nadie.', m: 'produccion' },
   { t: 'Softmax', d: 'Función que convierte logits en probabilidades positivas que suman 1.', m: 'fundamentos' },
   { t: 'Subagente', d: 'Agente que trabaja en su propia ventana de contexto y le devuelve un resumen al agente principal.', m: 'agentes' },
