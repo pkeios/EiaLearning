@@ -2,7 +2,7 @@ const T = window.TEMARIO;
 const app = document.getElementById('app');
 const APROBADO = 80;
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-const cargar = () => ({ leidas: {}, notas: {}, falladas: {}, apuntes: {}, agenda: {}, dias: {}, tarjetas: {}, aciertos: {}, practicas: {}, ...JSON.parse(localStorage.getItem('progreso') || '{}') });
+const cargar = () => ({ leidas: {}, notas: {}, falladas: {}, apuntes: {}, agenda: {}, dias: {}, tarjetas: {}, aciertos: {}, practicas: {}, conocidas: {}, ...JSON.parse(localStorage.getItem('progreso') || '{}') });
 const guardar = p => localStorage.setItem('progreso', JSON.stringify(p));
 const mezclar = a => a.map(x => [Math.random(), x]).sort((x, y) => x[0] - y[0]).map(x => x[1]);
 // La clave de una pregunta es su texto: sobrevive a reordenar o insertar preguntas.
@@ -98,6 +98,31 @@ const avance = (m, p) => {
   return { leidas, hechas, pct: Math.round(100 * (leidas + hechas + aprobado(m, p)) / (m.lecciones.length + m.practica.length + 1)) };
 };
 
+// Novedades: lecciones que el alumno todavía no vio desde que existen. Se identifican por módulo y título.
+const claveLeccion = (m, l) => m.id + '|' + l.titulo;
+const todasLasLecciones = () => T.flatMap(m => m.lecciones.map((l, n) => ({ m, l, n })));
+const novedades = p => todasLasLecciones().filter(x => !p.conocidas[claveLeccion(x.m, x.l)]);
+function marcarConocidas(p, lista) { lista.forEach(x => { p.conocidas[claveLeccion(x.m, x.l)] = true; }); }
+// La primera vez que se usa esta función, todo lo que ya existe cuenta como conocido (si no, todo sería "nuevo").
+function iniciarNovedades() {
+  const crudo = JSON.parse(localStorage.getItem('progreso') || '{}');
+  if (crudo.conocidas) return;
+  const p = cargar();
+  marcarConocidas(p, todasLasLecciones());
+  guardar(p);
+}
+
+function novedadesPagina() {
+  const p = cargar(), lista = novedades(p);
+  app.innerHTML = `<a class="volver" href="#/">← Temario</a><h1>🆕 Novedades</h1>
+    ${lista.length ? `<p class="suave">Lecciones agregadas al curso desde tu última visita.</p>
+      <ol class="plan">${lista.map(x => `<li><a href="#/m/${x.m.id}/${x.n}">${icono(x.m)} ${esc(x.l.titulo)} <small class="suave">(${esc(x.m.titulo)})</small></a></li>`).join('')}</ol>
+      <button class="secundario" id="vistas">✔ Marcar todas como vistas</button>`
+    : '<section class="card"><p>No hay lecciones nuevas desde tu última visita. 🎉</p></section>'}`;
+  const boton = app.querySelector('#vistas');
+  if (boton) boton.onclick = () => { const p = cargar(); marcarConocidas(p, novedades(p)); guardar(p); novedadesPagina(); };
+}
+
 function inicio() {
   const p = cargar();
   const aprobados = T.filter(m => aprobado(m, p)).length;
@@ -117,6 +142,7 @@ function inicio() {
       </div>
       <a class="boton" href="#/m/${siguiente.id}">${aprobados || leidas ? 'Continuar' : 'Empezar'}: ${icono(siguiente)} ${esc(siguiente.titulo)} →</a>
       <div class="datos">
+        ${novedades(p).length ? `<a class="boton secundario" href="#/novedades">🆕 Novedades (${novedades(p).length})</a>` : ''}
         <a class="boton secundario" href="#/hoy">📋 Qué estudiar hoy</a>
         <a class="boton secundario" href="#/nivel">🎯 Quiz por nivel</a>
         <a class="boton secundario" href="#/progreso">📊 Progreso por módulo</a>
@@ -168,7 +194,7 @@ function descargarApuntes() {
 // Si agregás campos nuevos al progreso, sumalos acá también.
 function limpiarProgreso(d) {
   if (!d || typeof d !== 'object' || Array.isArray(d)) throw new Error('formato inválido');
-  const p = { leidas: {}, notas: {}, falladas: {}, apuntes: {}, agenda: {}, dias: {}, tarjetas: {}, aciertos: {}, practicas: {} };
+  const p = { leidas: {}, notas: {}, falladas: {}, apuntes: {}, agenda: {}, dias: {}, tarjetas: {}, aciertos: {}, practicas: {}, conocidas: {} };
   for (const k of ['leidas', 'falladas']) for (const c in d[k] || {}) p[k][c] = true;
   for (const c in d.notas || {}) p.notas[c] = Math.min(100, Math.max(0, Number(d.notas[c]) || 0));
   for (const c in d.apuntes || {}) p.apuntes[c] = String(d.apuntes[c]);
@@ -177,6 +203,7 @@ function limpiarProgreso(d) {
     p.agenda[c] = { n: Math.min(INTERVALOS.length - 1, Math.max(0, parseInt(a.n) || 0)), d: /^\d{4}-\d{2}-\d{2}$/.test(a.d) ? a.d : dia() };
   }
   for (const c in d.practicas || {}) if (d.practicas[c]) p.practicas[c] = true;
+  for (const c in d.conocidas || {}) if (d.conocidas[c]) p.conocidas[c] = true;
   for (const c in d.aciertos || {}) {
     const a = d.aciertos[c] || {}, total = Math.max(0, parseInt(a.total) || 0);
     p.aciertos[c] = { ok: Math.min(total, Math.max(0, parseInt(a.ok) || 0)), total };
@@ -206,6 +233,8 @@ function modulo(id, abrir = null) {
   if (!m) return inicio();
   const p = cargar(), i = T.indexOf(m), prev = T[i - 1], next = T[i + 1];
   const leida = n => p.leidas[m.id + ':' + n];
+  // Al abrir un módulo, sus lecciones dejan de ser novedad
+  if (m.lecciones.some(l => !p.conocidas[claveLeccion(m, l)])) { marcarConocidas(p, m.lecciones.map(l => ({ m, l }))); guardar(p); }
   app.innerHTML = `
     <a class="volver" href="#/">← Temario</a>
     <header class="modulo-head">
@@ -562,6 +591,7 @@ function render() {
     quiz(`🎯 Quiz de nivel ${nombre}: 15 preguntas al azar`, mezclar(preguntasDeNivel(id)).slice(0, 15));
   }
   else if (ruta === 'nivel') elegirNivel();
+  else if (ruta === 'novedades') novedadesPagina();
   else if (ruta === 'quiz' && T.some(m => m.id === id)) {
     const m = T.find(x => x.id === id);
     quiz(`${icono(m)} Quiz: ${m.titulo}`, mezclar(preguntasDe(m)), (p, pct) => { p.notas[m.id] = Math.max(p.notas[m.id] ?? 0, pct); });
@@ -613,5 +643,6 @@ function avisarContenidoNuevo() {
   document.body.append(aviso);
 }
 
+iniciarNovedades();
 addEventListener('hashchange', render);
 render();
