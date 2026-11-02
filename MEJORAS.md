@@ -148,3 +148,4 @@ Lo completa el comando `/mejorar`. Una línea por ejecución.
 - 2026-11-02 · app · versión para chicos: pregunta de reflexión al final de cada misión para explicarle a alguien de la casa
 - 2026-11-02 · llms · metodología: 9 explicaciones más corrigen la trampa; el módulo pasa a 6/7
 - 2026-11-02 · rag · metodología: 10 explicaciones más corrigen la trampa; el módulo pasa a 6/7
+- 2026-11-02 · prompting · metodología: 13 explicaciones más corrigen la trampa; el módulo pasa a 6/7 y ya ninguno queda debajo
