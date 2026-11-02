@@ -2,7 +2,7 @@ const T = window.TEMARIO;
 const app = document.getElementById('app');
 const APROBADO = 80;
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-const cargar = () => ({ leidas: {}, notas: {}, falladas: {}, apuntes: {}, agenda: {}, dias: {}, tarjetas: {}, aciertos: {}, practicas: {}, conocidas: {}, minutos: {}, metaSemanal: 120, ...JSON.parse(localStorage.getItem('progreso') || '{}') });
+const cargar = () => ({ leidas: {}, notas: {}, falladas: {}, apuntes: {}, agenda: {}, dias: {}, tarjetas: {}, aciertos: {}, practicas: {}, conocidas: {}, minutos: {}, metaSemanal: 120, intentos: {}, ...JSON.parse(localStorage.getItem('progreso') || '{}') });
 const guardar = p => localStorage.setItem('progreso', JSON.stringify(p));
 const mezclar = a => a.map(x => [Math.random(), x]).sort((x, y) => x[0] - y[0]).map(x => x[1]);
 // La clave de una pregunta es su texto: sobrevive a reordenar o insertar preguntas.
@@ -196,7 +196,7 @@ function descargarApuntes() {
 // Si agregás campos nuevos al progreso, sumalos acá también.
 function limpiarProgreso(d) {
   if (!d || typeof d !== 'object' || Array.isArray(d)) throw new Error('formato inválido');
-  const p = { leidas: {}, notas: {}, falladas: {}, apuntes: {}, agenda: {}, dias: {}, tarjetas: {}, aciertos: {}, practicas: {}, conocidas: {}, minutos: {}, metaSemanal: 120 };
+  const p = { leidas: {}, notas: {}, falladas: {}, apuntes: {}, agenda: {}, dias: {}, tarjetas: {}, aciertos: {}, practicas: {}, conocidas: {}, minutos: {}, metaSemanal: 120, intentos: {} };
   for (const k of ['leidas', 'falladas']) for (const c in d[k] || {}) p[k][c] = true;
   for (const c in d.notas || {}) p.notas[c] = Math.min(100, Math.max(0, Number(d.notas[c]) || 0));
   for (const c in d.apuntes || {}) p.apuntes[c] = String(d.apuntes[c]);
@@ -206,6 +206,10 @@ function limpiarProgreso(d) {
   }
   for (const c in d.practicas || {}) if (d.practicas[c]) p.practicas[c] = true;
   for (const c in d.conocidas || {}) if (d.conocidas[c]) p.conocidas[c] = true;
+  for (const c in d.intentos || {}) {
+    const x = d.intentos[c] || {};
+    if (/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(x.d) && Array.isArray(x.f)) p.intentos[c] = { d: x.d, f: x.f.map(Number).filter(i => Number.isInteger(i) && i >= 0) };
+  }
   if (d.metaSemanal != null) p.metaSemanal = Math.min(3000, Math.max(10, parseInt(d.metaSemanal) || 120));
   for (const c in d.minutos || {}) if (/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(c)) p.minutos[c] = Math.max(0, parseInt(d.minutos[c]) || 0);
   for (const c in d.aciertos || {}) {
@@ -557,14 +561,14 @@ function empaquetar(p) {
       return p.falladas[k] ? [[i, p.agenda[k]?.n ?? 0, p.agenda[k]?.d ?? '']] : [];
     })),
     t: p.tarjetas, no: p.notas, a: p.aciertos, di: p.dias, mi: p.minutos,
-    me: p.metaSemanal, ex: p.examen, ef: p.examenFecha, nom: p.nombre,
+    me: p.metaSemanal, in: p.intentos, ex: p.examen, ef: p.examenFecha, nom: p.nombre,
   };
 }
 function desempaquetar(d, apuntes = {}) {
   if (!d || d.v !== 1) throw new Error('formato desconocido');
   const p = { leidas: {}, conocidas: {}, practicas: {}, falladas: {}, agenda: {}, apuntes,
     tarjetas: d.t, notas: d.no, aciertos: d.a, dias: d.di, minutos: d.mi,
-    metaSemanal: d.me, examen: d.ex, examenFecha: d.ef, nombre: d.nom };
+    metaSemanal: d.me, intentos: d.in, examen: d.ex, examenFecha: d.ef, nombre: d.nom };
   for (const m of T) {
     lista(d.l?.[m.id]).forEach(i => { if (m.lecciones[i]) p.leidas[m.id + ':' + i] = true; });
     lista(d.c?.[m.id]).forEach(i => { if (m.lecciones[i]) p.conocidas[claveLeccion(m, m.lecciones[i])] = true; });
@@ -631,6 +635,15 @@ async function traerProgreso(datos) {
 }
 
 let temporizador = null;
+// Diferencias entre dos intentos: listas de posiciones de preguntas falladas
+function compararIntentos(anterior, ahora) {
+  const antes = new Set(anterior), hoy = new Set(ahora);
+  return {
+    corregidas: [...antes].filter(i => !hoy.has(i)).length,
+    siguen: [...hoy].filter(i => antes.has(i)).length,
+    nuevas: [...hoy].filter(i => !antes.has(i)).length,
+  };
+}
 const textoLogro = (que, pct, url) => `Aprobé ${que} del curso de AI Engineering con ${pct}% 🎉 Estudio con este curso abierto de autoaprendizaje: ${url}`;
 // Voz: algunos navegadores cortan los textos largos, así que se lee en trozos de una o pocas oraciones.
 function trozosParaVoz(texto, max = 220) {
@@ -649,7 +662,7 @@ function preguntaObjetivo(campos, activo) {
   return enfocada >= 0 ? enfocada : campos.findIndex(c => !c.querySelector('input:checked'));
 }
 
-function quiz(titulo, preguntas, alTerminar, vacio = 'No hay preguntas pendientes. 🎉', { segundos = 0, aviso = '', logro = '' } = {}) {
+function quiz(titulo, preguntas, alTerminar, vacio = 'No hay preguntas pendientes. 🎉', { segundos = 0, aviso = '', logro = '', intento = '' } = {}) {
   app.innerHTML = `<a class="volver" href="#/">← Temario</a><h1>${esc(titulo)}</h1>${aviso}
     ${preguntas.length ? `<div class="quiz-estado"><span id="contador">0/${preguntas.length} respondidas</span><span id="reloj"></span><span class="atajos"> · Teclado: 1 a 4 eligen, Enter corrige</span>${barra(0)}</div>` : `<section class="card"><p>${esc(vacio)}</p></section>`}
     <form id="quiz">${preguntas.map((q, i) => `
@@ -686,12 +699,25 @@ function quiz(titulo, preguntas, alTerminar, vacio = 'No hay preguntas pendiente
     form.querySelectorAll('input, button').forEach(el => el.disabled = true);
     const pct = Math.round(100 * bien / preguntas.length);
     alTerminar?.(p, pct);
+    // Comparación con el intento anterior del mismo quiz de módulo (por posición de pregunta dentro del módulo)
+    let comparacion = '';
+    const mod = T.find(m => m.id === intento);
+    if (mod) {
+      const ahora = fallas.map(q => mod.quiz.findIndex(x => x.q === q.q)).filter(i => i >= 0);
+      const anterior = p.intentos[intento];
+      if (anterior) {
+        const c = compararIntentos(anterior.f, ahora);
+        comparacion = `<p class="suave">Contra tu intento anterior (${anterior.d}): ✔ ${c.corregidas} que antes fallaste ahora están bien · ✘ ${c.siguen} seguís fallando · ⚠ ${c.nuevas} nuevas falladas</p>`;
+      }
+      p.intentos[intento] = { d: dia(), f: ahora };
+    }
     estudiar(p);
     guardar(p);
     const res = app.querySelector('#resultado');
     res.innerHTML = `<section class="card resultado ${pct >= APROBADO ? 'ok' : ''}">
       <div class="nota">${pct}%</div>
       <p><strong>${bien} de ${preguntas.length} correctas.</strong> ${pct >= APROBADO ? '¡Aprobado! 🎉' : 'Leé las explicaciones de arriba y volvé a intentarlo.'}</p>
+      ${comparacion}
       ${fallas.length ? `<p><strong>Para repasar:</strong></p><div class="repasar">${modulosAFallas(fallas).map(([m, n]) =>
         `<a class="boton secundario" href="#/m/${m.id}">${icono(m)} ${esc(m.titulo)} (${n} ${n === 1 ? 'fallada' : 'falladas'})</a>`).join('')}</div>` : ''}
       ${logro && pct >= APROBADO ? '<button id="compartir" class="secundario">📣 Copiar logro para compartir</button> ' : ''}${fallas.length && bien ? '<button id="solo-falladas" class="secundario">👁 Ver solo las falladas</button> ' : ''}<button onclick="render()">↻ Reintentar</button> <a class="boton secundario" href="#/">Volver al temario</a>
@@ -767,7 +793,7 @@ function render() {
   else if (ruta === 'quiz' && T.some(m => m.id === id)) {
     const m = T.find(x => x.id === id);
     quiz(`${icono(m)} Quiz: ${m.titulo}`, mezclar(preguntasDe(m)), (p, pct) => { p.notas[m.id] = Math.max(p.notas[m.id] ?? 0, pct); }, undefined,
-      { logro: `el módulo "${m.titulo}"` });
+      { logro: `el módulo "${m.titulo}"`, intento: m.id });
   }
   else if (ruta === 'examen') quiz('🏁 Examen final: 25 preguntas al azar', mezclar(todas()).slice(0, 25), registrarExamen, undefined,
     { aviso: '<p><a href="#/examen-tiempo">⏱ Prefiero hacerlo con tiempo límite (1 minuto por pregunta)</a></p>', logro: 'el examen final' });
