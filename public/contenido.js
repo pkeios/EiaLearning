@@ -799,6 +799,7 @@ bpe(["bajo", "bajar", "bajamos", "trabajo"], 3)
     'Escribir prompts sobre documentos largos que reduzcan alucinaciones: orden, estructura, citas verificables y permiso para decir "no sé"',
     'Optimizar prompts con datos y métricas (por ejemplo, con DSPy) sin sobreajustar',
     'Controlar formato y estilo con instrucciones positivas, el porqué y salidas estructuradas, sin depender del prefill',
+    'Escribir prompts para agentes que regulen autonomía, alcance, verificación y paralelismo',
   ],
   lecciones: [
     { titulo: 'Las técnicas que realmente funcionan', html: `
@@ -927,6 +928,28 @@ Más efectivo:
         <li><strong>Para continuar una respuesta cortada:</strong> pasá el texto anterior en el mensaje del usuario y pedile que siga desde ahí.</li>
       </ul>
       <p>Como siempre, comprobá el efecto con tus evals: un cambio de formato puede afectar también la calidad del contenido.</p>` },
+    { titulo: 'Prompts para agentes: autonomía, alcance y verificación', html: `
+      <p>Un agente no solo responde: actúa. Su system prompt tiene que decirle cuánta iniciativa tomar, hasta dónde llegar y cómo comprobar lo que hace. La guía de prompting de Claude trae secciones específicas para sistemas agénticos; estas son las más útiles:</p>
+      <ul>
+        <li><strong>Autonomía según la reversibilidad:</strong> libertad para acciones locales y reversibles (editar un archivo, correr tests), y confirmación antes de lo difícil de revertir, lo que afecta sistemas compartidos o lo destructivo (borrar, forzar un push, mandar mensajes). Y nunca usar una acción destructiva como atajo ante un obstáculo, como saltear un chequeo de seguridad.</li>
+        <li><strong>Alcance acotado:</strong> sin guía, algunos modelos tienden a hacer de más: archivos extra, abstracciones o configurabilidad que nadie pidió. Pedí solo los cambios solicitados o claramente necesarios.</li>
+        <li><strong>Soluciones generales, no trampas:</strong> pedí que la solución funcione para cualquier entrada válida, sin valores fijos para pasar los tests, y que avise si un test está mal en lugar de esquivarlo.</li>
+        <li><strong>Investigar antes de responder:</strong> que nunca especule sobre código o documentos que no abrió.</li>
+        <li><strong>Paralelismo:</strong> las llamadas a herramientas independientes van en paralelo (leer 3 archivos a la vez), y en secuencia solo cuando una necesita el resultado de otra. Nunca inventar parámetros que faltan.</li>
+      </ul>
+      <pre><code>&lt;autonomia&gt;
+Hacé sin preguntar lo local y reversible: leer, editar archivos, correr tests.
+Antes de borrar, publicar, enviar mensajes o tocar sistemas compartidos, pedí confirmación.
+Ante un obstáculo, no saltees chequeos ni descartes trabajo ajeno para avanzar.
+&lt;/autonomia&gt;
+&lt;alcance&gt;
+Hacé solo lo pedido o lo claramente necesario. Sin funciones, archivos ni abstracciones extra.
+&lt;/alcance&gt;
+&lt;verificacion&gt;
+Leé los archivos antes de opinar sobre ellos. Resolvé el problema en general, no para los
+tests. Si un test parece incorrecto, avisame en lugar de esquivarlo.
+&lt;/verificacion&gt;</code></pre>
+      <p><strong>Un límite que ya viste:</strong> estas instrucciones se cumplen casi siempre, pero no siempre. Lo que no admite excepciones (no borrar producción, no mandar datos afuera) va además en controles deterministas: permisos, hooks o confirmaciones fuera del modelo.</p>` },
   ],
   practica: [
     'Elegí una tarea real (resumir mails, clasificar gastos). Escribí 20 casos de prueba con la respuesta esperada y medí 3 versiones de prompt.',
@@ -936,6 +959,7 @@ Más efectivo:
     'Tomá 3 documentos largos (contratos, manuales o informes) y 15 preguntas, 5 de ellas sin respuesta en los documentos. Compará un prompt con la pregunta al principio contra uno con documentos arriba, citas primero y permiso para decir "no sé". Medí exactitud, respuestas inventadas y citas que no existen (verificalas con código).',
     'Tomá un clasificador de tickets: medí tu prompt manual en 50 casos de validación, optimizalo con DSPy usando 100 casos de entrenamiento y comparalo en los mismos 50 de validación. Anotá cuántas llamadas al modelo costó la optimización.',
     'Tomá un prompt lleno de prohibiciones ("no hagas X, no uses Y") y reescribilo con instrucciones positivas y el motivo de cada una. Compará las dos versiones en 20 casos: cuántas respuestas cumplen el formato pedido y cuántas mantienen la calidad del contenido.',
+    'Escribí el system prompt de un agente con secciones de autonomía, alcance y verificación. Diseñá 5 tareas trampa (una que tiente a borrar algo, una a hacer de más, una con un test mal escrito) y compará qué hace el agente con y sin esas secciones.',
   ],
   recursos: [
     { t: 'Anthropic — Guía de prompt engineering', url: 'https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/overview' },
@@ -975,6 +999,11 @@ Más efectivo:
     { q: 'Tu prompt está escrito todo en viñetas y te molesta que las respuestas también salgan en viñetas. ¿Qué probás?', opciones: ['Bajar la temperatura', 'Agregar "no uses viñetas" al final', 'Reescribir el prompt en prosa, más parecido al estilo de salida que querés', 'Cambiar de modelo'], correcta: 2, explicacion: 'El estilo del prompt influye en el de la respuesta. Hacer que el prompt se parezca a la salida deseada es una de las técnicas que recomienda la guía.' },
     { q: 'Usabas prefill (escribir el comienzo de la respuesta del asistente) para forzar JSON, y con modelos nuevos de Claude la petición falla. ¿Qué hacés?', opciones: ['Usás salidas estructuradas con un JSON Schema', 'Repetís la llave de apertura dos veces', 'Volvés a un modelo viejo', 'Pedís el JSON en mayúsculas'], correcta: 0, explicacion: 'Según la documentación, desde los modelos Claude 4.6 no se admite dejar una respuesta del asistente a medio escribir al final. Las salidas estructuradas son la forma recomendada de forzar formato.' },
     { q: 'Las respuestas empiezan siempre con "¡Claro! Aquí tenés el resumen:" y lo querés evitar sin usar prefill. ¿Qué hacés?', opciones: ['Nada, no se puede evitar', 'Subir max_tokens', 'Instruir en el system prompt que responda directamente, sin preámbulo, o pedir la salida dentro de etiquetas y extraerla', 'Bajar la temperatura a 0'], correcta: 2, explicacion: 'Una instrucción directa o un formato con etiquetas resuelve los preámbulos. La temperatura no controla el estilo de apertura, y además en la API de Claude ya no está disponible en los modelos recientes.' },
+    { q: 'Tu agente de código hizo un push forzado sin preguntar. ¿Qué cambiás?', opciones: ['Subís la temperatura', 'Nada, ya está hecho', 'Agregás una guía de autonomía por reversibilidad (lo destructivo o compartido, con confirmación) y, para lo innegociable, permisos o controles fuera del modelo', 'Le pedís que trabaje más rápido'], correcta: 2, explicacion: 'La instrucción reduce el riesgo, y el control determinista lo elimina para lo que no admite excepciones. Las dos capas se complementan.' },
+    { q: 'Tu agente agrega archivos, abstracciones y opciones de configuración que nadie pidió. ¿Qué instrucción agregás?', opciones: ['Que haga solo los cambios pedidos o claramente necesarios, sin abstracciones de un solo uso ni funciones hipotéticas', 'Que documente más', 'Que use más herramientas', 'Que use más tokens'], correcta: 0, explicacion: 'La guía de Claude advierte esa tendencia a hacer de más. Definir el alcance de forma explícita la corrige.' },
+    { q: 'El agente hace pasar los tests escribiendo a mano los valores esperados. ¿Qué pedís en el prompt?', opciones: ['Que escriba más tests', 'Una solución general que funcione para cualquier entrada válida, sin valores fijos para los casos de prueba, y que avise si un test está mal', 'Que borre los tests', 'Que use temperatura 0'], correcta: 1, explicacion: 'Los tests verifican la solución, no la definen. Pedir que avise sobre tests incorrectos evita que los esquive en silencio.' },
+    { q: 'Tu agente responde sobre el contenido de un archivo que nunca abrió, e inventa. ¿Qué instrucción agregás?', opciones: ['Que responda más rápido', 'Que use menos tokens', 'Que sea más creativo', 'Que nunca especule sobre código que no abrió y lea los archivos relevantes antes de responder'], correcta: 3, explicacion: 'Investigar antes de responder ancla las respuestas en lo que realmente hay, en lugar de en lo que "suele haber".' },
+    { q: 'El agente tiene que leer tres archivos que no dependen entre sí. ¿Cómo conviene que lo haga?', opciones: ['De a uno, con pausas', 'Adivinando el contenido', 'En paralelo, porque no dependen entre sí; en secuencia solo cuando una llamada necesita el resultado de otra', 'No leerlos'], correcta: 2, explicacion: 'Las llamadas independientes en paralelo ahorran tiempo. Cuando un parámetro depende de un resultado previo, hay que esperar y nunca inventarlo.' },
   ],
 },
 {
