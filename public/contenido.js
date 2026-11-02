@@ -11,6 +11,7 @@ window.TEMARIO = [
     'Entender vectores, matrices, producto punto y gradientes',
     'Leer probabilidad básica: distribuciones y softmax',
     'Entender entropía, entropía cruzada, KL y perplexity: la matemática de la loss de un LLM',
+    'Usar Python asíncrono para llamar APIs en paralelo, con límites de concurrencia y manejo de errores',
   ],
   lecciones: [
     { titulo: 'Python para IA: lo imprescindible', html: `
@@ -56,18 +57,50 @@ p_correctos = np.array([0.7, 0.5, 0.9, 0.2])
 entropia_cruzada = -np.log(p_correctos).mean()   # ≈ 0,691
 perplexity = np.exp(entropia_cruzada)            # ≈ 2,0</code></pre>
       <p><strong>Trampa común:</strong> la perplexity depende del tokenizador. Un modelo que corta el texto en más tokens, más chicos, tiene una perplexity por token distinta para el mismo texto. Para comparar modelos con tokenizadores diferentes hay que normalizar por carácter o por byte.</p>` },
+    { titulo: 'Python asíncrono: muchas llamadas a la API en paralelo', html: `
+      <p>Una llamada a un LLM pasa casi todo su tiempo <strong>esperando la red</strong>. Si hacés 100 llamadas de 2 segundos una detrás de otra, tardás 200 segundos. Si las superponés, con un máximo de 10 a la vez, tardás unos 20. Para eso está <code>asyncio</code>.</p>
+      <ul>
+        <li><strong><code>async</code> / <code>await</code>:</strong> una función asíncrona puede "soltar" el control mientras espera, y Python avanza con otras.</li>
+        <li><strong><code>asyncio.gather</code>:</strong> lanza muchas tareas a la vez y junta los resultados en el mismo orden.</li>
+        <li><strong><code>asyncio.Semaphore</code>:</strong> limita cuántas corren al mismo tiempo, para no chocar con los rate limits del proveedor.</li>
+        <li><strong><code>return_exceptions=True</code>:</strong> hace que una llamada que falla no tire abajo las otras 499. Después reintentás solo las fallidas.</li>
+      </ul>
+      <pre><code>import asyncio
+from anthropic import AsyncAnthropic
+
+client = AsyncAnthropic()
+limite = asyncio.Semaphore(10)          # como mucho 10 llamadas simultáneas
+
+async def clasificar(texto):
+    async with limite:
+        resp = await client.messages.create(
+            model="claude-haiku-5-5", max_tokens=20,
+            messages=[{"role": "user", "content": "Categoría (una palabra) de: " + texto}],
+        )
+        return resp.content[0].text
+
+async def main(textos):
+    return await asyncio.gather(*(clasificar(t) for t in textos), return_exceptions=True)
+
+resultados = asyncio.run(main(textos))
+fallidos = [t for t, r in zip(textos, resultados) if isinstance(r, Exception)]</code></pre>
+      <p><strong>Ojo: async no acelera todo.</strong> Sirve para superponer esperas de entrada y salida (red, disco). Un cálculo pesado de CPU, como multiplicar matrices grandes, no tiene esperas que superponer; ahí ayudan NumPy, la GPU o varios procesos.</p>
+      <p><strong>Streaming con generadores:</strong> para mostrar la respuesta mientras llega, un generador (<code>yield</code>, o <code>async for</code> en código asíncrono) entrega cada fragmento apenas está disponible, sin esperar al final.</p>
+      <p>Si tenés miles de tareas que no son urgentes, compará contra la API batch del proveedor: suele ser más barata que lanzarlas en paralelo.</p>` },
   ],
   practica: [
     'Implementá producto punto, similitud coseno y softmax solo con NumPy y comprobá los resultados a mano con vectores pequeños.',
     'Implementá descenso de gradiente para minimizar f(x) = (x - 3)^2 empezando en x = 0. Probá learning rates 0.01, 0.1 y 1.1 y explicá qué pasa.',
     'Mirá los 4 primeros videos de la serie de redes neuronales de 3Blue1Brown y escribí un resumen de una página.',
     'Con un modelo chico de Hugging Face (por ejemplo GPT-2), calculá la perplexity de tres textos: uno en inglés, uno en español y uno con palabras al azar. Explicá por qué dan distinto.',
+    'Clasificá 200 textos con un LLM: primero uno por uno y después con asyncio.gather y un Semaphore de 5, 10 y 20. Medí el tiempo total y la cantidad de errores 429 en cada caso, y elegí el límite.',
   ],
   recursos: [
     { t: 'Tutorial oficial de Python (español)', url: 'https://docs.python.org/es/3/tutorial/' },
     { t: '3Blue1Brown — Redes neuronales (visual)', url: 'https://www.3blue1brown.com/topics/neural-networks' },
     { t: 'Khan Academy — Álgebra lineal', url: 'https://www.khanacademy.org/math/linear-algebra' },
     { t: 'Dive into Deep Learning (libro gratis, con código)', url: 'https://d2l.ai/' },
+    { t: 'Python — Corrutinas y tareas (asyncio)', url: 'https://docs.python.org/es/3/library/asyncio-task.html' },
     { t: 'Dive into Deep Learning — Teoría de la información', url: 'https://d2l.ai/chapter_appendix-mathematics-for-deep-learning/information-theory.html' },
   ],
   quiz: [
@@ -83,6 +116,11 @@ perplexity = np.exp(entropia_cruzada)            # ≈ 2,0</code></pre>
     { q: 'El modelo A tiene perplexity 8 y el B 12, pero usan tokenizadores distintos. ¿A es mejor?', opciones: ['Sí, siempre', 'No necesariamente: la perplexity por token depende del tokenizador; hay que normalizar por carácter o por byte', 'No: mayor perplexity es mejor', 'Son equivalentes'], correcta: 1, explicacion: 'Si A corta el texto en más tokens, cada uno es más fácil de predecir y su perplexity por token baja sin que el modelo sea mejor. Mayor perplexity es peor, no mejor.' },
     { q: '¿Por qué RLHF y DPO incluyen una penalización de divergencia KL respecto del modelo de referencia?', opciones: ['Para entrenar más rápido', 'Para usar menos tokens', 'Para mejorar la tokenización', 'Para que el modelo ajustado no se aleje demasiado del original y no explote fallas de la recompensa perdiendo calidad'], correcta: 3, explicacion: 'Sin ese ancla, el modelo puede encontrar respuestas raras que puntúan alto en la recompensa pero son peores. La KL mide cuánto se alejó.' },
     { q: 'Una moneda justa y otra que sale cara el 99% de las veces. ¿Cuál tiene más entropía?', opciones: ['La cargada', 'Las dos igual', 'La justa: 1 bit, la máxima incertidumbre para dos resultados', 'Ninguna tiene entropía'], correcta: 2, explicacion: 'La entropía mide incertidumbre. Con la cargada casi siempre sabés qué va a salir, así que su entropía es casi 0 (unos 0,08 bits).' },
+    { q: 'Tenés que hacer 100 llamadas a un LLM de unos 2 segundos cada una. ¿Cuánto tardás con asyncio y un límite de 10 simultáneas?', opciones: ['Unos 20 segundos en lugar de 200, porque las esperas de red se superponen', '200 segundos igual', '2 segundos', '2.000 segundos'], correcta: 0, explicacion: '10 a la vez son 10 tandas de unos 2 segundos. Sin límite podría ser menos, pero chocarías con los rate limits.' },
+    { q: '¿Para qué usás un asyncio.Semaphore al lanzar muchas llamadas?', opciones: ['Para ordenar los resultados', 'Para limitar cuántas llamadas corren al mismo tiempo y no chocar con los rate limits', 'Para cifrar las peticiones', 'Para reintentar automáticamente'], correcta: 1, explicacion: 'gather ya devuelve los resultados en orden. El semáforo controla la concurrencia; los reintentos los tenés que programar aparte.' },
+    { q: 'Lanzás 500 llamadas con asyncio.gather, una falla y perdés todos los resultados. ¿Qué cambiás?', opciones: ['Volvés a hacerlas una por una', 'Sacás el manejo de errores', 'Usás return_exceptions=True (o capturás el error en cada tarea) y reintentás solo las fallidas', 'Subís la concurrencia'], correcta: 2, explicacion: 'Con return_exceptions=True, cada fallo queda como un resultado más y el resto se conserva. Volver a lo secuencial resuelve el síntoma a costa de 10 veces más tiempo.' },
+    { q: '¿Por qué asyncio acelera las llamadas a un LLM pero no un cálculo pesado con NumPy?', opciones: ['Porque asyncio usa la GPU', 'Porque NumPy no funciona con Python asíncrono', 'Es al revés: acelera NumPy y no las llamadas', 'Porque async superpone esperas de entrada y salida, y un cálculo de CPU no tiene esperas que superponer'], correcta: 3, explicacion: 'Mientras una llamada espera la red, otra puede avanzar. Un cálculo de CPU está ocupado todo el tiempo; para eso sirven la vectorización, la GPU o varios procesos.' },
+    { q: 'Querés mostrar la respuesta del modelo en tu programa de terminal a medida que llega. ¿Qué herramienta de Python usás?', opciones: ['Un generador (yield o async for) que entrega cada fragmento apenas llega', 'Una lista que se imprime al final', 'Un hilo nuevo por cada token', 'Un time.sleep entre palabras'], correcta: 0, explicacion: 'El generador produce fragmentos a medida que la API los manda. Juntar todo en una lista elimina justamente la ventaja del streaming.' },
   ],
 },
 {
