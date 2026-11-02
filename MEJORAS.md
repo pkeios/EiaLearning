@@ -90,3 +90,4 @@ Lo completa el comando `/mejorar`. Una línea por ejecución.
 - 2026-11-02 · rag · lección de chunking a fondo (fijo, recursivo, por estructura, semántico, con contexto, expansión al recuperar; criterio de que el chunk se entienda solo; cómo elegir tamaño midiendo; señales de mal chunking), 5 preguntas, 1 práctica, 1 recurso · fuentes: https://www.pinecone.io/learn/chunking-strategies/
 - 2026-11-02 · app · al terminar el quiz de un módulo, comparación con el intento anterior (corregidas, que siguen fallando, nuevas falladas); se guarda por posición de pregunta, viaja en el enlace a otro dispositivo y se limpia al importar; con tests
 - 2026-11-02 · app · lectura en voz alta con voz en español latino si el dispositivo tiene una (pedido del usuario)
+- 2026-11-02 · app · versión para chicos de 10 a 13 años en chicos/: 6 misiones (qué es la IA, cómo aprende, chatbots y alucinaciones, prompts, seguridad, sesgo y honestidad) con preguntas y estrellas; link en la cabecera
