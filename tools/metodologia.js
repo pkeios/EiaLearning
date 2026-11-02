@@ -7,7 +7,7 @@ const texto = html => html.replace(/<[^>]+>/g, ' ').replace(/&[a-z]+;/g, ' ');
 const palabras = html => texto(html).split(/\s+/).filter(Boolean).length;
 // Pregunta de aplicación: plantea un caso o una decisión, no pide una definición.
 const esAplicacion = q => /(^|\s)(tu|tus|tenés|querés|usás|usaste|encontrás|ves|medís|armás|elegís|hacés|un equipo|una empresa|después de|durante|si )|qué hacés|qué cambiás|qué revisás|qué concluís|por qué/i.test(q);
-const nombraTrampa = e => /trampa|tentador|parece|falla|no sirve|engaña|error/i.test(e);
+const nombraTrampa = e => /trampa|tentador|tienta|parece|falla|no sirve|engaña|error/i.test(e);
 const verificable = x => /\d|medí|compará|verificá|anotá|registrá|probá|tabla/i.test(x);
 const conEjemplo = html => /<pre>|por ejemplo|ejemplo:|<table/i.test(html);
 const conVisual = html => /<pre>|<table|<ol>|<ul>/i.test(html);
