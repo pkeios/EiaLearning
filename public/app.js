@@ -451,10 +451,15 @@ function elegirNivel() {
 // Una pregunta sin responder (null) nunca cuenta como acierto, aunque la correcta sea la opción 0.
 const esCorrecta = (elegida, q) => elegida !== null && Number(elegida) === q.correcta;
 let temporizador = null;
+// Teclado: la pregunta objetivo es la que tiene el foco; si ninguna lo tiene, la primera sin responder.
+function preguntaObjetivo(campos, activo) {
+  const enfocada = campos.findIndex(c => c.contains(activo));
+  return enfocada >= 0 ? enfocada : campos.findIndex(c => !c.querySelector('input:checked'));
+}
 
 function quiz(titulo, preguntas, alTerminar, vacio = 'No hay preguntas pendientes. 🎉', { segundos = 0, aviso = '' } = {}) {
   app.innerHTML = `<a class="volver" href="#/">← Temario</a><h1>${esc(titulo)}</h1>${aviso}
-    ${preguntas.length ? `<div class="quiz-estado"><span id="contador">0/${preguntas.length} respondidas</span><span id="reloj"></span>${barra(0)}</div>` : `<section class="card"><p>${esc(vacio)}</p></section>`}
+    ${preguntas.length ? `<div class="quiz-estado"><span id="contador">0/${preguntas.length} respondidas</span><span id="reloj"></span><span class="atajos"> · Teclado: 1 a 4 eligen, Enter corrige</span>${barra(0)}</div>` : `<section class="card"><p>${esc(vacio)}</p></section>`}
     <form id="quiz">${preguntas.map((q, i) => `
       <fieldset class="pregunta"><legend><span class="num">${i + 1}</span>${esc(q.q)}</legend>
         ${q.opciones.map((o, j) => `<label class="opcion"><input type="radio" name="p${i}" value="${j}" required><span>${esc(o)}</span></label>`).join('')}
@@ -507,6 +512,26 @@ function quiz(titulo, preguntas, alTerminar, vacio = 'No hay preguntas pendiente
     };
     res.scrollIntoView({ behavior: 'smooth' });
   };
+  document.onkeydown = e => {
+    if (form.querySelector('input:disabled') || ['TEXTAREA', 'SELECT'].includes(e.target.tagName) || ['text', 'search'].includes(e.target.type)) return;
+    const campos = [...form.querySelectorAll('fieldset')];
+    if (/^[1-4]$/.test(e.key)) {
+      const i = preguntaObjetivo(campos, document.activeElement);
+      const opcion = campos[i]?.querySelectorAll('input')[Number(e.key) - 1];
+      if (!opcion) return;
+      e.preventDefault();
+      opcion.checked = true;
+      form.onchange();
+      // Pasar a la próxima sin responder, para responder todo seguido con el teclado
+      const siguiente = campos.findIndex(c => !c.querySelector('input:checked'));
+      const destino = siguiente >= 0 ? campos[siguiente].querySelector('input') : opcion;
+      destino.focus();
+      destino.closest('fieldset').scrollIntoView({ block: 'center', behavior: 'smooth' });
+    } else if (e.key === 'Enter' && campos.every(c => c.querySelector('input:checked'))) {
+      e.preventDefault();
+      form.requestSubmit();
+    }
+  };
   if (segundos && preguntas.length) {
     // Al llegar a cero se corrige solo: lo que quedó sin responder cuenta como error.
     let resta = segundos;
@@ -523,6 +548,7 @@ function quiz(titulo, preguntas, alTerminar, vacio = 'No hay preguntas pendiente
 function render() {
   const [, ruta, id, leccion] = location.hash.split('/');
   clearInterval(temporizador); // si se sale de un examen con tiempo, el reloj no sigue corriendo
+  document.onkeydown = null;   // los atajos del quiz solo valen dentro del quiz
   scrollTo(0, 0);
   if (ruta === 'm') modulo(id, leccion != null && leccion !== '' ? Number(leccion) : null);
   else if (ruta === 'buscar') busqueda();

@@ -8,8 +8,8 @@ const ctx = { window: {}, document: { getElementById: id => id === 'tema' ? boto
 vm.createContext(ctx);
 vm.runInContext(leer('contenido.js'), ctx);
 vm.runInContext(leer('glosario.js'), ctx);
-vm.runInContext(leer('app.js') + ';this.X = { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos, avance, clavePractica, registrarExamen, planDeHoy, apuntesMarkdown, esCorrecta, preguntasDeNivel };', ctx);
-const { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos, avance, clavePractica, registrarExamen, planDeHoy, apuntesMarkdown, esCorrecta, preguntasDeNivel } = ctx.X;
+vm.runInContext(leer('app.js') + ';this.X = { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos, avance, clavePractica, registrarExamen, planDeHoy, apuntesMarkdown, esCorrecta, preguntasDeNivel, preguntaObjetivo };', ctx);
+const { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos, avance, clavePractica, registrarExamen, planDeHoy, apuntesMarkdown, esCorrecta, preguntasDeNivel, preguntaObjetivo } = ctx.X;
 const plano = o => JSON.parse(JSON.stringify(o));
 
 // Inicio renderiza con progreso vacío
@@ -203,6 +203,13 @@ assert.ok(el.h.includes('#/nivel/intermedio'));
 ctx.location.hash = '#/nivel/avanzado';
 vm.runInContext('render()', ctx);
 assert.ok(el.h.includes('Quiz de nivel Avanzado') && (el.h.match(/class="pregunta"/g) || []).length === 15);
+
+// Atajos: la pregunta enfocada manda; si no hay foco en ninguna, la primera sin responder
+const campo = (respondida, foco) => ({ contains: x => x === foco, querySelector: () => (respondida ? {} : null) });
+const foco = {};
+assert.equal(preguntaObjetivo([campo(true), campo(false, foco), campo(false)], foco), 1);
+assert.equal(preguntaObjetivo([campo(true), campo(true), campo(false)], null), 2);
+assert.equal(preguntaObjetivo([campo(true), campo(true)], null), -1);
 
 // Repaso vacío muestra un mensaje en lugar de un formulario
 guardado = null;
