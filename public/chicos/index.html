@@ -194,14 +194,17 @@ function mision(i) {
         ${s.taller ? `<p class="texto">${s.t}</p><div id="actividad"></div>` : ''}
         ${s.q ? `<p class="texto">${s.q}</p><div class="opciones">${s.o.map((o, j) => `<button class="opcion" data-j="${j}">${o}</button>`).join('')}</div>` : ''}
         ${s.clasificar ? `<p class="texto">${s.clasificar}</p><div class="chips">${s.items.map(([t], k) => `<div class="chip" data-k="${k}"><span>${t}</span>${s.grupos.map((g, j) => `<button data-g="${j}">${g}</button>`).join('')}</div>`).join('')}</div>` : ''}
-        <p class="aviso" aria-live="polite"></p>
+        <p class="aviso" id="aviso-mision" aria-live="polite"></p>
         <div class="acciones"><button class="chico" id="oir" aria-label="Escuchar">🔊</button><button class="boton" id="seguir" ${ejercicio ? 'disabled' : ''}>Seguir →</button></div>
       </section>`;
-    const aviso = app.querySelector('.aviso'), seguir = app.querySelector('#seguir');
+    const aviso = app.querySelector('#aviso-mision'), seguir = app.querySelector('#seguir');
     const listo = () => { if (primerIntento) estrellas++; seguir.disabled = false; seguir.focus(); };
     app.querySelector('#oir').onclick = () => leer(dicho + (s.o ? '. ' + s.o.join('. ') : ''));
     seguir.onclick = () => { clearInterval(corriendo); paso++; mostrar(); };
-    if (s.taller) montarTaller(s.taller, app.querySelector('#actividad'), () => { logro(s.taller); seguir.disabled = false; });
+    if (s.taller) {
+      aviso.textContent = '🛠️ Completá la actividad para poder seguir.';
+      montarTaller(s.taller, app.querySelector('#actividad'), () => { logro(s.taller); seguir.disabled = false; aviso.className = 'aviso bien'; aviso.textContent = '✅ ¡Actividad completa! Ya podés seguir.'; });
+    }
     app.querySelectorAll('.opcion').forEach(b => b.onclick = () => {
       if (Number(b.dataset.j) === s.c) {
         b.classList.add('bien');

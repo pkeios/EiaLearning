@@ -155,3 +155,4 @@ Lo completa el comando `/mejorar`. Una línea por ejecución.
 - 2026-11-02 · rag · metodología: 2 preguntas nuevas de casos; el módulo cumple las 7 metas
 - 2026-11-02 · prompting · metodología: 4 preguntas nuevas de casos; el módulo cumple las 7 metas
 - 2026-11-02 · seguridad · metodología: 7 preguntas nuevas de casos; el módulo cumple las 7 metas
+- 2026-11-02 · app · versión para chicos: aviso claro de por qué Seguir está bloqueado en las actividades, con id propio

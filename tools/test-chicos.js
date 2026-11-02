@@ -64,4 +64,6 @@ assert.equal(X.NOMBRE_SESGO.length, X.SESGO_AGREGAR.length);
 assert(!/aria-label="Agregar (paso|ejemplo)"/.test(h), 'etiqueta repetida para botones distintos');
 // Práctica suficiente: entrenar pide 3 frases distintas y autocompletar 2 palabras, y solo cuentan los intentos que funcionan.
 assert(/probadas\.size >= 3\) alLograr/.test(h) && /usadas\.size >= 2\) alLograr/.test(h));
+// En los pasos de actividad, el aviso de la misión tiene su propio id (no se confunde con el de la actividad) y explica por qué Seguir está bloqueado.
+assert(h.includes('id="aviso-mision"') && h.includes('Completá la actividad para poder seguir'));
 console.log('test-chicos OK');
