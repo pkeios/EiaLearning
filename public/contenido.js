@@ -134,6 +134,7 @@ fallidos = [t for t, r in zip(textos, resultados) if isinstance(r, Exception)]</
     'Elegir la métrica correcta (accuracy, precision, recall, F1)',
     'Usar ensembles de árboles (random forest, gradient boosting) y pipelines sin data leakage',
     'Decidir entre un LLM y un clasificador clásico sobre embeddings, y elegir umbrales según el costo de cada error',
+    'Explorar grandes volúmenes de texto con embeddings, reducción de dimensionalidad y clustering',
   ],
   lecciones: [
     { titulo: 'Qué es aprender a partir de datos', html: `
@@ -214,16 +215,50 @@ def clasificar(texto):
       <p><strong>El umbral es una decisión de negocio.</strong> Con 0,5 por defecto mezclás los errores sin pensar. Si un falso positivo cuesta mucho (marcar como fraude a un cliente bueno), subí el umbral para ganar precision. Si lo caro es dejar pasar un caso (no detectar un fraude), bajalo para ganar recall. La curva precision-recall te muestra el intercambio.</p>
       <p><strong>Calibración:</strong> que un modelo diga 0,8 no significa que acierte el 80% de esas veces. Si vas a usar las probabilidades para decidir o para mostrarlas, verificá la calibración con un gráfico de confiabilidad y, si hace falta, calibrá (por ejemplo, con <code>CalibratedClassifierCV</code>).</p>
       <p><strong>Cuándo sí un LLM:</strong> pocas consultas, categorías que cambian seguido, sin datos etiquetados, o tareas que requieren razonar o generar texto.</p>` },
+    { titulo: 'Explorar texto a escala: embeddings, clustering y reducción de dimensionalidad', html: `
+      <p>Tenés 50.000 consultas de usuarios, o 10.000 trazas donde tu sistema falló, y querés saber <strong>de qué se trata</strong> sin leerlas una por una ni tener categorías previas. Es aprendizaje no supervisado, y es una de las herramientas más útiles para el análisis de errores a escala.</p>
+      <p><strong>El pipeline:</strong></p>
+      <ol>
+        <li><strong>Embeddings</strong> de cada texto.</li>
+        <li><strong>Reducir dimensiones</strong> (opcional): con PCA a unas 50 dimensiones para bajar ruido y costo, conservando la mayor parte de la varianza.</li>
+        <li><strong>Clustering:</strong> k-means si sabés cuántos grupos querés (asume grupos más o menos esféricos); HDBSCAN si no lo sabés: encuentra grupos por densidad y marca como ruido lo que no encaja en ninguno.</li>
+        <li><strong>Nombrar cada grupo:</strong> pasale a un LLM 15 ejemplos del cluster y pedile un nombre corto. BERTopic automatiza este flujo.</li>
+      </ol>
+      <pre><code>from sklearn.decomposition import PCA
+from sklearn.cluster import HDBSCAN
+
+X = embed(consultas)                                # (50000, 1024)
+X50 = PCA(n_components=50).fit_transform(X)
+etiquetas = HDBSCAN(min_cluster_size=30).fit_predict(X50)   # -1 = ruido
+
+for c in sorted(set(etiquetas) - {-1}):
+    ejemplos = [q for q, e in zip(consultas, etiquetas) if e == c][:15]
+    nombre = llm("Poné un nombre corto al tema común de estas consultas:\\n" + "\\n".join(ejemplos))
+    print(c, nombre, (etiquetas == c).sum())</code></pre>
+      <p><strong>Para visualizar</strong>, UMAP (o t-SNE) proyecta a 2D conservando bien los vecindarios: los puntos parecidos quedan juntos. Cuidado: las distancias <em>entre</em> grupos lejanos en el gráfico no son confiables, así que no concluyas que dos grupos son "muy distintos" solo porque aparecen lejos.</p>
+      <p><strong>Usos típicos en AI engineering:</strong></p>
+      <ul>
+        <li>Agrupar las trazas fallidas para encontrar los modos de fallo más frecuentes.</li>
+        <li>Descubrir intenciones de usuario para diseñar routing o evals.</li>
+        <li>Detectar duplicados y casi duplicados en datasets antes de entrenar o evaluar.</li>
+        <li>Ver qué temas consultan los usuarios que tu documentación no cubre.</li>
+      </ul>
+      <p>Revisá siempre algunos clusters a mano: el algoritmo agrupa por parecido, pero el nombre que le pone el LLM puede ser engañoso.</p>` },
   ],
   practica: [
     'Con scikit-learn y el dataset Titanic (o cualquiera de Kaggle), entrená una regresión logística y un random forest. Compará accuracy, precision, recall y F1 en test.',
     'Provocá overfitting a propósito con un árbol de decisión sin límite de profundidad y graficá error de train vs test según max_depth.',
     'Con un dataset tabular de Kaggle, compará con validación cruzada de 5 folds una regresión logística en Pipeline, un random forest y HistGradientBoosting. Reportá F1 medio ± desvío de cada uno y justificá cuál pondrías en producción.',
     'Etiquetá con un LLM 2.000 textos (por ejemplo, reseñas) y revisá 100 a mano. Entrená una regresión logística sobre embeddings, elegí un umbral con la curva precision-recall y compará contra clasificar todo con el LLM: exactitud, costo por cada 1.000 textos y latencia.',
+    'Juntá 2.000 consultas o reseñas reales, agrupalas con embeddings y HDBSCAN, nombrá cada grupo con un LLM y visualizalos con UMAP. Revisá a mano tres grupos y anotá si el nombre describe bien sus ejemplos.',
   ],
   recursos: [
     { t: 'Guía de usuario de scikit-learn', url: 'https://scikit-learn.org/stable/user_guide.html' },
     { t: 'scikit-learn — Ensembles: gradient boosting, random forests y más', url: 'https://scikit-learn.org/stable/modules/ensemble.html' },
+    { t: 'scikit-learn — Clustering', url: 'https://scikit-learn.org/stable/modules/clustering.html' },
+    { t: 'scikit-learn — Descomposición (PCA y más)', url: 'https://scikit-learn.org/stable/modules/decomposition.html' },
+    { t: 'UMAP — Documentación', url: 'https://umap-learn.readthedocs.io/en/latest/' },
+    { t: 'BERTopic — Temas a partir de embeddings', url: 'https://maartengr.github.io/BERTopic/' },
     { t: 'scikit-learn — Calibración de probabilidades', url: 'https://scikit-learn.org/stable/modules/calibration.html' },
     { t: 'scikit-learn — precision_recall_curve', url: 'https://scikit-learn.org/stable/modules/generated/sklearn.metrics.precision_recall_curve.html' },
     { t: 'Why do tree-based models still outperform deep learning on tabular data? (paper)', url: 'https://arxiv.org/abs/2207.08815' },
@@ -247,6 +282,11 @@ def clasificar(texto):
     { q: 'Tu modelo dice "probabilidad 0,9" en 1.000 casos, pero solo 600 son realmente positivos. ¿Qué problema tiene?', opciones: ['Overfitting en el set de test', 'Data leakage', 'Está mal calibrado: sus probabilidades no reflejan la frecuencia real; hay que calibrarlo', 'Le falta entrenar más epochs'], correcta: 2, explicacion: 'Calibrado significaría que de los casos con 0,9, alrededor del 90% son positivos. Si usás esas probabilidades para decidir, primero calibralas.' },
     { q: 'Querés entrenar un clasificador, pero no tenés datos etiquetados y etiquetar a mano cuesta caro. ¿Qué hacés?', opciones: ['Entrenás sin etiquetas con k-means y usás los clusters como categorías', 'Abandonás la idea', 'Usás siempre un LLM para cada predicción', 'Usás un LLM para etiquetar miles de ejemplos, revisás una muestra a mano y entrenás el clasificador con eso'], correcta: 3, explicacion: 'El LLM etiqueta barato y la revisión humana mide su calidad. Los clusters de k-means no tienen por qué coincidir con tus categorías de negocio.' },
     { q: '¿Por qué no conviene usar siempre 0,5 como umbral de decisión?', opciones: ['Porque el umbral debe reflejar cuánto cuesta cada tipo de error en tu problema', 'Porque scikit-learn no lo permite', 'Porque 0,5 da siempre la peor accuracy', 'Porque el umbral tiene que ser igual a la proporción de positivos'], correcta: 0, explicacion: 'Un falso positivo y un falso negativo casi nunca cuestan lo mismo. La curva precision-recall te muestra el intercambio y vos elegís el punto.' },
+    { q: 'Tenés 50.000 consultas de usuarios y querés saber de qué temas hablan, sin categorías previas. ¿Qué hacés?', opciones: ['Calculás embeddings, los agrupás con clustering y le pedís a un LLM que nombre cada grupo a partir de ejemplos', 'Leés las 50.000 consultas', 'Entrenás un clasificador supervisado sin etiquetas', 'Contás las palabras más frecuentes de todo el conjunto'], correcta: 0, explicacion: 'Sin etiquetas, el clustering descubre los grupos y el LLM los resume. Un clasificador supervisado necesita etiquetas, y contar palabras globales mezcla todos los temas.' },
+    { q: '¿Qué ventaja tiene HDBSCAN sobre k-means para agrupar consultas de usuarios?', opciones: ['Siempre es más rápido', 'No necesita fijar de antemano la cantidad de grupos y marca como ruido lo que no encaja en ninguno', 'Usa la GPU', 'Encuentra grupos más esféricos'], correcta: 1, explicacion: 'Con datos reales casi nunca sabés cuántos temas hay, y siempre hay consultas sueltas. k-means te obliga a elegir k y mete cada punto en algún grupo.' },
+    { q: 'En un gráfico UMAP dos grupos aparecen muy lejos uno del otro. ¿Podés concluir que son muy distintos?', opciones: ['Sí, las distancias del gráfico son exactas', 'Sí, si antes aplicaste PCA', 'No del todo: UMAP conserva bien los vecindarios locales, pero las distancias entre grupos lejanos no son confiables', 'No, UMAP coloca los puntos al azar'], correcta: 2, explicacion: 'UMAP prioriza que los vecinos sigan siendo vecinos. La separación grande entre grupos puede exagerar o achicar la diferencia real. No es azar: los grupos sí reflejan parecido.' },
+    { q: '¿Para qué sirve el clustering en el trabajo diario de un AI engineer?', opciones: ['Para reemplazar las evals', 'Para entrenar el LLM', 'Para acelerar la tokenización', 'Para agrupar trazas fallidas y encontrar los modos de fallo más frecuentes a escala'], correcta: 3, explicacion: 'Cuando hay miles de trazas, agrupar es la forma de priorizar el análisis de errores. Las evals se construyen después, sobre esos modos de fallo.' },
+    { q: '¿Para qué reducís con PCA embeddings de 1.024 dimensiones antes de agruparlos?', opciones: ['Para poder verlos en 3D', 'Para bajar el ruido y el costo de cómputo conservando la mayor parte de la varianza', 'Para normalizar los vectores', 'Porque el clustering no funciona con más de 50 dimensiones'], correcta: 1, explicacion: 'A 50 dimensiones queda casi toda la información útil y el clustering es más rápido y estable. Para visualizar se usa otra proyección a 2D, como UMAP.' },
   ],
 },
 {
