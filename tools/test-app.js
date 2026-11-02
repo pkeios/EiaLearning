@@ -4,12 +4,12 @@ const leer = f => fs.readFileSync(path.join(__dirname, '..', 'public', f), 'utf8
 const el = { querySelector: () => el, querySelectorAll: () => [], focus() {}, value: '', h: '', set innerHTML(v) { this.h = v; }, get innerHTML() { return this.h; } };
 const botonTema = {};
 let guardado = null;
-const ctx = { window: {}, document: { getElementById: id => id === 'tema' ? botonTema : el, documentElement: { dataset: { tema: 'oscuro' } } }, localStorage: { getItem: () => guardado, setItem: (k, v) => { guardado = v; } }, location: { hash: '' }, addEventListener() {}, scrollTo() {}, Date, URL, setInterval: () => 1, clearInterval() {} };
+const ctx = { window: {}, document: { getElementById: id => id === 'tema' ? botonTema : el, documentElement: { dataset: { tema: 'oscuro' }, style: {} } }, localStorage: { getItem: () => guardado, setItem: (k, v) => { guardado = v; } }, location: { hash: '' }, addEventListener() {}, scrollTo() {}, Date, URL, setInterval: () => 1, clearInterval() {} };
 vm.createContext(ctx);
 vm.runInContext(leer('contenido.js'), ctx);
 vm.runInContext(leer('glosario.js'), ctx);
-vm.runInContext(leer('app.js') + ';this.X = { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos, avance, clavePractica, registrarExamen, planDeHoy, apuntesMarkdown, esCorrecta, preguntasDeNivel, preguntaObjetivo };', ctx);
-const { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos, avance, clavePractica, registrarExamen, planDeHoy, apuntesMarkdown, esCorrecta, preguntasDeNivel, preguntaObjetivo } = ctx.X;
+vm.runInContext(leer('app.js') + ';this.X = { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos, avance, clavePractica, registrarExamen, planDeHoy, apuntesMarkdown, esCorrecta, preguntasDeNivel, preguntaObjetivo, cambiarLetra };', ctx);
+const { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos, avance, clavePractica, registrarExamen, planDeHoy, apuntesMarkdown, esCorrecta, preguntasDeNivel, preguntaObjetivo, cambiarLetra } = ctx.X;
 const plano = o => JSON.parse(JSON.stringify(o));
 
 // Inicio renderiza con progreso vacío
@@ -210,6 +210,16 @@ const foco = {};
 assert.equal(preguntaObjetivo([campo(true), campo(false, foco), campo(false)], foco), 1);
 assert.equal(preguntaObjetivo([campo(true), campo(true), campo(false)], null), 2);
 assert.equal(preguntaObjetivo([campo(true), campo(true)], null), -1);
+
+// Tamaño de letra: sube y baja de a 10%, con límites de 80% y 150%
+guardado = null;
+assert.equal(cambiarLetra(0.1), 1.1);
+assert.equal(ctx.document.documentElement.style.fontSize, '110%');
+for (let i = 0; i < 10; i++) cambiarLetra(0.1);
+assert.equal(cambiarLetra(0.1), 1.5);
+for (let i = 0; i < 20; i++) cambiarLetra(-0.1);
+assert.equal(cambiarLetra(-0.1), 0.8);
+guardado = null;
 
 // Repaso vacío muestra un mensaje en lugar de un formulario
 guardado = null;

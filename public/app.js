@@ -590,6 +590,17 @@ botonTema.onclick = () => {
 };
 iconoTema();
 
+// Tamaño de letra: escala del 80% al 150%, se recuerda y se aplica en index.html antes de pintar.
+function cambiarLetra(delta) {
+  const actual = Number(localStorage.getItem('letra')) || 1;
+  const nueva = Math.round(Math.min(1.5, Math.max(0.8, actual + delta)) * 10) / 10;
+  localStorage.setItem('letra', nueva);
+  document.documentElement.style.fontSize = Math.round(nueva * 100) + '%';
+  return nueva;
+}
+document.getElementById('letra-menos').onclick = () => cambiarLetra(-0.1);
+document.getElementById('letra-mas').onclick = () => cambiarLetra(0.1);
+
 // Sin conexión: el service worker solo funciona servido por http(s), no abriendo el archivo local.
 if (window.navigator?.serviceWorker && location.protocol.startsWith('http')) {
   navigator.serviceWorker.register('sw.js');

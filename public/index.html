@@ -8,12 +8,12 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="icono-192.png">
   <meta name="theme-color" content="#0b1020">
-  <script>document.documentElement.dataset.tema = localStorage.getItem('tema') || (matchMedia('(prefers-color-scheme: light)').matches ? 'claro' : 'oscuro');</script>
+  <script>document.documentElement.style.fontSize = Math.round((Number(localStorage.getItem('letra')) || 1) * 100) + '%'; document.documentElement.dataset.tema = localStorage.getItem('tema') || (matchMedia('(prefers-color-scheme: light)').matches ? 'claro' : 'oscuro');</script>
 </head>
 <body>
   <header>
     <a href="#/" class="marca">🧠 AI Engineering</a>
-    <nav><a href="#/buscar">🔎 Buscar</a><a href="#/glosario">📖 Glosario</a><a href="#/repaso">Repaso</a><a href="#/examen">Examen final</a><button id="tema" class="tema" aria-label="Cambiar entre modo claro y oscuro"></button></nav>
+    <nav><a href="#/buscar">🔎 Buscar</a><a href="#/glosario">📖 Glosario</a><a href="#/repaso">Repaso</a><a href="#/examen">Examen final</a><button id="letra-menos" class="tema" aria-label="Achicar la letra">A−</button><button id="letra-mas" class="tema" aria-label="Agrandar la letra">A+</button><button id="tema" class="tema" aria-label="Cambiar entre modo claro y oscuro"></button></nav>
   </header>
   <main id="app"></main>
   <script src="contenido.js"></script>
