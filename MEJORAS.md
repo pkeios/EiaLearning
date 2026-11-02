@@ -105,3 +105,4 @@ Lo completa el comando `/mejorar`. Una línea por ejecución.
 - 2026-11-02 · fine-tuning · metodología: 5 explicaciones del quiz ahora corrigen la opción más tentadora
 - 2026-11-02 · seguridad · metodología: 5 explicaciones del quiz ahora corrigen la opción más tentadora
 - 2026-11-02 · produccion · metodología: ejemplos concretos en las 2 lecciones más cortas (registro de log real y cuenta de ahorro con caché)
+- 2026-11-02 · proyecto · metodología: ejemplos concretos en las 2 lecciones más cortas (README con métricas y semana de estudio basada en evidencia)

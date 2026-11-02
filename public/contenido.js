@@ -2614,7 +2614,22 @@ Fecha clave: obligaciones de alto riesgo (Anexo III) desde el 2 de diciembre de 
         <li><strong>Sistema de evals</strong>: dataset dorado, juez calibrado contra humanos, ejecución en CI.</li>
         <li><strong>Desplegado de punta a punta</strong>: backend, observabilidad, routing de modelos, defensas contra prompt injection y un informe de costo/latencia.</li>
       </ol>
-      <p><strong>Qué hace destacar un proyecto:</strong> un README que explique el problema, las decisiones y sus alternativas, métricas de evaluación con números reales, una demo que funcione y lo que aprendiste de los fallos.</p>` },
+      <p><strong>Qué hace destacar un proyecto:</strong> un README que explique el problema, las decisiones y sus alternativas, métricas de evaluación con números reales, una demo que funcione y lo que aprendiste de los fallos.</p>
+      <p><strong>Ejemplo:</strong> el corazón del README del proyecto 2 podría verse así (los números son ilustrativos; los tuyos salen de tus evals):</p>
+      <pre><code>## Resultados (50 preguntas con respuesta esperada)
+| versión                     | recall@5 | exactitud | costo/consulta | p95    |
+|-----------------------------|----------|-----------|----------------|--------|
+| v1 solo vectores            | 0,62     | 0,58      | 0,004 USD      | 1,9 s  |
+| v2 + búsqueda híbrida       | 0,78     | 0,70      | 0,004 USD      | 2,0 s  |
+| v3 + reranker               | 0,86     | 0,77      | 0,006 USD      | 2,6 s  |
+
+## Decisión
+Me quedé con v3: +7 puntos de exactitud justifican +0,6 s.
+Descarté fine-tuning: el error principal era de búsqueda (recall), no de redacción.
+
+## Fallos que todavía tiene
+Preguntas que combinan dos documentos: 6 de 8 fallan. Próximo paso: descomponer la consulta.</code></pre>
+      <p>Fijate que cada fila cambia <strong>una sola cosa</strong>, que la decisión se justifica con números y que los fallos se muestran en vez de esconderse. Es lo mismo que practicaste en el módulo de evals, aplicado a contar tu trabajo.</p>` },
     { titulo: 'Diseñar un sistema de IA de punta a punta (y la entrevista de system design)', html: `
       <p>Las entrevistas de AI engineering ya no piden solo sistemas distribuidos clásicos: te dan una consigna como "diseñá un chatbot RAG de soporte" o "un agente que procese reclamos de seguros controlando el costo de tokens" y tenés unos 60 minutos. El mismo método sirve para tus proyectos reales.</p>
       <ol>
@@ -2640,7 +2655,17 @@ Total ≈ 1.350 USD/día ≈ 40.500 USD/mes</code></pre>
         <li><strong>Papers:</strong> leé abstract, figuras y conclusiones; reproducí una parte en código. Entender un paper = poder implementarlo.</li>
         <li><strong>Construí en público:</strong> blog, GitHub, posts. Enseñar consolida y te conecta con gente mejor que vos.</li>
         <li><strong>Mantenete al día:</strong> changelogs de los proveedores, arXiv, blogs de ingeniería de los labs. Probá cada novedad relevante en un proyecto chico ese mismo día.</li>
-      </ul>` },
+      </ul>
+      <p><strong>Por qué funciona:</strong> una revisión de diez técnicas de estudio (Dunlosky y otros, 2013) calificó como de alta utilidad solo dos: <strong>practicar con preguntas</strong> y <strong>espaciar el estudio</strong>. Releer y subrayar, que son lo que más hace la gente, quedaron como de baja utilidad: dan sensación de saber porque reconocés el texto, pero no te obligan a recordarlo.</p>
+      <p><strong>Ejemplo de una semana aplicando esto</strong> (unas 6 horas):</p>
+      <pre><code>lunes      1 lección nueva (40 min) + escribir "Explicalo con tus palabras" sin mirar (15 min)
+martes     quiz del módulo sin repasar antes (20 min) + práctica del módulo (1 h)
+miércoles  Repaso: solo lo que fallaste (15 min) + seguir la práctica (45 min)
+jueves     1 lección nueva + tarjetas del glosario que tocan hoy (20 min)
+viernes    práctica (1 h) + anotar qué número mediste y qué decidiste
+sábado     quiz del módulo de la semana pasada, sin releer (15 min)  ← espaciado
+domingo    descanso</code></pre>
+      <p>Lo importante no son los horarios sino el patrón: <strong>primero intentás recordar, después mirás</strong>, y volvés a lo de días anteriores en vez de solo avanzar. La página "Qué estudiar hoy" de este sitio te arma esa lista sola.</p>` },
     { titulo: 'Programar con agentes de código (sin engañarte)', html: `
       <p>Un AI engineer pasa buena parte del día trabajando con agentes de código como Claude Code. Antes del método, un dato para no confiar en la sensación: en un ensayo controlado de METR (16 desarrolladores experimentados, 246 tareas en sus propios proyectos, herramientas de principios de 2025), con IA tardaron <strong>19% más</strong>, aunque después creían haber ido un 20% más rápido. Las herramientas mejoran rápido, pero la lección queda: <strong>medí, no supongas</strong>.</p>
       <p><strong>Lo que más rinde, según la guía oficial de Claude Code:</strong></p>
