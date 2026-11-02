@@ -144,3 +144,4 @@ Lo completa el comando `/mejorar`. Una línea por ejecución.
 - 2026-11-02 · fine-tuning · metodología: 5 explicaciones más corrigen la trampa; el módulo pasa a 6/7
 - 2026-11-02 · ml-clasico · metodología: 7 explicaciones más corrigen la trampa; el módulo pasa a 6/7
 - 2026-11-02 · fundamentos · metodología: 7 explicaciones más corrigen la trampa; el módulo pasa a 6/7
+- 2026-11-02 · deep-learning · metodología: 7 explicaciones más corrigen la trampa; el módulo pasa a 6/7
