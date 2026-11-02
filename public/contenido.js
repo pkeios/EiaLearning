@@ -641,6 +641,7 @@ respuesta = llm.generar(secuencia)                 # atiende a imagen y texto ju
     'Gestionar el contexto de agentes largos: compactación, recuperación just-in-time, notas y subagentes',
     'Escribir prompts sobre documentos largos que reduzcan alucinaciones: orden, estructura, citas verificables y permiso para decir "no sé"',
     'Optimizar prompts con datos y métricas (por ejemplo, con DSPy) sin sobreajustar',
+    'Controlar formato y estilo con instrucciones positivas, el porqué y salidas estructuradas, sin depender del prefill',
   ],
   lecciones: [
     { titulo: 'Las técnicas que realmente funcionan', html: `
@@ -746,6 +747,29 @@ optimizado = dspy.BootstrapFewShot(metric=metrica).compile(programa, trainset=ej
         <li><strong>Métrica pobre, resultado pobre:</strong> el optimizador maximiza exactamente lo que medís. Si la métrica no captura lo importante, vas a obtener un prompt que la satisface sin servir.</li>
       </ul>
       <p><strong>Cuándo conviene:</strong> tareas estables, con una métrica clara, donde ajustar el prompt a mano ya no mejora. Para un prototipo que cambia todos los días, todavía no.</p>` },
+    { titulo: 'Controlar el formato y el estilo de la respuesta', html: `
+      <p>Que la respuesta tenga el largo, el tono y el formato que tu producto necesita es uno de los pedidos más frecuentes. La guía de prompting de Claude da varias técnicas que funcionan:</p>
+      <ol>
+        <li><strong>Decí qué hacer, no qué evitar.</strong> En lugar de "no uses Markdown", probá "respondé en párrafos de prosa continua". Una instrucción positiva le da al modelo un objetivo claro.</li>
+        <li><strong>Explicá el porqué.</strong> "Nunca uses puntos suspensivos" funciona peor que "tu respuesta la va a leer un sintetizador de voz, que no sabe pronunciar puntos suspensivos". Con el motivo, el modelo generaliza a casos que no previste.</li>
+        <li><strong>Que tu prompt se parezca a la salida que querés.</strong> El estilo del prompt influye en el de la respuesta: un prompt lleno de viñetas tiende a producir viñetas.</li>
+        <li><strong>Usá etiquetas para delimitar la salida</strong>, por ejemplo "escribí el resumen dentro de &lt;resumen&gt;", y extraelo con código.</li>
+        <li><strong>Para estructuras estrictas</strong> (JSON con un esquema), usá salidas estructuradas en lugar de pedirlo solo con palabras.</li>
+      </ol>
+      <pre><code>Menos efectivo:
+  NO uses listas. NO uses negritas. NO empieces con "Aquí tenés".
+
+Más efectivo:
+  Tu respuesta se muestra en una notificación del celular, donde el Markdown
+  se ve como símbolos sueltos. Respondé en una o dos oraciones de texto plano,
+  empezando directamente por la información.</code></pre>
+      <p><strong>Una técnica que cambió: el prefill.</strong> Durante años se usó escribir el comienzo de la respuesta del asistente (por ejemplo, abrir una llave para forzar JSON) para que el modelo siguiera desde ahí. Según la documentación de Claude, desde los modelos Claude 4.6, dejar una respuesta del asistente a medio escribir al final de la conversación ya no se admite. Las alternativas:</p>
+      <ul>
+        <li><strong>Para forzar un formato:</strong> salidas estructuradas.</li>
+        <li><strong>Para evitar preámbulos</strong> como "Aquí está el resumen:": una instrucción directa en el system prompt, o pedir la salida dentro de etiquetas.</li>
+        <li><strong>Para continuar una respuesta cortada:</strong> pasá el texto anterior en el mensaje del usuario y pedile que siga desde ahí.</li>
+      </ul>
+      <p>Como siempre, comprobá el efecto con tus evals: un cambio de formato puede afectar también la calidad del contenido.</p>` },
   ],
   practica: [
     'Elegí una tarea real (resumir mails, clasificar gastos). Escribí 20 casos de prueba con la respuesta esperada y medí 3 versiones de prompt.',
@@ -754,6 +778,7 @@ optimizado = dspy.BootstrapFewShot(metric=metrica).compile(programa, trainset=ej
     'Tomá el agente del módulo de agentes y registrá los tokens de contexto en cada paso. Agregá limpieza de resultados viejos de herramientas y un archivo NOTES.md, y compará tasa de éxito y tokens totales en 10 tareas largas antes y después.',
     'Tomá 3 documentos largos (contratos, manuales o informes) y 15 preguntas, 5 de ellas sin respuesta en los documentos. Compará un prompt con la pregunta al principio contra uno con documentos arriba, citas primero y permiso para decir "no sé". Medí exactitud, respuestas inventadas y citas que no existen (verificalas con código).',
     'Tomá un clasificador de tickets: medí tu prompt manual en 50 casos de validación, optimizalo con DSPy usando 100 casos de entrenamiento y comparalo en los mismos 50 de validación. Anotá cuántas llamadas al modelo costó la optimización.',
+    'Tomá un prompt lleno de prohibiciones ("no hagas X, no uses Y") y reescribilo con instrucciones positivas y el motivo de cada una. Compará las dos versiones en 20 casos: cuántas respuestas cumplen el formato pedido y cuántas mantienen la calidad del contenido.',
   ],
   recursos: [
     { t: 'Anthropic — Guía de prompt engineering', url: 'https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/overview' },
@@ -788,6 +813,11 @@ optimizado = dspy.BootstrapFewShot(metric=metrica).compile(programa, trainset=ej
     { q: '¿Cuándo conviene usar optimización automática de prompts?', opciones: ['Siempre, desde el primer día', 'Cuando no hay una métrica clara', 'En tareas que cambian todos los días', 'Cuando la tarea es estable, hay una métrica clara y ajustar a mano ya no mejora'], correcta: 3, explicacion: 'La optimización necesita una métrica fija y una tarea que no cambie. En un prototipo que cambia a diario, el esfuerzo no se amortiza.' },
     { q: 'En DSPy, ¿qué define una signature?', opciones: ['Las entradas y salidas de la tarea, y el framework arma el prompt a partir de eso', 'La firma digital del modelo', 'El costo máximo de la llamada', 'La temperatura de muestreo'], correcta: 0, explicacion: 'La signature describe el qué; el módulo elige el cómo (respuesta directa, razonamiento o herramientas), y el optimizador ajusta el prompt resultante.' },
     { q: '¿Cuál es un costo que se suele olvidar al optimizar prompts automáticamente?', opciones: ['Ninguno', 'Que cambia el tokenizador del modelo', 'Las muchas llamadas al modelo durante la búsqueda: conviene presupuestarlas y empezar con un modelo barato', 'Que borra los datos de entrenamiento'], correcta: 2, explicacion: 'Cada variante probada se evalúa contra los ejemplos, y eso multiplica las llamadas. Medilo antes de lanzarlo con un modelo caro.' },
+    { q: 'Querés que el modelo no use Markdown. ¿Qué instrucción suele funcionar mejor?', opciones: ['"NO USES MARKDOWN" en mayúsculas', '"Respondé en párrafos de prosa continua", con el motivo si lo hay', '"No uses listas, ni negritas, ni títulos, ni tablas"', 'No decir nada y limpiar la salida después'], correcta: 1, explicacion: 'Decir qué hacer le da un objetivo claro; una lista de prohibiciones deja abierto qué hacer en su lugar. Limpiar después funciona a medias y no corrige el estilo.' },
+    { q: 'La respuesta de tu app la lee un sintetizador de voz y no querés puntos suspensivos. ¿Cómo lo pedís?', opciones: ['"Nunca uses puntos suspensivos"', '"Evitá ..."', 'Filtrándolos con una expresión regular solamente', '"Tu respuesta la va a leer un sintetizador de voz que no sabe pronunciar puntos suspensivos, así que no los uses"'], correcta: 3, explicacion: 'Con el motivo, el modelo entiende el objetivo y también evita otros símbolos que el sintetizador no pronuncia, algo que una regla suelta no logra.' },
+    { q: 'Tu prompt está escrito todo en viñetas y te molesta que las respuestas también salgan en viñetas. ¿Qué probás?', opciones: ['Bajar la temperatura', 'Agregar "no uses viñetas" al final', 'Reescribir el prompt en prosa, más parecido al estilo de salida que querés', 'Cambiar de modelo'], correcta: 2, explicacion: 'El estilo del prompt influye en el de la respuesta. Hacer que el prompt se parezca a la salida deseada es una de las técnicas que recomienda la guía.' },
+    { q: 'Usabas prefill (escribir el comienzo de la respuesta del asistente) para forzar JSON, y con modelos nuevos de Claude la petición falla. ¿Qué hacés?', opciones: ['Usás salidas estructuradas con un JSON Schema', 'Repetís la llave de apertura dos veces', 'Volvés a un modelo viejo', 'Pedís el JSON en mayúsculas'], correcta: 0, explicacion: 'Según la documentación, desde los modelos Claude 4.6 no se admite dejar una respuesta del asistente a medio escribir al final. Las salidas estructuradas son la forma recomendada de forzar formato.' },
+    { q: 'Las respuestas empiezan siempre con "¡Claro! Aquí tenés el resumen:" y lo querés evitar sin usar prefill. ¿Qué hacés?', opciones: ['Nada, no se puede evitar', 'Subir max_tokens', 'Instruir en el system prompt que responda directamente, sin preámbulo, o pedir la salida dentro de etiquetas y extraerla', 'Bajar la temperatura a 0'], correcta: 2, explicacion: 'Una instrucción directa o un formato con etiquetas resuelve los preámbulos. La temperatura no controla el estilo de apertura, y además en la API de Claude ya no está disponible en los modelos recientes.' },
   ],
 },
 {

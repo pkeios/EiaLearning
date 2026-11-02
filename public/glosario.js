@@ -62,6 +62,7 @@ window.GLOSARIO = [
   { t: 'Perplexity', d: 'Exponencial de la entropía cruzada media por token: entre cuántas opciones duda el modelo, en promedio.', m: 'fundamentos' },
   { t: 'PII', d: 'Información personal identificable: datos como nombre, email, teléfono o documento que permiten identificar a una persona.', m: 'produccion' },
   { t: 'Plantilla de chat', d: 'Formato exacto, con tokens especiales, que un modelo de chat espera para separar los roles de la conversación.', m: 'fine-tuning' },
+  { t: 'Prefill (en prompting)', d: 'Escribir el comienzo de la respuesta del asistente para que el modelo siga desde ahí. En la API de Claude ya no se admite desde los modelos 4.6; se reemplaza con salidas estructuradas o instrucciones directas.', m: 'prompting' },
   { t: 'Prompt caching', d: 'Reutilizar el procesamiento de un prefijo repetido del prompt para bajar costo y latencia.', m: 'apis' },
   { t: 'Prompt injection', d: 'Instrucciones maliciosas, en la entrada o en contenido externo, que intentan controlar al modelo.', m: 'seguridad' },
   { t: 'RAG', d: 'Retrieval-Augmented Generation: recuperar documentos relevantes y pasárselos al modelo como contexto antes de responder.', m: 'rag' },
