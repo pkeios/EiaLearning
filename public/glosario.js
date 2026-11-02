@@ -49,6 +49,7 @@ window.GLOSARIO = [
   { t: 'Recall@k', d: 'Proporción de documentos relevantes que aparecen entre los k primeros resultados de una búsqueda.', m: 'rag' },
   { t: 'Reranker', d: 'Modelo que reordena los candidatos recuperados con más precisión, por ejemplo un cross-encoder.', m: 'rag' },
   { t: 'RLHF', d: 'Ajustar un modelo con aprendizaje por refuerzo a partir de preferencias humanas.', m: 'llms' },
+  { t: 'Safetensors', d: 'Formato para guardar pesos de modelos que contiene solo tensores, sin código: cargarlo no puede ejecutar nada, a diferencia de pickle.', m: 'seguridad' },
   { t: 'Shadow', d: 'Mandar una copia del tráfico real a una versión nueva sin mostrarle sus respuestas a nadie.', m: 'produccion' },
   { t: 'Softmax', d: 'Función que convierte logits en probabilidades positivas que suman 1.', m: 'fundamentos' },
   { t: 'Subagente', d: 'Agente que trabaja en su propia ventana de contexto y le devuelve un resumen al agente principal.', m: 'agentes' },
