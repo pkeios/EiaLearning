@@ -19,6 +19,10 @@ M.forEach((m, i) => {
 });
 // Metacognición: cada misión termina con una pregunta corta para explicar con tus palabras.
 M.forEach((m, i) => assert(m.reflexion && m.reflexion.endsWith('?') && m.reflexion.split(' ').length <= 15, 'misión ' + i + ' sin reflexión corta'));
+// Repaso espaciado: solo pregunta de misiones terminadas, y nada si no terminó ninguna.
+const repasoDe = new Function(js.split('const app =')[0] + js.split('// Repaso espaciado')[1].split('function inicio()')[0].replace(/^[^\n]*\n/, '') + ';return preguntaRepaso')();
+assert.equal(repasoDe({}), null);
+for (let k = 0; k < 20; k++) assert.equal(repasoDe({ 2: 3 }, () => k / 20).m.titulo, M[2].titulo);
 assert(M.filter(m => m.pasos.some(s => s.taller)).length >= 6, 'todas las misiones con práctica adentro');
 assert(!/https?:\/\/(?!atacante)/.test(h), 'no tiene que haber links a sitios externos');
 

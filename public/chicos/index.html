@@ -135,16 +135,47 @@ function leer(texto) {
   speechSynthesis.speak(Object.assign(new SpeechSynthesisUtterance(texto.replace(/\p{Extended_Pictographic}/gu, '')), { lang: 'es-419', voice: voz || null, rate: .95 }));
 }
 
+// Repaso espaciado: una pregunta al azar de una misión ya terminada, para recordar lo aprendido otro día.
+function preguntaRepaso(p, azar = Math.random) {
+  const hechas = MISIONES.map((m, i) => [m, i]).filter(([, i]) => p[i] != null);
+  const preguntas = hechas.flatMap(([m]) => m.pasos.filter(s => s.q).map(s => ({ s, m })));
+  return preguntas.length ? preguntas[Math.floor(azar() * preguntas.length)] : null;
+}
+
 function inicio() {
   const p = cargar(), total = Object.values(p).reduce((a, b) => a + b, 0);
   app.innerHTML = `<p class="estrellas">⭐ <strong>${total}</strong> de ${MISIONES.length * 3} estrellas</p>
     ${Object.keys(p).length === MISIONES.length ? SIGUIENTE : ''}
     <div class="misiones">${MISIONES.map((m, i) => `<button class="mision" style="--c:${m.color}" data-i="${i}">
       <span class="emoji">${m.emoji}</span><strong>${i + 1}. ${m.titulo}</strong><small>${p[i] != null ? '⭐'.repeat(p[i]) + '☆'.repeat(3 - p[i]) : '▶️ Jugar'}</small></button>`).join('')}</div>
+    <div id="repaso"></div>
     <h2 class="seccion">🛠️ Taller: ¡ahora hacelo vos!</h2>
     <div class="misiones">${TALLER.map(t => `<button class="mision" style="--c:${t.color}" data-t="${t.id}">
       <span class="emoji">${t.emoji}</span><strong>${t.titulo}</strong><small>${cargarTaller()[t.id] ? '✅ Hecho' : '🛠️ Probar'}</small></button>`).join('')}</div>`;
   app.querySelectorAll('.mision').forEach(b => b.onclick = () => { location.hash = b.dataset.t ? '#/taller/' + b.dataset.t : '#/' + b.dataset.i; });
+  const r = preguntaRepaso(p);
+  if (!r) return;
+  const caja = app.querySelector('#repaso');
+  caja.innerHTML = `<h2 class="seccion">🔁 Repaso rápido</h2>
+    <section class="tarjeta" style="border-color:${r.m.color};box-shadow:0 6px 0 ${r.m.color}">
+      <p class="suave">De la misión ${r.m.emoji} ${r.m.titulo}. ¿Te acordás?</p>
+      <p class="texto">${r.s.q}</p>
+      <div class="opciones">${r.s.o.map((o, j) => `<button class="opcion" data-r="${j}">${o}</button>`).join('')}</div>
+      <p class="aviso" aria-live="polite"></p>
+      <button class="chico" id="otra-repaso" style="font-size:1rem">🔄 Otra pregunta</button>
+    </section>`;
+  const aviso = caja.querySelector('.aviso');
+  caja.querySelectorAll('[data-r]').forEach(b => b.onclick = () => {
+    if (Number(b.dataset.r) === r.s.c) {
+      b.classList.add('bien');
+      caja.querySelectorAll('[data-r]').forEach(x => x.disabled = true);
+      aviso.className = 'aviso bien'; aviso.textContent = '🎉 ¡Te acordaste! ' + r.s.e;
+    } else {
+      b.classList.add('mal'); b.disabled = true;
+      aviso.className = 'aviso mal'; aviso.textContent = '🤔 Casi... ¡probá otra!';
+    }
+  });
+  caja.querySelector('#otra-repaso').onclick = () => inicio();
 }
 
 function mision(i) {
