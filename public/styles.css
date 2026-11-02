@@ -155,6 +155,9 @@ mark { background: rgba(250, 204, 21, .4); color: inherit; border-radius: 3px; p
 .certificado { text-align: center; border: 3px double var(--acento); border-radius: var(--radio); padding: 3rem 2rem; margin: 1rem 0; background: var(--card); }
 .certificado h1 { font-size: 2.6rem; margin: .2rem 0 1rem; }
 .certificado h2 { font-size: 2rem; margin: .5rem 0; }
+.aviso-nuevo { position: fixed; bottom: 1rem; left: 50%; transform: translateX(-50%); z-index: 20; display: flex; gap: .8rem; align-items: center; background: var(--card2); border: 1px solid var(--acento); border-radius: 12px; padding: .6rem .6rem .6rem 1rem; box-shadow: 0 8px 30px rgba(0, 0, 0, .35); }
+.aviso-nuevo button { padding: .4rem .9rem; }
+
 @media print {
   header, .no-imprimir { display: none !important; }
   body { background: #fff; color: #000; }

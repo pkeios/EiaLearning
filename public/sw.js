@@ -16,7 +16,13 @@ self.addEventListener('activate', e => {
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET' || new URL(e.request.url).origin !== location.origin) return;
   const red = fetch(e.request).then(async r => {
-    if (r.ok) (await caches.open(CACHE)).put(e.request, r.clone());
+    if (r.ok) {
+      const cache = await caches.open(CACHE), anterior = await cache.match(e.request);
+      await cache.put(e.request, r.clone());
+      // Si el archivo cambió desde la última visita, avisamos a la página para que ofrezca recargar.
+      const firma = x => x && (x.headers.get('etag') || x.headers.get('last-modified'));
+      if (firma(anterior) && firma(anterior) !== firma(r)) (await self.clients.matchAll()).forEach(c => c.postMessage('contenido-nuevo'));
+    }
     return r;
   });
   e.waitUntil(red.catch(() => {}));

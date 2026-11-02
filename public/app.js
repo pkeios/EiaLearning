@@ -505,7 +505,16 @@ botonTema.onclick = () => {
 iconoTema();
 
 // Sin conexión: el service worker solo funciona servido por http(s), no abriendo el archivo local.
-if (window.navigator?.serviceWorker && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js');
+if (window.navigator?.serviceWorker && location.protocol.startsWith('http')) {
+  navigator.serviceWorker.register('sw.js');
+  navigator.serviceWorker.addEventListener('message', e => { if (e.data === 'contenido-nuevo') avisarContenidoNuevo(); });
+}
+function avisarContenidoNuevo() {
+  if (document.querySelector('.aviso-nuevo')) return;
+  const aviso = Object.assign(document.createElement('div'), { className: 'aviso-nuevo', role: 'status' });
+  aviso.innerHTML = 'Hay contenido nuevo en el curso. <button onclick="location.reload()">Recargar</button>';
+  document.body.append(aviso);
+}
 
 addEventListener('hashchange', render);
 render();

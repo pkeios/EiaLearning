@@ -17,4 +17,5 @@
 - [x] Al terminar el examen final con 80% o más, mostrar un certificado de finalización imprimible con la fecha y la nota
 - [x] Página "Qué estudiar hoy" que junte en una lista corta: repaso pendiente, tarjetas del día, la próxima lección sin leer y la próxima práctica sin hacer del módulo actual
 - [x] Instalable y sin conexión (PWA): manifest y service worker para estudiar desde el celular sin internet
-- [ ] Aviso discreto "Hay contenido nuevo, recargá" cuando el service worker descarga una versión nueva del curso
+- [x] Aviso discreto "Hay contenido nuevo, recargá" cuando el service worker descarga una versión nueva del curso
+- [ ] Descargar todos tus apuntes "Explicalo con tus palabras" en un archivo Markdown, ordenados por módulo
