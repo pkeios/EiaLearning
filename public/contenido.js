@@ -1205,6 +1205,8 @@ registrar(final.stop_reason, final.usage)</code></pre>
     'Mandá 500 clasificaciones por la API de lotes y las mismas 500 en tiempo real, con concurrencia limitada. Compará costo total, tiempo hasta tener todos los resultados y errores, y emparejá los resultados del lote por custom_id.',
     'Agregá caching a una app con un system prompt largo. En 20 llamadas seguidas medí cache_creation_input_tokens, cache_read_input_tokens, costo y tiempo hasta el primer token, con y sin caché. Después agregá la hora al principio del prompt y observá qué pasa.',
     'Armá en tu backend un endpoint que reenvíe por SSE el streaming de Claude al navegador. Simulá un error a mitad del stream y mostrá la respuesta parcial con un botón de reintentar; registrá el stop_reason y los tokens del mensaje final.',
+    'Tomá 50 pedidos reales de tu app y contá sus tokens de entrada de dos formas: con el contador de tokens del proveedor y con la regla de "palabras dividido 0,75". Anotá el error promedio de la regla y en qué textos se equivoca más (español, código, términos técnicos), y decidí con qué método vas a estimar costos.',
+    'Armá un test de regresión para tu extractor: 20 facturas con su JSON esperado. Medí el porcentaje de campos correctos y cuántos reintentos por validación fallida hubo, cambiá una sola cosa del prompt, volvé a medir y dejá el test corriendo en CI para que frene cambios que empeoren el resultado.',
   ],
   recursos: [
     { t: 'Documentación de la API de Claude', url: 'https://docs.claude.com/' },
