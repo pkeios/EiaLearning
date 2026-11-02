@@ -95,6 +95,7 @@ perplexity = np.exp(entropia_cruzada)            # ≈ 2,0</code></pre>
     'Detectar overfitting y usar bien train/validación/test',
     'Elegir la métrica correcta (accuracy, precision, recall, F1)',
     'Usar ensembles de árboles (random forest, gradient boosting) y pipelines sin data leakage',
+    'Decidir entre un LLM y un clasificador clásico sobre embeddings, y elegir umbrales según el costo de cada error',
   ],
   lecciones: [
     { titulo: 'Qué es aprender a partir de datos', html: `
@@ -147,15 +148,46 @@ for nombre, modelo in [("lineal", lineal), ("boosting", boosting)]:
     f1 = cross_val_score(modelo, X, y, cv=5, scoring="f1")
     print(nombre, f1.mean().round(3), "±", f1.std().round(3))</code></pre>
       <p>Regla práctica: empezá con un modelo lineal como línea base, después gradient boosting. Si el boosting no mejora claramente, el problema está en los datos o en las features, no en el algoritmo.</p>` },
+    { titulo: '¿LLM o modelo clásico? Embeddings, clasificadores y umbrales', html: `
+      <p>Un error caro de AI engineering es usar un LLM para todo. Si tenés que clasificar millones de textos en categorías fijas, un modelo clásico entrenado sobre <strong>embeddings</strong> suele ser cientos de veces más barato, responde en milisegundos, siempre da la misma salida y sus probabilidades se pueden calibrar.</p>
+      <p><strong>Patrón muy usado:</strong></p>
+      <ol>
+        <li>Usá un LLM para <strong>etiquetar</strong> unos miles de ejemplos (y revisá a mano una muestra).</li>
+        <li>Convertí cada texto en un embedding.</li>
+        <li>Entrená una regresión logística (o gradient boosting) sobre esos vectores.</li>
+        <li>Mandá al LLM solo los casos dudosos, donde el clasificador tiene baja confianza.</li>
+      </ol>
+      <pre><code>from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import precision_recall_curve
+
+X_tr, X_te = embed(textos_train), embed(textos_test)    # vectores de embeddings
+clf = LogisticRegression(max_iter=2000).fit(X_tr, y_tr)  # y = 1 si es "urgente"
+prob = clf.predict_proba(X_te)[:, 1]
+
+# Elegí el umbral según el costo de cada error, no 0,5 por costumbre
+prec, rec, umbrales = precision_recall_curve(y_te, prob)
+umbral = min(u for p, u in zip(prec, umbrales) if p &gt;= 0.95)  # precision ≥ 95%
+
+def clasificar(texto):
+    p = clf.predict_proba(embed([texto]))[0, 1]
+    if 0.2 &lt; p &lt; umbral:
+        return clasificar_con_llm(texto)    # zona dudosa: el modelo grande decide
+    return p &gt;= umbral</code></pre>
+      <p><strong>El umbral es una decisión de negocio.</strong> Con 0,5 por defecto mezclás los errores sin pensar. Si un falso positivo cuesta mucho (marcar como fraude a un cliente bueno), subí el umbral para ganar precision. Si lo caro es dejar pasar un caso (no detectar un fraude), bajalo para ganar recall. La curva precision-recall te muestra el intercambio.</p>
+      <p><strong>Calibración:</strong> que un modelo diga 0,8 no significa que acierte el 80% de esas veces. Si vas a usar las probabilidades para decidir o para mostrarlas, verificá la calibración con un gráfico de confiabilidad y, si hace falta, calibrá (por ejemplo, con <code>CalibratedClassifierCV</code>).</p>
+      <p><strong>Cuándo sí un LLM:</strong> pocas consultas, categorías que cambian seguido, sin datos etiquetados, o tareas que requieren razonar o generar texto.</p>` },
   ],
   practica: [
     'Con scikit-learn y el dataset Titanic (o cualquiera de Kaggle), entrená una regresión logística y un random forest. Compará accuracy, precision, recall y F1 en test.',
     'Provocá overfitting a propósito con un árbol de decisión sin límite de profundidad y graficá error de train vs test según max_depth.',
     'Con un dataset tabular de Kaggle, compará con validación cruzada de 5 folds una regresión logística en Pipeline, un random forest y HistGradientBoosting. Reportá F1 medio ± desvío de cada uno y justificá cuál pondrías en producción.',
+    'Etiquetá con un LLM 2.000 textos (por ejemplo, reseñas) y revisá 100 a mano. Entrená una regresión logística sobre embeddings, elegí un umbral con la curva precision-recall y compará contra clasificar todo con el LLM: exactitud, costo por cada 1.000 textos y latencia.',
   ],
   recursos: [
     { t: 'Guía de usuario de scikit-learn', url: 'https://scikit-learn.org/stable/user_guide.html' },
     { t: 'scikit-learn — Ensembles: gradient boosting, random forests y más', url: 'https://scikit-learn.org/stable/modules/ensemble.html' },
+    { t: 'scikit-learn — Calibración de probabilidades', url: 'https://scikit-learn.org/stable/modules/calibration.html' },
+    { t: 'scikit-learn — precision_recall_curve', url: 'https://scikit-learn.org/stable/modules/generated/sklearn.metrics.precision_recall_curve.html' },
     { t: 'Why do tree-based models still outperform deep learning on tabular data? (paper)', url: 'https://arxiv.org/abs/2207.08815' },
     { t: 'Machine Learning Specialization (Andrew Ng)', url: 'https://www.coursera.org/specializations/machine-learning-introduction' },
     { t: 'Kaggle Learn (cursos cortos y prácticos)', url: 'https://www.kaggle.com/learn' },
@@ -172,6 +204,11 @@ for nombre, modelo in [("lineal", lineal), ("boosting", boosting)]:
     { q: '¿Por qué conviene meter el escalado y la codificación dentro de un Pipeline al hacer validación cruzada?', opciones: ['Porque entrena más rápido', 'Porque scikit-learn no permite escalar fuera de un Pipeline', 'Para que el modelo use la GPU', 'Para que cada transformación se ajuste solo con el train de cada fold y no haya leakage'], correcta: 3, explicacion: 'Si escalás todo antes de la validación cruzada, cada fold de validación ya "vio" estadísticas de sí mismo. El Pipeline lo evita y además se reutiliza en producción.' },
     { q: 'En gradient boosting, ¿qué aprende cada árbol nuevo?', opciones: ['A corregir los errores (el gradiente de la pérdida) del conjunto de árboles anteriores', 'Lo mismo que el anterior pero con otra muestra de datos', 'Una partición aleatoria sin mirar los errores', 'A decidir qué árbol anterior usar para cada fila'], correcta: 0, explicacion: 'El boosting es secuencial y aditivo: cada árbol apunta a lo que el conjunto todavía predice mal. Entrenar con otra muestra independiente es la idea del bagging.' },
     { q: 'Tu gradient boosting mejora en train con cada iteración, pero la métrica de validación empeora a partir de la iteración 300. ¿Qué hacés?', opciones: ['Agregar más iteraciones', 'Subir el learning rate', 'Usar early stopping con el set de validación, o bajar el learning rate y limitar los árboles', 'Dejar de usar el set de validación'], correcta: 2, explicacion: 'Es overfitting: a partir de ese punto los árboles nuevos memorizan ruido. Early stopping corta en el mejor punto de validación. Más iteraciones o más learning rate lo empeoran.' },
+    { q: 'Tenés que clasificar 5 millones de mensajes por día en 8 categorías fijas y ya tenés 10.000 ejemplos etiquetados. ¿Qué probás primero?', opciones: ['Un clasificador clásico sobre embeddings, y el LLM solo para los casos dudosos', 'Mandar cada mensaje a un LLM grande', 'Un agente con herramientas', 'Fine-tuning de un LLM de 70B'], correcta: 0, explicacion: 'Con categorías fijas, datos etiquetados y mucho volumen, un clasificador sobre embeddings es mucho más barato y rápido. El LLM aporta en la zona de baja confianza.' },
+    { q: 'Tu clasificador de fraude marca como fraude a muchos clientes legítimos, y eso genera quejas caras. ¿Qué ajustás primero?', opciones: ['Bajás el umbral de decisión', 'Subís el umbral de decisión para ganar precision, aceptando perder algo de recall', 'Cambiás a un LLM', 'Agregás más features al azar'], correcta: 1, explicacion: 'Los falsos positivos bajan al exigir más confianza para decir "fraude". Bajar el umbral haría lo contrario: más alertas y más clientes buenos marcados.' },
+    { q: 'Tu modelo dice "probabilidad 0,9" en 1.000 casos, pero solo 600 son realmente positivos. ¿Qué problema tiene?', opciones: ['Overfitting en el set de test', 'Data leakage', 'Está mal calibrado: sus probabilidades no reflejan la frecuencia real; hay que calibrarlo', 'Le falta entrenar más epochs'], correcta: 2, explicacion: 'Calibrado significaría que de los casos con 0,9, alrededor del 90% son positivos. Si usás esas probabilidades para decidir, primero calibralas.' },
+    { q: 'Querés entrenar un clasificador, pero no tenés datos etiquetados y etiquetar a mano cuesta caro. ¿Qué hacés?', opciones: ['Entrenás sin etiquetas con k-means y usás los clusters como categorías', 'Abandonás la idea', 'Usás siempre un LLM para cada predicción', 'Usás un LLM para etiquetar miles de ejemplos, revisás una muestra a mano y entrenás el clasificador con eso'], correcta: 3, explicacion: 'El LLM etiqueta barato y la revisión humana mide su calidad. Los clusters de k-means no tienen por qué coincidir con tus categorías de negocio.' },
+    { q: '¿Por qué no conviene usar siempre 0,5 como umbral de decisión?', opciones: ['Porque el umbral debe reflejar cuánto cuesta cada tipo de error en tu problema', 'Porque scikit-learn no lo permite', 'Porque 0,5 da siempre la peor accuracy', 'Porque el umbral tiene que ser igual a la proporción de positivos'], correcta: 0, explicacion: 'Un falso positivo y un falso negativo casi nunca cuestan lo mismo. La curva precision-recall te muestra el intercambio y vos elegís el punto.' },
   ],
 },
 {
