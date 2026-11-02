@@ -4,6 +4,7 @@ window.GLOSARIO = [
   { t: 'AI Act (UE)', d: 'Regulación europea de IA que clasifica los sistemas por riesgo (prohibido, alto, limitado, mínimo) y asigna obligaciones según el rol: proveedor o implementador.', m: 'seguridad' },
   { t: 'Acumulación de gradientes', d: 'Sumar los gradientes de varios micro-batches antes de actualizar los pesos, para simular un batch más grande del que entra en memoria.', m: 'deep-learning' },
   { t: 'AdamW', d: 'Optimizador Adam con weight decay desacoplado. Es el estándar para entrenar Transformers.', m: 'deep-learning' },
+  { t: 'Agencia excesiva', d: 'Riesgo de que un agente tenga más funciones, permisos o autonomía de los que su tarea necesita, de modo que una inyección o un error causen daño real.', m: 'seguridad' },
   { t: 'Aprendizaje contrastivo', d: 'Entrenamiento que acerca en el espacio vectorial los pares que van juntos y aleja los que no. Así se entrenan los modelos de embeddings y CLIP.', m: 'deep-learning' },
   { t: 'Alucinación', d: 'Respuesta plausible pero falsa o inventada. Se reduce dando contexto, pidiendo citas y permitiendo decir "no sé".', m: 'llms' },
   { t: 'Atención', d: 'Mecanismo por el que cada token pondera la información de los demás según la similitud entre su query y las keys de los otros.', m: 'llms' },
