@@ -28,7 +28,7 @@ assert(!/https?:\/\/(?!atacante)/.test(h), 'no tiene que haber links a sitios ex
 
 // Taller: solo las funciones puras (sin tocar el DOM).
 const taller = js.split('// ---------- Taller')[1].split('function taller(')[0].replace(/^[^\n]*\n/, '');
-const X = new Function(js.split('const app =')[0] + taller + ';return { NOMBRE_DIR, DIR, NOMBRE_SESGO, REGLAS, OTRAS_F, SESGO_INICIO, SESGO_AGREGAR, dibujarIA, masComun, MENSAJE, predecir, aprenderTexto, siguientes, escribirSola, correrRobot, NIVELES, DEMO, palabrasDe }')();
+const X = new Function(js.split('const app =')[0] + taller + ';return { MAX_BLOQUES, expandir, NOMBRE_DIR, DIR, NOMBRE_SESGO, REGLAS, OTRAS_F, SESGO_INICIO, SESGO_AGREGAR, dibujarIA, masComun, MENSAJE, predecir, aprenderTexto, siguientes, escribirSola, correrRobot, NIVELES, DEMO, palabrasDe }')();
 
 const ej = X.DEMO.map(([t, g]) => ({ t, g }));
 assert(X.predecir(ej, 'gané la prueba').prob[0] > 0.5);
@@ -66,4 +66,9 @@ assert(!/aria-label="Agregar (paso|ejemplo)"/.test(h), 'etiqueta repetida para b
 assert(/probadas\.size >= 3\) alLograr/.test(h) && /usadas\.size >= 2\) alLograr/.test(h));
 // En los pasos de actividad, el aviso de la misión tiene su propio id (no se confunde con el de la actividad) y explica por qué Seguir está bloqueado.
 assert(h.includes('id="aviso-mision"') && h.includes('Completá la actividad para poder seguir'));
+// Bucles: ×n repite el paso anterior, y el nivel con límite de bloques se puede resolver dentro del límite.
+assert.equal(X.expandir([R, '×4', D, '×4']).length, 8);
+assert.deepStrictEqual(X.expandir(['×3']), []);
+X.MAX_BLOQUES.forEach((m, n) => { if (m) assert(X.correrRobot(X.NIVELES[n], X.expandir([R, '×4', D, '×4'])).fin === 'estrella' && 4 <= m); });
+assert.equal(X.MAX_BLOQUES.length, X.NIVELES.length);
 console.log('test-chicos OK');

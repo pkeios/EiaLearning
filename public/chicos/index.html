@@ -301,7 +301,21 @@ const NIVELES = [
   ['R....', '.....', '.....', '.....', '....E'],
   ['R.#..', '..#..', '..#.E', '.....', '.....'],
   ['R#...', '.#.#.', '.#.#.', '...#E', '###..'],
+  ['R....', '.....', '.....', '.....', '....E'],
 ];
+// Nivel 4: bucles. Máximo de bloques por nivel (null = sin límite) y bloques que repiten el paso anterior.
+const MAX_BLOQUES = [null, null, null, 4];
+const REPETIR = ['×2', '×3', '×4'];
+// "×n" hace que el paso anterior cuente n veces en total.
+function expandir(prog) {
+  const pasos = [];
+  for (const b of prog) {
+    if (!REPETIR.includes(b)) { pasos.push(b); continue; }
+    const ultimo = pasos[pasos.length - 1];
+    if (ultimo) for (let i = 1; i < Number(b.slice(1)); i++) pasos.push(ultimo);
+  }
+  return pasos;
+}
 let corriendo = null; // animación del robot: se corta al cambiar de página
 const NOMBRE_DIR = { '⬆️': 'arriba', '⬇️': 'abajo', '⬅️': 'izquierda', '➡️': 'derecha' };
 const DIR = { '⬆️': [-1, 0], '⬇️': [1, 0], '⬅️': [0, -1], '➡️': [0, 1] };
@@ -479,12 +493,15 @@ function montarTaller(id, cont, alLograr) {
       const mapa = NIVELES[nivel];
       const [rr, rc] = pos || [mapa.findIndex(f => f.includes('R')), mapa[mapa.findIndex(f => f.includes('R'))].indexOf('R')];
       cont.querySelector('.grilla').innerHTML = mapa.flatMap((f, r) => [...f].map((x, c) => `<div class="celda">${r === rr && c === rc ? '🤖' : x === '#' ? '🧱' : x === 'E' ? '⭐' : ''}</div>`)).join('');
-      cont.querySelector('.programa').textContent = prog.join('') || 'Tu programa aparece acá';
+      cont.querySelector('.programa').textContent = prog.length ? prog.join(' ') + (MAX_BLOQUES[nivel] ? `   (${prog.length} de ${MAX_BLOQUES[nivel]} bloques)` : '') : 'Tu programa aparece acá';
     };
     const armar = () => {
+      const max = MAX_BLOQUES[nivel];
       cont.innerHTML = (`<p class="texto">Nivel ${nivel + 1} de ${NIVELES.length}: llevá al robot hasta la ⭐ sin chocar 🧱</p>
+        ${max ? `<p class="chip" style="display:block">🔁 <strong>Desafío de programador:</strong> usá como máximo ${max} bloques. Los bloques ×2, ×3 y ×4 repiten el paso anterior: eso se llama <strong>bucle</strong>.</p>` : ''}
         <div class="grilla"></div>
         <div class="fila">${Object.keys(DIR).map(d => `<button class="opcion" data-d="${d}" aria-label="Agregar paso hacia ${NOMBRE_DIR[d]}">${d}</button>`).join('')}</div>
+        ${max ? `<div class="fila">${REPETIR.map(r => `<button class="opcion" data-d="${r}" aria-label="Repetir el paso anterior ${r.slice(1)} veces">🔁 ${r}</button>`).join('')}</div>` : ''}
         <p class="programa"></p>
         <div class="fila"><button class="opcion" id="borrar">🗑️ Borrar</button><button class="boton" id="correr">▶️ Ejecutar</button></div>
         <div id="resultado" class="aviso" aria-live="polite"></div>`);
@@ -493,13 +510,16 @@ function montarTaller(id, cont, alLograr) {
       cont.querySelector('#borrar').onclick = () => { prog = []; res.textContent = ''; pintar(); };
       cont.querySelector('#correr').onclick = () => {
         clearInterval(corriendo);
-        const { camino, fin } = correrRobot(NIVELES[nivel], prog);
+        const { camino, fin } = correrRobot(NIVELES[nivel], expandir(prog));
         let k = 0;
         corriendo = setInterval(() => {
           pintar(camino[k++]);
           if (k < camino.length) return;
           clearInterval(corriendo);
-          if (fin === 'estrella') {
+          if (fin === 'estrella' && max && prog.length > max) {
+            res.className = 'aviso mal';
+            res.textContent = `🤖 ¡Llegaste! Pero usaste ${prog.length} bloques. Probá con ${max} o menos usando 🔁.`;
+          } else if (fin === 'estrella') {
             res.className = 'aviso bien';
             res.innerHTML = `🎉 ¡Llegaste en ${camino.length - 1} pasos! ` + (nivel + 1 < NIVELES.length ? '<button class="boton" id="otro">Siguiente nivel →</button>' : '🏆 ¡Sos programador!');
             alLograr(nivel + 1 === NIVELES.length);
