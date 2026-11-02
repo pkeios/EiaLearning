@@ -129,3 +129,4 @@ Lo completa el comando `/mejorar`. Una línea por ejecución.
 - 2026-11-02 · ml-clasico · metodología: 5 explicaciones ahora corrigen la opción tentadora
 - 2026-11-02 · llms · metodología: 5 preguntas nuevas de casos que aplican tokens, alucinación, ventana de contexto y temperatura
 - 2026-11-02 · agentes · metodología: 5 explicaciones ahora corrigen la opción tentadora
+- 2026-11-02 · evals · metodología: 5 explicaciones ahora corrigen la opción tentadora
