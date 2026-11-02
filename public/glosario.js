@@ -35,6 +35,7 @@ window.GLOSARIO = [
   { t: 'FlashAttention', d: 'Forma de calcular la atención exacta reorganizando los cálculos para mover menos datos en la memoria de la GPU: más rápida y con menos memoria.', m: 'llms' },
   { t: 'Eval de regresión', d: 'Conjunto de pruebas que ya deberían pasar casi siempre; sirve para detectar que un cambio rompió algo que funcionaba.', m: 'evals' },
   { t: 'Exfiltración', d: 'Sacar datos de un sistema hacia un atacante; con LLMs, por ejemplo, a través de links o imágenes cuya URL lleva datos privados.', m: 'seguridad' },
+  { t: 'Fidelidad (faithfulness)', d: 'Medida de cuánto de lo que afirma una respuesta está respaldado por el contexto recuperado. Baja fidelidad es alucinación.', m: 'rag' },
   { t: 'Few-shot', d: 'Incluir ejemplos de entrada y salida en el prompt para fijar formato y criterio.', m: 'prompting' },
   { t: 'Fine-tuning', d: 'Seguir entrenando un modelo preentrenado con datos propios para una tarea, un formato o un estilo.', m: 'fine-tuning' },
   { t: 'GraphRAG', d: 'Variante de RAG que arma un grafo de entidades y resúmenes por comunidades para responder preguntas globales sobre todo un corpus.', m: 'rag' },

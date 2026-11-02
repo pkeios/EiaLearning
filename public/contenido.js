@@ -1047,6 +1047,7 @@ print(u.cache_creation_input_tokens, u.cache_read_input_tokens, u.input_tokens)
     'Elegir entre contexto largo, RAG clásico y RAG agéntico, aplicando permisos en el retrieval',
     'Elegir modelo de embeddings e índice vectorial, y ajustar el equilibrio entre recall y latencia',
     'Responder preguntas sobre datos estructurados con text-to-SQL seguro, y saber cuándo usar GraphRAG',
+    'Evaluar un RAG por partes: retrieval, fidelidad, relevancia, exactitud y abstención',
   ],
   lecciones: [
     { titulo: 'Embeddings y búsqueda semántica', html: `
@@ -1136,6 +1137,27 @@ respuesta = llm(f"Pregunta: {pregunta}\\nResultado: {filas}\\nRespondé en una f
         <li>Para responder, produce una respuesta parcial con cada resumen y después las sintetiza.</li>
       </ol>
       <p>En preguntas de síntesis sobre corpus de alrededor de un millón de tokens, mejoró bastante lo completo y diverso de las respuestas frente a un RAG clásico. El costo: indexar es mucho más caro, porque el LLM procesa todo el corpus. Conviene cuando las preguntas globales son frecuentes; para preguntas puntuales, el RAG clásico sigue siendo mejor opción.</p>` },
+    { titulo: 'Evaluar un RAG de punta a punta', html: `
+      <p>"Las respuestas están bien" no es una métrica. Un RAG tiene partes que fallan de formas distintas, y conviene medirlas por separado:</p>
+      <ul>
+        <li><strong>Retrieval:</strong> ¿trajo lo necesario? <em>Recall@k</em> (si el fragmento correcto está entre los k primeros) y <em>precisión del contexto</em> (cuánto de lo recuperado es relevante, porque el resto es ruido que también paga tokens).</li>
+        <li><strong>Fidelidad (faithfulness):</strong> ¿cada afirmación de la respuesta está respaldada por el contexto recuperado? Una respuesta que es cierta en el mundo pero no sale de tus documentos igual es un riesgo: la próxima vez el modelo va a inventar.</li>
+        <li><strong>Relevancia de la respuesta:</strong> ¿responde lo que se preguntó, o se va por las ramas?</li>
+        <li><strong>Exactitud:</strong> cuando tenés una respuesta de referencia, ¿coincide?</li>
+        <li><strong>Abstención correcta:</strong> cuando la respuesta no está en tus documentos, ¿dice "no figura" en lugar de inventar?</li>
+      </ul>
+      <pre><code>def fidelidad(respuesta, contexto):
+    afirmaciones = llm("Listá las afirmaciones de esta respuesta, una por línea:\\n" + respuesta).splitlines()
+    respaldadas = [juez("¿Esta afirmación se deduce del contexto? Respondé sí o no.", a, contexto)
+                   for a in afirmaciones if a.strip()]
+    return sum(respaldadas) / max(1, len(respaldadas))</code></pre>
+      <p><strong>Diagnóstico por partes:</strong></p>
+      <ul>
+        <li>Recuperó lo correcto y respondió mal: problema de <strong>generación</strong> (prompt, modelo, orden del contexto).</li>
+        <li>No recuperó lo correcto: problema de <strong>retrieval</strong> (chunking, embeddings, búsqueda híbrida, reranker).</li>
+        <li>La respuesta no estaba en ningún documento: problema de <strong>cobertura</strong>, que se arregla agregando datos, no tocando el modelo.</li>
+      </ul>
+      <p><strong>Sin respuestas de referencia:</strong> frameworks como RAGAS proponen métricas que no necesitan etiquetas humanas, como la fidelidad calculada con un juez. Sirven para monitorear tráfico real de producción, pero son jueces LLM: calibralos contra etiquetas humanas antes de confiar en ellos.</p>` },
   ],
   practica: [
     'Construí un RAG sobre tus propios apuntes (o la documentación de una librería): chunking, embeddings, pgvector o Chroma, y respuestas con citas.',
@@ -1144,12 +1166,15 @@ respuesta = llm(f"Pregunta: {pregunta}\\nResultado: {filas}\\nRespondé en una f
     'Sobre tus apuntes, compará tres variantes en 30 preguntas (5 de ellas de varios saltos): todo en el contexto con caching, RAG clásico y RAG agéntico. Medí exactitud, costo y latencia por pregunta, y escribí cuál elegirías y por qué.',
     'Indexá 100.000 chunks en pgvector. Medí recall@10 y latencia con búsqueda exacta y con HNSW usando ef_search de 40, 100 y 200, graficá recall contra latencia y elegí el punto para tu caso.',
     'Armá text-to-SQL sobre una base SQLite de ejemplo con un usuario de solo lectura. Escribí 20 preguntas con su resultado esperado y medí cuántas acierta comparando resultados; después agregá descripciones de columnas y 3 ejemplos pregunta → SQL y volvé a medir.',
+    'Tomá 30 preguntas para tu RAG, 5 de ellas sin respuesta en los documentos. Calculá recall@5, fidelidad con un juez por afirmación, relevancia y tasa de abstención correcta, y clasificá cada fallo como de retrieval, de generación o de cobertura.',
   ],
   recursos: [
     { t: 'Paper original de RAG (Lewis et al., 2020)', url: 'https://arxiv.org/abs/2005.11401' },
     { t: 'Anthropic — Contextual Retrieval', url: 'https://www.anthropic.com/news/contextual-retrieval' },
     { t: 'pgvector (búsqueda vectorial en Postgres)', url: 'https://github.com/pgvector/pgvector' },
     { t: 'Sentence Transformers (embeddings open source)', url: 'https://www.sbert.net/' },
+    { t: 'RAGAS: evaluación automática de RAG (paper)', url: 'https://arxiv.org/abs/2309.15217' },
+    { t: 'RAGAS — Documentación', url: 'https://docs.ragas.io/en/stable/' },
     { t: 'GraphRAG: From Local to Global (paper)', url: 'https://arxiv.org/abs/2404.16130' },
     { t: 'BIRD: benchmark de text-to-SQL con bases reales (paper)', url: 'https://arxiv.org/abs/2305.03111' },
     { t: 'MTEB Leaderboard (comparativa de modelos de embeddings)', url: 'https://huggingface.co/spaces/mteb/leaderboard' },
@@ -1178,6 +1203,11 @@ respuesta = llm(f"Pregunta: {pregunta}\\nResultado: {filas}\\nRespondé en una f
     { q: 'Para evaluar un sistema de text-to-SQL, ¿qué comparás con la referencia?', opciones: ['El texto exacto del SQL', 'La longitud de la consulta', 'El resultado de ejecutar la consulta generada contra el resultado esperado', 'La velocidad de la consulta'], correcta: 2, explicacion: 'La misma pregunta admite muchas consultas correctas distintas. Lo que importa es que devuelvan los mismos datos.' },
     { q: 'Preguntan "¿cuáles son los temas principales de estos 5.000 informes?" y tu RAG clásico responde mal. ¿Por qué, y qué alternativa hay?', opciones: ['Los chunks son muy chicos', 'El modelo es chico', 'Falta un reranker', 'Es una pregunta global que ningún chunk responde; GraphRAG arma un grafo con resúmenes por comunidades para sintetizar'], correcta: 3, explicacion: 'El top-k trae unos pocos fragmentos parecidos a la pregunta, pero la respuesta requiere mirar todo el corpus. Mejorar el retrieval no cambia eso.' },
     { q: 'Tu text-to-SQL se equivoca seguido porque las columnas se llaman col_a7, flg_x y similares. ¿Qué mejora más?', opciones: ['Agregar descripciones de cada columna, valores de ejemplo y pares pregunta → SQL', 'Subir la temperatura', 'Cambiar el modelo de embeddings', 'Sacar el esquema del prompt'], correcta: 0, explicacion: 'El modelo no puede adivinar qué significa col_a7. Con descripciones y ejemplos tiene el contexto que le falta.' },
+    { q: '¿Qué mide la fidelidad (faithfulness) en un RAG?', opciones: ['Si las afirmaciones de la respuesta están respaldadas por el contexto recuperado', 'Si la respuesta es larga', 'Si la búsqueda fue rápida', 'Si el usuario quedó conforme'], correcta: 0, explicacion: 'La fidelidad compara la respuesta con lo que el sistema le dio al modelo. Una respuesta infiel es una alucinación, aunque suene bien.' },
+    { q: 'El retrieval trajo el fragmento correcto, pero la respuesta es incorrecta. ¿Dónde está el problema?', opciones: ['En el retrieval', 'En la generación: el modelo no usó bien el contexto (prompt, modelo u orden del contexto)', 'En los embeddings', 'En la base de datos vectorial'], correcta: 1, explicacion: 'Si la información llegó al modelo, la búsqueda cumplió. Tocar los embeddings no arregla un problema de generación.' },
+    { q: 'La respuesta es correcta en el mundo real, pero no aparece en los documentos recuperados. ¿Cómo queda su fidelidad?', opciones: ['Alta, porque es correcta', 'No importa', 'Baja: no está respaldada por el contexto, y eso es un riesgo aunque esta vez acierte', 'Perfecta'], correcta: 2, explicacion: 'Si el modelo responde con lo que "sabe" en lugar de lo recuperado, la próxima vez puede inventar con la misma seguridad. En un RAG se exige respaldo.' },
+    { q: '¿Qué ventaja tienen las métricas sin referencia, como las que propone RAGAS?', opciones: ['Son siempre exactas', 'No usan ningún modelo', 'Reemplazan por completo a los humanos', 'Se pueden aplicar a tráfico real sin respuestas etiquetadas, aunque conviene calibrarlas contra humanos'], correcta: 3, explicacion: 'Sirven para monitorear a escala. Pero usan jueces LLM, que tienen sesgos y errores, y por eso se validan contra etiquetas humanas.' },
+    { q: 'Te hacen una pregunta cuya respuesta no está en ningún documento de tu base. ¿Qué comportamiento medís como correcto?', opciones: ['Que se abstenga y diga que no figura en los documentos, en lugar de inventar', 'Que responda con conocimiento general', 'Que pida más tokens', 'Que repita la pregunta'], correcta: 0, explicacion: 'La abstención correcta es parte de la calidad de un RAG. Por eso conviene incluir preguntas sin respuesta en el dataset de evals.' },
   ],
 },
 {
