@@ -158,6 +158,7 @@ print("p50, p95, p99", np.percentile(lat, [50, 95, 99]))</code></pre>
     'Usar ensembles de árboles (random forest, gradient boosting) y pipelines sin data leakage',
     'Decidir entre un LLM y un clasificador clásico sobre embeddings, y elegir umbrales según el costo de cada error',
     'Explorar grandes volúmenes de texto con embeddings, reducción de dimensionalidad y clustering',
+    'Validar sin engañarse con datos temporales y agrupados (TimeSeriesSplit y GroupKFold)',
   ],
   lecciones: [
     { titulo: 'Qué es aprender a partir de datos', html: `
@@ -267,6 +268,24 @@ for c in sorted(set(etiquetas) - {-1}):
         <li>Ver qué temas consultan los usuarios que tu documentación no cubre.</li>
       </ul>
       <p>Revisá siempre algunos clusters a mano: el algoritmo agrupa por parecido, pero el nombre que le pone el LLM puede ser engañoso.</p>` },
+    { titulo: 'Validación que no miente: datos temporales y agrupados', html: `
+      <p>La validación cruzada clásica mezcla los datos al azar. Eso supone que cada ejemplo es independiente, y en muchos problemas reales no lo es. Cuando no lo es, la nota sale inflada y el modelo decepciona en producción.</p>
+      <p><strong>1. Datos con tiempo.</strong> Si predecís demanda, fraude o abandono, en producción siempre predecís el <em>futuro</em> con datos del <em>pasado</em>. Mezclar al azar deja que el modelo "vea el futuro" al entrenar. La solución es validar respetando el orden: entrenar con lo anterior y evaluar con lo posterior. En scikit-learn, <code>TimeSeriesSplit</code>.</p>
+      <p><strong>2. Datos agrupados.</strong> Si tenés varias filas del mismo cliente, paciente o documento, y algunas quedan en train y otras en test, el modelo puede reconocer al cliente en lugar de aprender el patrón. En producción vas a ver clientes nuevos. La solución es que cada grupo quede entero de un solo lado: <code>GroupKFold</code>.</p>
+      <pre><code>from sklearn.model_selection import TimeSeriesSplit, GroupKFold, cross_val_score
+
+# Datos ordenados por fecha: cada fold entrena con el pasado y evalúa con lo que sigue
+puntaje_tiempo = cross_val_score(modelo, X, y, cv=TimeSeriesSplit(n_splits=5))
+
+# Varias filas por cliente: ningún cliente aparece en train y en test a la vez
+puntaje_grupos = cross_val_score(modelo, X, y, cv=GroupKFold(n_splits=5), groups=ids_cliente)</code></pre>
+      <p><strong>Señales de que tu validación está mintiendo:</strong></p>
+      <ul>
+        <li>El modelo da mucho mejor en validación que en producción.</li>
+        <li>Una feature resulta sospechosamente importante, como un id o una fecha de cierre que solo se conoce después.</li>
+        <li>La nota cae fuerte al pasar de una partición al azar a una por tiempo o por grupo.</li>
+      </ul>
+      <p><strong>Lo mismo vale para LLMs:</strong> si tu dataset de evals tiene varias preguntas sobre el mismo documento, no son independientes (lo viste en evals con los errores agrupados), y si afinás un modelo, separá train y test por documento o por cliente, no por fila.</p>` },
   ],
   practica: [
     'Con scikit-learn y el dataset Titanic (o cualquiera de Kaggle), entrená una regresión logística y un random forest. Compará accuracy, precision, recall y F1 en test.',
@@ -274,10 +293,12 @@ for c in sorted(set(etiquetas) - {-1}):
     'Con un dataset tabular de Kaggle, compará con validación cruzada de 5 folds una regresión logística en Pipeline, un random forest y HistGradientBoosting. Reportá F1 medio ± desvío de cada uno y justificá cuál pondrías en producción.',
     'Etiquetá con un LLM 2.000 textos (por ejemplo, reseñas) y revisá 100 a mano. Entrená una regresión logística sobre embeddings, elegí un umbral con la curva precision-recall y compará contra clasificar todo con el LLM: exactitud, costo por cada 1.000 textos y latencia.',
     'Juntá 2.000 consultas o reseñas reales, agrupalas con embeddings y HDBSCAN, nombrá cada grupo con un LLM y visualizalos con UMAP. Revisá a mano tres grupos y anotá si el nombre describe bien sus ejemplos.',
+    'Tomá un dataset con fechas o con varias filas por cliente. Compará la nota de una validación cruzada al azar contra TimeSeriesSplit o GroupKFold, y explicá la diferencia. ¿Cuál se parece más a lo que pasaría en producción?',
   ],
   recursos: [
     { t: 'Guía de usuario de scikit-learn', url: 'https://scikit-learn.org/stable/user_guide.html' },
     { t: 'scikit-learn — Ensembles: gradient boosting, random forests y más', url: 'https://scikit-learn.org/stable/modules/ensemble.html' },
+    { t: 'scikit-learn — Validación cruzada (incluye TimeSeriesSplit y GroupKFold)', url: 'https://scikit-learn.org/stable/modules/cross_validation.html' },
     { t: 'scikit-learn — Clustering', url: 'https://scikit-learn.org/stable/modules/clustering.html' },
     { t: 'scikit-learn — Descomposición (PCA y más)', url: 'https://scikit-learn.org/stable/modules/decomposition.html' },
     { t: 'UMAP — Documentación', url: 'https://umap-learn.readthedocs.io/en/latest/' },
@@ -310,6 +331,11 @@ for c in sorted(set(etiquetas) - {-1}):
     { q: 'En un gráfico UMAP dos grupos aparecen muy lejos uno del otro. ¿Podés concluir que son muy distintos?', opciones: ['Sí, las distancias del gráfico son exactas', 'Sí, si antes aplicaste PCA', 'No del todo: UMAP conserva bien los vecindarios locales, pero las distancias entre grupos lejanos no son confiables', 'No, UMAP coloca los puntos al azar'], correcta: 2, explicacion: 'UMAP prioriza que los vecinos sigan siendo vecinos. La separación grande entre grupos puede exagerar o achicar la diferencia real. No es azar: los grupos sí reflejan parecido.' },
     { q: '¿Para qué sirve el clustering en el trabajo diario de un AI engineer?', opciones: ['Para reemplazar las evals', 'Para entrenar el LLM', 'Para acelerar la tokenización', 'Para agrupar trazas fallidas y encontrar los modos de fallo más frecuentes a escala'], correcta: 3, explicacion: 'Cuando hay miles de trazas, agrupar es la forma de priorizar el análisis de errores. Las evals se construyen después, sobre esos modos de fallo.' },
     { q: '¿Para qué reducís con PCA embeddings de 1.024 dimensiones antes de agruparlos?', opciones: ['Para poder verlos en 3D', 'Para bajar el ruido y el costo de cómputo conservando la mayor parte de la varianza', 'Para normalizar los vectores', 'Porque el clustering no funciona con más de 50 dimensiones'], correcta: 1, explicacion: 'A 50 dimensiones queda casi toda la información útil y el clustering es más rápido y estable. Para visualizar se usa otra proyección a 2D, como UMAP.' },
+    { q: 'Vas a predecir la demanda de la semana que viene con datos históricos. ¿Cómo validás el modelo?', opciones: ['Con validación cruzada mezclando al azar', 'Respetando el orden temporal: entrenar con el pasado y evaluar con lo posterior (por ejemplo, TimeSeriesSplit)', 'Evaluando con los mismos datos de entrenamiento', 'Sin validación: con mirar el gráfico alcanza'], correcta: 1, explicacion: 'Al mezclar al azar, el modelo entrena con datos posteriores a los que predice, algo que en producción nunca pasa. La nota sale inflada.' },
+    { q: 'Tu dataset tiene 50 filas por cliente y 1.000 clientes. Al partir por fila al azar, el modelo da 95%, pero con clientes nuevos da 70%. ¿Qué pasó?', opciones: ['Underfitting', 'El modelo es demasiado chico', 'Las filas de un mismo cliente quedaron en train y en test, y el modelo aprendió a reconocer clientes; hay que agrupar con GroupKFold', 'Faltó normalizar'], correcta: 2, explicacion: 'Con partición por fila, el test tiene clientes que el modelo ya vio. Separando por cliente, la validación se parece a lo que pasa con clientes nuevos.' },
+    { q: 'En tu modelo de abandono de clientes, la feature más importante es la fecha de cierre de la cuenta. ¿Qué sospechás?', opciones: ['Que es una gran feature', 'Que falta regularización', 'Que el modelo es muy simple', 'Data leakage: esa fecha solo se conoce después de que el cliente abandona, así que en producción no está disponible'], correcta: 3, explicacion: 'Una feature que codifica la respuesta da notas excelentes en validación y no sirve en producción, porque al momento de predecir todavía no existe.' },
+    { q: 'Al pasar de una validación al azar a una por tiempo, tu nota cae de 92% a 78%. ¿Qué concluís?', opciones: ['Que la validación al azar estaba inflada y 78% se parece más a lo que vas a ver en producción', 'Que la validación por tiempo está mal hecha', 'Que hay que volver a la validación al azar', 'Que el modelo empeoró'], correcta: 0, explicacion: 'El modelo es el mismo: lo que cambió es qué tan honesta es la medición. La caída muestra cuánto dependía la nota de "ver el futuro".' },
+    { q: 'Tenés un dataset de evals con 10 preguntas sobre cada uno de 30 documentos, y vas a afinar un modelo. ¿Cómo separás train y test?', opciones: ['Por pregunta, al azar', 'Usando las mismas preguntas en los dos', 'Por documento: todas las preguntas de un documento van del mismo lado', 'Por largo de la pregunta'], correcta: 2, explicacion: 'Si preguntas del mismo documento quedan en los dos lados, el modelo puede apoyarse en lo que memorizó de ese documento. Separar por documento mide si generaliza.' },
   ],
 },
 {
