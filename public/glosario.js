@@ -23,6 +23,7 @@ window.GLOSARIO = [
   { t: 'Datos sintéticos', d: 'Casos generados con un modelo en lugar de recolectados de usuarios reales. Útiles para arrancar y probar casos raros; no para medir frecuencias reales.', m: 'evals' },
   { t: 'Denial of Wallet', d: 'Ataque que provoca un gran volumen de operaciones pagas para dispararle los costos a quien opera el servicio.', m: 'produccion' },
   { t: 'Descenso de gradiente', d: 'Actualizar los parámetros en la dirección opuesta al gradiente de la loss para reducirla.', m: 'fundamentos' },
+  { t: 'Destilación', d: 'Entrenar un modelo chico (alumno) para imitar a uno grande (maestro) en una tarea, usando sus probabilidades o sus salidas.', m: 'fine-tuning' },
   { t: 'Divergencia KL', d: 'Sorpresa extra por usar una distribución q en lugar de la real p. Mide cuánto se aleja un modelo de otro.', m: 'fundamentos' },
   { t: 'DPO', d: 'Ajuste por preferencias con pares de respuestas preferida y rechazada, sin entrenar un modelo de recompensa aparte.', m: 'fine-tuning' },
   { t: 'Dual LLM', d: 'Patrón de seguridad: un modelo con herramientas nunca ve datos no confiables, y otro sin herramientas los procesa.', m: 'seguridad' },

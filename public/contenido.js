@@ -1328,6 +1328,7 @@ def calificar(entorno, transcripcion):
     'Correr y cuantizar modelos abiertos localmente',
     'Entender qué limita el servicio de LLMs: KV cache, GQA, batching continuo y PagedAttention',
     'Preparar datos de fine-tuning de calidad y evaluar el resultado contra la línea base y el olvido catastrófico',
+    'Destilar un modelo grande en uno chico para una tarea acotada, y decidir con costo, latencia y calidad',
   ],
   lecciones: [
     { titulo: '¿Cuándo hacer fine-tuning?', html: `
@@ -1386,18 +1387,47 @@ texto = tok.apply_chat_template(ejemplo, tokenize=False)   # el formato que el m
         <li><strong>Olvido catastrófico:</strong> al especializarse, el modelo puede perder capacidades generales que antes tenía. Evaluá también tareas generales, no solo la tuya; LoRA y mezclar algo de datos generales ayudan.</li>
         <li><strong>No comparar contra la línea base:</strong> el fine-tuning se justifica solo si supera al modelo base con un buen prompt y few-shot, medido con las mismas evals.</li>
       </ul>` },
+    { titulo: 'Destilación: un modelo chico que aprende de uno grande', html: `
+      <p>Muchas veces el modelo grande hace bien tu tarea, pero es caro y lento para tu volumen. La <strong>destilación</strong> entrena un modelo chico (el alumno) para imitar al grande (el maestro) en esa tarea.</p>
+      <ul>
+        <li><strong>La idea original</strong> (Hinton y otros, 2015): el alumno aprende de las probabilidades del maestro, no solo de la respuesta final. Esas probabilidades "blandas" dicen también qué alternativas eran casi correctas.</li>
+        <li><strong>Un caso clásico:</strong> DistilBERT es un 40% más chico y un 60% más rápido que BERT, y conserva cerca del 97% de su capacidad de comprensión del lenguaje.</li>
+        <li><strong>Con LLMs vía API</strong> normalmente no tenés las probabilidades del maestro, así que se destila por sus <em>salidas</em>: el maestro responde miles de entradas reales y con esos pares afinás al alumno.</li>
+        <li><strong>Destilar el razonamiento:</strong> el método "Distilling step-by-step" usa también las explicaciones del modelo grande como señal de entrenamiento. Un T5 de 770 millones de parámetros superó a PaLM de 540.000 millones (con few-shot) en un benchmark, usando el 80% de los datos; el ajuste estándar del mismo T5 no lo logró ni con el 100%.</li>
+      </ul>
+      <pre><code># 1) El maestro etiqueta entradas reales de tu tarea
+pares = []
+for texto in muestra_de_produccion(5000):
+    salida = maestro(texto)                  # modelo grande, con tu mejor prompt
+    if pasa_tus_checks(salida):              # filtrá las salidas malas: el alumno copia errores
+        pares.append({"entrada": texto, "salida": salida})
+
+# 2) Afinás al alumno (por ejemplo con LoRA) sobre "pares"
+# 3) Comparás alumno vs maestro en un conjunto de test aparte:
+#    exactitud, costo por 1.000 pedidos y latencia</code></pre>
+      <p><strong>Cuidados:</strong></p>
+      <ul>
+        <li><strong>El alumno hereda los errores del maestro</strong>, y no lo va a superar en lo que el maestro hace mal. Filtrá y revisá una muestra.</li>
+        <li><strong>Funciona para tareas acotadas.</strong> El alumno imita al maestro en tu distribución de entradas, no en todo.</li>
+        <li><strong>Revisá los términos de uso</strong> del proveedor del maestro: algunos limitan usar sus salidas para entrenar otros modelos.</li>
+        <li><strong>Medí la decisión completa:</strong> si el alumno queda 2 puntos abajo pero cuesta 20 veces menos y responde en la mitad de tiempo, puede ser la mejor opción. O no: depende del costo de cada error.</li>
+      </ul>` },
   ],
   practica: [
     'Instalá Ollama, corré un modelo abierto de 7-8B y compará calidad y velocidad en 4 bits vs 8 bits con 10 prompts tuyos.',
     'Hacé fine-tuning con LoRA (Hugging Face PEFT o Unsloth) de un modelo chico para una tarea de clasificación, y comparalo con few-shot prompting usando tus evals.',
     'Serví un modelo chico con vLLM y medí TTFT, tokens por segundo por usuario y throughput total con 1, 8 y 32 usuarios simultáneos. Calculá a mano la memoria de KV cache esperada y comparala con lo que reporta vLLM.',
     'Armá 300 ejemplos curados para una tarea y separá 50 de test sin duplicados. Afiná con LoRA usando la plantilla de chat del modelo y comparalo contra el modelo base con few-shot. Medí también 20 tareas generales antes y después para detectar olvido catastrófico.',
+    'Destilá una tarea de clasificación o extracción: generá 2.000 pares con un modelo grande, filtrá los que no pasen tus chequeos y afiná un modelo chico con LoRA. Compará alumno y maestro en 200 casos de test aparte: exactitud, costo por 1.000 pedidos y latencia.',
   ],
   recursos: [
     { t: 'LoRA (paper)', url: 'https://arxiv.org/abs/2106.09685' },
     { t: 'QLoRA (paper)', url: 'https://arxiv.org/abs/2305.14314' },
     { t: 'Hugging Face PEFT', url: 'https://huggingface.co/docs/peft' },
     { t: 'Ollama', url: 'https://ollama.com/' },
+    { t: 'Distilling the Knowledge in a Neural Network (paper)', url: 'https://arxiv.org/abs/1503.02531' },
+    { t: 'DistilBERT (paper)', url: 'https://arxiv.org/abs/1910.01108' },
+    { t: 'Distilling Step-by-Step (paper)', url: 'https://arxiv.org/abs/2305.02301' },
     { t: 'LIMA: Less Is More for Alignment (paper)', url: 'https://arxiv.org/abs/2305.11206' },
     { t: 'Hugging Face — Plantillas de chat', url: 'https://huggingface.co/docs/transformers/main/en/chat_templating' },
     { t: 'Hugging Face TRL — SFT Trainer', url: 'https://huggingface.co/docs/trl/sft_trainer' },
@@ -1422,6 +1452,11 @@ texto = tok.apply_chat_template(ejemplo, tokenize=False)   # el formato que el m
     { q: 'Después de afinar el modelo para clasificar tickets, empeoró redactando emails, algo que antes hacía bien. ¿Qué pasó?', opciones: ['Overfitting en los datos de test', 'Alucinación', 'Data leakage', 'Olvido catastrófico: evaluás también capacidades generales y probás con LoRA o mezclando datos generales'], correcta: 3, explicacion: 'Al especializarse, el modelo puede perder lo que no practicó. Si solo medís tu tarea, no lo ves.' },
     { q: 'Antes de concluir que el fine-tuning valió la pena, ¿contra qué lo comparás?', opciones: ['Contra el modelo base con un buen prompt y few-shot, usando las mismas evals', 'Contra nada: si mejoró, mejoró', 'Contra un benchmark público', 'Contra el modelo antes del pre-training'], correcta: 0, explicacion: 'El fine-tuning cuesta datos, entrenamiento y mantenimiento. Solo se justifica si supera a la alternativa barata en tu tarea.' },
     { q: 'Armaste un dataset de 5.000 ejemplos para fine-tuning. ¿Cuándo separás el conjunto de test?', opciones: ['Después de entrenar', 'Nunca, usás todo para entrenar', 'Al principio, verificando que no haya ejemplos duplicados o casi idénticos entre train y test', 'Solo si sobra tiempo'], correcta: 2, explicacion: 'Si un ejemplo casi idéntico está en train y en test, la evaluación mide memoria y no generalización: es data leakage.' },
+    { q: 'Un modelo grande clasifica bien tus tickets, pero a tu volumen cuesta demasiado. ¿Qué técnica probás?', opciones: ['Subir la temperatura del modelo grande', 'Destilación: el modelo grande etiqueta entradas reales y con eso afinás un modelo chico', 'Agregar más ejemplos al prompt del modelo grande', 'Usar el modelo grande solo los lunes'], correcta: 1, explicacion: 'La destilación traslada la habilidad del maestro a un alumno más barato para tu tarea concreta. Más ejemplos en el prompt encarecen cada llamada en lugar de abaratarla.' },
+    { q: 'Al destilar, el maestro se equivoca en el 8% de los casos y vos usás todas sus salidas sin filtrar. ¿Qué esperás?', opciones: ['Que el alumno corrija esos errores solo', 'Que el alumno supere al maestro', 'Que el alumno no aprenda nada', 'Que el alumno herede esos errores: conviene filtrar con chequeos y revisar una muestra'], correcta: 3, explicacion: 'El alumno aprende a imitar al maestro, errores incluidos. Filtrar las salidas malas es una de las palancas más baratas para mejorar el resultado.' },
+    { q: '¿Qué agrega el método "Distilling step-by-step" a la destilación clásica?', opciones: ['Usa también las explicaciones del modelo grande como señal de entrenamiento', 'Elimina la necesidad de datos', 'Entrena al maestro en lugar del alumno', 'Usa solo la respuesta final'], correcta: 0, explicacion: 'Las explicaciones le dan al alumno más información sobre cómo llegar a la respuesta. Con eso, un T5 de 770 millones superó a PaLM de 540.000 millones en un benchmark con menos datos.' },
+    { q: 'Usás un LLM por API como maestro y no tenés acceso a sus probabilidades. ¿Cómo destilás?', opciones: ['No se puede destilar', 'Pedís las probabilidades por soporte', 'Por sus salidas: el maestro responde entradas reales y afinás al alumno con esos pares', 'Copiás los pesos del maestro'], correcta: 2, explicacion: 'La destilación con probabilidades es la versión original, pero con APIs lo habitual es destilar por salidas. Los pesos de un modelo cerrado no están disponibles.' },
+    { q: 'Tu alumno destilado queda 2 puntos por debajo del maestro, pero cuesta 20 veces menos y responde en la mitad de tiempo. ¿Lo usás?', opciones: ['Depende de cuánto cuesta cada error en tu caso: hay que poner calidad, costo y latencia en la misma balanza', 'Nunca: siempre gana el más preciso', 'Siempre: siempre gana el más barato', 'Solo si el alumno es open source'], correcta: 0, explicacion: 'En una clasificación de bajo riesgo, 2 puntos pueden no importar; en un diagnóstico, sí. La decisión sale de comparar el costo de los errores con el ahorro.' },
   ],
 },
 {
