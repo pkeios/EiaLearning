@@ -110,3 +110,4 @@ Lo completa el comando `/mejorar`. Una línea por ejecución.
 - 2026-11-02 · fine-tuning · metodología: 5 explicaciones más corrigen la opción tentadora
 - 2026-11-02 · seguridad · metodología: ejemplos concretos en las lecciones de ataques (exfiltración paso a paso) y defensas (SQL parametrizado)
 - 2026-11-02 · produccion · metodología: 5 preguntas nuevas de diagnóstico en casos reales, con la trampa explicada
+- 2026-11-02 · proyecto · metodología: 5 preguntas nuevas de aplicación con casos reales y la trampa explicada
