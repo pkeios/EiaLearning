@@ -153,3 +153,4 @@ Lo completa el comando `/mejorar`. Una línea por ejecución.
 - 2026-11-02 · app · versión para chicos: Repaso rápido en el inicio con preguntas de misiones ya terminadas
 - 2026-11-02 · produccion · metodología: 3 prácticas nuevas con resultado medible; el módulo cumple las 7 metas
 - 2026-11-02 · rag · metodología: 2 preguntas nuevas de casos; el módulo cumple las 7 metas
+- 2026-11-02 · prompting · metodología: 4 preguntas nuevas de casos; el módulo cumple las 7 metas
