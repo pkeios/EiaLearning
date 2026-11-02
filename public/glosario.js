@@ -2,6 +2,7 @@
 // Validar con: node tools/validar.js
 window.GLOSARIO = [
   { t: 'AdamW', d: 'Optimizador Adam con weight decay desacoplado. Es el estándar para entrenar Transformers.', m: 'deep-learning' },
+  { t: 'Alucinación', d: 'Respuesta plausible pero falsa o inventada. Se reduce dando contexto, pidiendo citas y permitiendo decir "no sé".', m: 'llms' },
   { t: 'Atención', d: 'Mecanismo por el que cada token pondera la información de los demás según la similitud entre su query y las keys de los otros.', m: 'llms' },
   { t: 'Backoff exponencial', d: 'Esperar cada vez más entre reintentos, con algo de azar (jitter), para no saturar a un servicio caído.', m: 'apis' },
   { t: 'Backpropagation', d: 'Algoritmo que calcula el gradiente de la loss respecto de cada parámetro aplicando la regla de la cadena.', m: 'deep-learning' },

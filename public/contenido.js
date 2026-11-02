@@ -391,6 +391,7 @@ for x, y in loader:
     'Usar system prompts, etiquetas XML, cadena de pensamiento y prompt chaining',
     'Iterar prompts con criterios de éxito y casos de prueba, como un ingeniero',
     'Gestionar el contexto de agentes largos: compactación, recuperación just-in-time, notas y subagentes',
+    'Escribir prompts sobre documentos largos que reduzcan alucinaciones: orden, estructura, citas verificables y permiso para decir "no sé"',
   ],
   lecciones: [
     { titulo: 'Las técnicas que realmente funcionan', html: `
@@ -441,16 +442,45 @@ def preparar_contexto(mensajes, notas):
     # 3) las notas persistentes siempre entran
     return [{"role": "user", "content": "Notas: " + notas}] + mensajes</code></pre>
       <p>Regla práctica: antes de agregar algo al contexto, preguntate si un experto humano necesitaría eso para el próximo paso. Si no, va a una herramienta o a un archivo de notas.</p>` },
+    { titulo: 'Prompts con documentos largos: orden, estructura, citas y "no sé"', html: `
+      <p>Analizar contratos, informes o historiales es de las tareas más comunes, y donde un buen prompt cambia más el resultado. La guía oficial de Claude recomienda, para entradas de más de unos 20.000 tokens:</p>
+      <ol>
+        <li><strong>Documentos arriba, pregunta al final.</strong> Poné los documentos largos al principio del prompt y las instrucciones y la pregunta después. En sus pruebas, la pregunta al final mejoró la calidad de las respuestas hasta un 30%, sobre todo con varios documentos complejos.</li>
+        <li><strong>Cada documento en sus etiquetas, con metadatos</strong> (fuente, fecha). Así el modelo distingue un documento de otro y puede decir de dónde sacó cada dato.</li>
+        <li><strong>Primero las citas, después la tarea.</strong> Pedile que extraiga las partes relevantes textuales y que responda basándose solo en ellas. Lo enfoca en lo importante y te deja verificar.</li>
+        <li><strong>Permitile decir "no sé".</strong> Si la respuesta no está en los documentos, que lo diga en vez de completar con lo que "suena" bien. Es una de las formas más simples de reducir alucinaciones.</li>
+      </ol>
+      <pre><code>&lt;documentos&gt;
+  &lt;documento indice="1"&gt;
+    &lt;fuente&gt;contrato_proveedor_2026.pdf&lt;/fuente&gt;
+    &lt;contenido&gt;{CONTRATO}&lt;/contenido&gt;
+  &lt;/documento&gt;
+  &lt;documento indice="2"&gt;
+    &lt;fuente&gt;anexo_precios.xlsx&lt;/fuente&gt;
+    &lt;contenido&gt;{ANEXO}&lt;/contenido&gt;
+  &lt;/documento&gt;
+&lt;/documentos&gt;
+
+Primero copiá en &lt;citas&gt; las frases textuales de los documentos que hablen de
+penalidades por demora, indicando el número de documento.
+Después, usando solo esas citas, respondé: ¿qué pasa si el proveedor entrega 15 días tarde?
+Si los documentos no lo dicen, respondé "No figura en los documentos".</code></pre>
+      <p><strong>Verificá las citas en código:</strong> que cada cita aparezca textual en el documento es un chequeo barato y determinista. Si una cita no existe, la respuesta no está respaldada. Algunas APIs ofrecen esto de forma nativa, como la función de citas de Claude, que devuelve qué fragmento del documento respalda cada afirmación.</p>
+      <p>Todo esto se combina con lo que viste en RAG: si los documentos no entran o son muchos, primero recuperás los relevantes y después aplicás esta misma estructura.</p>` },
   ],
   practica: [
     'Elegí una tarea real (resumir mails, clasificar gastos). Escribí 20 casos de prueba con la respuesta esperada y medí 3 versiones de prompt.',
     'Convertí un prompt largo de un solo paso en una cadena de 3 prompts y compará calidad y facilidad de depuración.',
     'Hacé el tutorial interactivo de prompt engineering de Anthropic de principio a fin.',
     'Tomá el agente del módulo de agentes y registrá los tokens de contexto en cada paso. Agregá limpieza de resultados viejos de herramientas y un archivo NOTES.md, y compará tasa de éxito y tokens totales en 10 tareas largas antes y después.',
+    'Tomá 3 documentos largos (contratos, manuales o informes) y 15 preguntas, 5 de ellas sin respuesta en los documentos. Compará un prompt con la pregunta al principio contra uno con documentos arriba, citas primero y permiso para decir "no sé". Medí exactitud, respuestas inventadas y citas que no existen (verificalas con código).',
   ],
   recursos: [
     { t: 'Anthropic — Guía de prompt engineering', url: 'https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/overview' },
     { t: 'Anthropic — Tutorial interactivo de prompt engineering (GitHub)', url: 'https://github.com/anthropics/prompt-eng-interactive-tutorial' },
+    { t: 'Claude — Prompting best practices (incluye contexto largo)', url: 'https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices' },
+    { t: 'Claude — Reducir alucinaciones', url: 'https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/reduce-hallucinations' },
+    { t: 'Claude — Citas (citations)', url: 'https://platform.claude.com/docs/en/build-with-claude/citations' },
     { t: 'Anthropic — Effective context engineering for AI agents', url: 'https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents' },
     { t: 'Prompting Guide (técnicas y papers)', url: 'https://www.promptingguide.ai/' },
   ],
@@ -466,6 +496,11 @@ def preparar_contexto(mensajes, notas):
     { q: 'Tu system prompt tiene 40 reglas del tipo "si pasa X, hacé Y" y el agente falla en cada caso nuevo que no está en la lista. ¿Qué cambiás?', opciones: ['Reemplazás las reglas por principios claros y unos pocos ejemplos canónicos variados', 'Agregás una regla por cada caso nuevo', 'Escribís las reglas en mayúsculas', 'Borrás el system prompt'], correcta: 0, explicacion: 'Las listas de reglas frágiles no generalizan. Los principios y los ejemplos le dan al modelo heurísticas para casos que no previste. Sumar reglas agranda el problema.' },
     { q: '¿Por qué conviene que un subagente devuelva un resumen de 1.000 a 2.000 tokens en lugar de todo lo que exploró?', opciones: ['Porque así el subagente usa un modelo más barato', 'Porque la API no permite respuestas más largas', 'Para que el contexto del agente principal quede limpio, mientras el subagente explora a fondo en su propia ventana', 'Para no tener que usar herramientas'], correcta: 2, explicacion: 'El subagente puede gastar decenas de miles de tokens explorando; al coordinador solo le sirve la conclusión. Separar ventanas protege el presupuesto de atención del principal.' },
     { q: 'Un agente hace una migración de varias horas que no entra en una sola ventana de contexto. ¿Cómo evitás que pierda el progreso al compactar?', opciones: ['Usando siempre la ventana más grande disponible, con eso alcanza', 'Poniendo la temperatura en 0', 'Repitiendo el prompt inicial cada 10 pasos', 'Haciendo que escriba notas estructuradas fuera del contexto (lista de tareas, NOTES.md) y las relea'], correcta: 3, explicacion: 'Las notas persistentes sobreviven a la compactación y le dicen qué hizo y qué falta. Una ventana más grande solo retrasa el problema y además sufre context rot.' },
+    { q: 'Tenés que hacerle una pregunta sobre un contrato de 50.000 tokens. ¿Cómo ordenás el prompt?', opciones: ['La pregunta primero y el contrato al final', 'El contrato arriba, y las instrucciones y la pregunta al final', 'La pregunta repetida al principio y al final, con el contrato en el medio', 'El contrato partido en 10 mensajes separados'], correcta: 1, explicacion: 'Según la guía de Claude, con entradas largas la pregunta al final mejora la calidad hasta un 30%. Partir el contrato en mensajes no le agrega estructura.' },
+    { q: 'Tu sistema responde preguntas sobre manuales e inventa respuestas cuando el dato no está. ¿Qué cambio de prompt probás primero?', opciones: ['Subir la temperatura', 'Pedir respuestas más largas', 'Permitirle explícitamente decir "no figura en los documentos" y pedirle que se base solo en citas textuales', 'Agregar "no alucines" en mayúsculas'], correcta: 2, explicacion: 'Si no tiene permitido decir "no sé", el modelo tiende a completar. Las citas lo obligan a apoyarse en el texto y te dejan verificar. Una orden genérica en mayúsculas no da ese mecanismo.' },
+    { q: '¿Para qué sirve pedirle al modelo que extraiga citas textuales antes de responder?', opciones: ['Para hacer la respuesta más larga', 'Para gastar menos tokens', 'Para que el modelo use su conocimiento general', 'Para enfocarlo en las partes relevantes y poder verificar que la respuesta está respaldada'], correcta: 3, explicacion: 'Las citas lo hacen buscar antes de responder y te dan algo comprobable. Gasta algunos tokens más, no menos.' },
+    { q: 'Le pasás 5 documentos al modelo. ¿Por qué conviene envolver cada uno en etiquetas con su fuente?', opciones: ['Para que distinga los documentos y pueda decir de cuál sacó cada dato', 'Porque el modelo no lee texto sin etiquetas', 'Para reducir el costo', 'Para que no haga falta escribir instrucciones'], correcta: 0, explicacion: 'Sin separación, el modelo puede mezclar datos de un documento con otro. Con la fuente, puede citar y vos podés verificar.' },
+    { q: 'El modelo devolvió citas para respaldar su respuesta. ¿Cómo verificás barato que no las inventó?', opciones: ['Le preguntás al mismo modelo si las citas son reales', 'Comprobás en código que cada cita aparezca textual en el documento', 'Confiás si la respuesta suena segura', 'Pedís a un humano que lea todo el documento cada vez'], correcta: 1, explicacion: 'Buscar el texto exacto es determinista y casi gratis. Preguntarle al mismo modelo no es una verificación independiente.' },
   ],
 },
 {
