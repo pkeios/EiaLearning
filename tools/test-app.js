@@ -8,8 +8,8 @@ const ctx = { window: {}, document: { getElementById: id => id === 'tema' ? boto
 vm.createContext(ctx);
 vm.runInContext(leer('contenido.js'), ctx);
 vm.runInContext(leer('glosario.js'), ctx);
-vm.runInContext(leer('app.js') + ';this.X = { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta };', ctx);
-const { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta } = ctx.X;
+vm.runInContext(leer('app.js') + ';this.X = { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos };', ctx);
+const { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos } = ctx.X;
 const plano = o => JSON.parse(JSON.stringify(o));
 
 // Inicio renderiza con progreso vacío
@@ -44,7 +44,7 @@ assert.equal(racha(r), 3);
 const l = limpiarProgreso({ leidas: { 'a:0': 1 }, notas: { a: '<img onerror=x>', b: 150, c: 85 }, apuntes: { a: 5 }, examen: '90', raro: 1,
   falladas: { x: 1 }, agenda: { x: { n: '9', d: '<x>' }, y: { n: 1, d: '2026-12-01' } }, dias: { '2026-11-01': '2', 'malo': 5, '2026-10-31': -3 } });
 assert.deepStrictEqual(plano(l), { leidas: { 'a:0': true }, notas: { a: 0, b: 100, c: 85 }, falladas: { x: true }, apuntes: { a: '5' },
-  agenda: { x: { n: 3, d: dia() }, y: { n: 1, d: '2026-12-01' } }, dias: { '2026-11-01': 2, '2026-10-31': 0 }, tarjetas: {}, examen: 90 });
+  agenda: { x: { n: 3, d: dia() }, y: { n: 1, d: '2026-12-01' } }, dias: { '2026-11-01': 2, '2026-10-31': 0 }, tarjetas: {}, aciertos: {}, examen: 90 });
 for (const malo of [null, [], 5, 'x']) assert.throws(() => limpiarProgreso(malo));
 
 // Buscador: sin tildes ni mayúsculas, todas las palabras deben aparecer
@@ -117,6 +117,19 @@ guardado = null;
 ctx.location.hash = '#/tarjetas';
 vm.runInContext('render()', ctx);
 assert.ok(el.h.includes('Dar vuelta'));
+
+// Aciertos por módulo: acumula, calcula porcentaje y se limpia al importar
+const ap = cargar();
+contarAcierto(ap, { m: 'rag' }, true); contarAcierto(ap, { m: 'rag' }, false); contarAcierto(ap, { m: 'rag' }, true);
+assert.deepStrictEqual(plano(ap.aciertos.rag), { ok: 2, total: 3 });
+assert.equal(pctAciertos(ap.aciertos.rag), 67);
+assert.equal(pctAciertos(undefined), null);
+assert.deepStrictEqual(plano(limpiarProgreso({ aciertos: { rag: { ok: 9, total: '4' }, x: { ok: -1 } } }).aciertos), { rag: { ok: 4, total: 4 }, x: { ok: 0, total: 0 } });
+guardado = JSON.stringify({ aciertos: { rag: { ok: 1, total: 4 }, llms: { ok: 3, total: 4 } } });
+ctx.location.hash = '#/progreso';
+vm.runInContext('render()', ctx);
+assert.ok(el.h.indexOf('Embeddings y RAG') < el.h.indexOf('Transformers y LLMs'));
+guardado = null;
 
 // Repaso vacío muestra un mensaje en lugar de un formulario
 guardado = null;

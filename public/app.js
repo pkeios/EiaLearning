@@ -2,7 +2,7 @@ const T = window.TEMARIO;
 const app = document.getElementById('app');
 const APROBADO = 80;
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-const cargar = () => ({ leidas: {}, notas: {}, falladas: {}, apuntes: {}, agenda: {}, dias: {}, tarjetas: {}, ...JSON.parse(localStorage.getItem('progreso') || '{}') });
+const cargar = () => ({ leidas: {}, notas: {}, falladas: {}, apuntes: {}, agenda: {}, dias: {}, tarjetas: {}, aciertos: {}, ...JSON.parse(localStorage.getItem('progreso') || '{}') });
 const guardar = p => localStorage.setItem('progreso', JSON.stringify(p));
 const mezclar = a => a.map(x => [Math.random(), x]).sort((x, y) => x[0] - y[0]).map(x => x[1]);
 // La clave de una pregunta es su texto: sobrevive a reordenar o insertar preguntas.
@@ -65,6 +65,13 @@ function calificarTarjeta(p, t, sabia) {
   const n = sabia ? (p.tarjetas[t]?.n ?? -1) + 1 : 0;
   p.tarjetas[t] = { n, d: sabia ? dia(INTERVALOS[Math.min(n, INTERVALOS.length - 1)]) : dia() };
 }
+// Aciertos acumulados por módulo en todos los quizzes (incluye examen y repaso).
+function contarAcierto(p, q, ok) {
+  const a = p.aciertos[q.m] || (p.aciertos[q.m] = { ok: 0, total: 0 });
+  a.total++;
+  if (ok) a.ok++;
+}
+const pctAciertos = a => a && a.total ? Math.round(100 * a.ok / a.total) : null;
 function registrar(p, k, ok) {
   if (!ok) { p.falladas[k] = true; p.agenda[k] = { n: 0, d: dia(INTERVALOS[0]) }; return; }
   if (!p.falladas[k]) return;
@@ -102,6 +109,7 @@ function inicio() {
       </div>
       <a class="boton" href="#/m/${siguiente.id}">${aprobados || leidas ? 'Continuar' : 'Empezar'}: ${icono(siguiente)} ${esc(siguiente.titulo)} →</a>
       <div class="datos">
+        <a class="boton secundario" href="#/progreso">📊 Progreso por módulo</a>
         <button class="secundario" id="exportar">⬇ Exportar progreso</button>
         <button class="secundario" id="importar">⬆ Importar progreso</button>
         <input type="file" id="archivo" accept=".json,application/json" hidden>
@@ -133,13 +141,17 @@ function exportar() {
 // Si agregás campos nuevos al progreso, sumalos acá también.
 function limpiarProgreso(d) {
   if (!d || typeof d !== 'object' || Array.isArray(d)) throw new Error('formato inválido');
-  const p = { leidas: {}, notas: {}, falladas: {}, apuntes: {}, agenda: {}, dias: {}, tarjetas: {} };
+  const p = { leidas: {}, notas: {}, falladas: {}, apuntes: {}, agenda: {}, dias: {}, tarjetas: {}, aciertos: {} };
   for (const k of ['leidas', 'falladas']) for (const c in d[k] || {}) p[k][c] = true;
   for (const c in d.notas || {}) p.notas[c] = Math.min(100, Math.max(0, Number(d.notas[c]) || 0));
   for (const c in d.apuntes || {}) p.apuntes[c] = String(d.apuntes[c]);
   for (const c in d.agenda || {}) {
     const a = d.agenda[c] || {};
     p.agenda[c] = { n: Math.min(INTERVALOS.length - 1, Math.max(0, parseInt(a.n) || 0)), d: /^\d{4}-\d{2}-\d{2}$/.test(a.d) ? a.d : dia() };
+  }
+  for (const c in d.aciertos || {}) {
+    const a = d.aciertos[c] || {}, total = Math.max(0, parseInt(a.total) || 0);
+    p.aciertos[c] = { ok: Math.min(total, Math.max(0, parseInt(a.ok) || 0)), total };
   }
   for (const c in d.tarjetas || {}) {
     const a = d.tarjetas[c] || {};
@@ -317,6 +329,22 @@ function tarjetas() {
   pintar();
 }
 
+function progreso() {
+  const p = cargar();
+  // Primero los más flojos; los que no tienen respuestas van al final.
+  const filas = T.map(m => ({ m, a: p.aciertos[m.id], pct: pctAciertos(p.aciertos[m.id]) }))
+    .sort((x, y) => (x.pct ?? 101) - (y.pct ?? 101));
+  app.innerHTML = `<a class="volver" href="#/">← Temario</a><h1>📊 Progreso por módulo</h1>
+    <p class="suave">Porcentaje de aciertos en todos los quizzes, examen y repaso incluidos. Arriba, tus puntos más flojos: empezá por ahí.</p>
+    ${filas.map(({ m, a, pct }) => `
+      <section class="card fila-progreso">
+        <div class="fila-progreso-titulo"><span>${icono(m)} <a href="#/m/${m.id}">${esc(m.titulo)}</a></span>
+          <strong>${pct != null ? pct + '%' : '—'}</strong></div>
+        ${barra(pct ?? 0)}
+        <small class="suave">${a && a.total ? a.ok + ' de ' + a.total + ' respuestas correctas' : 'Sin respuestas todavía'} · <a href="#/quiz/${m.id}">Hacer el quiz</a></small>
+      </section>`).join('')}`;
+}
+
 function quiz(titulo, preguntas, alTerminar, vacio = 'No hay preguntas pendientes. 🎉') {
   app.innerHTML = `<a class="volver" href="#/">← Temario</a><h1>${esc(titulo)}</h1>
     ${preguntas.length ? `<div class="quiz-estado"><span id="contador">0/${preguntas.length} respondidas</span>${barra(0)}</div>` : `<section class="card"><p>${esc(vacio)}</p></section>`}
@@ -348,6 +376,7 @@ function quiz(titulo, preguntas, alTerminar, vacio = 'No hay preguntas pendiente
       exp.hidden = false;
       exp.innerHTML = (ok ? '✔ ' : `✘ La correcta era: <strong>${esc(q.opciones[q.correcta])}</strong>. `) + esc(q.explicacion);
       registrar(p, clave(q), ok);
+      contarAcierto(p, q, ok);
     });
     form.querySelectorAll('input, button').forEach(el => el.disabled = true);
     const pct = Math.round(100 * bien / preguntas.length);
@@ -373,6 +402,7 @@ function render() {
   else if (ruta === 'buscar') busqueda();
   else if (ruta === 'glosario') glosario();
   else if (ruta === 'tarjetas') tarjetas();
+  else if (ruta === 'progreso') progreso();
   else if (ruta === 'quiz' && T.some(m => m.id === id)) {
     const m = T.find(x => x.id === id);
     quiz(`${icono(m)} Quiz: ${m.titulo}`, mezclar(preguntasDe(m)), (p, pct) => { p.notas[m.id] = Math.max(p.notas[m.id] ?? 0, pct); });
