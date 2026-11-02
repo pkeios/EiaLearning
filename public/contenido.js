@@ -1445,6 +1445,7 @@ pesos = torch.load("modelo.pt", weights_only=True)</code></pre>
     'Tener un sistema de aprendizaje continuo en un campo que cambia cada mes',
     'Diseñar un sistema de IA de punta a punta y defenderlo en una entrevista de system design',
     'Programar con agentes de código de forma efectiva y medir si de verdad te hacen más rápido',
+    'Construir de punta a punta un asistente RAG evaluado, con resultados medidos para cada versión',
   ],
   lecciones: [
     { titulo: 'La ruta de proyectos', html: `
@@ -1501,6 +1502,37 @@ Total ≈ 1.350 USD/día ≈ 40.500 USD/mes</code></pre>
 - Las lecciones son template literals: sin backticks adentro
 - El progreso del alumno se guarda por texto de pregunta: no lo cambies</code></pre>
       <p>Este mismo sitio se construye así: <code>/mejorar</code> y <code>/evolucionar</code> le dan instrucciones al agente, y <code>validar.js</code> y <code>test-app.js</code> son los chequeos que corre antes de publicar, también en CI.</p>` },
+    { titulo: 'Proyecto guiado: un asistente RAG evaluado en un fin de semana', html: `
+      <p>Este proyecto junta casi todo el curso en algo que podés mostrar. La regla de oro: <strong>cada versión se mide</strong> y se anota en una tabla.</p>
+      <pre><code>asistente-rag/
+  datos/                    # documentos fuente (manuales, apuntes, políticas)
+  evals/preguntas.jsonl     # {"pregunta": ..., "respuesta": ..., "fuente": ...}
+  src/indexar.py            # chunking + embeddings + índice
+  src/responder.py          # búsqueda + generación con citas
+  src/evaluar.py            # corre las evals y agrega una fila a resultados.md
+  resultados.md             # una fila por versión
+  README.md</code></pre>
+      <p><strong>Día 1: construir con red de seguridad</strong></p>
+      <ol>
+        <li><strong>Evals primero.</strong> Elegí un caso real y escribí 30 preguntas con su respuesta esperada y su fuente, 5 de ellas sin respuesta en los documentos.</li>
+        <li><strong>Línea base.</strong> Si los documentos entran en el contexto, empezá metiéndolos completos con caching. Es tu punto de comparación.</li>
+        <li><strong>RAG simple.</strong> Chunking, embeddings y pgvector o Chroma. Medí recall@5: ¿aparece la fuente correcta entre los 5 primeros?</li>
+        <li><strong>Generación con citas</strong> y permiso para decir "no figura en los documentos".</li>
+      </ol>
+      <p><strong>Día 2: medir, mejorar y documentar</strong></p>
+      <ol start="5">
+        <li><strong>Evals completas:</strong> exactitud (juez binario calibrado con 20 casos tuyos), citas válidas verificadas en código y respuestas inventadas en las preguntas sin respuesta.</li>
+        <li><strong>Mejoras de a una:</strong> búsqueda híbrida, después reranker, después ajuste de chunking. Cada cambio es una fila nueva en la tabla.</li>
+        <li><strong>Mínimo de producción:</strong> log por consulta con tokens, costo y latencia; límites de entrada y de uso.</li>
+        <li><strong>README:</strong> problema, arquitectura, tabla de resultados, costo por 1.000 consultas, decisiones con sus alternativas y 3 fallos analizados.</li>
+      </ol>
+      <p><strong>Cómo se ve resultados.md:</strong></p>
+      <pre><code>| versión            | recall@5 | exactitud | citas válidas | inventa | USD / 1.000 |
+| línea base (todo)  |    —     |   0,80    |     0,90      |   2/5   |    9,10     |
+| RAG simple         |   0,83   |   0,77    |     0,95      |   1/5   |    1,40     |
+| + híbrida          |   0,90   |   0,83    |     0,96      |   1/5   |    1,45     |
+| + reranker         |   0,93   |   0,87    |     0,97      |   0/5   |    1,60     |</code></pre>
+      <p>Los números del ejemplo son ilustrativos; los tuyos van a ser otros. Lo que importa es que cualquiera que lea el README pueda ver qué probaste, qué funcionó, cuánto cuesta y dónde falla. Eso es lo que distingue a un AI engineer de alguien que armó un demo.</p>` },
   ],
   practica: [
     'Elegí uno de los 5 proyectos y terminalo esta semana con README, evals y demo.',
@@ -1508,6 +1540,7 @@ Total ≈ 1.350 USD/día ≈ 40.500 USD/mes</code></pre>
     'Elegí un paper reciente de arXiv sobre agentes o RAG, resumilo en una página y reproducí un experimento pequeño.',
     'Escribí un design doc de una página para "asistente RAG sobre 10 millones de documentos a 1.000 consultas por segundo": requisitos, diagrama, costo mensual calculado, evals y riesgos. Después pedile a Claude que haga de entrevistador y te repregunte durante 30 minutos.',
     'Usá un agente de código en uno de tus proyectos: escribí un CLAUDE.md de menos de 20 líneas, un SPEC.md para una funcionalidad y los tests que la verifican. Cronometrá la tarea y comparala con otra parecida hecha a mano.',
+    'Hacé el proyecto guiado del asistente RAG completo y publicá el repositorio con resultados.md y el README. Después usá el prompt de tutor de este módulo para que Claude revise tu README como si fuera un entrevistador.',
   ],
   recursos: [
     { t: 'arXiv — Computation and Language (cs.CL), novedades', url: 'https://arxiv.org/list/cs.CL/recent' },
@@ -1533,6 +1566,11 @@ Total ≈ 1.350 USD/día ≈ 40.500 USD/mes</code></pre>
     { q: 'Tu CLAUDE.md dice "IMPORTANTE: nunca commitear sin que pase el typecheck", y el agente a veces lo ignora. ¿Qué hacés?', opciones: ['Agregás más "IMPORTANTE"', 'Repetís la regla tres veces', 'La convertís en un control determinista, como un hook o CI, que bloquee el commit', 'Borrás el CLAUDE.md'], correcta: 2, explicacion: 'Lo que lee el modelo se sigue casi siempre, pero no siempre. Una regla que no admite excepciones tiene que estar en algo que se ejecuta siempre.' },
     { q: '¿Qué conviene poner en el CLAUDE.md de un proyecto?', opciones: ['Todo el código importante', 'Lo que el agente puede descubrir leyendo el repositorio', 'Tus preferencias personales de estilo', 'Lo que no puede ver: comandos exactos de tests y typecheck, trampas del entorno, procedimientos del equipo'], correcta: 3, explicacion: 'CLAUDE.md se carga en cada sesión y cada línea consume atención. Lo descubrible se deja afuera, y las preferencias personales van en CLAUDE.local.md.' },
     { q: '¿Cuál de estos prompts le da a un agente de código la mejor chance de resolver bien?', opciones: ['"Arreglá el bug del login"', '"Los usuarios reportan que el login falla cuando expira la sesión; mirá el refresh de tokens en src/auth/, escribí un test que lo reproduzca y después arreglalo"', '"Arreglá todo lo que esté mal"', '"Hacé que el login funcione mejor"'], correcta: 1, explicacion: 'Da el síntoma, dónde mirar y cómo verificar: un test que reproduce el bug es también el chequeo de que quedó arreglado.' },
+    { q: 'Arrancás el proyecto del asistente RAG. ¿Qué hacés primero?', opciones: ['Elegís la base de datos vectorial', 'Programás la interfaz', 'Definís el caso y escribís 30 preguntas con su respuesta esperada, antes de construir el sistema', 'Hacés fine-tuning de un modelo'], correcta: 2, explicacion: 'Sin evals no podés saber si cada decisión posterior mejora o empeora. La tecnología se elige después, con números.' },
+    { q: 'Agregaste búsqueda híbrida y un reranker al mismo tiempo, y la exactitud subió 8 puntos. ¿Qué problema tiene?', opciones: ['Que no sabés cuánto aportó cada cambio: conviene agregar uno por vez y registrar cada versión', 'Ninguno', 'Que mejoró poco', 'Que el reranker sobra'], correcta: 0, explicacion: 'Quizás uno de los dos aportó todo y el otro solo suma costo. Sin cambios separados no lo podés saber.' },
+    { q: '¿Por qué conviene medir recall@5 por separado de la exactitud de las respuestas?', opciones: ['Porque es obligatorio', 'Para saber si un error viene de la búsqueda o de la generación', 'Porque es más barato de calcular', 'No hace falta: con la exactitud alcanza'], correcta: 1, explicacion: 'Si la fuente correcta no se recuperó, el problema es la búsqueda; si se recuperó y la respuesta igual está mal, es la generación. Se arreglan de formas distintas.' },
+    { q: '¿Qué hace que el README de este proyecto se destaque frente a un entrevistador?', opciones: ['Una lista larga de tecnologías', 'Capturas de pantalla lindas', 'Una explicación extensa de qué es RAG', 'Una tabla de métricas por versión, el costo por consulta, las decisiones con sus alternativas y fallos analizados'], correcta: 3, explicacion: 'Muestra criterio de ingeniería: qué mediste, qué probaste y qué aprendiste. La lista de tecnologías no dice nada sobre cómo pensás.' },
+    { q: 'Tus documentos son 80 páginas. ¿Qué usás como línea base antes de construir el RAG?', opciones: ['Un RAG agéntico', 'Fine-tuning del modelo', 'Los documentos completos en el contexto con caching, para tener contra qué comparar el RAG', 'Ninguna línea base'], correcta: 2, explicacion: '80 páginas entran en el contexto de los modelos actuales. Si el RAG no supera a esa opción simple en calidad o costo, no se justifica.' },
   ],
 },
 ];

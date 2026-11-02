@@ -36,6 +36,7 @@ window.GLOSARIO = [
   { t: 'HNSW', d: 'Índice de búsqueda aproximada de vecinos basado en un grafo de varias capas. Muy rápido, con algo menos de recall que la búsqueda exacta.', m: 'rag' },
   { t: 'Idempotencia', d: 'Propiedad de una operación que puede repetirse sin efectos extra. Es clave al reintentar acciones como cobros.', m: 'apis' },
   { t: 'KV cache', d: 'Keys y values de los tokens anteriores guardados para no recalcularlos en cada paso de generación.', m: 'fine-tuning' },
+  { t: 'Línea base', d: 'La solución más simple que funciona, usada como punto de comparación: una mejora solo vale si la supera en tus métricas.', m: 'proyecto' },
   { t: 'LLM-as-judge', d: 'Usar un modelo con una rúbrica para evaluar las salidas de otro sistema.', m: 'evals' },
   { t: 'LoRA', d: 'Fine-tuning que entrena matrices de bajo rango añadidas y deja congelados los pesos originales.', m: 'fine-tuning' },
   { t: 'MCP', d: 'Model Context Protocol: estándar abierto para conectar aplicaciones de IA con herramientas y fuentes de datos.', m: 'agentes' },
