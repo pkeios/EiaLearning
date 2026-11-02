@@ -103,6 +103,7 @@ const MISIONES = [
   { emoji: '🛡️', titulo: 'Seguridad', color: '#1f9d55', pasos: [
     { idea: '🔐', t: 'Tus datos personales no se los des a una IA.' },
     { clasificar: '¿Se lo puedo escribir a una IA?', grupos: ['👍 Sí', '🚫 No'], items: [['¿Por qué el cielo es azul?', 0], ['Mi dirección', 1], ['Mi contraseña', 1], ['Ideas para un cuento de dragones', 0], ['El teléfono de mi familia', 1]] },
+    { taller: 'tapar', t: '¡Tu turno! Tapá los datos personales antes de mandar el mensaje.' },
     { idea: '🎭', t: 'Con IA se pueden hacer fotos y videos falsos que parecen reales.' },
     { q: 'Ves un video de un famoso diciendo algo rarísimo. ¿Qué hacés?', o: ['📤 Lo comparto ya', '🤔 Desconfío y le pregunto a un adulto'], c: 1, e: 'Puede ser falso. Antes de creer o compartir, preguntá.' },
     { idea: '🙋', t: 'Si algo te hace sentir incómodo, cortá y contale a un adulto.' },
@@ -212,6 +213,7 @@ const TALLER = [
   { id: 'entrenar', emoji: '🧪', titulo: 'Entrená tu IA', color: '#ff7a59' },
   { id: 'palabras', emoji: '✍️', titulo: 'Autocompletar', color: '#1f9dd6' },
   { id: 'robot', emoji: '🤖', titulo: 'Programá el robot', color: '#1f9d55' },
+  { id: 'tapar', emoji: '🕵️', titulo: 'Tapá los datos', color: '#d6457a' },
 ];
 const cargarTaller = () => { try { return JSON.parse(localStorage.getItem('chicos-taller')) || {}; } catch { return {}; } };
 const logro = id => { const t = cargarTaller(); t[id] = true; localStorage.setItem('chicos-taller', JSON.stringify(t)); };
@@ -276,6 +278,11 @@ function correrRobot(mapa, prog) {
   return { camino, fin: 'corto' };
 }
 
+// Mensaje para tapar: 1 = dato personal (hay que taparlo), 2 = parece importante pero se puede preguntar, 0 = texto.
+const MENSAJE = [
+  ['Hola IA, soy ', 0], ['Martina López', 1], [', vivo en ', 0], ['Calle Las Flores 123', 1], [' y voy a la ', 0],
+  ['Escuela N° 5', 1], ['. Mi contraseña es ', 0], ['gatito99', 1], ['. ¿Me ayudás con la tarea de ', 0], ['los volcanes', 2], [' para el ', 0], ['jueves', 2], ['?', 0],
+];
 const DEMO = [
   ['hoy gané el partido de fútbol', 0], ['me encanta jugar con mis amigos', 0], ['saqué un diez en la prueba', 0], ['mañana vamos a la playa', 0],
   ['se me rompió el juguete', 1], ['perdí mi cartuchera nueva', 1], ['hoy llueve y no puedo salir', 1], ['me peleé con mi amigo', 1],
@@ -340,6 +347,20 @@ function montarTaller(id, cont, alLograr) {
         : `🤷 "${esc(w)}" no aparece en el texto. ¡Probá otra palabra!`;
       alLograr(true);
     };
+  } else if (id === 'tapar') {
+    let faltan = MENSAJE.filter(([, x]) => x === 1).length;
+    cont.innerHTML = (`<div class="grande">🕵️</div>
+      <p class="texto">Alguien va a mandarle esto a una IA. Tocá los datos personales para taparlos.</p>
+      <p class="chip" style="display:block;line-height:2.2">${MENSAJE.map(([t, x], k) => x ? `<button class="opcion" style="display:inline;padding:.1rem .4rem" data-k="${k}">${t}</button>` : t).join('')}</p>
+      <div id="resultado" class="aviso" aria-live="polite"></div>`);
+    const res = cont.querySelector('#resultado');
+    cont.querySelectorAll('[data-k]').forEach(b => b.onclick = () => {
+      if (MENSAJE[b.dataset.k][1] === 2) { b.classList.add('mal'); res.className = 'aviso mal'; res.textContent = '🙂 Eso no es un dato personal: ¡se puede preguntar tranquilo!'; return; }
+      b.textContent = '████'; b.disabled = true; b.classList.add('bien');
+      res.className = 'aviso bien';
+      res.textContent = --faltan ? '✅ ¡Bien! Quedan ' + faltan + ' datos.' : '🎉 ¡Listo! Ahora el mensaje es seguro y la IA igual puede ayudar con la tarea.';
+      if (!faltan) alLograr(true);
+    });
   } else {
     let nivel = 0, prog = [];
     const pintar = (pos = null) => {
