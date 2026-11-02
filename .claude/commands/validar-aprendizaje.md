@@ -17,12 +17,13 @@ Las 6 estrategias de The Learning Scientists (https://www.learningscientists.org
 | **Elaboración** | La lección explica el porqué y conecta con otros módulos ("esto es lo mismo que viste en RAG..."). |
 | **Carga cognitiva** | Una idea central por lección, de 300 a 600 palabras (como máximo ~900), con los términos nuevos definidos en el momento. |
 | **Aprender haciendo** | Las prácticas tienen un resultado verificable: algo que se mide, se compara o se entrega. |
-| **Espaciado e intercalado** | Ya los resuelve la app (repaso a 1, 3, 7 y 14 días, quiz por nivel, examen final mezclado): no los reimplementes; solo verificá que el módulo tenga suficientes preguntas (≥ 4 por lección) para alimentarlos. |
+| **Intercalar teoría, preguntas y práctica** | Nunca un bloque largo de una sola cosa: después de una idea viene una pregunta o algo para hacer. La práctica va dentro del recorrido, no al final y aparte. |
+| **Espaciado e intercalado de temas** | Ya los resuelve la app (repaso a 1, 3, 7 y 14 días, quiz por nivel, examen final mezclado): no los reimplementes; solo verificá que el módulo tenga suficientes preguntas (≥ 4 por lección) para alimentarlos. |
 | **Metacognición** | Ya existen "Explicalo con tus palabras" y el prompt de tutor: verificá que los objetivos del módulo estén escritos como algo que el alumno puede comprobar que sabe hacer. |
 
 ## 1. Medir
 - Corré `node tools/metodologia.js`. Muestra por módulo las métricas automáticas y un puntaje.
-- Si `$ARGUMENTS` es el id de un módulo, trabajá en ese. Si es `chicos`, validá `public/chicos/index.html` (ver punto 4). Si no hay argumento, elegí el módulo con menor puntaje que no aparezca en las últimas 3 entradas de `METODOLOGIA.md`.
+- Si `$ARGUMENTS` es el id de un módulo, trabajá en ese. Si es `chicos`, validá `public/chicos/index.html` (ver punto 4). Si no hay argumento: si `chicos` no aparece en las últimas 4 entradas de `METODOLOGIA.md`, validá la versión para chicos; si no, elegí el módulo con menor puntaje que no aparezca en las últimas 3 entradas. Así las dos versiones del curso se revisan con regularidad.
 - Las métricas son heurísticas: **leé el módulo completo** y evaluá cada principio de la tabla a mano. Anotá qué cumple, qué no y un ejemplo concreto de cada falla.
 
 ## 2. Mejorar (una sola cosa, la de mayor impacto)
@@ -43,7 +44,7 @@ Respetá todas las reglas de `.claude/commands/mejorar.md`: sin backticks en las
 - Agregá también la línea habitual en `MEJORAS.md`: `- AAAA-MM-DD · <modulo> · metodología: <qué cambiaste>`.
 
 ## 4. Versión para chicos (`chicos`)
-Validá `public/chicos/index.html` con estos criterios para 10 a 13 años: frases de una idea (≤ 22 palabras), un apoyo visual por tarjeta, cada misión con 3 ejercicios interactivos y retroalimentación inmediata que explique, nada de links a sitios externos, lenguaje sin tecnicismos (o explicados con un ejemplo cotidiano) y mensajes de seguridad y honestidad presentes. Mejorá una sola cosa (por ejemplo, un ejercicio más claro o una frase más corta) sin cambiar el formato de la clave `chicos` del `localStorage`.
+Corré `node tools/test-chicos.js` y validá `public/chicos/index.html` con estos criterios para 10 a 13 años: frases de una idea (≤ 22 palabras), un apoyo visual por tarjeta, cada misión con 3 ejercicios interactivos y retroalimentación inmediata que explique, **práctica intercalada** (nunca más de 2 preguntas seguidas; las actividades de hacer algo, como entrenar una IA o programar el robot, van dentro de las misiones y no solo en una sección aparte), aprender haciendo con algo que el chico construye y ve funcionar, conexión con la escuela (que pueda usar sus propios textos o temas de clase), nada de links a sitios externos, lenguaje sin tecnicismos (o explicados con un ejemplo cotidiano) y mensajes de seguridad y honestidad presentes. Mejorá una sola cosa (por ejemplo, un ejercicio más claro o una frase más corta) sin cambiar el formato de la clave `chicos` del `localStorage`.
 
 ## 5. Publicar
 Commit con mensaje `metodologia(<modulo>): ...` y la línea de co-autoría de la sesión, después `git pull --rebase` y `git push`. Si algo falla dos veces seguidas, no insistas: dejá el trabajo sin commitear y explicá el problema.

@@ -78,6 +78,7 @@ const MISIONES = [
     { idea: '📚 👀', t: 'La máquina aprende viendo MUCHOS ejemplos. ¡Como vos!' },
     { clasificar: 'Enseñale a la máquina: ¿perro o gato?', grupos: ['🐶 Perro', '🐱 Gato'], items: [['🐕', 0], ['🐈', 1], ['🐩', 0], ['🐈‍⬛', 1], ['🦮', 0]] },
     { idea: '🏷️', t: 'Lo que hiciste se llama "etiquetar". Son los datos de entrenamiento.' },
+    { taller: 'entrenar', t: '¡Tu turno! Entrená una IA con tus propias frases.' },
     { idea: '🔴 🔴 🔴 ❓', t: 'Si solo ve ejemplos parecidos, se confunde con lo nuevo.' },
     { q: 'La máquina solo vio pelotas rojas 🔴. Le mostrás una azul 🔵. ¿Qué pasa?', o: ['😵 Puede confundirse', '🎯 Seguro acierta'], c: 0, e: 'Nunca vio una pelota azul. Aprende solo de lo que le mostraste.' },
     { q: '¿Qué necesita para aprender mejor?', o: ['🍕 Pizza', '🌈 Ejemplos variados', '😴 Dormir'], c: 1, e: 'Ejemplos variados = una IA que se equivoca menos.' },
@@ -85,6 +86,7 @@ const MISIONES = [
   { emoji: '💬', titulo: 'Chatbots', color: '#1f9dd6', pasos: [
     { idea: '🔮', t: 'Un chatbot adivina la palabra que sigue. Una y otra vez.' },
     { q: 'Completá: "Había una vez una princesa en un gran..."', o: ['🥦 brócoli', '🚀 cohete', '🏰 castillo'], c: 2, e: '¡Eso hace un chatbot! Elige la palabra que más vio en los textos.' },
+    { taller: 'palabras', t: '¡Tu turno! Armá un mini chatbot que aprende de un texto.' },
     { idea: '🤥', t: 'A veces inventa cosas que suenan seguras... pero son falsas.' },
     { q: 'El chatbot dice que en Marte viven pingüinos 🐧. ¿Qué hacés?', o: ['✅ Lo copio para la tarea', '🔍 Lo reviso en un libro o con mi profe'], c: 1, e: 'Siempre revisá los datos importantes en otra fuente.' },
     { q: '¿El chatbot siempre tiene razón?', o: ['👎 No, puede equivocarse', '👍 Sí, siempre'], c: 0, e: 'Es muy útil, pero se equivoca. Vos sos quien revisa.' },
@@ -92,6 +94,8 @@ const MISIONES = [
   { emoji: '🎯', titulo: 'Pedir bien', color: '#e0a100', pasos: [
     { idea: '✍️', t: 'Lo que le escribís a la IA se llama "prompt". Cuanto más claro, mejor.' },
     { q: '¿Qué prompt es mejor?', o: ['😐 "Volcanes"', '🌋 "Explicame cómo se forma un volcán en 3 frases, para alguien de 11 años"'], c: 1, e: 'Dice qué querés, para quién y cómo.' },
+    { idea: '🤖 📋', t: 'Las computadoras hacen EXACTO lo que les decís. Por eso las instrucciones claras importan.' },
+    { taller: 'robot', t: '¡Tu turno! Dale instrucciones exactas al robot.' },
     { clasificar: '¿Esto ayuda a que la IA te entienda?', grupos: ['✅ Ayuda', '❌ No'], items: [['Decir para quién es', 0], ['Escribir una sola palabra', 1], ['Pedir una lista o 3 frases', 0], ['Escribir TODO EN MAYÚSCULAS', 1], ['Contar para qué lo necesitás', 0]] },
     { idea: '🌟', t: 'Superpoder: pedile que te haga preguntas para practicar.' },
     { q: '¿Qué te ayuda a aprender más?', o: ['📝 "Haceme la tarea"', '🧠 "Haceme 3 preguntas sobre las plantas"'], c: 1, e: 'Si te toma examen, aprendés vos.' },
@@ -148,11 +152,12 @@ function mision(i) {
     if (paso === m.pasos.length) return final();
     const s = m.pasos[paso], ejercicio = !s.idea;
     let primerIntento = true;
-    const dicho = s.idea ? s.t : s.q || s.clasificar;
+    const dicho = s.idea || s.taller ? s.t : s.q || s.clasificar;
     app.innerHTML = `<a class="volver" href="#/">← Misiones</a>
       <div class="barra">${m.pasos.map((_, k) => `<span class="${k <= paso ? 'hecho' : ''}"></span>`).join('')}</div>
       <section class="tarjeta">
         ${s.idea ? `<div class="grande">${s.idea}</div><p class="texto">${s.t}</p>` : ''}
+        ${s.taller ? `<p class="texto">${s.t}</p><div id="actividad"></div>` : ''}
         ${s.q ? `<p class="texto">${s.q}</p><div class="opciones">${s.o.map((o, j) => `<button class="opcion" data-j="${j}">${o}</button>`).join('')}</div>` : ''}
         ${s.clasificar ? `<p class="texto">${s.clasificar}</p><div class="chips">${s.items.map(([t], k) => `<div class="chip" data-k="${k}"><span>${t}</span>${s.grupos.map((g, j) => `<button data-g="${j}">${g}</button>`).join('')}</div>`).join('')}</div>` : ''}
         <p class="aviso" aria-live="polite"></p>
@@ -161,7 +166,8 @@ function mision(i) {
     const aviso = app.querySelector('.aviso'), seguir = app.querySelector('#seguir');
     const listo = () => { if (primerIntento) estrellas++; seguir.disabled = false; seguir.focus(); };
     app.querySelector('#oir').onclick = () => leer(dicho + (s.o ? '. ' + s.o.join('. ') : ''));
-    seguir.onclick = () => { paso++; mostrar(); };
+    seguir.onclick = () => { clearInterval(corriendo); paso++; mostrar(); };
+    if (s.taller) montarTaller(s.taller, app.querySelector('#actividad'), () => { logro(s.taller); seguir.disabled = false; });
     app.querySelectorAll('.opcion').forEach(b => b.onclick = () => {
       if (Number(b.dataset.j) === s.c) {
         b.classList.add('bien');
@@ -276,14 +282,11 @@ const DEMO = [
 ];
 const CUENTO = 'Había una vez un robot que quería aprender. El robot leía libros todos los días. Un día el robot leyó un libro de dragones. El dragón quería volar y el robot quería leer. Al final el robot y el dragón fueron amigos.';
 
-function taller(id) {
-  const t = TALLER.find(x => x.id === id);
-  if (!t) return inicio();
-  document.documentElement.style.setProperty('--color', t.color);
-  const marco = cuerpo => `<a class="volver" href="#/">← Inicio</a><section class="tarjeta">${cuerpo}</section>`;
+// Monta una actividad en cont. alLograr(ultimo) se llama al completarla (en el robot, en cada nivel; ultimo = último nivel).
+function montarTaller(id, cont, alLograr) {
   if (id === 'entrenar') {
     let ejemplos = [];
-    app.innerHTML = marco(`<div class="grande">🧪</div>
+    cont.innerHTML = (`<div class="grande">🧪</div>
       <p class="texto">Enseñale a la máquina: escribí frases y decile si son alegres o tristes.</p>
       <input type="text" id="frase" placeholder="Ej: hoy jugué con mi perro" aria-label="Frase de ejemplo">
       <div class="fila"><button class="opcion" data-g="0">😀 Alegre</button><button class="opcion" data-g="1">😢 Triste</button></div>
@@ -293,17 +296,17 @@ function taller(id) {
       <input type="text" id="prueba" placeholder="Ej: gané la carrera" aria-label="Frase para probar">
       <button class="boton" id="probar">Adivinar</button>
       <div id="resultado" class="aviso" aria-live="polite"></div>`);
-    const lista = app.querySelector('#lista'), res = app.querySelector('#resultado');
+    const lista = cont.querySelector('#lista'), res = cont.querySelector('#resultado');
     const dibujar = () => { lista.innerHTML = ejemplos.map(e => `<div class="chip"><span>${e.g ? '😢' : '😀'} ${esc(e.t)}</span></div>`).join(''); };
-    app.querySelectorAll('[data-g]').forEach(b => b.onclick = () => {
-      const inp = app.querySelector('#frase');
+    cont.querySelectorAll('[data-g]').forEach(b => b.onclick = () => {
+      const inp = cont.querySelector('#frase');
       if (!palabrasDe(inp.value).length) return inp.focus();
       ejemplos.push({ t: inp.value.trim(), g: Number(b.dataset.g) });
       inp.value = ''; inp.focus(); dibujar();
     });
-    app.querySelector('#demo').onclick = () => { ejemplos = DEMO.map(([t, g]) => ({ t, g })); dibujar(); };
-    app.querySelector('#probar').onclick = () => {
-      const frase = app.querySelector('#prueba').value;
+    cont.querySelector('#demo').onclick = () => { ejemplos = DEMO.map(([t, g]) => ({ t, g })); dibujar(); };
+    cont.querySelector('#probar').onclick = () => {
+      const frase = cont.querySelector('#prueba').value;
       if ([0, 1].some(g => ejemplos.filter(e => e.g === g).length < 3)) { res.className = 'aviso mal'; res.textContent = '🤔 Necesito al menos 3 ejemplos de cada tipo para aprender.'; return; }
       const { prob, claves } = predecir(ejemplos, frase);
       res.className = 'aviso';
@@ -312,50 +315,50 @@ function taller(id) {
         <div class="prob">😢 <div style="width:${Math.round(prob[1] * 70)}%"></div> ${Math.round(prob[1] * 100)}%</div>
         <p>Me fijé en: ${claves.map(([w, g]) => `<strong>${esc(w)}</strong> ${g ? '😢' : '😀'}`).join(', ')}</p>
         <p class="suave">Si se equivocó, enseñale más ejemplos con esas palabras y probá de nuevo.</p>`;
-      logro('entrenar');
+      alLograr(true);
     };
   } else if (id === 'palabras') {
-    app.innerHTML = marco(`<div class="grande">✍️</div>
+    cont.innerHTML = (`<div class="grande">✍️</div>
       <p class="texto">La máquina lee un texto y aprende qué palabra suele venir después de cada palabra.</p>
       <textarea id="texto" rows="5" aria-label="Texto para aprender">${CUENTO}</textarea>
       <p class="suave">Podés borrar el cuento y pegar un texto tuyo: un resumen de clase, una canción, una poesía.</p>
       <input type="text" id="inicio" value="el" aria-label="Palabra para empezar">
       <div class="fila"><button class="opcion" id="sigue">🔮 ¿Qué sigue?</button><button class="opcion" id="sola">✍️ Que escriba sola</button></div>
       <div id="resultado" class="aviso" aria-live="polite"></div>`);
-    const res = app.querySelector('#resultado');
-    const datos = () => [aprenderTexto(app.querySelector('#texto').value), palabrasDe(app.querySelector('#inicio').value, 1)[0] || ''];
-    app.querySelector('#sigue').onclick = () => {
+    const res = cont.querySelector('#resultado');
+    const datos = () => [aprenderTexto(cont.querySelector('#texto').value), palabrasDe(cont.querySelector('#inicio').value, 1)[0] || ''];
+    cont.querySelector('#sigue').onclick = () => {
       const [sig, w] = datos(), ops = siguientes(sig, w).slice(0, 4), tot = ops.reduce((s, [, c]) => s + c, 0);
       res.className = 'aviso';
       res.innerHTML = ops.length ? `Después de "<strong>${esc(w)}</strong>" vi:` + ops.map(([x, c]) => `<div class="prob">${esc(x)} <div style="width:${Math.round(c / tot * 60)}%"></div> ${c} ${c === 1 ? 'vez' : 'veces'}</div>`).join('')
         : `🤷 "${esc(w)}" no aparece en el texto (o es la última palabra). ¡Probá otra!`;
     };
-    app.querySelector('#sola').onclick = () => {
+    cont.querySelector('#sola').onclick = () => {
       const [sig, w] = datos();
       res.className = 'aviso';
       res.innerHTML = siguientes(sig, w).length ? `📝 ${esc(escribirSola(sig, w))}...<p class="suave">Tocá de nuevo: cada vez sale distinto. Un chatbot hace esto mismo, pero aprendió de millones de textos.</p>`
         : `🤷 "${esc(w)}" no aparece en el texto. ¡Probá otra palabra!`;
-      logro('palabras');
+      alLograr(true);
     };
   } else {
     let nivel = 0, prog = [];
     const pintar = (pos = null) => {
       const mapa = NIVELES[nivel];
       const [rr, rc] = pos || [mapa.findIndex(f => f.includes('R')), mapa[mapa.findIndex(f => f.includes('R'))].indexOf('R')];
-      app.querySelector('.grilla').innerHTML = mapa.flatMap((f, r) => [...f].map((x, c) => `<div class="celda">${r === rr && c === rc ? '🤖' : x === '#' ? '🧱' : x === 'E' ? '⭐' : ''}</div>`)).join('');
-      app.querySelector('.programa').textContent = prog.join('') || 'Tu programa aparece acá';
+      cont.querySelector('.grilla').innerHTML = mapa.flatMap((f, r) => [...f].map((x, c) => `<div class="celda">${r === rr && c === rc ? '🤖' : x === '#' ? '🧱' : x === 'E' ? '⭐' : ''}</div>`)).join('');
+      cont.querySelector('.programa').textContent = prog.join('') || 'Tu programa aparece acá';
     };
     const armar = () => {
-      app.innerHTML = marco(`<p class="texto">Nivel ${nivel + 1} de ${NIVELES.length}: llevá al robot hasta la ⭐ sin chocar 🧱</p>
+      cont.innerHTML = (`<p class="texto">Nivel ${nivel + 1} de ${NIVELES.length}: llevá al robot hasta la ⭐ sin chocar 🧱</p>
         <div class="grilla"></div>
         <div class="fila">${Object.keys(DIR).map(d => `<button class="opcion" data-d="${d}" aria-label="Agregar paso">${d}</button>`).join('')}</div>
         <p class="programa"></p>
         <div class="fila"><button class="opcion" id="borrar">🗑️ Borrar</button><button class="boton" id="correr">▶️ Ejecutar</button></div>
         <div id="resultado" class="aviso" aria-live="polite"></div>`);
-      const res = app.querySelector('#resultado');
-      app.querySelectorAll('[data-d]').forEach(b => b.onclick = () => { prog.push(b.dataset.d); pintar(); });
-      app.querySelector('#borrar').onclick = () => { prog = []; res.textContent = ''; pintar(); };
-      app.querySelector('#correr').onclick = () => {
+      const res = cont.querySelector('#resultado');
+      cont.querySelectorAll('[data-d]').forEach(b => b.onclick = () => { prog.push(b.dataset.d); pintar(); });
+      cont.querySelector('#borrar').onclick = () => { prog = []; res.textContent = ''; pintar(); };
+      cont.querySelector('#correr').onclick = () => {
         clearInterval(corriendo);
         const { camino, fin } = correrRobot(NIVELES[nivel], prog);
         let k = 0;
@@ -366,8 +369,8 @@ function taller(id) {
           if (fin === 'estrella') {
             res.className = 'aviso bien';
             res.innerHTML = `🎉 ¡Llegaste en ${camino.length - 1} pasos! ` + (nivel + 1 < NIVELES.length ? '<button class="boton" id="otro">Siguiente nivel →</button>' : '🏆 ¡Sos programador!');
-            if (nivel + 1 === NIVELES.length) logro('robot');
-            app.querySelector('#otro')?.addEventListener('click', () => { nivel++; prog = []; armar(); });
+            alLograr(nivel + 1 === NIVELES.length);
+            cont.querySelector('#otro')?.addEventListener('click', () => { nivel++; prog = []; armar(); });
           } else {
             res.className = 'aviso mal';
             res.textContent = fin === 'choque' ? `💥 ¡Choque en el paso ${camino.length}! Borrá y probá otro camino.` : '🤔 El robot se quedó sin pasos antes de llegar. ¡Agregá más!';
@@ -378,6 +381,14 @@ function taller(id) {
     };
     armar();
   }
+}
+
+function taller(id) {
+  const t = TALLER.find(x => x.id === id);
+  if (!t) return inicio();
+  document.documentElement.style.setProperty('--color', t.color);
+  app.innerHTML = '<a class="volver" href="#/">← Inicio</a><section class="tarjeta"></section>';
+  montarTaller(id, app.querySelector('.tarjeta'), ultimo => { if (ultimo) logro(id); });
   scrollTo(0, 0);
 }
 

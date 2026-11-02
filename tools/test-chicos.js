@@ -5,14 +5,19 @@ const h = fs.readFileSync(__dirname + '/../public/chicos/index.html', 'utf8');
 const js = h.split('<script>')[1].split('</script>')[0];
 new Function(js); // sintaxis
 
-// Misiones: 3 ejercicios cada una, respuestas válidas y frases cortas.
+// Misiones: 3 ejercicios cada una, respuestas válidas, frases cortas y práctica intercalada.
 const M = new Function(js.split('const app =')[0] + 'return MISIONES')();
 M.forEach((m, i) => {
-  const ej = m.pasos.filter(s => !s.idea);
+  const ej = m.pasos.filter(s => s.q || s.clasificar);
   assert.equal(ej.length, 3, 'misión ' + i);
   ej.forEach(s => { if (s.q) assert(s.c < s.o.length); else s.items.forEach(([, g]) => assert(g < s.grupos.length)); });
-  m.pasos.filter(s => s.idea).forEach(s => assert(s.t.split(' ').length <= 22, 'texto largo: ' + s.t));
+  m.pasos.filter(s => s.idea || s.taller).forEach(s => assert(s.t.split(' ').length <= 22, 'texto largo: ' + s.t));
+  m.pasos.filter(s => s.taller).forEach(s => assert(['entrenar', 'palabras', 'robot'].includes(s.taller), 'actividad inexistente: ' + s.taller));
+  // Intercalado: nunca más de 2 preguntas seguidas sin una idea o una práctica en el medio.
+  let seguidas = 0;
+  m.pasos.forEach(s => { seguidas = s.q || s.clasificar ? seguidas + 1 : 0; assert(seguidas <= 2, 'misión ' + i + ': más de 2 preguntas seguidas'); });
 });
+assert(M.filter(m => m.pasos.some(s => s.taller)).length >= 3, 'al menos 3 misiones con práctica adentro');
 assert(!/https?:\/\/(?!atacante)/.test(h), 'no tiene que haber links a sitios externos');
 
 // Taller: solo las funciones puras (sin tocar el DOM).
