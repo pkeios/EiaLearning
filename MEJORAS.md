@@ -142,3 +142,4 @@ Lo completa el comando `/mejorar`. Una línea por ejecución.
 - 2026-11-02 · proyecto · metodología: 5 preguntas nuevas de casos; el módulo pasa a 6/7
 - 2026-11-02 · app · versión para chicos: Entrená tu IA pide 3 frases y Autocompletar 2 palabras para terminar, con contador; arreglo de Autocompletar que se completaba sin escribir
 - 2026-11-02 · fine-tuning · metodología: 5 explicaciones más corrigen la trampa; el módulo pasa a 6/7
+- 2026-11-02 · ml-clasico · metodología: 7 explicaciones más corrigen la trampa; el módulo pasa a 6/7
