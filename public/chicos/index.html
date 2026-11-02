@@ -46,6 +46,16 @@
   .volver { color: var(--suave); text-decoration: none; }
   .fiesta { font-size: 3rem; letter-spacing: .3rem; }
   footer { text-align: center; color: var(--suave); font-size: .85rem; padding: 2rem 1rem; }
+  .seccion { text-align: center; margin: 2rem 0 .8rem; }
+  input[type=text], textarea { width: 100%; font: inherit; padding: .6rem .8rem; border-radius: 14px; border: 3px solid #e4dcf7; margin: .4rem 0; }
+  textarea { font-size: 1rem; }
+  .fila { display: flex; gap: .5rem; justify-content: center; flex-wrap: wrap; margin: .4rem 0; }
+  .prob { display: flex; align-items: center; gap: .5rem; margin: .3rem 0; }
+  .prob div { height: 22px; border-radius: 11px; background: var(--color); min-width: 4px; }
+  .grilla { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; max-width: 300px; margin: 1rem auto; }
+  .celda { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; background: #f3effd; border-radius: 10px; }
+  .suave { color: var(--suave); font-size: .95rem; font-weight: 400; }
+  .programa { min-height: 2.4rem; font-size: 1.5rem; letter-spacing: .15rem; word-break: break-all; }
 </style>
 </head>
 <body>
@@ -123,8 +133,11 @@ function inicio() {
   app.innerHTML = `<p class="estrellas">⭐ <strong>${total}</strong> de ${MISIONES.length * 3} estrellas</p>
     ${Object.keys(p).length === MISIONES.length ? SIGUIENTE : ''}
     <div class="misiones">${MISIONES.map((m, i) => `<button class="mision" style="--c:${m.color}" data-i="${i}">
-      <span class="emoji">${m.emoji}</span><strong>${i + 1}. ${m.titulo}</strong><small>${p[i] != null ? '⭐'.repeat(p[i]) + '☆'.repeat(3 - p[i]) : '▶️ Jugar'}</small></button>`).join('')}</div>`;
-  app.querySelectorAll('.mision').forEach(b => b.onclick = () => { location.hash = '#/' + b.dataset.i; });
+      <span class="emoji">${m.emoji}</span><strong>${i + 1}. ${m.titulo}</strong><small>${p[i] != null ? '⭐'.repeat(p[i]) + '☆'.repeat(3 - p[i]) : '▶️ Jugar'}</small></button>`).join('')}</div>
+    <h2 class="seccion">🛠️ Taller: ¡ahora hacelo vos!</h2>
+    <div class="misiones">${TALLER.map(t => `<button class="mision" style="--c:${t.color}" data-t="${t.id}">
+      <span class="emoji">${t.emoji}</span><strong>${t.titulo}</strong><small>${cargarTaller()[t.id] ? '✅ Hecho' : '🛠️ Probar'}</small></button>`).join('')}</div>`;
+  app.querySelectorAll('.mision').forEach(b => b.onclick = () => { location.hash = b.dataset.t ? '#/taller/' + b.dataset.t : '#/' + b.dataset.i; });
 }
 
 function mision(i) {
@@ -188,8 +201,190 @@ function mision(i) {
   scrollTo(0, 0);
 }
 
+// ---------- Taller: actividades prácticas (todo corre en el navegador) ----------
+const TALLER = [
+  { id: 'entrenar', emoji: '🧪', titulo: 'Entrená tu IA', color: '#ff7a59' },
+  { id: 'palabras', emoji: '✍️', titulo: 'Autocompletar', color: '#1f9dd6' },
+  { id: 'robot', emoji: '🤖', titulo: 'Programá el robot', color: '#1f9d55' },
+];
+const cargarTaller = () => { try { return JSON.parse(localStorage.getItem('chicos-taller')) || {}; } catch { return {}; } };
+const logro = id => { const t = cargarTaller(); t[id] = true; localStorage.setItem('chicos-taller', JSON.stringify(t)); };
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const palabrasDe = (t, min = 2) => t.toLowerCase().split(/[^\p{L}]+/u).filter(w => w.length >= min);
+
+// Clasificador de palabras (Naive Bayes): la frase va al grupo donde sus palabras aparecieron más.
+function predecir(ejemplos, frase) {
+  const grupos = [0, 1].map(g => {
+    const c = {}, deG = ejemplos.filter(e => e.g === g);
+    let n = 0;
+    deG.forEach(e => palabrasDe(e.t).forEach(w => { c[w] = (c[w] || 0) + 1; n++; }));
+    return { c, n, docs: deG.length };
+  });
+  const vocab = new Set(ejemplos.flatMap(e => palabrasDe(e.t))).size || 1;
+  const ws = palabrasDe(frase);
+  const puntos = grupos.map(G => Math.log((G.docs + 1) / (ejemplos.length + 2)) + ws.reduce((s, w) => s + Math.log(((G.c[w] || 0) + 1) / (G.n + vocab)), 0));
+  const e = puntos.map(x => Math.exp(x - Math.max(...puntos)));
+  const claves = [...new Set(ws.filter(w => grupos[0].c[w] || grupos[1].c[w]))]
+    .map(w => [w, (grupos[0].c[w] || 0) / (grupos[0].n || 1) >= (grupos[1].c[w] || 0) / (grupos[1].n || 1) ? 0 : 1]);
+  return { prob: e.map(x => x / (e[0] + e[1])), claves };
+}
+
+// Autocompletar: para cada palabra, cuenta qué palabras vinieron después (un "modelo de lenguaje" chiquito).
+function aprenderTexto(texto) {
+  const ws = palabrasDe(texto, 1), sig = {};
+  for (let i = 0; i + 1 < ws.length; i++) { sig[ws[i]] ??= {}; sig[ws[i]][ws[i + 1]] = (sig[ws[i]][ws[i + 1]] || 0) + 1; }
+  return sig;
+}
+const siguientes = (sig, w) => Object.entries(sig[w] || {}).sort((a, b) => b[1] - a[1]);
+function escribirSola(sig, inicio, n = 12, azar = Math.random) {
+  const out = [inicio];
+  let w = inicio;
+  for (let i = 0; i < n; i++) {
+    const ops = siguientes(sig, w);
+    if (!ops.length) break;
+    let r = azar() * ops.reduce((s, [, c]) => s + c, 0);
+    w = ops.find(([, c]) => (r -= c) < 0)[0];
+    out.push(w);
+  }
+  return out.join(' ');
+}
+
+// Robot: R inicio, E estrella, # pared.
+const NIVELES = [
+  ['R....', '.....', '.....', '.....', '....E'],
+  ['R.#..', '..#..', '..#.E', '.....', '.....'],
+  ['R#...', '.#.#.', '.#.#.', '...#E', '###..'],
+];
+let corriendo = null; // animación del robot: se corta al cambiar de página
+const DIR = { '⬆️': [-1, 0], '⬇️': [1, 0], '⬅️': [0, -1], '➡️': [0, 1] };
+function correrRobot(mapa, prog) {
+  let r = mapa.findIndex(f => f.includes('R')), c = mapa[r].indexOf('R');
+  const camino = [[r, c]];
+  for (const p of prog) {
+    const [nr, nc] = [r + DIR[p][0], c + DIR[p][1]];
+    if (!mapa[nr] || mapa[nr][nc] === undefined || mapa[nr][nc] === '#') return { camino, fin: 'choque' };
+    [r, c] = [nr, nc];
+    camino.push([r, c]);
+    if (mapa[r][c] === 'E') return { camino, fin: 'estrella' };
+  }
+  return { camino, fin: 'corto' };
+}
+
+const DEMO = [
+  ['hoy gané el partido de fútbol', 0], ['me encanta jugar con mis amigos', 0], ['saqué un diez en la prueba', 0], ['mañana vamos a la playa', 0],
+  ['se me rompió el juguete', 1], ['perdí mi cartuchera nueva', 1], ['hoy llueve y no puedo salir', 1], ['me peleé con mi amigo', 1],
+];
+const CUENTO = 'Había una vez un robot que quería aprender. El robot leía libros todos los días. Un día el robot leyó un libro de dragones. El dragón quería volar y el robot quería leer. Al final el robot y el dragón fueron amigos.';
+
+function taller(id) {
+  const t = TALLER.find(x => x.id === id);
+  if (!t) return inicio();
+  document.documentElement.style.setProperty('--color', t.color);
+  const marco = cuerpo => `<a class="volver" href="#/">← Inicio</a><section class="tarjeta">${cuerpo}</section>`;
+  if (id === 'entrenar') {
+    let ejemplos = [];
+    app.innerHTML = marco(`<div class="grande">🧪</div>
+      <p class="texto">Enseñale a la máquina: escribí frases y decile si son alegres o tristes.</p>
+      <input type="text" id="frase" placeholder="Ej: hoy jugué con mi perro" aria-label="Frase de ejemplo">
+      <div class="fila"><button class="opcion" data-g="0">😀 Alegre</button><button class="opcion" data-g="1">😢 Triste</button></div>
+      <div class="chips" id="lista"></div>
+      <button class="chico" id="demo" style="font-size:1rem">✨ Cargar ejemplos</button>
+      <p class="texto" style="margin-top:1.2rem">🔍 Ahora probá tu IA con una frase nueva</p>
+      <input type="text" id="prueba" placeholder="Ej: gané la carrera" aria-label="Frase para probar">
+      <button class="boton" id="probar">Adivinar</button>
+      <div id="resultado" class="aviso" aria-live="polite"></div>`);
+    const lista = app.querySelector('#lista'), res = app.querySelector('#resultado');
+    const dibujar = () => { lista.innerHTML = ejemplos.map(e => `<div class="chip"><span>${e.g ? '😢' : '😀'} ${esc(e.t)}</span></div>`).join(''); };
+    app.querySelectorAll('[data-g]').forEach(b => b.onclick = () => {
+      const inp = app.querySelector('#frase');
+      if (!palabrasDe(inp.value).length) return inp.focus();
+      ejemplos.push({ t: inp.value.trim(), g: Number(b.dataset.g) });
+      inp.value = ''; inp.focus(); dibujar();
+    });
+    app.querySelector('#demo').onclick = () => { ejemplos = DEMO.map(([t, g]) => ({ t, g })); dibujar(); };
+    app.querySelector('#probar').onclick = () => {
+      const frase = app.querySelector('#prueba').value;
+      if ([0, 1].some(g => ejemplos.filter(e => e.g === g).length < 3)) { res.className = 'aviso mal'; res.textContent = '🤔 Necesito al menos 3 ejemplos de cada tipo para aprender.'; return; }
+      const { prob, claves } = predecir(ejemplos, frase);
+      res.className = 'aviso';
+      if (!claves.length) { res.innerHTML = '🤷 No conozco ninguna de esas palabras. ¡Enseñame más ejemplos! (Las IAs necesitan muchos datos.)'; return; }
+      res.innerHTML = `<div class="prob">😀 <div style="width:${Math.round(prob[0] * 70)}%"></div> ${Math.round(prob[0] * 100)}%</div>
+        <div class="prob">😢 <div style="width:${Math.round(prob[1] * 70)}%"></div> ${Math.round(prob[1] * 100)}%</div>
+        <p>Me fijé en: ${claves.map(([w, g]) => `<strong>${esc(w)}</strong> ${g ? '😢' : '😀'}`).join(', ')}</p>
+        <p class="suave">Si se equivocó, enseñale más ejemplos con esas palabras y probá de nuevo.</p>`;
+      logro('entrenar');
+    };
+  } else if (id === 'palabras') {
+    app.innerHTML = marco(`<div class="grande">✍️</div>
+      <p class="texto">La máquina lee un texto y aprende qué palabra suele venir después de cada palabra.</p>
+      <textarea id="texto" rows="5" aria-label="Texto para aprender">${CUENTO}</textarea>
+      <p class="suave">Podés borrar el cuento y pegar un texto tuyo: un resumen de clase, una canción, una poesía.</p>
+      <input type="text" id="inicio" value="el" aria-label="Palabra para empezar">
+      <div class="fila"><button class="opcion" id="sigue">🔮 ¿Qué sigue?</button><button class="opcion" id="sola">✍️ Que escriba sola</button></div>
+      <div id="resultado" class="aviso" aria-live="polite"></div>`);
+    const res = app.querySelector('#resultado');
+    const datos = () => [aprenderTexto(app.querySelector('#texto').value), palabrasDe(app.querySelector('#inicio').value, 1)[0] || ''];
+    app.querySelector('#sigue').onclick = () => {
+      const [sig, w] = datos(), ops = siguientes(sig, w).slice(0, 4), tot = ops.reduce((s, [, c]) => s + c, 0);
+      res.className = 'aviso';
+      res.innerHTML = ops.length ? `Después de "<strong>${esc(w)}</strong>" vi:` + ops.map(([x, c]) => `<div class="prob">${esc(x)} <div style="width:${Math.round(c / tot * 60)}%"></div> ${c} ${c === 1 ? 'vez' : 'veces'}</div>`).join('')
+        : `🤷 "${esc(w)}" no aparece en el texto (o es la última palabra). ¡Probá otra!`;
+    };
+    app.querySelector('#sola').onclick = () => {
+      const [sig, w] = datos();
+      res.className = 'aviso';
+      res.innerHTML = siguientes(sig, w).length ? `📝 ${esc(escribirSola(sig, w))}...<p class="suave">Tocá de nuevo: cada vez sale distinto. Un chatbot hace esto mismo, pero aprendió de millones de textos.</p>`
+        : `🤷 "${esc(w)}" no aparece en el texto. ¡Probá otra palabra!`;
+      logro('palabras');
+    };
+  } else {
+    let nivel = 0, prog = [];
+    const pintar = (pos = null) => {
+      const mapa = NIVELES[nivel];
+      const [rr, rc] = pos || [mapa.findIndex(f => f.includes('R')), mapa[mapa.findIndex(f => f.includes('R'))].indexOf('R')];
+      app.querySelector('.grilla').innerHTML = mapa.flatMap((f, r) => [...f].map((x, c) => `<div class="celda">${r === rr && c === rc ? '🤖' : x === '#' ? '🧱' : x === 'E' ? '⭐' : ''}</div>`)).join('');
+      app.querySelector('.programa').textContent = prog.join('') || 'Tu programa aparece acá';
+    };
+    const armar = () => {
+      app.innerHTML = marco(`<p class="texto">Nivel ${nivel + 1} de ${NIVELES.length}: llevá al robot hasta la ⭐ sin chocar 🧱</p>
+        <div class="grilla"></div>
+        <div class="fila">${Object.keys(DIR).map(d => `<button class="opcion" data-d="${d}" aria-label="Agregar paso">${d}</button>`).join('')}</div>
+        <p class="programa"></p>
+        <div class="fila"><button class="opcion" id="borrar">🗑️ Borrar</button><button class="boton" id="correr">▶️ Ejecutar</button></div>
+        <div id="resultado" class="aviso" aria-live="polite"></div>`);
+      const res = app.querySelector('#resultado');
+      app.querySelectorAll('[data-d]').forEach(b => b.onclick = () => { prog.push(b.dataset.d); pintar(); });
+      app.querySelector('#borrar').onclick = () => { prog = []; res.textContent = ''; pintar(); };
+      app.querySelector('#correr').onclick = () => {
+        clearInterval(corriendo);
+        const { camino, fin } = correrRobot(NIVELES[nivel], prog);
+        let k = 0;
+        corriendo = setInterval(() => {
+          pintar(camino[k++]);
+          if (k < camino.length) return;
+          clearInterval(corriendo);
+          if (fin === 'estrella') {
+            res.className = 'aviso bien';
+            res.innerHTML = `🎉 ¡Llegaste en ${camino.length - 1} pasos! ` + (nivel + 1 < NIVELES.length ? '<button class="boton" id="otro">Siguiente nivel →</button>' : '🏆 ¡Sos programador!');
+            if (nivel + 1 === NIVELES.length) logro('robot');
+            app.querySelector('#otro')?.addEventListener('click', () => { nivel++; prog = []; armar(); });
+          } else {
+            res.className = 'aviso mal';
+            res.textContent = fin === 'choque' ? `💥 ¡Choque en el paso ${camino.length}! Borrá y probá otro camino.` : '🤔 El robot se quedó sin pasos antes de llegar. ¡Agregá más!';
+          }
+        }, 350);
+      };
+      pintar();
+    };
+    armar();
+  }
+  scrollTo(0, 0);
+}
+
 function rutear() {
   window.speechSynthesis?.cancel();
+  clearInterval(corriendo);
+  if (location.hash.startsWith('#/taller/')) return taller(location.hash.slice(9));
   const i = Number(location.hash.slice(2));
   if (location.hash.length > 2 && MISIONES[i]) mision(i); else inicio();
 }
