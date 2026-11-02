@@ -1,6 +1,7 @@
 // Glosario: términos clave con definición corta y el módulo donde se explican. Lo amplía /mejorar.
 // Validar con: node tools/validar.js
 window.GLOSARIO = [
+  { t: 'AI Act (UE)', d: 'Regulación europea de IA que clasifica los sistemas por riesgo (prohibido, alto, limitado, mínimo) y asigna obligaciones según el rol: proveedor o implementador.', m: 'seguridad' },
   { t: 'Acumulación de gradientes', d: 'Sumar los gradientes de varios micro-batches antes de actualizar los pesos, para simular un batch más grande del que entra en memoria.', m: 'deep-learning' },
   { t: 'AdamW', d: 'Optimizador Adam con weight decay desacoplado. Es el estándar para entrenar Transformers.', m: 'deep-learning' },
   { t: 'Aprendizaje contrastivo', d: 'Entrenamiento que acerca en el espacio vectorial los pares que van juntos y aleja los que no. Así se entrenan los modelos de embeddings y CLIP.', m: 'deep-learning' },

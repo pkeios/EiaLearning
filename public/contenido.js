@@ -1975,6 +1975,7 @@ def responder(pregunta, usuario):
     'Usar patrones de diseño (plan-then-execute, dual LLM, map-reduce) que resisten prompt injection por construcción',
     'Proteger la cadena de suministro: modelos descargados, dependencias y servidores MCP',
     'Planificar y automatizar red teaming de una app con LLMs, midiendo la tasa de éxito de ataques por categoría',
+    'Ubicar un sistema de IA en las categorías de riesgo del AI Act europeo y conocer las obligaciones según tu rol',
   ],
   lecciones: [
     { titulo: 'Ataques a sistemas con LLMs', html: `
@@ -2065,6 +2066,24 @@ def ataque_exitoso(cat, respuesta):
 
 tasas = tasa_por_categoria([(a["cat"], ataque_exitoso(a["cat"], sistema(a))) for a in ATAQUES])</code></pre>
       <p>Herramientas como garak (NVIDIA) o el módulo de red teaming de promptfoo generan y corren cientos de ataques automáticamente. Usalas para ampliar la cobertura, sin reemplazar los ataques pensados para tu caso concreto.</p>` },
+    { titulo: 'Regulación en la práctica: el AI Act europeo para quien construye', html: `
+      <p>El AI Act de la Unión Europea es la regulación de IA más completa hasta ahora, y te alcanza aunque tu empresa esté fuera de Europa si tu sistema se usa en el mercado europeo. No es asesoramiento legal, pero conviene saber ubicar tu proyecto. Clasifica los sistemas por <strong>nivel de riesgo</strong>:</p>
+      <ul>
+        <li><strong>Riesgo inaceptable (prohibido):</strong> por ejemplo, la puntuación social que lleva a un trato perjudicial, explotar vulnerabilidades por edad o discapacidad, inferir emociones en el trabajo o la escuela (con excepciones médicas o de seguridad), o armar bases de reconocimiento facial con imágenes recolectadas indiscriminadamente.</li>
+        <li><strong>Alto riesgo:</strong> ahí están la mayoría de las obligaciones. Incluye áreas como empleo (filtrar CVs, evaluar desempeño), educación (admisiones, calificaciones), acceso a servicios esenciales (crédito, seguros de salud) e infraestructura crítica.</li>
+        <li><strong>Riesgo limitado (transparencia):</strong> la gente tiene que saber que está hablando con una IA, como en un chatbot, y los deepfakes tienen que estar identificados.</li>
+        <li><strong>Riesgo mínimo:</strong> sin obligaciones específicas, como un recomendador de películas o un filtro de spam.</li>
+      </ul>
+      <p><strong>Los roles importan.</strong> El <em>proveedor</em>, quien desarrolla el sistema y lo pone en el mercado, carga con la mayoría de las obligaciones. El <em>implementador</em>, la organización que lo usa profesionalmente, tiene menos. Las obligaciones de <strong>modelos de propósito general</strong> (documentación técnica, información para quienes los integran, derechos de autor y, para los de riesgo sistémico, evaluaciones y pruebas adversariales) recaen en quien desarrolla el modelo base, no en quien lo integra en su app.</p>
+      <p><strong>Fechas clave</strong> según el resumen del sitio de referencia: las prohibiciones aplican desde febrero de 2025, las obligaciones de modelos de propósito general desde agosto de 2025, las de transparencia desde agosto de 2026, y las de alto riesgo del Anexo III desde el 2 de diciembre de 2027. El calendario ya tuvo ajustes, así que verificá la versión vigente.</p>
+      <pre><code>Caso: filtro de CVs para selección de personal
+Categoría: alto riesgo (empleo)
+Mi rol: proveedor (lo desarrollo y lo vendo)
+A revisar: gestión de riesgos, calidad de datos, registros, supervisión humana,
+           documentación técnica, información para quien lo usa
+Transparencia: avisar a los candidatos que interviene una IA
+Fecha clave: obligaciones de alto riesgo (Anexo III) desde el 2 de diciembre de 2027</code></pre>
+      <p>Muchas de estas obligaciones son buenas prácticas que ya viste en el curso: evals, registros, supervisión humana y red teaming. Construir así desde el principio hace el cumplimiento mucho más barato. Y revisá también la regulación de tu país y de tu sector.</p>` },
   ],
   practica: [
     'Construí un agente que resume páginas web y probá atacarlo con prompt injection indirecta escondida en una página tuya. Después implementá defensas y medí cuántos ataques siguen funcionando.',
@@ -2072,6 +2091,7 @@ tasas = tasa_por_categoria([(a["cat"], ataque_exitoso(a["cat"], sistema(a))) for
     'Rediseñá el agente que resume páginas web con el patrón dual LLM y un plan fijo. Repetí los mismos ataques de prompt injection de la primera práctica y anotá cuántos siguen teniendo efecto y qué funcionalidad perdiste.',
     'Auditá tu entorno: listá los servidores MCP que tenés configurados con su comando exacto y su origen, los modelos descargados y su formato (convertí a safetensors lo que puedas) y las dependencias sin versión fija. Anotá qué permisos tiene cada cosa y cuáles sobran.',
     'Armá un catálogo de 30 ataques en 5 categorías contra tu app, incluyendo inyección indirecta y exfiltración por Markdown. Medí la tasa de éxito por categoría, aplicá defensas, volvé a medir y dejá los ataques como tests en CI.',
+    'Tomá dos proyectos (un chatbot de atención y un filtro de CVs) y completá para cada uno la ficha: categoría de riesgo, tu rol, obligaciones a revisar y fechas clave, citando la sección del resumen oficial que lo respalda.',
   ],
   recursos: [
     { t: 'OWASP GenAI Security Project (Top 10 para LLMs)', url: 'https://genai.owasp.org/' },
@@ -2079,6 +2099,7 @@ tasas = tasa_por_categoria([(a["cat"], ataque_exitoso(a["cat"], sistema(a))) for
     { t: 'EU AI Act — explorador del texto', url: 'https://artificialintelligenceact.eu/' },
     { t: 'Design Patterns for Securing LLM Agents against Prompt Injections (paper)', url: 'https://arxiv.org/abs/2506.08837' },
     { t: 'CaMeL — Defeating Prompt Injections by Design (paper)', url: 'https://arxiv.org/abs/2503.18813' },
+    { t: 'EU AI Act — Resumen de alto nivel', url: 'https://artificialintelligenceact.eu/high-level-summary/' },
     { t: 'garak — escáner de vulnerabilidades de LLMs (NVIDIA)', url: 'https://github.com/NVIDIA/garak' },
     { t: 'promptfoo — Red teaming de aplicaciones LLM', url: 'https://www.promptfoo.dev/docs/red-team/' },
     { t: 'MCP — Security best practices', url: 'https://modelcontextprotocol.io/docs/draft/tutorials/security/security_best_practices' },
@@ -2108,6 +2129,11 @@ tasas = tasa_por_categoria([(a["cat"], ataque_exitoso(a["cat"], sistema(a))) for
     { q: '¿Dónde conviene correr los ataques de red teaming?', opciones: ['Contra el modelo solo, sin herramientas', 'En un chat de prueba sin guardrails', 'En un entorno parecido a producción, con las mismas herramientas, recuperación y guardrails', 'En producción, con usuarios reales'], correcta: 2, explicacion: 'Las vulnerabilidades suelen estar en cómo se combinan el modelo, las herramientas y los datos. En producción, en cambio, arriesgás a usuarios reales.' },
     { q: 'Encontraste 12 ataques que funcionaban y los arreglaste. ¿Qué hacés después?', opciones: ['Borrás esos casos', 'Los guardás en un documento', 'Asumís que el sistema ya es seguro', 'Los convertís en tests de regresión en CI y seguís sumando ataques nuevos'], correcta: 3, explicacion: 'Un cambio futuro de prompt o de modelo puede reabrir la puerta. Los tests en CI lo detectan, y los ataques nuevos cubren lo que todavía no probaste.' },
     { q: '¿Qué métrica te sirve para seguir el progreso de tus defensas?', opciones: ['La tasa de éxito de ataques por categoría, sobre el mismo conjunto antes y después de cada cambio', 'La cantidad de palabras del system prompt', 'La latencia media', 'La cantidad de usuarios'], correcta: 0, explicacion: 'Medir por categoría muestra dónde estás débil, y usar el mismo conjunto permite comparar versiones de forma justa.' },
+    { q: 'Lanzás un chatbot de atención al cliente usado en la Unión Europea. ¿Cuál es la obligación principal según el AI Act?', opciones: ['Ninguna', 'Transparencia: las personas tienen que saber que están hablando con una IA', 'Una certificación completa de alto riesgo', 'Está prohibido'], correcta: 1, explicacion: 'Un chatbot de atención cae en riesgo limitado: la obligación central es avisar que es una IA. No está prohibido ni es de alto riesgo por sí mismo.' },
+    { q: 'Construís un sistema que filtra CVs para decidir a quién entrevistar. ¿En qué categoría cae?', opciones: ['Riesgo mínimo', 'Prohibido', 'Alto riesgo (empleo), con obligaciones como supervisión humana, registros y documentación', 'Fuera de la regulación'], correcta: 2, explicacion: 'Las decisiones de empleo están entre las áreas de alto riesgo, porque afectan las oportunidades de las personas.' },
+    { q: '¿Cuál de estas prácticas está prohibida por el AI Act?', opciones: ['Recomendar películas', 'Un chatbot que avisa que es una IA', 'Clasificar tickets de soporte', 'Una puntuación social que lleve a un trato perjudicial para las personas'], correcta: 3, explicacion: 'La puntuación social con efectos perjudiciales está entre los usos de riesgo inaceptable. Las demás opciones son de riesgo mínimo o limitado.' },
+    { q: 'Integrás el modelo de un proveedor en tu app de recursos humanos. ¿Te aplican a vos las obligaciones de modelos de propósito general?', opciones: ['Sí, todas', 'Principalmente no: son de quien desarrolla el modelo; a vos te aplican las de tu sistema según su riesgo y tu rol', 'Nunca tenés ninguna obligación', 'Solo si el modelo es open source'], correcta: 1, explicacion: 'El AI Act separa al proveedor del modelo base del proveedor del sistema que lo usa. Tu app de RR. HH. tiene sus propias obligaciones, probablemente de alto riesgo.' },
+    { q: 'Tu empresa está en Argentina y vende su producto de IA a clientes en la Unión Europea. ¿Te aplica el AI Act?', opciones: ['No, solo a empresas europeas', 'Solo si tenés una oficina en Europa', 'Sí: aplica a los sistemas que se ponen en el mercado europeo aunque el proveedor esté afuera; conviene asesoramiento legal', 'Nunca'], correcta: 2, explicacion: 'Lo que cuenta es dónde se usa el sistema, no dónde está la empresa. Para el detalle de tu caso, hace falta asesoramiento legal.' },
   ],
 },
 {
