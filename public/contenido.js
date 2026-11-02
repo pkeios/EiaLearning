@@ -1012,6 +1012,7 @@ for perfil, intencion, dificultad in random.sample(tuplas, 15):
     'Entender SFT, DPO, LoRA y QLoRA',
     'Correr y cuantizar modelos abiertos localmente',
     'Entender qué limita el servicio de LLMs: KV cache, GQA, batching continuo y PagedAttention',
+    'Preparar datos de fine-tuning de calidad y evaluar el resultado contra la línea base y el olvido catastrófico',
   ],
   lecciones: [
     { titulo: '¿Cuándo hacer fine-tuning?', html: `
@@ -1044,17 +1045,47 @@ Ejemplo, modelo tipo Llama 3 8B: 32 capas, 8 cabezas KV, dim 128, fp16 (2 bytes)
       <p><strong>Batching continuo:</strong> con batching estático, el lote espera a que termine la respuesta más larga y las cortas quedan bloqueadas. Con batching continuo, las secuencias entran y salen del lote en cada paso: la GPU siempre está ocupada y el throughput sube mucho.</p>
       <p><strong>PagedAttention (vLLM):</strong> reservar memoria contigua para el contexto máximo de cada pedido desperdicia la mayor parte. vLLM guarda el KV cache en bloques chicos, como las páginas de memoria de un sistema operativo, y así entran muchos más pedidos simultáneos en la misma GPU.</p>
       <p><strong>Métricas que importan:</strong> tiempo hasta el primer token (TTFT), tokens por segundo por usuario, throughput total del servidor y costo por millón de tokens. Más usuarios simultáneos suben el throughput pero empeoran la latencia de cada uno: hay que elegir el punto según tu producto.</p>` },
+    { titulo: 'Datos para fine-tuning: calidad, formato y las trampas', html: `
+      <p>En fine-tuning, el resultado depende más de los datos que de los hiperparámetros.</p>
+      <p><strong>Calidad antes que cantidad.</strong> El paper LIMA (2023) afinó un modelo grande con solo unos 1.000 ejemplos muy cuidados y obtuvo resultados competitivos. Su hipótesis: el conocimiento viene del pre-training, y el ajuste enseña sobre todo el formato y el estilo de respuesta. Cien ejemplos consistentes valen más que diez mil contradictorios.</p>
+      <p><strong>Cómo armar el dataset:</strong></p>
+      <ul>
+        <li>Que sea <strong>consistente</strong>: el mismo estilo y criterio en todos los ejemplos.</li>
+        <li>Que cubra la <strong>distribución real</strong> de entradas, casos difíciles incluidos.</li>
+        <li><strong>Separá el test al principio</strong> y verificá que no queden ejemplos duplicados o casi idénticos entre train y test.</li>
+        <li>Sacá los datos personales. Si generás respuestas con un modelo más grande (destilación), revisá los términos de uso del proveedor.</li>
+      </ul>
+      <p><strong>El formato exacto importa.</strong> Cada modelo de chat espera una plantilla con sus tokens especiales para separar roles. Si entrenás con un formato inventado, el modelo se degrada. Usá la plantilla del tokenizador para entrenar y para inferir:</p>
+      <pre><code>from transformers import AutoTokenizer
+
+tok = AutoTokenizer.from_pretrained("tu-modelo-base-instruct")
+ejemplo = [
+    {"role": "system", "content": "Clasificá el ticket. Respondé solo la categoría."},
+    {"role": "user", "content": "No me llegó la factura de octubre"},
+    {"role": "assistant", "content": "facturacion"},
+]
+texto = tok.apply_chat_template(ejemplo, tokenize=False)   # el formato que el modelo espera</code></pre>
+      <p>Librerías como TRL permiten además calcular la loss <strong>solo sobre las respuestas del asistente</strong>, para que el modelo aprenda a responder y no a repetir los prompts.</p>
+      <p><strong>Las dos trampas más comunes:</strong></p>
+      <ul>
+        <li><strong>Olvido catastrófico:</strong> al especializarse, el modelo puede perder capacidades generales que antes tenía. Evaluá también tareas generales, no solo la tuya; LoRA y mezclar algo de datos generales ayudan.</li>
+        <li><strong>No comparar contra la línea base:</strong> el fine-tuning se justifica solo si supera al modelo base con un buen prompt y few-shot, medido con las mismas evals.</li>
+      </ul>` },
   ],
   practica: [
     'Instalá Ollama, corré un modelo abierto de 7-8B y compará calidad y velocidad en 4 bits vs 8 bits con 10 prompts tuyos.',
     'Hacé fine-tuning con LoRA (Hugging Face PEFT o Unsloth) de un modelo chico para una tarea de clasificación, y comparalo con few-shot prompting usando tus evals.',
     'Serví un modelo chico con vLLM y medí TTFT, tokens por segundo por usuario y throughput total con 1, 8 y 32 usuarios simultáneos. Calculá a mano la memoria de KV cache esperada y comparala con lo que reporta vLLM.',
+    'Armá 300 ejemplos curados para una tarea y separá 50 de test sin duplicados. Afiná con LoRA usando la plantilla de chat del modelo y comparalo contra el modelo base con few-shot. Medí también 20 tareas generales antes y después para detectar olvido catastrófico.',
   ],
   recursos: [
     { t: 'LoRA (paper)', url: 'https://arxiv.org/abs/2106.09685' },
     { t: 'QLoRA (paper)', url: 'https://arxiv.org/abs/2305.14314' },
     { t: 'Hugging Face PEFT', url: 'https://huggingface.co/docs/peft' },
     { t: 'Ollama', url: 'https://ollama.com/' },
+    { t: 'LIMA: Less Is More for Alignment (paper)', url: 'https://arxiv.org/abs/2305.11206' },
+    { t: 'Hugging Face — Plantillas de chat', url: 'https://huggingface.co/docs/transformers/main/en/chat_templating' },
+    { t: 'Hugging Face TRL — SFT Trainer', url: 'https://huggingface.co/docs/trl/sft_trainer' },
     { t: 'PagedAttention / vLLM (paper)', url: 'https://arxiv.org/abs/2309.06180' },
     { t: 'Documentación de vLLM', url: 'https://docs.vllm.ai/en/latest/' },
     { t: 'GQA: Grouped-Query Attention (paper)', url: 'https://arxiv.org/abs/2305.13245' },
@@ -1071,6 +1102,11 @@ Ejemplo, modelo tipo Llama 3 8B: 32 capas, 8 cabezas KV, dim 128, fp16 (2 bytes)
     { q: 'Tu servidor usa batching estático y las respuestas cortas tardan tanto como las largas. ¿Qué cambiás?', opciones: ['Agrandás el lote', 'Subís la temperatura', 'Pasás a batching continuo: las secuencias entran y salen del lote en cada paso', 'Desactivás el KV cache'], correcta: 2, explicacion: 'Con lotes estáticos todo espera a la secuencia más larga. Agrandar el lote empeora la espera, y sin KV cache todo se vuelve más lento.' },
     { q: '¿Qué problema resuelve PagedAttention en vLLM?', opciones: ['La precisión del modelo', 'La tokenización', 'El entrenamiento distribuido', 'El desperdicio de memoria del KV cache, guardándolo en bloques como páginas de memoria'], correcta: 3, explicacion: 'Reservar memoria contigua para el contexto máximo de cada pedido deja mucho espacio sin usar. Con bloques, entran más pedidos simultáneos en la misma GPU.' },
     { q: '¿Por qué GQA (grouped-query attention) es importante al servir un modelo?', opciones: ['Porque mejora la tokenización', 'Porque reduce el KV cache al compartir keys y values entre varias cabezas de query, y entran más usuarios simultáneos', 'Porque elimina la necesidad de GPU', 'Porque aumenta la cantidad de parámetros'], correcta: 1, explicacion: 'Con 8 cabezas KV en lugar de 32, el KV cache se divide por 4. En servicio, la memoria del KV cache suele ser el límite de cuántos usuarios atendés a la vez.' },
+    { q: '¿Qué mostró el paper LIMA sobre el fine-tuning?', opciones: ['Que unos 1.000 ejemplos muy cuidados pueden lograr un ajuste competitivo: la calidad pesa más que la cantidad', 'Que hacen falta millones de ejemplos', 'Que el fine-tuning agrega grandes cantidades de conocimiento nuevo', 'Que el fine-tuning no sirve'], correcta: 0, explicacion: 'Su hipótesis es que el conocimiento viene del pre-training y el ajuste enseña sobre todo formato y estilo. Por eso unos pocos ejemplos consistentes alcanzan.' },
+    { q: 'Afinaste un modelo con un formato de prompt que inventaste y ahora responde de forma rara. ¿Causa más probable?', opciones: ['Pocos datos', 'Learning rate demasiado bajo', 'No usaste la plantilla de chat del modelo: hay que entrenar e inferir con apply_chat_template', 'La GPU es chica'], correcta: 2, explicacion: 'Cada modelo de chat espera sus tokens especiales para separar roles. Con otro formato, el entrenamiento le enseña algo que choca con lo que ya sabía.' },
+    { q: 'Después de afinar el modelo para clasificar tickets, empeoró redactando emails, algo que antes hacía bien. ¿Qué pasó?', opciones: ['Overfitting en los datos de test', 'Alucinación', 'Data leakage', 'Olvido catastrófico: evaluás también capacidades generales y probás con LoRA o mezclando datos generales'], correcta: 3, explicacion: 'Al especializarse, el modelo puede perder lo que no practicó. Si solo medís tu tarea, no lo ves.' },
+    { q: 'Antes de concluir que el fine-tuning valió la pena, ¿contra qué lo comparás?', opciones: ['Contra el modelo base con un buen prompt y few-shot, usando las mismas evals', 'Contra nada: si mejoró, mejoró', 'Contra un benchmark público', 'Contra el modelo antes del pre-training'], correcta: 0, explicacion: 'El fine-tuning cuesta datos, entrenamiento y mantenimiento. Solo se justifica si supera a la alternativa barata en tu tarea.' },
+    { q: 'Armaste un dataset de 5.000 ejemplos para fine-tuning. ¿Cuándo separás el conjunto de test?', opciones: ['Después de entrenar', 'Nunca, usás todo para entrenar', 'Al principio, verificando que no haya ejemplos duplicados o casi idénticos entre train y test', 'Solo si sobra tiempo'], correcta: 2, explicacion: 'Si un ejemplo casi idéntico está en train y en test, la evaluación mide memoria y no generalización: es data leakage.' },
   ],
 },
 {
