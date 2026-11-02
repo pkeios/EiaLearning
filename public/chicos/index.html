@@ -268,6 +268,7 @@ const NIVELES = [
   ['R#...', '.#.#.', '.#.#.', '...#E', '###..'],
 ];
 let corriendo = null; // animación del robot: se corta al cambiar de página
+const NOMBRE_DIR = { '⬆️': 'arriba', '⬇️': 'abajo', '⬅️': 'izquierda', '➡️': 'derecha' };
 const DIR = { '⬆️': [-1, 0], '⬇️': [1, 0], '⬅️': [0, -1], '➡️': [0, 1] };
 function correrRobot(mapa, prog) {
   let r = mapa.findIndex(f => f.includes('R')), c = mapa[r].indexOf('R');
@@ -290,6 +291,7 @@ const MENSAJE = [
 // Sesgo: la IA "dibuja" copiando la proporción de sus ejemplos. Se arregla con datos más variados.
 const SESGO_INICIO = ['👨‍🔬', '👨‍🔬', '👨‍🔬', '👨‍🔬', '👨‍🔬', '👩‍🔬'];
 const SESGO_AGREGAR = ['👩‍🔬', '👩🏽‍🔬', '👩🏿‍🔬', '👨🏾‍🔬'];
+const NOMBRE_SESGO = ['una científica', 'una científica de piel morena', 'una científica de piel oscura', 'un científico de piel morena'];
 const dibujarIA = (datos, n = 5) => Array.from({ length: n }, (_, i) => datos[Math.floor((i + 0.5) * datos.length / n)]);
 const masComun = datos => Math.max(...datos.map(x => datos.filter(y => y === x).length)) / datos.length;
 // Sé la máquina: descubrir una regla secreta mirando ejemplos, como hace la IA.
@@ -388,7 +390,7 @@ function montarTaller(id, cont, alLograr) {
       <p class="texto">Le pedimos: "dibujá 5 científicos" 👇</p>
       <p class="programa" id="dibujo"></p>
       <p class="texto">¿Es justo? Agregá ejemplos variados:</p>
-      <div class="fila">${SESGO_AGREGAR.map(e => `<button class="opcion" data-e="${e}" aria-label="Agregar ejemplo">+ ${e}</button>`).join('')}</div>
+      <div class="fila">${SESGO_AGREGAR.map((e, k) => `<button class="opcion" data-e="${e}" aria-label="Agregar ${NOMBRE_SESGO[k]}">+ ${e}</button>`).join('')}</div>
       <div id="resultado" class="aviso" aria-live="polite"></div>`);
     const res = cont.querySelector('#resultado');
     const pintar = () => {
@@ -442,7 +444,7 @@ function montarTaller(id, cont, alLograr) {
     const armar = () => {
       cont.innerHTML = (`<p class="texto">Nivel ${nivel + 1} de ${NIVELES.length}: llevá al robot hasta la ⭐ sin chocar 🧱</p>
         <div class="grilla"></div>
-        <div class="fila">${Object.keys(DIR).map(d => `<button class="opcion" data-d="${d}" aria-label="Agregar paso">${d}</button>`).join('')}</div>
+        <div class="fila">${Object.keys(DIR).map(d => `<button class="opcion" data-d="${d}" aria-label="Agregar paso hacia ${NOMBRE_DIR[d]}">${d}</button>`).join('')}</div>
         <p class="programa"></p>
         <div class="fila"><button class="opcion" id="borrar">🗑️ Borrar</button><button class="boton" id="correr">▶️ Ejecutar</button></div>
         <div id="resultado" class="aviso" aria-live="polite"></div>`);

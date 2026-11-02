@@ -22,7 +22,7 @@ assert(!/https?:\/\/(?!atacante)/.test(h), 'no tiene que haber links a sitios ex
 
 // Taller: solo las funciones puras (sin tocar el DOM).
 const taller = js.split('// ---------- Taller')[1].split('function taller(')[0].replace(/^[^\n]*\n/, '');
-const X = new Function(js.split('const app =')[0] + taller + ';return { REGLAS, OTRAS_F, SESGO_INICIO, SESGO_AGREGAR, dibujarIA, masComun, MENSAJE, predecir, aprenderTexto, siguientes, escribirSola, correrRobot, NIVELES, DEMO, palabrasDe }')();
+const X = new Function(js.split('const app =')[0] + taller + ';return { NOMBRE_DIR, DIR, NOMBRE_SESGO, REGLAS, OTRAS_F, SESGO_INICIO, SESGO_AGREGAR, dibujarIA, masComun, MENSAJE, predecir, aprenderTexto, siguientes, escribirSola, correrRobot, NIVELES, DEMO, palabrasDe }')();
 
 const ej = X.DEMO.map(([t, g]) => ({ t, g }));
 assert(X.predecir(ej, 'gané la prueba').prob[0] > 0.5);
@@ -52,4 +52,8 @@ X.REGLAS.forEach(R => R.otras.forEach(o => {
   assert(X.OTRAS_F[o], 'regla sin función: ' + o);
   assert(R.ejemplos.some(n => X.OTRAS_F[o](n) !== R.f(n)), `"${o}" no se distingue de "${R.ok}" con los ejemplos`);
 }));
+// Accesibilidad: cada botón con emoji tiene un nombre distinto para lectores de pantalla.
+assert.deepStrictEqual(Object.keys(X.NOMBRE_DIR), Object.keys(X.DIR));
+assert.equal(X.NOMBRE_SESGO.length, X.SESGO_AGREGAR.length);
+assert(!/aria-label="Agregar (paso|ejemplo)"/.test(h), 'etiqueta repetida para botones distintos');
 console.log('test-chicos OK');
