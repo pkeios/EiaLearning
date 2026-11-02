@@ -484,8 +484,14 @@ function quiz(titulo, preguntas, alTerminar, vacio = 'No hay preguntas pendiente
       <p><strong>${bien} de ${preguntas.length} correctas.</strong> ${pct >= APROBADO ? '¡Aprobado! 🎉' : 'Leé las explicaciones de arriba y volvé a intentarlo.'}</p>
       ${fallas.length ? `<p><strong>Para repasar:</strong></p><div class="repasar">${modulosAFallas(fallas).map(([m, n]) =>
         `<a class="boton secundario" href="#/m/${m.id}">${icono(m)} ${esc(m.titulo)} (${n} ${n === 1 ? 'fallada' : 'falladas'})</a>`).join('')}</div>` : ''}
-      <button onclick="render()">↻ Reintentar</button> <a class="boton secundario" href="#/">Volver al temario</a>
+      ${fallas.length && bien ? '<button id="solo-falladas" class="secundario">👁 Ver solo las falladas</button> ' : ''}<button onclick="render()">↻ Reintentar</button> <a class="boton secundario" href="#/">Volver al temario</a>
     </section>`;
+    const filtro = res.querySelector('#solo-falladas');
+    if (filtro) filtro.onclick = () => {
+      const solo = form.classList.toggle('solo-falladas');
+      filtro.textContent = solo ? '👁 Ver todas las preguntas' : '👁 Ver solo las falladas';
+      form.scrollIntoView({ behavior: 'smooth' });
+    };
     res.scrollIntoView({ behavior: 'smooth' });
   };
   if (segundos && preguntas.length) {
