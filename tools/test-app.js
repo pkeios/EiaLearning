@@ -4,12 +4,14 @@ const leer = f => fs.readFileSync(path.join(__dirname, '..', 'public', f), 'utf8
 const el = { querySelector: () => el, querySelectorAll: () => [], focus() {}, value: '', h: '', set innerHTML(v) { this.h = v; }, get innerHTML() { return this.h; } };
 const botonTema = {};
 let guardado = null;
-const ctx = { window: {}, document: { getElementById: id => id === 'tema' ? botonTema : el, documentElement: { dataset: { tema: 'oscuro' }, style: {} } }, localStorage: { getItem: () => guardado, setItem: (k, v) => { guardado = v; } }, location: { hash: '' }, addEventListener() {}, scrollTo() {}, Date, URL, setInterval: () => 1, clearInterval() {} };
+const ctx = { window: {}, document: { getElementById: id => id === 'tema' ? botonTema : el, documentElement: { dataset: { tema: 'oscuro' }, style: {} } }, localStorage: { getItem: () => guardado, setItem: (k, v) => { guardado = v; } }, location: { hash: '', origin: 'https://ejemplo.dev', pathname: '/curso/' }, addEventListener() {}, scrollTo() {}, Date, URL, setInterval: () => 1, clearInterval() {}, Blob, Response, CompressionStream, DecompressionStream, btoa, atob };
 vm.createContext(ctx);
 vm.runInContext(leer('contenido.js'), ctx);
 vm.runInContext(leer('glosario.js'), ctx);
-vm.runInContext(leer('app.js') + ';this.X = { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos, avance, clavePractica, registrarExamen, planDeHoy, apuntesMarkdown, esCorrecta, preguntasDeNivel, preguntaObjetivo, cambiarLetra, novedades, marcarConocidas, iniciarNovedades, todasLasLecciones, trozosParaVoz, sumarMinuto, serieMinutos, minutosSemana, textoLogro };', ctx);
-const { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos, avance, clavePractica, registrarExamen, planDeHoy, apuntesMarkdown, esCorrecta, preguntasDeNivel, preguntaObjetivo, cambiarLetra, novedades, marcarConocidas, iniciarNovedades, todasLasLecciones, trozosParaVoz, sumarMinuto, serieMinutos, minutosSemana, textoLogro } = ctx.X;
+vm.runInContext(leer('vendor/qrcode.js') + ';this.qrcode = qrcode;', ctx);
+ctx.window.qrcode = ctx.qrcode;
+vm.runInContext(leer('app.js') + ';this.X = { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos, avance, clavePractica, registrarExamen, planDeHoy, apuntesMarkdown, esCorrecta, preguntasDeNivel, preguntaObjetivo, cambiarLetra, novedades, marcarConocidas, iniciarNovedades, todasLasLecciones, trozosParaVoz, sumarMinuto, serieMinutos, minutosSemana, textoLogro, empaquetar, desempaquetar, comprimir, descomprimir };', ctx);
+const { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos, avance, clavePractica, registrarExamen, planDeHoy, apuntesMarkdown, esCorrecta, preguntasDeNivel, preguntaObjetivo, cambiarLetra, novedades, marcarConocidas, iniciarNovedades, todasLasLecciones, trozosParaVoz, sumarMinuto, serieMinutos, minutosSemana, textoLogro, empaquetar, desempaquetar, comprimir, descomprimir } = ctx.X;
 const plano = o => JSON.parse(JSON.stringify(o));
 
 // Inicio renderiza con progreso vacío
@@ -279,4 +281,36 @@ assert.ok(el.h.includes('No tenés preguntas falladas'));
 const sw = leer('sw.js'), lista = JSON.parse(sw.match(/const ARCHIVOS = (\[[^\]]*\])/)[1].replace(/'/g, '"'));
 for (const archivo of lista.filter(x => x !== './')) assert.ok(fs.existsSync(path.join(__dirname, '..', 'public', archivo)), 'sw.js precarga un archivo que no existe: ' + archivo);
 
-console.log('test-app OK');
+// Pasar a otro dispositivo: ida y vuelta sin pérdidas, tamaño apto para QR y rechazo de enlaces inválidos
+const TP = ctx.window.TEMARIO, pesado = cargar();
+TP.forEach(m => {
+  m.lecciones.forEach((l, i) => { pesado.leidas[m.id + ':' + i] = true; pesado.conocidas[m.id + '|' + l.titulo] = true; });
+  m.practica.slice(0, 3).forEach(x => { pesado.practicas[m.id + '|' + x] = true; });
+  m.quiz.slice(0, 3).forEach(q => { pesado.falladas[m.id + '|' + q.q] = true; pesado.agenda[m.id + '|' + q.q] = { n: 1, d: '2026-12-01' }; });
+  pesado.notas[m.id] = 85; pesado.aciertos[m.id] = { ok: 20, total: 26 };
+});
+for (let i = 1; i <= 28; i++) { const d = '2026-10-' + String(i).padStart(2, '0'); pesado.dias[d] = 2; pesado.minutos[d] = 25; }
+pesado.apuntes[TP[0].id] = 'apunte del origen';
+const paquete = JSON.parse(JSON.stringify(empaquetar(pesado)));
+const traido = desempaquetar(paquete, { destino: 'apunte del destino' });
+for (const k of ['leidas', 'conocidas', 'practicas', 'falladas', 'agenda', 'notas', 'aciertos', 'minutos', 'dias']) {
+  assert.deepStrictEqual(plano(traido[k]), plano(pesado[k]), 'se perdió ' + k);
+}
+assert.deepStrictEqual(plano(traido.apuntes), { destino: 'apunte del destino' });
+assert.throws(() => desempaquetar({ v: 2 }));
+assert.equal(Object.keys(desempaquetar({ v: 1, l: { [TP[0].id]: [0, 999] }, f: { inventado: [[0, 1, '2026-01-01']] } }).leidas).length, 1);
+
+(async () => {
+  const datos = await comprimir(JSON.stringify(paquete));
+  const enlace = 'https://pkeios.github.io/EiaLearning/#/traer/' + datos;
+  assert.ok(enlace.length <= 1500, 'el enlace con mucho progreso mide ' + enlace.length + ' y no entra en un QR escaneable');
+  assert.deepStrictEqual(JSON.parse(await descomprimir(datos)), paquete);
+  guardado = null;
+  await vm.runInContext('pasarProgreso()', ctx);
+  assert.ok(el.h.includes('<svg') && el.h.includes('Copiar enlace'));
+  await vm.runInContext('traerProgreso(' + JSON.stringify(datos) + ')', ctx);
+  assert.ok(el.h.includes('Reemplazar mi progreso'));
+  await vm.runInContext('traerProgreso("no-es-un-enlace")', ctx);
+  assert.ok(el.h.includes('no es válido'));
+  console.log('test-app OK (enlace de prueba: ' + enlace.length + ' caracteres)');
+})().catch(e => { console.error(e); process.exit(1); });

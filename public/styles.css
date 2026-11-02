@@ -184,3 +184,7 @@ mark { background: rgba(250, 204, 21, .4); color: inherit; border-radius: 3px; p
   .icono.grande { width: 64px; height: 64px; font-size: 2.2rem; }
   .pasos { flex-direction: column; }
 }
+
+/* QR para pasar el progreso: fondo blanco siempre, para que la cámara lo lea también en modo oscuro */
+.qr { width: min(320px, 100%); margin: 1rem 0; padding: .5rem; background: #fff; border-radius: 12px; }
+.qr svg { display: block; width: 100%; height: auto; }

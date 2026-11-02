@@ -148,6 +148,7 @@ function inicio() {
         <a class="boton secundario" href="#/nivel">🎯 Quiz por nivel</a>
         <a class="boton secundario" href="#/progreso">📊 Progreso</a>
         ${p.examen >= APROBADO ? '<a class="boton secundario" href="#/certificado">🎓 Certificado</a>' : ''}
+        <a class="boton secundario" href="#/pasar">📲 Pasar a otro dispositivo</a>
         <button class="secundario" id="apuntes">📝 Descargar mis apuntes</button>
         <button class="secundario" id="exportar">⬇ Exportar progreso</button>
         <button class="secundario" id="importar">⬆ Importar progreso</button>
@@ -540,6 +541,95 @@ function elegirNivel() {
 
 // Una pregunta sin responder (null) nunca cuenta como acierto, aunque la correcta sea la opción 0.
 const esCorrecta = (elegida, q) => elegida !== null && Number(elegida) === q.correcta;
+// Pasar el progreso a otro dispositivo con un enlace o un QR.
+// Formato compacto: en lugar de los textos largos de preguntas y lecciones viajan sus posiciones dentro de cada módulo
+// (el contenido nuevo se agrega al final, así que las posiciones no cambian). Los apuntes no viajan y se conservan en el destino.
+const lista = x => (Array.isArray(x) ? x : []);
+const porModulo = f => Object.fromEntries(T.map(m => [m.id, f(m)]).filter(([, v]) => v.length));
+function empaquetar(p) {
+  return {
+    v: 1,
+    l: porModulo(m => m.lecciones.flatMap((_, i) => (p.leidas[m.id + ':' + i] ? [i] : []))),
+    c: porModulo(m => m.lecciones.flatMap((l, i) => (p.conocidas[claveLeccion(m, l)] ? [i] : []))),
+    pr: porModulo(m => m.practica.flatMap((x, i) => (p.practicas[clavePractica(m, x)] ? [i] : []))),
+    f: porModulo(m => m.quiz.flatMap((q, i) => {
+      const k = m.id + '|' + q.q;
+      return p.falladas[k] ? [[i, p.agenda[k]?.n ?? 0, p.agenda[k]?.d ?? '']] : [];
+    })),
+    t: p.tarjetas, no: p.notas, a: p.aciertos, di: p.dias, mi: p.minutos,
+    me: p.metaSemanal, ex: p.examen, ef: p.examenFecha, nom: p.nombre,
+  };
+}
+function desempaquetar(d, apuntes = {}) {
+  if (!d || d.v !== 1) throw new Error('formato desconocido');
+  const p = { leidas: {}, conocidas: {}, practicas: {}, falladas: {}, agenda: {}, apuntes,
+    tarjetas: d.t, notas: d.no, aciertos: d.a, dias: d.di, minutos: d.mi,
+    metaSemanal: d.me, examen: d.ex, examenFecha: d.ef, nombre: d.nom };
+  for (const m of T) {
+    lista(d.l?.[m.id]).forEach(i => { if (m.lecciones[i]) p.leidas[m.id + ':' + i] = true; });
+    lista(d.c?.[m.id]).forEach(i => { if (m.lecciones[i]) p.conocidas[claveLeccion(m, m.lecciones[i])] = true; });
+    lista(d.pr?.[m.id]).forEach(i => { if (m.practica[i]) p.practicas[clavePractica(m, m.practica[i])] = true; });
+    lista(d.f?.[m.id]).forEach(([i, n, fecha]) => {
+      if (!m.quiz[i]) return;
+      const k = m.id + '|' + m.quiz[i].q;
+      p.falladas[k] = true;
+      if (fecha) p.agenda[k] = { n, d: fecha };
+    });
+  }
+  return limpiarProgreso(p); // el enlace viene de afuera: misma limpieza que al importar un archivo
+}
+const aBase64url = bytes => btoa(Array.from(bytes, b => String.fromCharCode(b)).join('')).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+const deBase64url = texto => Uint8Array.from(atob(texto.replace(/-/g, '+').replace(/_/g, '/')), c => c.charCodeAt(0));
+async function comprimir(texto) {
+  const flujo = new Blob([texto]).stream().pipeThrough(new CompressionStream('deflate-raw'));
+  return aBase64url(new Uint8Array(await new Response(flujo).arrayBuffer()));
+}
+async function descomprimir(texto) {
+  const flujo = new Blob([deBase64url(texto)]).stream().pipeThrough(new DecompressionStream('deflate-raw'));
+  return new Response(flujo).text();
+}
+
+async function pasarProgreso() {
+  app.innerHTML = '<a class="volver" href="#/">← Temario</a><h1>📲 Pasar a otro dispositivo</h1><p class="suave">Preparando…</p>';
+  const enlace = location.origin + location.pathname + '#/traer/' + await comprimir(JSON.stringify(empaquetar(cargar())));
+  // Más de ~1.500 caracteres da un QR demasiado denso para escanearlo desde una pantalla
+  let qr = '';
+  if (enlace.length <= 1500 && window.qrcode) {
+    const codigo = qrcode(0, 'L');
+    codigo.addData(enlace);
+    codigo.make();
+    qr = codigo.createSvgTag({ cellSize: 4, margin: 4, scalable: true, alt: 'Código QR con tu progreso' });
+  }
+  app.innerHTML = `<a class="volver" href="#/">← Temario</a><h1>📲 Pasar a otro dispositivo</h1>
+    ${qr ? `<div class="qr">${qr}</div><p class="suave">Escaneá el código con la cámara del otro dispositivo y abrí el enlace.</p>`
+      : `<section class="card"><p>Tu progreso es demasiado grande para un QR (${enlace.length} caracteres). Usá el enlace: mandátelo a vos mismo por mail o por un chat.</p></section>`}
+    <p><button id="copiar-enlace">📋 Copiar enlace</button> ${window.navigator?.share ? '<button id="compartir-enlace" class="secundario">📤 Compartir</button>' : ''}</p>
+    <p class="suave">El enlace lleva tu progreso: compartilo solo con vos. Tus apuntes no viajan; para pasarlos usá "Descargar mis apuntes".</p>`;
+  app.querySelector('#copiar-enlace').onclick = async e => {
+    try { await navigator.clipboard.writeText(enlace); e.target.textContent = '✔ Copiado'; }
+    catch { prompt('Copiá este enlace:', enlace); }
+  };
+  const compartir = app.querySelector('#compartir-enlace');
+  if (compartir) compartir.onclick = () => navigator.share({ title: 'Mi progreso de AI Engineering', url: enlace }).catch(() => {});
+}
+
+async function traerProgreso(datos) {
+  let p;
+  try { p = desempaquetar(JSON.parse(await descomprimir(datos)), cargar().apuntes); }
+  catch {
+    app.innerHTML = '<a class="volver" href="#/">← Temario</a><h1>📲 Traer progreso</h1><section class="card"><p>Este enlace no es válido o llegó incompleto. Volvé a copiarlo desde el otro dispositivo.</p></section>';
+    return;
+  }
+  const aprobadosEnlace = T.filter(m => aprobado(m, p)).length;
+  app.innerHTML = `<a class="volver" href="#/">← Temario</a><h1>📲 Traer progreso</h1>
+    <section class="card">
+      <p>El enlace trae <strong>${aprobadosEnlace}</strong> módulos aprobados y <strong>${Object.keys(p.leidas).length}</strong> lecciones leídas${p.examen != null ? `, con ${p.examen}% en el examen final` : ''}.</p>
+      <p class="suave">Va a reemplazar el progreso de este dispositivo. Tus apuntes de acá se conservan.</p>
+      <button id="confirmar-traer">Reemplazar mi progreso</button> <a class="boton secundario" href="#/">Cancelar</a>
+    </section>`;
+  app.querySelector('#confirmar-traer').onclick = () => { guardar(p); location.hash = '#/'; };
+}
+
 let temporizador = null;
 const textoLogro = (que, pct, url) => `Aprobé ${que} del curso de AI Engineering con ${pct}% 🎉 Estudio con este curso abierto de autoaprendizaje: ${url}`;
 // Voz: algunos navegadores cortan los textos largos, así que se lee en trozos de una o pocas oraciones.
@@ -671,6 +761,8 @@ function render() {
     quiz(`🎯 Quiz de nivel ${nombre}: 15 preguntas al azar`, mezclar(preguntasDeNivel(id)).slice(0, 15));
   }
   else if (ruta === 'nivel') elegirNivel();
+  else if (ruta === 'pasar') pasarProgreso();
+  else if (ruta === 'traer' && id) traerProgreso(id);
   else if (ruta === 'novedades') novedadesPagina();
   else if (ruta === 'quiz' && T.some(m => m.id === id)) {
     const m = T.find(x => x.id === id);
