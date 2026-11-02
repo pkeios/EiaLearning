@@ -30,6 +30,7 @@ window.GLOSARIO = [
   { t: 'Entropía cruzada', d: 'La loss de clasificación y de los LLMs: menos el logaritmo de la probabilidad asignada a la respuesta correcta.', m: 'fundamentos' },
   { t: 'Eval', d: 'Conjunto de casos y métricas para medir si un sistema con LLMs funciona y detectar regresiones.', m: 'evals' },
   { t: 'FlashAttention', d: 'Forma de calcular la atención exacta reorganizando los cálculos para mover menos datos en la memoria de la GPU: más rápida y con menos memoria.', m: 'llms' },
+  { t: 'Eval de regresión', d: 'Conjunto de pruebas que ya deberían pasar casi siempre; sirve para detectar que un cambio rompió algo que funcionaba.', m: 'evals' },
   { t: 'Few-shot', d: 'Incluir ejemplos de entrada y salida en el prompt para fijar formato y criterio.', m: 'prompting' },
   { t: 'Fine-tuning', d: 'Seguir entrenando un modelo preentrenado con datos propios para una tarea, un formato o un estilo.', m: 'fine-tuning' },
   { t: 'GraphRAG', d: 'Variante de RAG que arma un grafo de entidades y resúmenes por comunidades para responder preguntas globales sobre todo un corpus.', m: 'rag' },

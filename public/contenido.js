@@ -1172,6 +1172,7 @@ Formato: tabla con producto | plan gratuito | precio por millón de vectores | f
     'Usar evals para iterar sin regresiones',
     'Comparar versiones con rigor: intervalos de confianza, comparación pareada y pass@k vs pass^k',
     'Armar y etiquetar el dataset de evals: datos sintéticos por dimensiones, etiquetas binarias y un experto como referencia',
+    'Evaluar agentes con tareas aisladas, calificación por resultado, lectura de transcripciones y evals de capacidad y de regresión',
   ],
   lecciones: [
     { titulo: 'Por qué las evals son la habilidad número uno', html: `
@@ -1240,6 +1241,39 @@ for perfil, intencion, dificultad in random.sample(tuplas, 15):
       <p><strong>Etiquetas binarias, no escalas de 1 a 5.</strong> La diferencia entre un 3 y un 4 es subjetiva, hace falta más muestra para comparar y los evaluadores tienden al valor del medio. Si querés medir progreso gradual, dividí el criterio en chequeos binarios ("incluye 4 de los 5 datos esperados").</p>
       <p><strong>Un experto como referencia.</strong> Al principio, una sola persona experta en el dominio define qué es una buena respuesta. Sumá más etiquetadores solo si hace falta, y medí cuánto coinciden (por ejemplo, con el kappa de Cohen). No tercerices el análisis de errores central: quien no conoce el dominio no ve los fallos que importan.</p>
       <p><strong>Cuidado con las métricas genéricas.</strong> Puntajes listos para usar como "helpfulness" o "coherencia", o métricas de similitud como ROUGE y BERTScore, dan una falsa sensación de control. Usá modos de fallo binarios que salgan de tu propio análisis de errores.</p>` },
+    { titulo: 'Evaluar agentes: tareas, transcripciones y resultados', html: `
+      <p>Evaluar un agente es más difícil que evaluar una respuesta: actúa en varios pasos, cambia cosas en un entorno y no hace siempre lo mismo. La guía de Anthropic "Demystifying evals for AI agents" propone un vocabulario y un método.</p>
+      <ul>
+        <li><strong>Tarea:</strong> una prueba con entrada y criterio de éxito definidos, idealmente con una solución de referencia.</li>
+        <li><strong>Intento (trial):</strong> una ejecución de la tarea. Se hacen varios, porque el agente no es determinista.</li>
+        <li><strong>Transcripción:</strong> todo lo que el agente dijo e hizo: mensajes, llamadas a herramientas, razonamiento.</li>
+        <li><strong>Resultado:</strong> el estado final del entorno; por ejemplo, si la reserva existe de verdad en la base de datos.</li>
+        <li><strong>Calificadores:</strong> en código (tests, chequeos de estado), con modelo (rúbricas) o humanos. Una tarea puede tener varios.</li>
+      </ul>
+      <pre><code>tarea = {
+    "id": "reserva-001",
+    "pedido": "Reservá una mesa para 4 el viernes a las 21 en un lugar vegetariano del centro.",
+    "estado_inicial": "fixtures/restaurantes.sql",   # entorno limpio para cada intento
+}
+
+def calificar(entorno, transcripcion):
+    r = entorno.db.buscar_reserva(personas=4, dia="viernes", hora="21:00")
+    return {
+        "reserva_creada": r is not None,                              # el resultado, lo principal
+        "vegetariano": r is not None and r.restaurante.vegetariano,
+        "sin_reservas_extra": entorno.db.contar_reservas() == 1,      # no hizo de más
+        "no_inventa": not juez("¿Afirma algo que no ocurrió?", transcripcion),
+    }</code></pre>
+      <p><strong>Recomendaciones clave:</strong></p>
+      <ul>
+        <li><strong>Calificá el resultado, no el camino.</strong> Exigir un orden fijo de pasos castiga soluciones válidas. Usá crédito parcial en tareas de varias partes.</li>
+        <li><strong>Empezá chico:</strong> de 20 a 50 tareas salidas de fallos reales alcanzan al principio.</li>
+        <li><strong>Aislá cada intento:</strong> un entorno compartido produce fallos correlacionados o puntajes inflados.</li>
+        <li><strong>Leé transcripciones.</strong> Es la forma de distinguir un error del agente de un error del calificador. En el ejemplo de la guía, un modelo pasó de 42% a 95% en un benchmark solo con arreglos en la calificación. Y si una tarea da 0% en muchos intentos, sospechá primero de la tarea.</li>
+        <li><strong>Capacidad y regresión:</strong> las evals de capacidad arrancan con tasas bajas y muestran progreso; cuando se saturan, pasan a ser evals de regresión que deberían estar cerca de 100%, y hacen falta tareas nuevas más difíciles.</li>
+        <li><strong>Varios intentos:</strong> con 75% de éxito por intento, pass^3 es de apenas 42%. Elegí la métrica según si importa que salga bien alguna vez o siempre.</li>
+      </ul>
+      <p>Ninguna capa atrapa todo: las evals automáticas se combinan con monitoreo en producción, feedback de usuarios, revisión de transcripciones y tests A/B.</p>` },
   ],
   practica: [
     'Tomá tu RAG o chatbot, revisá 50 respuestas a mano y armá una taxonomía de errores con su frecuencia.',
@@ -1247,11 +1281,13 @@ for perfil, intencion, dificultad in random.sample(tuplas, 15):
     'Integrá tus evals en CI para que fallen si la tasa de aprobación baja de un umbral.',
     'Corré cada caso de tus evals 5 veces con dos versiones de prompt. Calculá el intervalo de confianza de cada versión y el de la diferencia pareada, decidí si la mejora es real y estimá cuántos casos necesitarías para detectar una mejora de 3 puntos.',
     'Definí 3 dimensiones para tu app, generá 20 tuplas y convertilas en consultas con un LLM. Etiquetá vos las respuestas con pasa o falla, pedile a otra persona que etiquete 30 de las mismas y calculá el acuerdo con el kappa de Cohen.',
+    'Armá 20 tareas para tu agente, cada una con estado inicial limpio y solución de referencia. Calificá por resultado con chequeos en código y un juez para lo subjetivo, corré 3 intentos por tarea y reportá pass@1, pass^3 y el diagnóstico de 5 transcripciones que hayas leído.',
   ],
   recursos: [
     { t: 'Hamel Husain — Your AI Product Needs Evals', url: 'https://hamel.dev/blog/posts/evals/' },
     { t: 'Anthropic — Crear evaluaciones empíricas', url: 'https://docs.claude.com/en/docs/test-and-evaluate/develop-tests' },
     { t: 'Chip Huyen — AI Engineering (libro, O\'Reilly)', url: 'https://www.oreilly.com/library/view/ai-engineering/9781098166298/' },
+    { t: 'Anthropic — Demystifying evals for AI agents', url: 'https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents' },
     { t: 'Hamel Husain — AI Evals: preguntas frecuentes', url: 'https://hamel.dev/blog/posts/evals-faq/' },
     { t: 'Hamel Husain — Using LLM-as-a-Judge for evaluation', url: 'https://hamel.dev/blog/posts/llm-judge/' },
     { t: 'Anthropic — A statistical approach to model evaluations', url: 'https://www.anthropic.com/research/statistical-approach-to-model-evals' },
@@ -1274,6 +1310,11 @@ for perfil, intencion, dificultad in random.sample(tuplas, 15):
     { q: 'Tu equipo quiere usar un "helpfulness score" genérico de una librería como métrica principal de calidad. ¿Qué opinás?', opciones: ['Perfecto, es estándar', 'Mejor usar ROUGE', 'Las métricas genéricas pueden dar falsa confianza: conviene usar modos de fallo binarios salidos de tu análisis de errores', 'Mejor usar BERTScore'], correcta: 2, explicacion: 'Un puntaje genérico no sabe qué falla en tu producto. ROUGE y BERTScore miden parecido de texto, no si la respuesta es correcta o útil.' },
     { q: 'Al empezar a armar evals, ¿quién conviene que defina qué es una buena respuesta?', opciones: ['Un proveedor externo de etiquetado', 'Todo el equipo votando cada caso', 'El propio modelo', 'Un experto en el dominio como referencia, sumando más etiquetadores solo si hace falta y midiendo cuánto coinciden'], correcta: 3, explicacion: 'Un criterio consistente vale más que muchas opiniones mezcladas. Quien no conoce el dominio no detecta los fallos que importan.' },
     { q: '¿Para qué no conviene usar datos sintéticos?', opciones: ['Para encontrar fallos raros', 'Para estimar con qué frecuencia ocurre cada fallo en producción', 'Para arrancar el análisis de errores antes de tener usuarios', 'Para probar casos borde'], correcta: 1, explicacion: 'La mezcla de casos sintéticos la elegiste vos, así que no refleja la frecuencia real de cada fallo. Para eso hacen falta trazas de producción.' },
+    { q: 'Al evaluar un agente, ¿cuál es la diferencia entre la transcripción y el resultado?', opciones: ['La transcripción es todo lo que el agente dijo e hizo; el resultado es el estado final del entorno, por ejemplo si la reserva existe en la base', 'Son lo mismo', 'El resultado es lo último que dice el agente', 'La transcripción es solo el prompt inicial'], correcta: 0, explicacion: 'Un agente puede decir "listo, reservé" sin haberlo hecho. Por eso el resultado se verifica en el entorno, no en sus palabras.' },
+    { q: 'Una tarea de tu eval da 0% de éxito en muchos intentos. ¿Qué sospechás primero?', opciones: ['Que el agente es incapaz', 'Que falta temperatura', 'Que la tarea o el calificador están rotos: leés transcripciones y revisás la solución de referencia', 'Que el modelo es chico'], correcta: 2, explicacion: 'Según la guía de Anthropic, un 0% sostenido suele indicar una tarea mal planteada o un calificador con errores. Leer transcripciones lo confirma.' },
+    { q: 'Los intentos de tu eval comparten la misma base de datos sin limpiarla entre uno y otro. ¿Qué riesgo hay?', opciones: ['Ninguno', 'Que sea más lento', 'Que sea más barato', 'Fallos correlacionados o puntajes inflados, porque un intento hereda el estado de otro: hay que aislar cada intento'], correcta: 3, explicacion: 'Si un intento ya creó la reserva, el siguiente puede "aprobar" sin hacer nada. Cada intento necesita un entorno limpio.' },
+    { q: 'Una eval de capacidad llegó a 98% de forma sostenida. ¿Qué hacés?', opciones: ['La pasás a regresión (debería quedar cerca de 100%) y armás tareas nuevas más difíciles para seguir midiendo progreso', 'La borrás', 'La dejás como está y celebrás', 'Bajás el umbral de aprobación'], correcta: 0, explicacion: 'Una eval saturada ya no muestra mejoras, pero sigue siendo útil para detectar que algo se rompa. Para medir progreso hacen falta tareas más difíciles.' },
+    { q: 'Tu agente resuelve bien el 75% de los intentos. ¿Cuánto da pass^3 (que salgan bien los 3 intentos)?', opciones: ['75%', 'Alrededor de 98%', 'Alrededor de 42%', '25%'], correcta: 2, explicacion: '0,75³ ≈ 0,42. El 98% sería pass@3 (al menos uno de tres bien). Si los usuarios necesitan que funcione siempre, la métrica que importa es la más baja.' },
   ],
 },
 {
