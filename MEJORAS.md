@@ -108,3 +108,4 @@ Lo completa el comando `/mejorar`. Una línea por ejecución.
 - 2026-11-02 · proyecto · metodología: ejemplos concretos en las 2 lecciones más cortas (README con métricas y semana de estudio basada en evidencia)
 - 2026-11-02 · apis · metodología: 5 explicaciones más corrigen la opción tentadora
 - 2026-11-02 · fine-tuning · metodología: 5 explicaciones más corrigen la opción tentadora
+- 2026-11-02 · seguridad · metodología: ejemplos concretos en las lecciones de ataques (exfiltración paso a paso) y defensas (SQL parametrizado)
