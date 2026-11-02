@@ -1014,6 +1014,7 @@ respuesta = llm(f"Pregunta: {pregunta}\\nResultado: {filas}\\nRespondé en una f
     'Entender MCP y diseñar herramientas que un modelo use bien',
     'Decidir cuándo un sistema multi-agente vale su costo, y delegar y evaluar bien',
     'Construir agentes de computer use seguros y saber cuándo conviene otra interfaz',
+    'Diseñar herramientas para agentes: pocas y de alto impacto, con respuestas eficientes, errores útiles y validadas con evals',
   ],
   lecciones: [
     { titulo: 'Tool use: el bucle que da superpoderes', html: `
@@ -1093,6 +1094,32 @@ Formato: tabla con producto | plan gratuito | precio por millón de vectores | f
                 resultados.append(error(a, str(e))); fallo = True
     mensajes += [{"role": "assistant", "content": resp.content},
                  {"role": "user", "content": resultados}]</code></pre>` },
+    { titulo: 'Diseñar herramientas que los agentes usen bien', html: `
+      <p>Un agente es tan bueno como sus herramientas. La guía de ingeniería de Anthropic "Writing effective tools for agents" resume lo que funciona:</p>
+      <ol>
+        <li><strong>Pocas herramientas, de alto impacto.</strong> No envuelvas cada endpoint de tu API. En lugar de <code>listar_usuarios</code>, <code>listar_eventos</code> y <code>crear_evento</code>, una sola <code>agendar_reunion</code> que busca disponibilidad y reserva. En lugar de <code>leer_logs</code>, <code>buscar_en_logs</code>, que devuelve solo las líneas relevantes.</li>
+        <li><strong>Nombres con espacio de nombres.</strong> Agrupá por servicio y recurso (<code>jira_buscar</code>, <code>asana_proyectos_buscar</code>) para que el agente elija bien. Probá qué convención le funciona mejor a tu modelo.</li>
+        <li><strong>Devolvé contexto con significado.</strong> Nombres en vez de UUIDs o tipos MIME. Ofrecé un parámetro de formato (conciso o detallado): en el ejemplo de la guía, la versión concisa usó cerca de un tercio de los tokens.</li>
+        <li><strong>Cuidá los tokens.</strong> Paginación, filtros y límites por defecto razonables. Si truncás, decile al agente cómo acotar la búsqueda.</li>
+        <li><strong>Errores que enseñan.</strong> No "Error 422", sino "Fecha inválida '31/02'. Usá AAAA-MM-DD, por ejemplo 2026-03-15".</li>
+        <li><strong>Descripciones como para alguien que empieza en el equipo.</strong> Parámetros sin ambigüedad (<code>usuario_id</code>, no <code>usuario</code>). Un cambio chico en la descripción puede cambiar mucho el comportamiento.</li>
+        <li><strong>Evaluá en un bucle.</strong> Tareas realistas de varios pasos con resultado verificable; medí éxito, llamadas, errores y tokens; leé las transcripciones para ver dónde se confunde; y guardá un conjunto de prueba aparte para no sobreajustar.</li>
+      </ol>
+      <pre><code>{
+  "name": "tickets_buscar",
+  "description": "Busca tickets de soporte por texto y estado. Usala antes de responder sobre un cliente. Devuelve como máximo 'limite' resultados; si hay más, la respuesta indica cómo pedir la página siguiente.",
+  "input_schema": {
+    "type": "object",
+    "properties": {
+      "consulta": {"type": "string", "description": "Palabras clave, por ejemplo 'factura duplicada'"},
+      "estado": {"type": "string", "enum": ["abierto", "cerrado", "todos"], "default": "abierto"},
+      "limite": {"type": "integer", "default": 10},
+      "formato": {"type": "string", "enum": ["conciso", "detallado"], "default": "conciso"}
+    },
+    "required": ["consulta"]
+  }
+}</code></pre>
+      <p>Pensalo así: el agente solo conoce tu herramienta por su nombre, su descripción y lo que devuelve. Todo lo que no esté ahí, no existe para él.</p>` },
   ],
   practica: [
     'Implementá desde cero (sin frameworks) un agente con 3 herramientas: calculadora, búsqueda en tus archivos y lectura de una URL. Logueá cada paso.',
@@ -1100,11 +1127,13 @@ Formato: tabla con producto | plan gratuito | precio por millón de vectores | f
     'Implementá el patrón evaluador-optimizador para mejorar un texto hasta que un juez le dé la nota mínima, con un máximo de 3 iteraciones.',
     'Implementá un orquestador que lance 3 subagentes en paralelo, cada uno con objetivo, límites y formato de salida explícitos. Comparalo contra un solo agente en 10 preguntas de investigación: calidad (con un juez de rúbrica), tokens totales y tiempo. Decidí con números si vale la pena.',
     'En una máquina virtual o contenedor, armá un agente de computer use que complete un formulario de prueba en una web local, con confirmación humana antes de enviar, límite de pasos y verificación por captura. Medí tokens por tarea y tasa de éxito en 10 corridas.',
+    'Reescribí las herramientas de tu agente siguiendo estos principios: consolidar, formato conciso, paginación y errores que digan cómo corregir. Medí 10 tareas de varios pasos antes y después: tasa de éxito, llamadas a herramientas y tokens.',
   ],
   recursos: [
     { t: 'Anthropic — Building effective agents', url: 'https://www.anthropic.com/engineering/building-effective-agents' },
     { t: 'Model Context Protocol (documentación oficial)', url: 'https://modelcontextprotocol.io/' },
     { t: 'Documentación de tool use de Claude', url: 'https://docs.claude.com/en/docs/agents-and-tools/tool-use/overview' },
+    { t: 'Anthropic — Writing effective tools for agents', url: 'https://www.anthropic.com/engineering/writing-tools-for-agents' },
     { t: 'Claude — Computer use', url: 'https://platform.claude.com/docs/en/agents-and-tools/tool-use/computer-use-tool' },
     { t: 'Anthropic — How we built our multi-agent research system', url: 'https://www.anthropic.com/engineering/multi-agent-research-system' },
   ],
@@ -1125,6 +1154,11 @@ Formato: tabla con producto | plan gratuito | precio por millón de vectores | f
     { q: 'El agente dice que guardó el formulario, pero en realidad no se guardó. ¿Qué mitigación aplicás?', opciones: ['Usás un modelo más grande', 'Le pedís que tome y evalúe una captura después de cada paso para verificar el resultado', 'Subís la resolución al máximo', 'Quitás las capturas para que vaya más rápido'], correcta: 1, explicacion: 'La documentación señala que el modelo a veces asume que una acción funcionó. Verificar con una captura cierra el ciclo; quitar capturas lo deja a ciegas.' },
     { q: 'Una tarea de computer use lleva 60 pasos con una captura de unos 1.500 tokens en cada uno. ¿Qué problema de costo aparece?', opciones: ['Ninguno', 'Solo más latencia', 'Que es ilegal', 'Los tokens crecen muy rápido porque cada llamada reenvía las capturas anteriores: hay que podarlas o achicarlas'], correcta: 3, explicacion: 'En el paso 60, el historial puede llevar decenas de capturas. Podar las viejas mantiene el costo y el contexto bajo control.' },
     { q: '¿A qué no debería tener acceso un agente de computer use, salvo que sea imprescindible?', opciones: ['A una máquina virtual', 'A un navegador', 'A las contraseñas y datos sensibles del usuario', 'A capturas de pantalla'], correcta: 2, explicacion: 'Si una página lo manipula, todo lo que tiene a su alcance está en riesgo. Las credenciales se mantienen fuera, como recomienda la documentación.' },
+    { q: 'Tu API tiene 40 endpoints y querés que un agente la use. ¿Cómo la exponés?', opciones: ['Con pocas herramientas que cubran los flujos de alto impacto, consolidando pasos', 'Con una herramienta por endpoint', 'Con una sola herramienta genérica "llamar_api" que acepte cualquier ruta', 'No la exponés'], correcta: 0, explicacion: 'Muchas herramientas parecidas generan decisiones ambiguas, y una genérica obliga al agente a conocer toda tu API. Pocas herramientas bien pensadas le simplifican el trabajo.' },
+    { q: 'Tu herramienta devuelve UUIDs y el agente confunde un registro con otro. ¿Qué cambiás?', opciones: ['Le pedís en el prompt que preste más atención', 'Devolvés nombres y datos con significado en lugar de identificadores opacos', 'Subís la temperatura', 'Le das más contexto general'], correcta: 1, explicacion: 'Un UUID no le dice nada al modelo. Con nombres y datos legibles razona mejor y comete menos errores.' },
+    { q: 'La herramienta de logs devuelve 200.000 líneas y llena el contexto del agente. ¿Qué hacés?', opciones: ['Usás un modelo con más contexto', 'Compactás el historial después de cada llamada', 'La reemplazás por una búsqueda con filtros, límites por defecto y paginación, que avise cómo acotar si trunca', 'Sacás la herramienta'], correcta: 2, explicacion: 'El problema está en lo que devuelve la herramienta. Más contexto o compactar solo esconden el síntoma, y sacarla deja al agente sin la capacidad.' },
+    { q: 'Tu agente falla una y otra vez con una fecha mal formateada, y la herramienta responde "Error 422". ¿Qué mejora más?', opciones: ['Reintentar automáticamente hasta que funcione', 'Cambiar de modelo', 'Ocultarle el error al agente', 'Un mensaje de error que diga cómo corregir: el formato esperado y un ejemplo'], correcta: 3, explicacion: 'Con un código opaco el agente adivina. Con el formato y un ejemplo, se corrige en el siguiente intento.' },
+    { q: 'Cambiaste la descripción de una herramienta. ¿Cómo sabés si mejoró?', opciones: ['Le preguntás al modelo si le gusta más', 'Con un eval de tareas realistas de varios pasos: éxito, llamadas, errores y tokens, más leer transcripciones', 'Por intuición', 'Contando las palabras de la descripción'], correcta: 1, explicacion: 'Las descripciones son prompts: cambios chicos tienen efectos grandes y a veces inesperados. Solo medirlo con tareas reales lo confirma.' },
   ],
 },
 {
