@@ -1414,6 +1414,7 @@ def ruta_segura(usuario_id, ruta_pedida):
     'Comparar versiones con rigor: intervalos de confianza, comparación pareada y pass@k vs pass^k',
     'Armar y etiquetar el dataset de evals: datos sintéticos por dimensiones, etiquetas binarias y un experto como referencia',
     'Evaluar agentes con tareas aisladas, calificación por resultado, lectura de transcripciones y evals de capacidad y de regresión',
+    'Evaluar en producción con señales de usuarios, monitoreo de drift y tests A/B bien diseñados',
   ],
   lecciones: [
     { titulo: 'Por qué las evals son la habilidad número uno', html: `
@@ -1515,6 +1516,29 @@ def calificar(entorno, transcripcion):
         <li><strong>Varios intentos:</strong> con 75% de éxito por intento, pass^3 es de apenas 42%. Elegí la métrica según si importa que salga bien alguna vez o siempre.</li>
       </ul>
       <p>Ninguna capa atrapa todo: las evals automáticas se combinan con monitoreo en producción, feedback de usuarios, revisión de transcripciones y tests A/B.</p>` },
+    { titulo: 'Evaluar en producción: señales de usuarios, drift y tests A/B', html: `
+      <p>Tus evals offline miden lo que vos imaginaste. Los usuarios reales preguntan otras cosas, y lo que preguntan cambia con el tiempo (<em>drift</em>). La evaluación en producción cierra ese hueco.</p>
+      <p><strong>Señales que conviene registrar:</strong></p>
+      <ul>
+        <li><strong>Explícitas:</strong> pulgar arriba o abajo. Son pocas y sesgadas (se quejan más los molestos), pero valiosas.</li>
+        <li><strong>Implícitas:</strong> el usuario reformula casi la misma pregunta enseguida, pide hablar con una persona, abandona la conversación, copia la respuesta o la edita mucho antes de usarla.</li>
+        <li><strong>De negocio:</strong> ¿se resolvió el ticket sin un humano? ¿se completó la compra?</li>
+        <li><strong>De control:</strong> latencia, costo, errores y quejas, para que una "mejora" no rompa otra cosa.</li>
+      </ul>
+      <pre><code>def registrar_turno(sesion, pregunta, respuesta):
+    anterior = sesion.ultimo_turno
+    if anterior and similitud(embed(pregunta), embed(anterior.pregunta)) &gt; 0.85:
+        senal("reformulo", anterior.id)   # repitió casi lo mismo: probable mala respuesta
+    sesion.ultimo_turno = Turno(pregunta, respuesta)</code></pre>
+      <p><strong>Monitoreo continuo:</strong> pasá un juez LLM sobre una muestra del tráfico, revisá a mano trazas con señales negativas y vigilá cambios en los temas (clustering), el idioma o el largo de las preguntas.</p>
+      <p><strong>Tests A/B bien hechos:</strong></p>
+      <ul>
+        <li><strong>Asignación estable por usuario</strong> (con un hash), y la métrica principal definida <em>antes</em> de empezar.</li>
+        <li><strong>Tamaño de muestra:</strong> para detectar que la tasa de éxito sube de 30% a 33%, con 80% de potencia y 5% de significancia, hacen falta unos 3.800 usuarios por variante. Las diferencias chicas necesitan mucho tráfico.</li>
+        <li><strong>No espiar:</strong> mirar el resultado cada hora y cortar apenas sale significativo multiplica los falsos positivos. Fijá el tamaño antes, o usá un método secuencial diseñado para eso.</li>
+        <li><strong>Métricas de control:</strong> que la variante no empeore la latencia, el costo ni las quejas.</li>
+      </ul>
+      <p><strong>Cerrá el ciclo:</strong> cada fallo que encuentres en producción pasa a ser un caso de tu dataset offline, para que no vuelva a pasar sin que lo detectes.</p>` },
   ],
   practica: [
     'Tomá tu RAG o chatbot, revisá 50 respuestas a mano y armá una taxonomía de errores con su frecuencia.',
@@ -1523,11 +1547,14 @@ def calificar(entorno, transcripcion):
     'Corré cada caso de tus evals 5 veces con dos versiones de prompt. Calculá el intervalo de confianza de cada versión y el de la diferencia pareada, decidí si la mejora es real y estimá cuántos casos necesitarías para detectar una mejora de 3 puntos.',
     'Definí 3 dimensiones para tu app, generá 20 tuplas y convertilas en consultas con un LLM. Etiquetá vos las respuestas con pasa o falla, pedile a otra persona que etiquete 30 de las mismas y calculá el acuerdo con el kappa de Cohen.',
     'Armá 20 tareas para tu agente, cada una con estado inicial limpio y solución de referencia. Calificá por resultado con chequeos en código y un juez para lo subjetivo, corré 3 intentos por tarea y reportá pass@1, pass^3 y el diagnóstico de 5 transcripciones que hayas leído.',
+    'Agregá a tu app un pulgar arriba o abajo y el registro de señales implícitas (reformulaciones, pedidos de hablar con una persona, respuestas copiadas). Después de una semana calculá las tasas, revisá 20 trazas con señales negativas y convertí los fallos en casos de eval.',
   ],
   recursos: [
     { t: 'Hamel Husain — Your AI Product Needs Evals', url: 'https://hamel.dev/blog/posts/evals/' },
     { t: 'Anthropic — Crear evaluaciones empíricas', url: 'https://docs.claude.com/en/docs/test-and-evaluate/develop-tests' },
     { t: 'Chip Huyen — AI Engineering (libro, O\'Reilly)', url: 'https://www.oreilly.com/library/view/ai-engineering/9781098166298/' },
+    { t: 'Evan Miller — Calculadora de tamaño de muestra para tests A/B', url: 'https://www.evanmiller.org/ab-testing/sample-size.html' },
+    { t: 'Hamel Husain — A Field Guide to Rapidly Improving AI Products', url: 'https://hamel.dev/blog/posts/field-guide/' },
     { t: 'Anthropic — Demystifying evals for AI agents', url: 'https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents' },
     { t: 'Hamel Husain — AI Evals: preguntas frecuentes', url: 'https://hamel.dev/blog/posts/evals-faq/' },
     { t: 'Hamel Husain — Using LLM-as-a-Judge for evaluation', url: 'https://hamel.dev/blog/posts/llm-judge/' },
@@ -1556,6 +1583,11 @@ def calificar(entorno, transcripcion):
     { q: 'Los intentos de tu eval comparten la misma base de datos sin limpiarla entre uno y otro. ¿Qué riesgo hay?', opciones: ['Ninguno', 'Que sea más lento', 'Que sea más barato', 'Fallos correlacionados o puntajes inflados, porque un intento hereda el estado de otro: hay que aislar cada intento'], correcta: 3, explicacion: 'Si un intento ya creó la reserva, el siguiente puede "aprobar" sin hacer nada. Cada intento necesita un entorno limpio.' },
     { q: 'Una eval de capacidad llegó a 98% de forma sostenida. ¿Qué hacés?', opciones: ['La pasás a regresión (debería quedar cerca de 100%) y armás tareas nuevas más difíciles para seguir midiendo progreso', 'La borrás', 'La dejás como está y celebrás', 'Bajás el umbral de aprobación'], correcta: 0, explicacion: 'Una eval saturada ya no muestra mejoras, pero sigue siendo útil para detectar que algo se rompa. Para medir progreso hacen falta tareas más difíciles.' },
     { q: 'Tu agente resuelve bien el 75% de los intentos. ¿Cuánto da pass^3 (que salgan bien los 3 intentos)?', opciones: ['75%', 'Alrededor de 98%', 'Alrededor de 42%', '25%'], correcta: 2, explicacion: '0,75³ ≈ 0,42. El 98% sería pass@3 (al menos uno de tres bien). Si los usuarios necesitan que funcione siempre, la métrica que importa es la más baja.' },
+    { q: '¿Por qué no alcanzan las evals offline para saber cómo funciona tu sistema?', opciones: ['Porque los usuarios reales preguntan cosas que tu dataset no tiene, y lo que preguntan cambia con el tiempo', 'Porque son caras', 'Porque no sirven para nada', 'Porque son lentas'], correcta: 0, explicacion: 'Las evals offline siguen siendo esenciales para iterar, pero miden lo que imaginaste. Producción muestra lo que no imaginaste.' },
+    { q: '¿Cuál de estas es una señal implícita de que una respuesta fue mala?', opciones: ['El usuario cierra la pestaña a la noche', 'El usuario usa el modo oscuro', 'El usuario escribe rápido', 'El usuario reformula casi la misma pregunta enseguida, o pide hablar con una persona'], correcta: 3, explicacion: 'Repetir la pregunta o pedir un humano indica que la respuesta no sirvió. Las otras opciones no dicen nada sobre la calidad.' },
+    { q: 'Tu tasa de éxito es 30% y querés detectar que una variante la sube a 33%, con 80% de potencia y 5% de significancia. ¿Cuántos usuarios necesitás por variante?', opciones: ['Unos 3.800', 'Unos 100', 'Unos 38', 'Unos 380.000'], correcta: 0, explicacion: 'Las diferencias chicas exigen muestras grandes. Con 100 usuarios, una mejora de 3 puntos queda escondida en el ruido.' },
+    { q: 'Mirás tu test A/B cada hora y lo cortás apenas el resultado sale significativo. ¿Qué problema tiene?', opciones: ['Ninguno', 'Que se gasta menos', 'Que es más rápido y también correcto', 'Es "peeking": multiplica los falsos positivos; hay que fijar el tamaño antes o usar un método secuencial'], correcta: 3, explicacion: 'Con muchas miradas, tarde o temprano el azar cruza el umbral. El 5% de error solo vale si mirás una vez, al tamaño planificado.' },
+    { q: 'Descubrís en producción un tipo de pregunta en el que tu sistema falla. Además de arreglarlo, ¿qué hacés?', opciones: ['Nada más', 'Agregás esos casos a tu dataset de evals offline, para detectarlo si vuelve a pasar', 'Borrás las trazas', 'Subís la temperatura'], correcta: 1, explicacion: 'Así cada fallo real se vuelve una prueba de regresión. Con el tiempo, el dataset offline se parece cada vez más a la realidad.' },
   ],
 },
 {
