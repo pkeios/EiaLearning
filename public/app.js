@@ -154,6 +154,12 @@ function modulo(id) {
       <a class="boton" href="#/quiz/${m.id}">📝 Hacer el quiz (${m.quiz.length} preguntas)</a>
       <span class="suave">${p.notas[m.id] != null ? 'Mejor nota: ' + p.notas[m.id] + '%' : 'Necesitás ' + APROBADO + '% para aprobar'}</span>
     </div>
+    <section class="card">
+      <h2>🎓 Examen oral con Claude</h2>
+      <p class="suave">Copiá este prompt y pegalo en Claude: te pregunta de a una, te corrige y repregunta lo que fallás. Si escribiste tu explicación arriba, empieza revisándola.</p>
+      <button class="secundario" id="tutor">📋 Copiar prompt de tutor</button>
+      <textarea id="prompt-tutor" rows="8" readonly hidden aria-label="Prompt de tutor"></textarea>
+    </section>
     <nav class="pasos">
       ${prev ? `<a href="#/m/${prev.id}">← ${icono(prev)} ${esc(prev.titulo)}</a>` : '<span></span>'}
       ${next ? `<a href="#/m/${next.id}">${icono(next)} ${esc(next.titulo)} →</a>` : ''}
@@ -162,6 +168,39 @@ function modulo(id) {
     const p = cargar(); p.leidas[m.id + ':' + b.dataset.leida] = true; estudiar(p); guardar(p); modulo(id);
   });
   app.querySelector('#apunte').oninput = e => { const p = cargar(); p.apuntes[m.id] = e.target.value; guardar(p); };
+  app.querySelector('#tutor').onclick = async e => {
+    const texto = promptTutor(m, cargar().apuntes[m.id]), caja = app.querySelector('#prompt-tutor');
+    try {
+      await navigator.clipboard.writeText(texto);
+      e.target.textContent = '✔ Copiado: pegalo en Claude';
+    } catch {
+      // Sin permiso de portapapeles (por ejemplo, abriendo el archivo local): se muestra para copiar a mano.
+      caja.value = texto; caja.hidden = false; caja.select();
+      e.target.textContent = 'Copialo de la caja de abajo (Ctrl+C)';
+    }
+  };
+}
+
+function promptTutor(m, apunte) {
+  return `Sos mi tutor de AI Engineering. Tomame un examen oral sobre el módulo "${m.titulo}".
+
+Objetivos del módulo:
+${m.objetivos.map(o => '- ' + o).join('\n')}
+
+Temas de las lecciones:
+${m.lecciones.map(l => '- ' + l.titulo).join('\n')}
+${apunte && apunte.trim() ? `
+Esta es mi explicación del módulo con mis palabras. Empezá señalando errores, imprecisiones y huecos:
+"""
+${apunte.trim()}
+"""
+` : ''}
+Reglas:
+1. Hacé una sola pregunta por vez, de dificultad creciente: primero conceptos, después escenarios prácticos del tipo "¿qué hacés si...?".
+2. Esperá mi respuesta. Corregime con precisión: qué está bien, qué falta y qué está mal, y por qué.
+3. Si me equivoco, repreguntá el mismo concepto desde otro ángulo hasta que lo entienda. No me des la respuesta enseguida.
+4. Después de 8 preguntas, dame una nota del 1 al 10, mis puntos débiles y qué repasar.
+Respondé en español.`;
 }
 
 function busqueda() {

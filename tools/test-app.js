@@ -3,11 +3,11 @@ const fs = require('fs'), path = require('path'), vm = require('vm'), assert = r
 const leer = f => fs.readFileSync(path.join(__dirname, '..', 'public', f), 'utf8');
 const el = { querySelector: () => el, querySelectorAll: () => [], focus() {}, value: '', h: '', set innerHTML(v) { this.h = v; }, get innerHTML() { return this.h; } };
 let guardado = null;
-const ctx = { window: {}, document: { getElementById: () => el }, localStorage: { getItem: () => guardado, setItem: (k, v) => { guardado = v; } }, location: { hash: '' }, addEventListener() {}, scrollTo() {}, Date };
+const ctx = { window: {}, document: { getElementById: () => el }, localStorage: { getItem: () => guardado, setItem: (k, v) => { guardado = v; } }, location: { hash: '' }, addEventListener() {}, scrollTo() {}, Date, URL };
 vm.createContext(ctx);
 vm.runInContext(leer('contenido.js'), ctx);
-vm.runInContext(leer('app.js') + ';this.X = { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar };', ctx);
-const { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar } = ctx.X;
+vm.runInContext(leer('app.js') + ';this.X = { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor };', ctx);
+const { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor } = ctx.X;
 const plano = o => JSON.parse(JSON.stringify(o));
 
 // Inicio renderiza con progreso vacío
@@ -55,6 +55,16 @@ assert.equal(buscar('palabrainexistentexyz').length, 0);
 ctx.location.hash = '#/buscar';
 vm.runInContext('render()', ctx);
 assert.ok(el.h.includes('Escribí al menos 2 letras') || el.h.includes('consulta'));
+
+// Prompt de tutor: incluye objetivos y lecciones; la explicación del alumno solo si escribió algo
+const mod = ctx.window.TEMARIO[0];
+const sinApunte = promptTutor(mod, '   ');
+assert.ok(sinApunte.includes(mod.titulo) && sinApunte.includes(mod.objetivos[0]) && sinApunte.includes(mod.lecciones[0].titulo));
+assert.ok(!sinApunte.includes('mi explicación'));
+assert.ok(promptTutor(mod, 'Un vector es una lista').includes('Un vector es una lista'));
+ctx.location.hash = '#/m/' + mod.id;
+vm.runInContext('render()', ctx);
+assert.ok(el.h.includes('id="tutor"'));
 
 // Repaso vacío muestra un mensaje en lugar de un formulario
 guardado = null;
