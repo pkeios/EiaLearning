@@ -13,4 +13,5 @@
 - [x] Al buscar, abrir directamente la lección encontrada (no solo el módulo) y resaltar la palabra buscada
 - [x] Modo tarjetas (flashcards) con los términos del glosario: ver el término, pensar la definición, darla vuelta y marcar si la sabías; las que no, vuelven antes
 - [x] Página de progreso con el porcentaje de aciertos por módulo (de todos los quizzes hechos) para ver los puntos débiles de un vistazo
-- [ ] Casillas para marcar cada ejercicio de práctica como hecho, que cuenten en el avance del módulo
+- [x] Casillas para marcar cada ejercicio de práctica como hecho, que cuenten en el avance del módulo
+- [ ] Al terminar el examen final con 80% o más, mostrar un certificado de finalización imprimible con la fecha y la nota

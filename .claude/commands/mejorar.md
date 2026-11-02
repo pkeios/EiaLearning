@@ -37,6 +37,6 @@ Agregá una línea al final de `MEJORAS.md`:
 - Español neutro, claro, sin relleno. Explicá el porqué, no solo el qué.
 - Las lecciones son template literals: **no uses backticks** dentro del HTML y escapá `<` y `>` dentro de `<code>` como `&lt;` y `&gt;`.
 - Agregá lecciones siempre **al final** del array `lecciones` (el progreso de "leída" se guarda por posición).
-- No cambies el texto de preguntas existentes salvo que estén mal (el texto es la clave del progreso de repaso del alumno).
+- No cambies el texto de preguntas ni de prácticas existentes salvo que estén mal (el texto es la clave del progreso del alumno).
 - No toques `app.js`, `index.html` ni `styles.css` salvo para arreglar un bug real.
 - Al terminar, respondé con 2-3 líneas: qué módulo, qué agregaste, resultado del validador.

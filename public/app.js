@@ -2,7 +2,7 @@ const T = window.TEMARIO;
 const app = document.getElementById('app');
 const APROBADO = 80;
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-const cargar = () => ({ leidas: {}, notas: {}, falladas: {}, apuntes: {}, agenda: {}, dias: {}, tarjetas: {}, aciertos: {}, ...JSON.parse(localStorage.getItem('progreso') || '{}') });
+const cargar = () => ({ leidas: {}, notas: {}, falladas: {}, apuntes: {}, agenda: {}, dias: {}, tarjetas: {}, aciertos: {}, practicas: {}, ...JSON.parse(localStorage.getItem('progreso') || '{}') });
 const guardar = p => localStorage.setItem('progreso', JSON.stringify(p));
 const mezclar = a => a.map(x => [Math.random(), x]).sort((x, y) => x[0] - y[0]).map(x => x[1]);
 // La clave de una pregunta es su texto: sobrevive a reordenar o insertar preguntas.
@@ -84,10 +84,13 @@ const nivelClase = n => ({ 'Básico': 'basico', 'Intermedio': 'intermedio', 'Ava
 const badge = m => `<span class="badge ${nivelClase(m.nivel)}">${esc(m.nivel)}</span>`;
 const icono = m => m.icono || '📘';
 const barra = pct => `<div class="barra" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><span style="width:${pct}%"></span></div>`;
-// Avance del módulo: cada lección leída cuenta 1 y aprobar el quiz cuenta 1.
+// Avance del módulo: cada lección leída, cada práctica hecha y aprobar el quiz cuentan 1.
+// La práctica se guarda por su texto, igual que las preguntas: sobrevive a agregar ejercicios nuevos.
+const clavePractica = (m, texto) => m.id + '|' + texto;
 const avance = (m, p) => {
   const leidas = m.lecciones.filter((_, i) => p.leidas[m.id + ':' + i]).length;
-  return { leidas, pct: Math.round(100 * (leidas + aprobado(m, p)) / (m.lecciones.length + 1)) };
+  const hechas = m.practica.filter(x => p.practicas[clavePractica(m, x)]).length;
+  return { leidas, hechas, pct: Math.round(100 * (leidas + hechas + aprobado(m, p)) / (m.lecciones.length + m.practica.length + 1)) };
 };
 
 function inicio() {
@@ -122,7 +125,7 @@ function inicio() {
         <small>Módulo ${i}</small>
         <h3>${esc(m.titulo)}</h3>
         ${barra(a.pct)}
-        <small>${a.leidas}/${m.lecciones.length} lecciones · quiz ${nota != null ? nota + '%' : 'pendiente'}${aprobado(m, p) ? ' ✔' : ''}</small>
+        <small>${a.leidas}/${m.lecciones.length} lecciones · práctica ${a.hechas}/${m.practica.length} · quiz ${nota != null ? nota + '%' : 'pendiente'}${aprobado(m, p) ? ' ✔' : ''}</small>
       </a>`;
     }).join('')}</div>`;
   app.querySelector('#exportar').onclick = exportar;
@@ -141,7 +144,7 @@ function exportar() {
 // Si agregás campos nuevos al progreso, sumalos acá también.
 function limpiarProgreso(d) {
   if (!d || typeof d !== 'object' || Array.isArray(d)) throw new Error('formato inválido');
-  const p = { leidas: {}, notas: {}, falladas: {}, apuntes: {}, agenda: {}, dias: {}, tarjetas: {}, aciertos: {} };
+  const p = { leidas: {}, notas: {}, falladas: {}, apuntes: {}, agenda: {}, dias: {}, tarjetas: {}, aciertos: {}, practicas: {} };
   for (const k of ['leidas', 'falladas']) for (const c in d[k] || {}) p[k][c] = true;
   for (const c in d.notas || {}) p.notas[c] = Math.min(100, Math.max(0, Number(d.notas[c]) || 0));
   for (const c in d.apuntes || {}) p.apuntes[c] = String(d.apuntes[c]);
@@ -149,6 +152,7 @@ function limpiarProgreso(d) {
     const a = d.agenda[c] || {};
     p.agenda[c] = { n: Math.min(INTERVALOS.length - 1, Math.max(0, parseInt(a.n) || 0)), d: /^\d{4}-\d{2}-\d{2}$/.test(a.d) ? a.d : dia() };
   }
+  for (const c in d.practicas || {}) if (d.practicas[c]) p.practicas[c] = true;
   for (const c in d.aciertos || {}) {
     const a = d.aciertos[c] || {}, total = Math.max(0, parseInt(a.total) || 0);
     p.aciertos[c] = { ok: Math.min(total, Math.max(0, parseInt(a.ok) || 0)), total };
@@ -189,7 +193,7 @@ function modulo(id, abrir = null) {
         <div class="contenido">${l.html}</div>
         ${leida(n) ? '' : `<button data-leida="${n}">✔ Marcar como leída</button>`}
       </details>`).join('')}
-    <h2>🛠️ Práctica</h2><ol class="practica">${m.practica.map(x => `<li>${esc(x)}</li>`).join('')}</ol>
+    <h2>🛠️ Práctica</h2><ol class="practica">${m.practica.map((x, n) => `<li class="${p.practicas[clavePractica(m, x)] ? 'hecha' : ''}"><label><input type="checkbox" data-practica="${n}" ${p.practicas[clavePractica(m, x)] ? 'checked' : ''}> <span>${esc(x)}</span></label></li>`).join('')}</ol>
     <section class="card">
       <h2>✍️ Explicalo con tus palabras</h2>
       <p class="suave">Técnica Feynman: si no lo podés explicar simple, todavía no lo entendiste. Se guarda solo.</p>
@@ -215,6 +219,12 @@ function modulo(id, abrir = null) {
     const p = cargar(); p.leidas[m.id + ':' + b.dataset.leida] = true; estudiar(p); guardar(p); modulo(id);
   });
   app.querySelector('#apunte').oninput = e => { const p = cargar(); p.apuntes[m.id] = e.target.value; guardar(p); };
+  app.querySelectorAll('[data-practica]').forEach(c => c.onchange = () => {
+    const p = cargar(), k = clavePractica(m, m.practica[c.dataset.practica]);
+    if (c.checked) { p.practicas[k] = true; estudiar(p); } else delete p.practicas[k];
+    guardar(p);
+    modulo(id);
+  });
   const buscada = abrir != null && app.querySelectorAll('details.leccion')[abrir];
   if (buscada) {
     if (ultimaBusqueda) resaltarEn(buscada.querySelector('.contenido'), ultimaBusqueda);
