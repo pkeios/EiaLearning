@@ -897,6 +897,7 @@ Formato: tabla con producto | plan gratuito | precio por millón de vectores | f
     'Combinar evaluaciones por código, LLM-as-judge y revisión humana',
     'Usar evals para iterar sin regresiones',
     'Comparar versiones con rigor: intervalos de confianza, comparación pareada y pass@k vs pass^k',
+    'Armar y etiquetar el dataset de evals: datos sintéticos por dimensiones, etiquetas binarias y un experto como referencia',
   ],
   lecciones: [
     { titulo: 'Por qué las evals son la habilidad número uno', html: `
@@ -941,17 +942,44 @@ def diferencia_pareada(a, b):         # mismos casos, mismo orden
         <li><strong>pass^k</strong> (popularizada por τ-bench): probabilidad de que <em>los k</em> intentos salgan bien. Mide confiabilidad, que es lo que importa cuando un agente atiende usuarios reales.</li>
       </ul>
       <p>Con 80% de éxito por intento (independientes): pass@3 = 1 − 0,2³ ≈ <strong>99%</strong>, pero pass^3 = 0,8³ ≈ <strong>51%</strong>. El mismo agente parece excelente o mediocre según qué preguntes.</p>` },
+    { titulo: 'Armar y etiquetar el dataset: datos sintéticos, etiquetas binarias y un experto', html: `
+      <p>Un juez y unas métricas valen lo que vale el dataset que los respalda. Recomendaciones prácticas de la guía de evals de Hamel Husain:</p>
+      <p><strong>Datos sintéticos por dimensiones, no "generá 100 preguntas".</strong> Si le pedís al modelo preguntas de prueba genéricas, salen parecidas entre sí. Mejor:</p>
+      <ol>
+        <li>Definí <strong>dimensiones</strong> que cambian el comportamiento (perfil del usuario, intención, dificultad).</li>
+        <li>Escribí a mano unas 20 combinaciones (tuplas) y pedile al modelo que proponga más.</li>
+        <li>Convertí cada tupla en una consulta realista, con una llamada aparte.</li>
+      </ol>
+      <pre><code>import itertools, random
+
+dimensiones = {
+    "perfil": ["cliente nuevo", "cliente de hace años", "empresa"],
+    "intencion": ["reclamo", "consulta de factura", "pedido de baja"],
+    "dificultad": ["clara", "ambigua", "con datos faltantes"],
+}
+tuplas = list(itertools.product(*dimensiones.values()))   # 27 combinaciones
+for perfil, intencion, dificultad in random.sample(tuplas, 15):
+    consulta = llm(f"Escribí el mensaje que mandaría un {perfil} con un {intencion}, "
+                   f"redactado de forma {dificultad}. Devolvé solo el mensaje.")</code></pre>
+      <p>Los datos sintéticos sirven para arrancar el análisis de errores antes de tener usuarios y para probar fallos raros. <strong>No sirven para estimar con qué frecuencia ocurre cada fallo en producción:</strong> eso solo lo dicen los datos reales.</p>
+      <p><strong>Cuánto revisar:</strong> etiquetá vos al menos 30 trazas antes de dejar que un agente proponga fallos. Trabajá con unas 100 trazas variadas y seguí hasta que las nuevas dejen de mostrar modos de fallo distintos. Para entrenar o calibrar un juez, de 100 a 200 ejemplos etiquetados por modo de fallo.</p>
+      <p><strong>Etiquetas binarias, no escalas de 1 a 5.</strong> La diferencia entre un 3 y un 4 es subjetiva, hace falta más muestra para comparar y los evaluadores tienden al valor del medio. Si querés medir progreso gradual, dividí el criterio en chequeos binarios ("incluye 4 de los 5 datos esperados").</p>
+      <p><strong>Un experto como referencia.</strong> Al principio, una sola persona experta en el dominio define qué es una buena respuesta. Sumá más etiquetadores solo si hace falta, y medí cuánto coinciden (por ejemplo, con el kappa de Cohen). No tercerices el análisis de errores central: quien no conoce el dominio no ve los fallos que importan.</p>
+      <p><strong>Cuidado con las métricas genéricas.</strong> Puntajes listos para usar como "helpfulness" o "coherencia", o métricas de similitud como ROUGE y BERTScore, dan una falsa sensación de control. Usá modos de fallo binarios que salgan de tu propio análisis de errores.</p>` },
   ],
   practica: [
     'Tomá tu RAG o chatbot, revisá 50 respuestas a mano y armá una taxonomía de errores con su frecuencia.',
     'Escribí un juez LLM binario para tu modo de fallo más común. Etiquetá 40 casos a mano y medí el acuerdo (accuracy, y precision/recall del juez).',
     'Integrá tus evals en CI para que fallen si la tasa de aprobación baja de un umbral.',
     'Corré cada caso de tus evals 5 veces con dos versiones de prompt. Calculá el intervalo de confianza de cada versión y el de la diferencia pareada, decidí si la mejora es real y estimá cuántos casos necesitarías para detectar una mejora de 3 puntos.',
+    'Definí 3 dimensiones para tu app, generá 20 tuplas y convertilas en consultas con un LLM. Etiquetá vos las respuestas con pasa o falla, pedile a otra persona que etiquete 30 de las mismas y calculá el acuerdo con el kappa de Cohen.',
   ],
   recursos: [
     { t: 'Hamel Husain — Your AI Product Needs Evals', url: 'https://hamel.dev/blog/posts/evals/' },
     { t: 'Anthropic — Crear evaluaciones empíricas', url: 'https://docs.claude.com/en/docs/test-and-evaluate/develop-tests' },
     { t: 'Chip Huyen — AI Engineering (libro, O\'Reilly)', url: 'https://www.oreilly.com/library/view/ai-engineering/9781098166298/' },
+    { t: 'Hamel Husain — AI Evals: preguntas frecuentes', url: 'https://hamel.dev/blog/posts/evals-faq/' },
+    { t: 'Hamel Husain — Using LLM-as-a-Judge for evaluation', url: 'https://hamel.dev/blog/posts/llm-judge/' },
     { t: 'Anthropic — A statistical approach to model evaluations', url: 'https://www.anthropic.com/research/statistical-approach-to-model-evals' },
     { t: 'τ-bench: agentes con herramientas y usuarios (paper, introduce pass^k)', url: 'https://arxiv.org/abs/2406.12045' },
   ],
@@ -967,6 +995,11 @@ def diferencia_pareada(a, b):         # mismos casos, mismo orden
     { q: 'Generás código y tenés tests automáticos: podés producir 5 candidatos y quedarte con el que pase. ¿Qué métrica describe mejor este sistema?', opciones: ['pass^5', 'pass@5', 'BLEU', 'Latencia media'], correcta: 1, explicacion: 'Si podés verificar y elegir, te alcanza con que uno de los k salga bien: eso es pass@k. pass^k es para cuando cada intento llega al usuario.' },
     { q: 'Corrés la misma eval dos veces sin cambiar nada y da 78% y 83%. ¿Qué hacés?', opciones: ['Te quedás con la corrida mejor', 'Cambiás de modelo', 'Ejecutás cada caso varias veces, promediás y reportás el error estándar', 'Bajás el dataset a 10 casos para que corra más rápido'], correcta: 2, explicacion: 'Ese salto es ruido del modelo. Repetir y promediar reduce la varianza; achicar el dataset la aumenta, y quedarte con la mejor corrida es engañarte.' },
     { q: 'Tu dataset tiene 100 preguntas, pero son 10 preguntas sobre cada uno de 10 documentos. El error estándar calculado de forma ingenua es ±4 puntos. ¿Qué pasa?', opciones: ['Nada, el cálculo es correcto', 'El error real es menor', 'Hay que borrar documentos', 'Las preguntas de un mismo documento no son independientes: hay que agrupar el error por documento, y puede ser bastante mayor'], correcta: 3, explicacion: 'Las preguntas de un mismo documento tienden a acertarse o fallarse juntas. Anthropic encontró errores agrupados de más de 3 veces los ingenuos en evals populares.' },
+    { q: 'Necesitás casos de prueba sintéticos para una app que todavía no tiene usuarios. ¿Cómo los generás?', opciones: ['Definís dimensiones (perfil, intención, dificultad), las combinás en tuplas y convertís cada tupla en una consulta realista con una llamada aparte', 'Le pedís al modelo "generá 100 preguntas de prueba"', 'Copiás preguntas de un benchmark público', 'No usás datos sintéticos nunca'], correcta: 0, explicacion: 'Pedir preguntas genéricas da casos parecidos entre sí. Las dimensiones fuerzan variedad en lo que de verdad cambia el comportamiento de tu sistema.' },
+    { q: 'Tu juez usa una escala de 1 a 5 de "calidad" y dos evaluadores humanos no se ponen de acuerdo entre 3 y 4. ¿Qué cambiás?', opciones: ['Pasás a una escala de 1 a 10', 'Pasás a veredictos binarios de pasa o falla, uno por cada modo de fallo concreto', 'Promediás las dos notas', 'Sacás a uno de los evaluadores'], correcta: 1, explicacion: 'La diferencia entre puntos vecinos de una escala es subjetiva. Un criterio binario y concreto es más fácil de acordar y de medir. Más puntos de escala empeoran el problema.' },
+    { q: 'Tu equipo quiere usar un "helpfulness score" genérico de una librería como métrica principal de calidad. ¿Qué opinás?', opciones: ['Perfecto, es estándar', 'Mejor usar ROUGE', 'Las métricas genéricas pueden dar falsa confianza: conviene usar modos de fallo binarios salidos de tu análisis de errores', 'Mejor usar BERTScore'], correcta: 2, explicacion: 'Un puntaje genérico no sabe qué falla en tu producto. ROUGE y BERTScore miden parecido de texto, no si la respuesta es correcta o útil.' },
+    { q: 'Al empezar a armar evals, ¿quién conviene que defina qué es una buena respuesta?', opciones: ['Un proveedor externo de etiquetado', 'Todo el equipo votando cada caso', 'El propio modelo', 'Un experto en el dominio como referencia, sumando más etiquetadores solo si hace falta y midiendo cuánto coinciden'], correcta: 3, explicacion: 'Un criterio consistente vale más que muchas opiniones mezcladas. Quien no conoce el dominio no detecta los fallos que importan.' },
+    { q: '¿Para qué no conviene usar datos sintéticos?', opciones: ['Para encontrar fallos raros', 'Para estimar con qué frecuencia ocurre cada fallo en producción', 'Para arrancar el análisis de errores antes de tener usuarios', 'Para probar casos borde'], correcta: 1, explicacion: 'La mezcla de casos sintéticos la elegiste vos, así que no refleja la frecuencia real de cada fallo. Para eso hacen falta trazas de producción.' },
   ],
 },
 {

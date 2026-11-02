@@ -17,6 +17,7 @@ window.GLOSARIO = [
   { t: 'Context rot', d: 'Degradación de la capacidad del modelo para usar la información a medida que el contexto crece.', m: 'prompting' },
   { t: 'Cuantización', d: 'Representar los pesos del modelo con menos bits para ahorrar memoria y ganar velocidad, con algo de pérdida de calidad.', m: 'fine-tuning' },
   { t: 'Data leakage', d: 'Información que no tendrías en producción se filtra al entrenamiento y da resultados irrealmente buenos.', m: 'ml-clasico' },
+  { t: 'Datos sintéticos', d: 'Casos generados con un modelo en lugar de recolectados de usuarios reales. Útiles para arrancar y probar casos raros; no para medir frecuencias reales.', m: 'evals' },
   { t: 'Descenso de gradiente', d: 'Actualizar los parámetros en la dirección opuesta al gradiente de la loss para reducirla.', m: 'fundamentos' },
   { t: 'Divergencia KL', d: 'Sorpresa extra por usar una distribución q en lugar de la real p. Mide cuánto se aleja un modelo de otro.', m: 'fundamentos' },
   { t: 'DPO', d: 'Ajuste por preferencias con pares de respuestas preferida y rechazada, sin entrenar un modelo de recompensa aparte.', m: 'fine-tuning' },
