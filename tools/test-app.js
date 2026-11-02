@@ -8,8 +8,8 @@ const ctx = { window: {}, document: { getElementById: id => id === 'tema' ? boto
 vm.createContext(ctx);
 vm.runInContext(leer('contenido.js'), ctx);
 vm.runInContext(leer('glosario.js'), ctx);
-vm.runInContext(leer('app.js') + ';this.X = { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos, avance, clavePractica, registrarExamen, planDeHoy };', ctx);
-const { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos, avance, clavePractica, registrarExamen, planDeHoy } = ctx.X;
+vm.runInContext(leer('app.js') + ';this.X = { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos, avance, clavePractica, registrarExamen, planDeHoy, apuntesMarkdown };', ctx);
+const { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos, avance, clavePractica, registrarExamen, planDeHoy, apuntesMarkdown } = ctx.X;
 const plano = o => JSON.parse(JSON.stringify(o));
 
 // Inicio renderiza con progreso vacío
@@ -172,6 +172,14 @@ guardado = null;
 ctx.location.hash = '#/hoy';
 vm.runInContext('render()', ctx);
 assert.ok(el.h.includes('Qué estudiar hoy') && el.h.includes('class="plan"'));
+
+// Apuntes en Markdown: solo módulos con texto, en el orden del temario
+const pa = cargar();
+assert.equal(apuntesMarkdown(pa), null);
+const [ma, mb] = ctx.window.TEMARIO;
+pa.apuntes[mb.id] = ' segundo '; pa.apuntes[ma.id] = 'primero'; pa.apuntes.inexistente = 'x';
+const md = apuntesMarkdown(pa);
+assert.ok(md.startsWith('# Mis apuntes') && md.indexOf(ma.titulo) < md.indexOf(mb.titulo) && md.includes('segundo\n') && !md.includes(' segundo '));
 
 // Repaso vacío muestra un mensaje en lugar de un formulario
 guardado = null;

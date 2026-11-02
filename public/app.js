@@ -120,6 +120,7 @@ function inicio() {
         <a class="boton secundario" href="#/hoy">📋 Qué estudiar hoy</a>
         <a class="boton secundario" href="#/progreso">📊 Progreso por módulo</a>
         ${p.examen >= APROBADO ? '<a class="boton secundario" href="#/certificado">🎓 Certificado</a>' : ''}
+        <button class="secundario" id="apuntes">📝 Descargar mis apuntes</button>
         <button class="secundario" id="exportar">⬇ Exportar progreso</button>
         <button class="secundario" id="importar">⬆ Importar progreso</button>
         <input type="file" id="archivo" accept=".json,application/json" hidden>
@@ -136,15 +137,30 @@ function inicio() {
       </a>`;
     }).join('')}</div>`;
   app.querySelector('#exportar').onclick = exportar;
+  app.querySelector('#apuntes').onclick = descargarApuntes;
   app.querySelector('#importar').onclick = () => app.querySelector('#archivo').click();
   app.querySelector('#archivo').onchange = e => e.target.files[0] && importar(e.target.files[0]);
 }
 
-function exportar() {
-  const url = URL.createObjectURL(new Blob([JSON.stringify(cargar(), null, 2)], { type: 'application/json' }));
-  const a = Object.assign(document.createElement('a'), { href: url, download: 'progreso-ai-engineering.json' });
+function descargar(nombre, texto, tipo) {
+  const url = URL.createObjectURL(new Blob([texto], { type: tipo }));
+  const a = Object.assign(document.createElement('a'), { href: url, download: nombre });
   a.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+const exportar = () => descargar('progreso-ai-engineering.json', JSON.stringify(cargar(), null, 2), 'application/json');
+
+// Apuntes "Explicalo con tus palabras" de todos los módulos, en el orden del temario. null si no hay ninguno.
+function apuntesMarkdown(p) {
+  const con = T.filter(m => (p.apuntes[m.id] || '').trim());
+  if (!con.length) return null;
+  return `# Mis apuntes de AI Engineering\n\n_Descargado el ${dia()}_\n` +
+    con.map(m => `\n## ${icono(m)} ${m.titulo}\n\n${p.apuntes[m.id].trim()}\n`).join('');
+}
+function descargarApuntes() {
+  const md = apuntesMarkdown(cargar());
+  if (!md) return alert('Todavía no escribiste apuntes. Están en cada módulo, en "Explicalo con tus palabras".');
+  descargar('mis-apuntes-ai-engineering.md', md, 'text/markdown');
 }
 
 // El archivo viene de afuera: solo se copian los campos conocidos y con el tipo esperado.

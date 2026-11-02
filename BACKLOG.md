@@ -18,4 +18,5 @@
 - [x] Página "Qué estudiar hoy" que junte en una lista corta: repaso pendiente, tarjetas del día, la próxima lección sin leer y la próxima práctica sin hacer del módulo actual
 - [x] Instalable y sin conexión (PWA): manifest y service worker para estudiar desde el celular sin internet
 - [x] Aviso discreto "Hay contenido nuevo, recargá" cuando el service worker descarga una versión nueva del curso
-- [ ] Descargar todos tus apuntes "Explicalo con tus palabras" en un archivo Markdown, ordenados por módulo
+- [x] Descargar todos tus apuntes "Explicalo con tus palabras" en un archivo Markdown, ordenados por módulo
+- [ ] Modo examen por módulo con tiempo límite (por ejemplo, 1 minuto por pregunta) para practicar bajo presión, opcional
