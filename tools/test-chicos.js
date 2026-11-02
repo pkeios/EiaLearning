@@ -17,6 +17,8 @@ M.forEach((m, i) => {
   let seguidas = 0;
   m.pasos.forEach(s => { seguidas = s.q || s.clasificar ? seguidas + 1 : 0; assert(seguidas <= 2, 'misión ' + i + ': más de 2 preguntas seguidas'); });
 });
+// Metacognición: cada misión termina con una pregunta corta para explicar con tus palabras.
+M.forEach((m, i) => assert(m.reflexion && m.reflexion.endsWith('?') && m.reflexion.split(' ').length <= 15, 'misión ' + i + ' sin reflexión corta'));
 assert(M.filter(m => m.pasos.some(s => s.taller)).length >= 6, 'todas las misiones con práctica adentro');
 assert(!/https?:\/\/(?!atacante)/.test(h), 'no tiene que haber links a sitios externos');
 

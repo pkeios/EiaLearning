@@ -66,7 +66,7 @@
 // Pasos: idea (emoji + frase corta), elegir (una correcta) y clasificar (cada ítem en su grupo).
 // Cada misión tiene 3 ejercicios: una estrella por cada uno resuelto al primer intento.
 const MISIONES = [
-  { emoji: '🧠', titulo: '¿Qué es la IA?', color: '#7b5cff', pasos: [
+  { emoji: '🧠', titulo: '¿Qué es la IA?', color: '#7b5cff', reflexion: '¿Por qué decimos que la IA no piensa como una persona?', pasos: [
     { idea: '🤖', t: 'La IA es un programa que aprende a encontrar patrones.' },
     { taller: 'patron', t: '¡Tu turno! Sé la máquina: descubrí la regla secreta mirando ejemplos.' },
     { idea: '📱 🎵 🗺️', t: 'Ya la usás: el celu que reconoce tu cara, la música que te recomienda, el mapa que esquiva el tránsito.' },
@@ -75,7 +75,7 @@ const MISIONES = [
     { q: '¿La IA tiene sentimientos?', o: ['😢 Sí, se pone triste', '🙅 No, es un programa'], c: 1, e: 'Aunque a veces escriba como una persona, no siente nada.' },
     { q: '¿Quién hace la IA?', o: ['👩‍💻 Personas', '🌧️ Aparece sola', '👽 Extraterrestres'], c: 0, e: 'La hacen personas. Por eso también puede tener sus errores.' },
   ] },
-  { emoji: '🐶', titulo: '¿Cómo aprende?', color: '#ff7a59', pasos: [
+  { emoji: '🐶', titulo: '¿Cómo aprende?', color: '#ff7a59', reflexion: '¿Por qué una IA necesita ejemplos variados para aprender bien?', pasos: [
     { idea: '📚 👀', t: 'La máquina aprende viendo MUCHOS ejemplos. ¡Como vos!' },
     { clasificar: 'Enseñale a la máquina: ¿perro o gato?', grupos: ['🐶 Perro', '🐱 Gato'], items: [['🐕', 0], ['🐈', 1], ['🐩', 0], ['🐈‍⬛', 1], ['🦮', 0]] },
     { idea: '🏷️', t: 'Lo que hiciste se llama "etiquetar". Son los datos de entrenamiento.' },
@@ -84,7 +84,7 @@ const MISIONES = [
     { q: 'La máquina solo vio pelotas rojas 🔴. Le mostrás una azul 🔵. ¿Qué pasa?', o: ['😵 Puede confundirse', '🎯 Seguro acierta'], c: 0, e: 'Nunca vio una pelota azul. Aprende solo de lo que le mostraste.' },
     { q: '¿Qué necesita para aprender mejor?', o: ['🍕 Pizza', '🌈 Ejemplos variados', '😴 Dormir'], c: 1, e: 'Ejemplos variados = una IA que se equivoca menos.' },
   ] },
-  { emoji: '💬', titulo: 'Chatbots', color: '#1f9dd6', pasos: [
+  { emoji: '💬', titulo: 'Chatbots', color: '#1f9dd6', reflexion: '¿Cómo hace un chatbot para escribir, y por qué a veces inventa?', pasos: [
     { idea: '🔮', t: 'Un chatbot adivina la palabra que sigue. Una y otra vez.' },
     { q: 'Completá: "Había una vez una princesa en un gran..."', o: ['🥦 brócoli', '🚀 cohete', '🏰 castillo'], c: 2, e: '¡Eso hace un chatbot! Elige la palabra que más vio en los textos.' },
     { taller: 'palabras', t: '¡Tu turno! Armá un mini chatbot que aprende de un texto.' },
@@ -92,7 +92,7 @@ const MISIONES = [
     { q: 'El chatbot dice que en Marte viven pingüinos 🐧. ¿Qué hacés?', o: ['✅ Lo copio para la tarea', '🔍 Lo reviso en un libro o con mi profe'], c: 1, e: 'Siempre revisá los datos importantes en otra fuente.' },
     { q: '¿El chatbot siempre tiene razón?', o: ['👎 No, puede equivocarse', '👍 Sí, siempre'], c: 0, e: 'Es muy útil, pero se equivoca. Vos sos quien revisa.' },
   ] },
-  { emoji: '🎯', titulo: 'Pedir bien', color: '#e0a100', pasos: [
+  { emoji: '🎯', titulo: 'Pedir bien', color: '#e0a100', reflexion: '¿Qué tiene que tener un buen pedido a una IA?', pasos: [
     { idea: '✍️', t: 'Lo que le escribís a la IA se llama "prompt". Cuanto más claro, mejor.' },
     { q: '¿Qué prompt es mejor?', o: ['😐 "Volcanes"', '🌋 "Explicame cómo se forma un volcán en 3 frases, para alguien de 11 años"'], c: 1, e: 'Dice qué querés, para quién y cómo.' },
     { idea: '🤖 📋', t: 'Las computadoras hacen EXACTO lo que les decís. Por eso las instrucciones claras importan.' },
@@ -101,7 +101,7 @@ const MISIONES = [
     { idea: '🌟', t: 'Superpoder: pedile que te haga preguntas para practicar.' },
     { q: '¿Qué te ayuda a aprender más?', o: ['📝 "Haceme la tarea"', '🧠 "Haceme 3 preguntas sobre las plantas"'], c: 1, e: 'Si te toma examen, aprendés vos.' },
   ] },
-  { emoji: '🛡️', titulo: 'Seguridad', color: '#1f9d55', pasos: [
+  { emoji: '🛡️', titulo: 'Seguridad', color: '#1f9d55', reflexion: '¿Qué datos nunca le darías a una IA, y por qué?', pasos: [
     { idea: '🔐', t: 'Tus datos personales no se los des a una IA.' },
     { clasificar: '¿Se lo puedo escribir a una IA?', grupos: ['👍 Sí', '🚫 No'], items: [['¿Por qué el cielo es azul?', 0], ['Mi dirección', 1], ['Mi contraseña', 1], ['Ideas para un cuento de dragones', 0], ['El teléfono de mi familia', 1]] },
     { taller: 'tapar', t: '¡Tu turno! Tapá los datos personales antes de mandar el mensaje.' },
@@ -110,7 +110,7 @@ const MISIONES = [
     { idea: '🙋', t: 'Si algo te hace sentir incómodo, cortá y contale a un adulto.' },
     { q: 'Un chat te hace sentir incómodo. ¿Qué hacés?', o: ['🙋 Corto y le cuento a un adulto', '🤐 No le cuento a nadie'], c: 0, e: 'Contarlo siempre está bien.' },
   ] },
-  { emoji: '⚖️', titulo: 'Justa y honesta', color: '#d6457a', pasos: [
+  { emoji: '⚖️', titulo: 'Justa y honesta', color: '#d6457a', reflexion: '¿Cómo se arregla una IA que trata distinto a algunas personas?', pasos: [
     { idea: '🪞', t: 'La IA copia lo que ve en sus ejemplos. También los errores de las personas.' },
     { q: 'Una IA siempre dibuja a los científicos como hombres 👨‍🔬. ¿Está bien?', o: ['✅ Sí, es así', '❌ No, es un error: hay muchas científicas 👩‍🔬'], c: 1, e: 'Se llama sesgo. La IA repite lo que más vio, aunque no sea justo.' },
     { taller: 'sesgo', t: '¡Tu turno! Arreglá el sesgo dándole a la IA ejemplos variados.' },
@@ -201,6 +201,7 @@ function mision(i) {
       <div class="fiesta">🎉🎊🎉</div>
       <p class="texto">¡Misión ${i + 1} cumplida!</p>
       <div class="grande">${'⭐'.repeat(estrellas) + '☆'.repeat(3 - estrellas)}</div>
+      <p class="chip" style="display:block">💭 <strong>Contale a alguien de tu casa:</strong> ${m.reflexion} Si podés explicarlo con tus palabras, ¡lo aprendiste de verdad!</p>
       <p>${estrellas === 3 ? '¡Perfecto, todo al primer intento!' : 'Podés volver a jugarla para ganar más estrellas.'}</p>
       ${todas ? SIGUIENTE : ''}
       <div class="acciones"><a class="volver" href="#/">← Misiones</a>${i + 1 < MISIONES.length ? `<a class="boton" href="#/${i + 1}">Siguiente misión →</a>` : '<a class="boton" href="#/">🏆 Ver mis estrellas</a>'}</div>
