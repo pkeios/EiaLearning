@@ -1119,6 +1119,7 @@ texto = tok.apply_chat_template(ejemplo, tokenize=False)   # el formato que el m
     'Optimizar costo y latencia sin perder calidad',
     'Hacer sistemas fiables: validación, fallbacks, versionado',
     'Migrar modelos y prompts en producción con shadow, canary y rollback',
+    'Proteger costo y disponibilidad con cuotas, límites de entrada y salida, topes de gasto y detección de abuso',
   ],
   lecciones: [
     { titulo: 'Observabilidad y versionado', html: `
@@ -1163,15 +1164,49 @@ def variante(usuario_id):
 nombre, cfg = variante("usuario-123")
 # registrá "nombre" en cada traza para comparar éxito, latencia y costo por variante</code></pre>
       <p>El mismo usuario siempre cae en la misma variante: así su experiencia es coherente y las métricas por variante no se mezclan.</p>` },
+    { titulo: 'Consumo sin control: cuotas, límites y "Denial of Wallet"', html: `
+      <p>Cada llamada a un LLM cuesta dinero, así que un abuso o un bug se traduce directo en una factura. OWASP lo incluye en su Top 10 para aplicaciones LLM como <strong>consumo sin límites</strong>, con tres riesgos principales:</p>
+      <ul>
+        <li><strong>Denial of Wallet:</strong> alguien provoca un volumen enorme de operaciones pagas para dispararte los costos.</li>
+        <li><strong>Inundación de entradas largas:</strong> muchos mensajes de tamaños variables y enormes que agotan recursos.</li>
+        <li><strong>Extracción del modelo:</strong> millones de consultas armadas para juntar salidas y entrenar una copia de tu modelo.</li>
+      </ul>
+      <p>Y sin atacantes también pasa: un agente con un bug que entra en bucle durante la noche.</p>
+      <p><strong>Defensas, en capas:</strong></p>
+      <ul>
+        <li><strong>Límite de tamaño de entrada</strong> y <code>max_tokens</code> razonable en cada llamada.</li>
+        <li><strong>Cuotas y rate limits por usuario</strong>, más estrictos para usuarios anónimos.</li>
+        <li><strong>Topes por tarea en agentes:</strong> máximo de pasos y de tokens.</li>
+        <li><strong>Timeouts</strong> y colas con límite, para que nadie acapare los recursos.</li>
+        <li><strong>Monitoreo y alertas de gasto anómalo</strong>, más un <strong>tope duro</strong> configurado en el panel del proveedor, por si todo lo demás falla.</li>
+        <li><strong>No expongas</strong> datos internos como logprobs si no hace falta: facilitan la extracción.</li>
+        <li><strong>Degradación elegante:</strong> bajo carga, mejor un modelo más chico o una respuesta parcial que caerse.</li>
+      </ul>
+      <pre><code>LIMITE_ENTRADA = 20_000      # caracteres por mensaje
+CUOTA_DIARIA = 200_000       # tokens por usuario por día
+
+def atender(usuario, mensaje):
+    if len(mensaje) &gt; LIMITE_ENTRADA:
+        return "Tu mensaje es demasiado largo."
+    if consumo_de_hoy(usuario) &gt;= CUOTA_DIARIA:
+        return "Llegaste al límite de uso de hoy."
+    resp = llamar_modelo(mensaje, max_tokens=1024, timeout=30)
+    registrar_consumo(usuario, resp.usage.input_tokens + resp.usage.output_tokens)
+    if gasto_de_la_ultima_hora() &gt; 2 * gasto_promedio_por_hora():
+        alertar("gasto anómalo")   # además del tope duro en el panel del proveedor
+    return resp.texto</code></pre>
+      <p>Pensalo como cualquier otro recurso caro: nadie deja una base de datos sin límites de conexiones, y un LLM merece el mismo cuidado.</p>` },
   ],
   practica: [
     'Agregá a tu app un log por llamada (Postgres o Langfuse) con tokens, costo, latencia y versión de prompt. Hacé un dashboard simple.',
     'Implementá routing: un clasificador barato decide si la consulta va al modelo chico o al grande. Medí ahorro y calidad con tus evals.',
     'Agregá a tu app un canary configurable (porcentaje, modelo y versión de prompt) con hash estable por usuario, y un tablero que compare tasa de éxito, latencia y costo entre estable y canary. Simulá un rollback cambiando solo la configuración.',
+    'Agregá a tu app una cuota diaria de tokens por usuario, un límite de tamaño de entrada y una alerta cuando el gasto de la última hora supere el doble del promedio. Simulá un usuario abusivo con un script y verificá que el sistema lo frena.',
   ],
   recursos: [
     { t: 'Langfuse (observabilidad open source)', url: 'https://langfuse.com/docs' },
     { t: 'OpenTelemetry', url: 'https://opentelemetry.io/docs/' },
+    { t: 'OWASP — LLM10:2025 Unbounded Consumption', url: 'https://genai.owasp.org/llmrisk/llm102025-unbounded-consumption/' },
     { t: 'Claude — Ciclo de vida y retiro de modelos', url: 'https://platform.claude.com/docs/en/about-claude/model-deprecations' },
     { t: 'Documentación de prompt caching de Claude', url: 'https://docs.claude.com/en/docs/build-with-claude/prompt-caching' },
   ],
@@ -1187,6 +1222,11 @@ nombre, cfg = variante("usuario-123")
     { q: 'Querés probar un modelo nuevo con tráfico real sin que ningún usuario vea sus respuestas. ¿Qué técnica usás?', opciones: ['Canary al 5%', 'Un A/B test', 'Cambiar todo de una vez', 'Shadow: mandás una copia del tráfico al modelo nuevo y comparás offline'], correcta: 3, explicacion: 'En canary y A/B hay usuarios que reciben la versión nueva. En shadow nadie la ve, así que es el paso más seguro antes del canary.' },
     { q: 'Para asignar usuarios a un canary del 5% usás hash(usuario_id) % 100 en Python. ¿Qué problema tiene?', opciones: ['hash() de strings cambia entre procesos, así que el mismo usuario salta de variante; hay que usar un hash estable como SHA-256', 'Ninguno', 'Es demasiado lento', 'El 5% es demasiado tráfico'], correcta: 0, explicacion: 'Python aleatoriza hash() de strings en cada proceso. Con varios servidores o reinicios, un usuario vería respuestas de las dos variantes y las métricas se mezclarían.' },
     { q: 'Migraste a un modelo más capaz y algunos casos empeoraron. ¿Por qué puede pasar?', opciones: ['Porque los modelos más capaces siempre son peores', 'Porque es un bug del proveedor', 'Porque tus prompts estaban ajustados al modelo anterior: hay que revisarlos y comparar con evals pareadas', 'Por el prompt caching'], correcta: 2, explicacion: 'Instrucciones que compensaban debilidades del modelo viejo pueden confundir al nuevo. Se detecta con evals pareadas y se corrige revisando el prompt.' },
+    { q: '¿Qué es un ataque de "Denial of Wallet"?', opciones: ['Una caída del proveedor del modelo', 'Que alguien provoque un volumen enorme de operaciones pagas para dispararte los costos', 'El robo de la billetera digital de un usuario', 'Un error 402 de pago requerido'], correcta: 1, explicacion: 'No busca tirar el servicio sino hacerlo insostenible económicamente. Con LLMs pagos por token es un riesgo concreto.' },
+    { q: 'Lanzás un chatbot público, sin login. ¿Cuál es tu primera defensa de costos?', opciones: ['Ninguna, los costos se ven a fin de mes', 'Usar un modelo más grande', 'Bajar la temperatura', 'Límites por IP o usuario, tamaño máximo de entrada, max_tokens y un tope de gasto con alertas'], correcta: 3, explicacion: 'Sin login cualquiera puede generar tráfico. Las defensas en capas limitan cuánto puede gastar un solo origen y cuánto puede gastar el sistema entero.' },
+    { q: 'Un agente con un bug entró en bucle y gastó 400 USD en una noche. ¿Qué le faltaba?', opciones: ['Más GPU', 'Un máximo de pasos y de tokens por tarea, y alertas de gasto anómalo', 'Más contexto', 'Temperatura 0'], correcta: 1, explicacion: 'Un tope por tarea corta el bucle y una alerta avisa a tiempo. El resto de las opciones no limita nada.' },
+    { q: 'Un usuario manda una y otra vez mensajes de 300.000 caracteres. ¿Qué hacés?', opciones: ['Los aceptás: es su derecho', 'Subís max_tokens', 'Cambiás de modelo', 'Validás un tamaño máximo de entrada y aplicás una cuota por usuario'], correcta: 3, explicacion: 'Es el patrón de inundación con entradas largas. max_tokens limita la salida, no la entrada, que es lo que se está abusando.' },
+    { q: 'Alguien hace millones de consultas variadas a tu modelo afinado, aparentemente para copiarlo. ¿Qué riesgo es y cómo lo mitigás?', opciones: ['Extracción del modelo: rate limits, detección de anomalías en el uso y no exponer logprobs', 'Data leakage: separás mejor train y test', 'Alucinación: pedís citas', 'Overfitting: regularizás el modelo'], correcta: 0, explicacion: 'Las salidas de tu modelo pueden servir como datos para entrenar una copia. Limitar el volumen y detectar patrones raros lo hace mucho más caro.' },
   ],
 },
 {
