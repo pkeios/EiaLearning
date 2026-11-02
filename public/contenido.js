@@ -13,6 +13,7 @@ window.TEMARIO = [
     'Entender entropía, entropía cruzada, KL y perplexity: la matemática de la loss de un LLM',
     'Usar Python asíncrono para llamar APIs en paralelo, con límites de concurrencia y manejo de errores',
     'Aplicar probabilidad y estadística para decidir: Bayes, valor esperado, percentiles y tamaño de muestra',
+    'Razonar sobre formas de tensores y broadcasting para evitar bugs silenciosos',
   ],
   lecciones: [
     { titulo: 'Python para IA: lo imprescindible', html: `
@@ -102,6 +103,36 @@ lat = np.array(latencias_ms)
 print("promedio", lat.mean())
 print("p50, p95, p99", np.percentile(lat, [50, 95, 99]))</code></pre>
       <p><strong>4. Tamaño de muestra: pocos casos, mucho ruido.</strong> Con 10 casos, cada uno mueve la nota 10 puntos. Un 90% con 10 casos y un 90% con 500 no significan lo mismo. Ya lo viste en el módulo de evals con el error estándar: antes de celebrar una mejora, mirá cuántos casos la respaldan.</p>` },
+    { titulo: 'Formas y broadcasting: la fuente de bugs más común', html: `
+      <p>En NumPy y PyTorch, casi todos los errores raros vienen de la <strong>forma</strong> (shape) de los arrays. Y los peores no dan error: producen números equivocados en silencio.</p>
+      <p><strong>Convenciones y reglas básicas:</strong></p>
+      <ul>
+        <li>En modelos de lenguaje, lo habitual es <code>(batch, secuencia, dimensión)</code>.</li>
+        <li>Multiplicación de matrices: <code>(…, n, k) @ (k, m)</code> da <code>(…, n, m)</code>. Por ejemplo, <code>(2, 3, 4) @ (4, 5)</code> da <code>(2, 3, 5)</code>: las dimensiones de adelante se mantienen.</li>
+        <li><strong>Broadcasting:</strong> para operar arrays de formas distintas, se comparan las dimensiones <em>desde la derecha</em>. Son compatibles si son iguales o si una vale 1, y las que faltan se tratan como 1. Así, <code>(32, 1, 8) + (5, 8)</code> da <code>(32, 5, 8)</code>.</li>
+      </ul>
+      <p><strong>El bug silencioso clásico:</strong> la salida del modelo tiene forma <code>(N, 1)</code> y las etiquetas, <code>(N,)</code>. Al restarlas, el broadcasting arma una matriz de <code>(N, N)</code> con todas las combinaciones. No hay error, la loss da un número, y el entrenamiento no aprende lo que creés.</p>
+      <pre><code>import numpy as np
+pred = np.random.rand(100, 1)      # salida del modelo: (N, 1)
+y = np.random.rand(100)            # etiquetas: (N,)
+
+error = pred - y
+print(error.shape)                 # (100, 100) sin ningún error
+
+error = pred.squeeze(-1) - y       # lo correcto: (100,)
+assert error.shape == y.shape, error.shape
+
+# Restar la media de cada fila de X (4, 3): keepdims conserva la forma (4, 1)
+X = np.random.rand(4, 3)
+X_centrada = X - X.mean(axis=1, keepdims=True)
+# X - X.mean(axis=1) da error: (4, 3) contra (4,) no es compatible desde la derecha</code></pre>
+      <p><strong>Hábitos que ahorran días:</strong></p>
+      <ul>
+        <li>Anotá en un comentario la forma esperada de cada tensor importante.</li>
+        <li>Poné un <code>assert</code> de forma en los puntos clave: entrada del modelo, salida y loss.</li>
+        <li>Usá <code>keepdims=True</code> al reducir si después vas a operar con el original.</li>
+        <li>Ante un resultado raro, imprimí las formas antes de sospechar del modelo.</li>
+      </ul>` },
   ],
   practica: [
     'Implementá producto punto, similitud coseno y softmax solo con NumPy y comprobá los resultados a mano con vectores pequeños.',
@@ -110,12 +141,15 @@ print("p50, p95, p99", np.percentile(lat, [50, 95, 99]))</code></pre>
     'Con un modelo chico de Hugging Face (por ejemplo GPT-2), calculá la perplexity de tres textos: uno en inglés, uno en español y uno con palabras al azar. Explicá por qué dan distinto.',
     'Clasificá 200 textos con un LLM: primero uno por uno y después con asyncio.gather y un Semaphore de 5, 10 y 20. Medí el tiempo total y la cantidad de errores 429 en cada caso, y elegí el límite.',
     'Medí la latencia de 200 llamadas a tu app: calculá promedio, p50, p95 y p99 y graficá el histograma. Después calculá con Bayes qué proporción de las alertas de un detector serían verdaderas si los casos reales son el 2%.',
+    'Reproducí el bug de restar (N, 1) y (N,) dentro de una loss de error cuadrático medio, medí cuánto cambia el resultado y agregá asserts que lo detecten. Después escribí 5 operaciones con broadcasting y predecí la forma de cada una antes de ejecutarla.',
   ],
   recursos: [
     { t: 'Tutorial oficial de Python (español)', url: 'https://docs.python.org/es/3/tutorial/' },
     { t: '3Blue1Brown — Redes neuronales (visual)', url: 'https://www.3blue1brown.com/topics/neural-networks' },
     { t: 'Khan Academy — Álgebra lineal', url: 'https://www.khanacademy.org/math/linear-algebra' },
     { t: 'Dive into Deep Learning (libro gratis, con código)', url: 'https://d2l.ai/' },
+    { t: 'NumPy — Broadcasting', url: 'https://numpy.org/doc/stable/user/basics.broadcasting.html' },
+    { t: 'PyTorch — Semántica de broadcasting', url: 'https://docs.pytorch.org/docs/stable/notes/broadcasting.html' },
     { t: 'Seeing Theory — probabilidad y estadística visual (Brown University)', url: 'https://seeing-theory.brown.edu/' },
     { t: 'Khan Academy — Estadística y probabilidad', url: 'https://www.khanacademy.org/math/statistics-probability' },
     { t: 'Python — Corrutinas y tareas (asyncio)', url: 'https://docs.python.org/es/3/library/asyncio-task.html' },
@@ -144,6 +178,11 @@ print("p50, p95, p99", np.percentile(lat, [50, 95, 99]))</code></pre>
     { q: 'La latencia promedio de tu app es 800 ms, pero los usuarios se quejan de que a veces tarda muchísimo. ¿Qué mirás?', opciones: ['El promedio otra vez, con más datos', 'La latencia mínima', 'Solo la mediana', 'Los percentiles altos (p95, p99): unas pocas respuestas muy lentas casi no mueven el promedio'], correcta: 3, explicacion: 'Si 1 de cada 20 respuestas tarda 8 segundos, el promedio casi no lo muestra, pero el p95 sí. La mediana tampoco ve la cola.' },
     { q: 'Probaste un prompt nuevo con 10 casos y acertó 9. ¿Qué tan seguro estás de que acierta el 90%?', opciones: ['Muy seguro', 'Poco: con 10 casos cada uno mueve la nota 10 puntos y la estimación es muy ruidosa', 'Totalmente seguro', 'Depende de la temperatura'], correcta: 1, explicacion: 'El margen de error con 10 casos es enorme: un solo caso más o menos cambia la nota en 10 puntos. Hacen falta muchos más casos para afirmar algo.' },
     { q: '¿Qué dice el teorema de Bayes, en palabras?', opciones: ['Que toda probabilidad es 50%', 'Que todos los eventos son independientes', 'Cómo actualizar la probabilidad de una hipótesis al ver evidencia, combinando qué tan probable era antes con qué tan bien explica esa evidencia', 'Que la media siempre es igual a la mediana'], correcta: 2, explicacion: 'La probabilidad previa importa: una evidencia fuerte de algo muy raro puede seguir dejando más probable la explicación común.' },
+    { q: '¿Qué forma tiene el resultado de multiplicar un array de forma (2, 3, 4) por uno de forma (4, 5)?', opciones: ['(2, 3, 5)', '(2, 4, 5)', '(3, 5)', 'Da error'], correcta: 0, explicacion: 'Se multiplican las dos últimas dimensiones, (3, 4) @ (4, 5) = (3, 5), y la de adelante (2) se mantiene.' },
+    { q: 'Calculás pred - y, con pred de forma (100, 1) e y de forma (100,). ¿Qué obtenés?', opciones: ['Un array de (100,)', 'Un array de (100, 1)', 'Un error', 'Un array de (100, 100), sin ningún error, y la loss queda mal'], correcta: 3, explicacion: 'Desde la derecha, 1 se estira a 100 y la dimensión faltante de y se trata como 1 y se estira a 100. El resultado tiene todas las combinaciones: un bug silencioso.' },
+    { q: 'Querés restar a cada fila de X (forma (4, 3)) su propia media. ¿Qué escribís?', opciones: ['X - X.mean(axis=1, keepdims=True)', 'X - X.mean(axis=1)', 'X - X.mean()', 'X - X.mean(axis=0, keepdims=True)'], correcta: 0, explicacion: 'keepdims deja la media con forma (4, 1), que se estira sobre las columnas. Sin keepdims queda (4,), que no es compatible con (4, 3) desde la derecha. axis=0 resta la media de cada columna.' },
+    { q: '¿Cuál es la regla del broadcasting?', opciones: ['Las formas tienen que ser idénticas', 'Se comparan las dimensiones de izquierda a derecha', 'Siempre se agrega una dimensión al principio', 'Se comparan las dimensiones desde la derecha, y son compatibles si son iguales o si una vale 1'], correcta: 3, explicacion: 'Las dimensiones que faltan se tratan como 1. Por eso (32, 1, 8) + (5, 8) da (32, 5, 8).' },
+    { q: '¿Qué hábito previene mejor los bugs de formas?', opciones: ['Confiar en que, si no da error, está bien', 'Poner asserts con la forma esperada en los puntos clave', 'Usar siempre float64', 'Evitar las matrices'], correcta: 1, explicacion: 'Los peores bugs de formas no dan error. Un assert convierte un número equivocado silencioso en un error inmediato y fácil de encontrar.' },
   ],
 },
 {
