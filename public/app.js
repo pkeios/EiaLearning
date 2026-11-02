@@ -118,7 +118,8 @@ function novedadesPagina() {
     ${lista.length ? `<p class="suave">Lecciones agregadas al curso desde tu última visita.</p>
       <ol class="plan">${lista.map(x => `<li><a href="#/m/${x.m.id}/${x.n}">${icono(x.m)} ${esc(x.l.titulo)} <small class="suave">(${esc(x.m.titulo)})</small></a></li>`).join('')}</ol>
       <button class="secundario" id="vistas">✔ Marcar todas como vistas</button>`
-    : '<section class="card"><p>No hay lecciones nuevas desde tu última visita. 🎉</p></section>'}`;
+    : '<section class="card"><p>No hay lecciones nuevas desde tu última visita. 🎉</p></section>'}
+    <p class="suave">🧒 También hay una <a href="chicos/">versión para chicos de 10 a 13 años</a>, con misiones cortas para aprender qué es la IA.</p>`;
   const boton = app.querySelector('#vistas');
   if (boton) boton.onclick = () => { const p = cargar(); marcarConocidas(p, novedades(p)); guardar(p); novedadesPagina(); };
 }

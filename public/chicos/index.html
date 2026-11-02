@@ -118,6 +118,8 @@ const MISIONES = [
 ];
 
 const app = document.getElementById('app');
+// Siguiente paso al terminar todas: el primer módulo del curso completo
+const SIGUIENTE = '<p>🚀 <strong>¿Querés ir más lejos?</strong> El curso completo de AI Engineering empieza por <a href="../#/m/fundamentos">Fundamentos</a>. Es para chicos más grandes y adultos, pero podés mirarlo con alguien que te acompañe.</p>';
 const cargar = () => { try { return JSON.parse(localStorage.getItem('chicos')) || {}; } catch { return {}; } };
 const guardar = p => localStorage.setItem('chicos', JSON.stringify(p));
 
@@ -125,6 +127,7 @@ function inicio() {
   const p = cargar();
   const total = Object.values(p).reduce((a, b) => a + b, 0);
   app.innerHTML = `<p class="estrellas">⭐ Tenés <strong>${total}</strong> de ${MISIONES.length * 3} estrellas</p>
+    ${Object.keys(p).length === MISIONES.length ? SIGUIENTE : ''}
     <div class="misiones">${MISIONES.map((m, i) => `<button class="mision" data-i="${i}"><span class="emoji">${m.emoji}</span><strong>Misión ${i + 1}</strong><br>${m.titulo}<br><small>${'⭐'.repeat(p[i] || 0) || 'Sin empezar'}</small></button>`).join('')}</div>`;
   app.querySelectorAll('.mision').forEach(b => b.onclick = () => { location.hash = '#/' + b.dataset.i; });
 }
@@ -151,7 +154,7 @@ function mision(i) {
       aciertos += bien; respondidas++;
       if (respondidas === m.preguntas.length) {
         const p = cargar(); p[i] = Math.max(p[i] || 0, aciertos); guardar(p);
-        const sig = i + 1 < MISIONES.length ? `<a class="boton" href="#/${i + 1}">Siguiente misión →</a>` : '<a class="boton" href="#/">🏆 ¡Terminaste todas! Ver mis estrellas</a>';
+        const sig = i + 1 < MISIONES.length ? `<a class="boton" href="#/${i + 1}">Siguiente misión →</a>` : '<a class="boton" href="#/">🏆 ¡Terminaste todas! Ver mis estrellas</a>' + SIGUIENTE;
         app.querySelector('#final').innerHTML = `<strong>Ganaste ${'⭐'.repeat(aciertos) || '0 estrellas'}</strong> (${aciertos} de ${m.preguntas.length}). ${aciertos < 3 ? 'Podés volver a intentarlo cuando quieras.' : '¡Perfecto!'}<br>${sig}`;
       }
     });
