@@ -408,8 +408,21 @@ function taller(id) {
   const t = TALLER.find(x => x.id === id);
   if (!t) return inicio();
   document.documentElement.style.setProperty('--color', t.color);
-  app.innerHTML = '<a class="volver" href="#/">← Inicio</a><section class="tarjeta"></section>';
-  montarTaller(id, app.querySelector('.tarjeta'), ultimo => { if (ultimo) logro(id); });
+  const i = TALLER.indexOf(t), sig = TALLER[i + 1];
+  app.innerHTML = `<a class="volver" href="#/">← Inicio</a>
+    ${cargarTaller()[id] ? '<p class="estrellas">✅ Este taller ya lo hiciste. ¡Podés volver a jugarlo!</p>' : ''}
+    <section class="tarjeta"></section><div id="fin-taller" aria-live="polite"></div>`;
+  // El cierre va fuera de la tarjeta: el robot redibuja la tarjeta en cada nivel.
+  montarTaller(id, app.querySelector('.tarjeta'), ultimo => {
+    const fin = app.querySelector('#fin-taller');
+    if (!ultimo || fin.innerHTML) return; // entrenar y autocompletar avisan en cada uso: el cierre se muestra una vez
+    logro(id);
+    fin.innerHTML = `<section class="tarjeta" style="margin-top:1rem">
+      <div class="fiesta">🎉🛠️🎉</div><p class="texto">¡Taller "${t.titulo}" terminado!</p>
+      <div class="acciones"><a class="volver" href="#/">← Inicio</a>${sig ? `<a class="boton" href="#/taller/${sig.id}">Siguiente: ${sig.emoji} ${sig.titulo} →</a>` : '<a class="boton" href="#/">🏆 Ver todo lo que hiciste</a>'}</div>
+    </section>`;
+    fin.scrollIntoView({ behavior: 'smooth' });
+  });
   scrollTo(0, 0);
 }
 
