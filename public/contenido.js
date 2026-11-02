@@ -869,6 +869,7 @@ if client.messages.batches.retrieve(lote.id).processing_status == "ended":
     'Diagnosticar y mejorar un RAG: híbrido, reranking, evaluación del retrieval',
     'Elegir entre contexto largo, RAG clásico y RAG agéntico, aplicando permisos en el retrieval',
     'Elegir modelo de embeddings e índice vectorial, y ajustar el equilibrio entre recall y latencia',
+    'Responder preguntas sobre datos estructurados con text-to-SQL seguro, y saber cuándo usar GraphRAG',
   ],
   lecciones: [
     { titulo: 'Embeddings y búsqueda semántica', html: `
@@ -938,6 +939,26 @@ ORDER BY embedding &lt;=&gt; $1
 LIMIT 5;</code></pre>
       <p><strong>Cuidado con los filtros:</strong> si el índice aproximado trae k candidatos y después el filtro descarta varios (por ejemplo, documentos de otro cliente), podés terminar con menos resultados de los que pediste. Pedí más candidatos, ajustá el índice o usá una solución con filtrado integrado, y medilo.</p>
       <p><strong>Medí siempre contra la búsqueda exacta:</strong> agregar un índice aproximado puede cambiar los resultados. Calculá el recall@k del índice tomando como referencia la búsqueda exacta y elegí el punto de recall y latencia que tu producto necesita.</p>` },
+    { titulo: 'Más allá de los chunks: text-to-SQL y GraphRAG', html: `
+      <p>Hay preguntas que la búsqueda de chunks no puede responder, por más buena que sea.</p>
+      <p><strong>1. Datos estructurados: text-to-SQL.</strong> "¿Cuánto vendimos por región en marzo?" no está escrito en ningún documento: está en una base de datos. El patrón: le das al modelo el esquema, él escribe la consulta SQL, <strong>tu código la ejecuta</strong> y el modelo redacta la respuesta con el resultado.</p>
+      <pre><code>ESQUEMA = """
+ventas(id, fecha DATE, region TEXT -- 'norte' | 'sur' | 'centro', monto_usd NUMERIC)
+"""
+sql = llm(f"Esquema:\\n{ESQUEMA}\\nEscribí una sola consulta SELECT para: {pregunta}. Solo el SQL.")
+if not es_un_solo_select(sql):                   # la validación va en código, no en el prompt
+    raise ValueError("consulta no permitida")
+filas = db_solo_lectura.execute(sql, timeout=5).fetchmany(200)
+respuesta = llm(f"Pregunta: {pregunta}\\nResultado: {filas}\\nRespondé en una frase, con los números.")</code></pre>
+      <p><strong>Seguridad, no negociable:</strong> el SQL lo escribió un modelo que puede equivocarse o ser manipulado. Usuario de base de datos de <strong>solo lectura</strong>, acceso solo a vistas permitidas, filtros por los permisos del usuario, timeout y límite de filas.</p>
+      <p><strong>Calidad:</strong> los esquemas reales son difíciles (el benchmark BIRD se armó con bases grandes y sucias justamente por eso). Ayuda mucho dar descripciones de cada columna, valores de ejemplo y algunos pares pregunta → SQL. Para evaluar, compará los <em>resultados</em> de ejecutar la consulta contra los esperados, no el texto del SQL: hay muchas consultas correctas distintas.</p>
+      <p><strong>2. Preguntas globales: GraphRAG.</strong> "¿Cuáles son los temas principales de estos 5.000 informes?" no se responde con los 5 chunks más parecidos: ningún chunk tiene esa respuesta. GraphRAG (Microsoft, 2024) propone:</p>
+      <ol>
+        <li>Un LLM extrae entidades y relaciones de los documentos y arma un grafo de conocimiento.</li>
+        <li>Agrupa entidades relacionadas en comunidades y genera de antemano un resumen de cada una.</li>
+        <li>Para responder, produce una respuesta parcial con cada resumen y después las sintetiza.</li>
+      </ol>
+      <p>En preguntas de síntesis sobre corpus de alrededor de un millón de tokens, mejoró bastante lo completo y diverso de las respuestas frente a un RAG clásico. El costo: indexar es mucho más caro, porque el LLM procesa todo el corpus. Conviene cuando las preguntas globales son frecuentes; para preguntas puntuales, el RAG clásico sigue siendo mejor opción.</p>` },
   ],
   practica: [
     'Construí un RAG sobre tus propios apuntes (o la documentación de una librería): chunking, embeddings, pgvector o Chroma, y respuestas con citas.',
@@ -945,12 +966,15 @@ LIMIT 5;</code></pre>
     'Agregá un reranker y medí cuánto cambia la calidad de las respuestas.',
     'Sobre tus apuntes, compará tres variantes en 30 preguntas (5 de ellas de varios saltos): todo en el contexto con caching, RAG clásico y RAG agéntico. Medí exactitud, costo y latencia por pregunta, y escribí cuál elegirías y por qué.',
     'Indexá 100.000 chunks en pgvector. Medí recall@10 y latencia con búsqueda exacta y con HNSW usando ef_search de 40, 100 y 200, graficá recall contra latencia y elegí el punto para tu caso.',
+    'Armá text-to-SQL sobre una base SQLite de ejemplo con un usuario de solo lectura. Escribí 20 preguntas con su resultado esperado y medí cuántas acierta comparando resultados; después agregá descripciones de columnas y 3 ejemplos pregunta → SQL y volvé a medir.',
   ],
   recursos: [
     { t: 'Paper original de RAG (Lewis et al., 2020)', url: 'https://arxiv.org/abs/2005.11401' },
     { t: 'Anthropic — Contextual Retrieval', url: 'https://www.anthropic.com/news/contextual-retrieval' },
     { t: 'pgvector (búsqueda vectorial en Postgres)', url: 'https://github.com/pgvector/pgvector' },
     { t: 'Sentence Transformers (embeddings open source)', url: 'https://www.sbert.net/' },
+    { t: 'GraphRAG: From Local to Global (paper)', url: 'https://arxiv.org/abs/2404.16130' },
+    { t: 'BIRD: benchmark de text-to-SQL con bases reales (paper)', url: 'https://arxiv.org/abs/2305.03111' },
     { t: 'MTEB Leaderboard (comparativa de modelos de embeddings)', url: 'https://huggingface.co/spaces/mteb/leaderboard' },
     { t: 'HNSW: búsqueda aproximada de vecinos con grafos (paper)', url: 'https://arxiv.org/abs/1603.09320' },
     { t: 'Lost in the Middle: How Language Models Use Long Contexts (paper)', url: 'https://arxiv.org/abs/2307.03172' },
@@ -972,6 +996,11 @@ LIMIT 5;</code></pre>
     { q: 'Tenés 10 millones de chunks con embeddings de 1.536 dimensiones en float32. ¿Cuánta memoria ocupan aproximadamente solo los vectores?', opciones: ['Unos 6 GB', 'Unos 61 GB', 'Unos 600 GB', 'Unos 1,5 GB'], correcta: 1, explicacion: '10.000.000 × 1.536 × 4 bytes ≈ 61 GB. Por eso las dimensiones y la cuantización de vectores importan a escala.' },
     { q: 'Tenés que elegir un modelo de embeddings para documentos en español. ¿Cómo decidís?', opciones: ['Tomás el primero del leaderboard MTEB', 'Elegís el más grande', 'Elegís siempre el más barato', 'Preseleccionás con MTEB teniendo en cuenta el idioma y decidís midiendo recall@k sobre tus propias consultas'], correcta: 3, explicacion: 'MTEB mide tareas genéricas, mayormente en inglés. Lo que importa es cómo rinde con tus documentos y tus preguntas.' },
     { q: 'Pedís el top-5 con el filtro "solo documentos del cliente X" y a veces volvés con menos de 5 resultados. ¿Por qué?', opciones: ['El índice aproximado trajo k candidatos y el filtro, aplicado después, descartó varios: pedí más candidatos o usá filtrado integrado', 'El modelo de embeddings está mal', 'Los vectores no están normalizados', 'Es un rate limit'], correcta: 0, explicacion: 'Si la mayoría de los vecinos cercanos son de otros clientes, el filtro los saca y quedan menos de k. Es un problema común al combinar ANN con filtros.' },
+    { q: 'Un usuario pregunta "¿cuánto vendimos por región en marzo?" y los datos están en Postgres. ¿Qué hacés?', opciones: ['Text-to-SQL: el modelo escribe la consulta a partir del esquema y tu código la ejecuta', 'Embebés las filas de la tabla y buscás el top-k', 'Hacés fine-tuning con los datos de ventas', 'Le pedís al modelo que lo estime'], correcta: 0, explicacion: 'Sumar por región es una agregación exacta: la resuelve la base de datos. Buscar filas parecidas no suma nada, y estimar es inventar.' },
+    { q: '¿Qué medida de seguridad es imprescindible al ejecutar SQL escrito por un modelo?', opciones: ['Pedirle en el prompt que no borre nada', 'Un usuario de solo lectura con acceso solo a vistas permitidas, más timeout y límite de filas', 'Usar temperatura 0', 'Revisar el SQL a ojo una vez al principio'], correcta: 1, explicacion: 'El modelo puede equivocarse o ser manipulado con prompt injection. Los permisos de la base limitan el daño sin depender de que el modelo obedezca.' },
+    { q: 'Para evaluar un sistema de text-to-SQL, ¿qué comparás con la referencia?', opciones: ['El texto exacto del SQL', 'La longitud de la consulta', 'El resultado de ejecutar la consulta generada contra el resultado esperado', 'La velocidad de la consulta'], correcta: 2, explicacion: 'La misma pregunta admite muchas consultas correctas distintas. Lo que importa es que devuelvan los mismos datos.' },
+    { q: 'Preguntan "¿cuáles son los temas principales de estos 5.000 informes?" y tu RAG clásico responde mal. ¿Por qué, y qué alternativa hay?', opciones: ['Los chunks son muy chicos', 'El modelo es chico', 'Falta un reranker', 'Es una pregunta global que ningún chunk responde; GraphRAG arma un grafo con resúmenes por comunidades para sintetizar'], correcta: 3, explicacion: 'El top-k trae unos pocos fragmentos parecidos a la pregunta, pero la respuesta requiere mirar todo el corpus. Mejorar el retrieval no cambia eso.' },
+    { q: 'Tu text-to-SQL se equivoca seguido porque las columnas se llaman col_a7, flg_x y similares. ¿Qué mejora más?', opciones: ['Agregar descripciones de cada columna, valores de ejemplo y pares pregunta → SQL', 'Subir la temperatura', 'Cambiar el modelo de embeddings', 'Sacar el esquema del prompt'], correcta: 0, explicacion: 'El modelo no puede adivinar qué significa col_a7. Con descripciones y ejemplos tiene el contexto que le falta.' },
   ],
 },
 {
