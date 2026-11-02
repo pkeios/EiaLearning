@@ -586,6 +586,7 @@ opt = torch.optim.AdamW([
     'Saber cuándo conviene un modelo de razonamiento y cuáles son sus límites (costo y fidelidad del razonamiento)',
     'Reconocer los componentes de un LLM moderno: pre-norm, RoPE, SwiGLU, MoE y FlashAttention',
     'Entender cómo los modelos multimodales convierten imágenes en tokens y qué implica en costo y limitaciones',
+    'Explicar cómo funciona la tokenización BPE y sus consecuencias en costo, idiomas, conteos y números',
   ],
   lecciones: [
     { titulo: 'De texto a predicción: tokens, embeddings y atención', html: `
@@ -656,6 +657,43 @@ respuesta = llm.generar(secuencia)                 # atiende a imagen y texto ju
         <li><strong>Contar y ubicar es aproximado,</strong> y también hay alucinaciones visuales: el modelo puede describir algo que no está.</li>
         <li><strong>Audio y video siguen la misma idea:</strong> se codifican en tokens que comparten la secuencia con el texto.</li>
       </ul>` },
+    { titulo: 'Tokenización por dentro: BPE y sus consecuencias', html: `
+      <p>Antes de entrar al modelo, el texto se parte en tokens. El algoritmo más usado es <strong>BPE</strong> (byte pair encoding), propuesto para traducción automática en 2015:</p>
+      <ol>
+        <li>Empezás con caracteres sueltos (o bytes).</li>
+        <li>Contás qué par de símbolos vecinos aparece más en el corpus.</li>
+        <li>Fusionás ese par en un símbolo nuevo y lo agregás al vocabulario.</li>
+        <li>Repetís hasta llegar al tamaño de vocabulario deseado.</li>
+      </ol>
+      <pre><code>from collections import Counter
+
+def bpe(palabras, fusiones):
+    seqs = [list(p) for p in palabras]
+    for _ in range(fusiones):
+        pares = Counter((a, b) for s in seqs for a, b in zip(s, s[1:]))
+        (a, b), _ = pares.most_common(1)[0]
+        for s in seqs:
+            i = 0
+            while i &lt; len(s) - 1:
+                if s[i] == a and s[i + 1] == b:
+                    s[i:i + 2] = [a + b]
+                else:
+                    i += 1
+        print("fusión:", a, "+", b, "→", a + b)
+    return seqs
+
+bpe(["bajo", "bajar", "bajamos", "trabajo"], 3)
+# fusión: b + a → ba,  ba + j → baj,  baj + o → bajo
+# [['bajo'], ['baj', 'a', 'r'], ['baj', 'a', 'm', 'o', 's'], ['t', 'r', 'a', 'bajo']]</code></pre>
+      <p>La versión a nivel de <strong>bytes</strong>, que usan muchos LLMs, garantiza que cualquier texto se pueda representar, incluidos emojis o idiomas raros, sin tokens "desconocidos".</p>
+      <p><strong>Consecuencias que vas a notar:</strong></p>
+      <ul>
+        <li><strong>Idiomas:</strong> lo que abunda en el corpus de entrenamiento queda en tokens largos. Un idioma menos representado necesita más tokens por palabra: cuesta más y entra menos en el contexto.</li>
+        <li><strong>Letras y conteos:</strong> el modelo ve tokens, no letras. Por eso le cuesta contar cuántas "r" tiene una palabra o deletrear al revés.</li>
+        <li><strong>Números:</strong> se parten en trozos irregulares, una de las razones por las que la aritmética larga sin herramientas falla.</li>
+        <li><strong>Espacios y mayúsculas:</strong> " Hola", "hola" y "HOLA" pueden ser tokens distintos.</li>
+        <li><strong>Cada modelo tiene su tokenizador:</strong> no compares cantidades de tokens entre modelos, y para estimar costos usá el contador del proveedor que vas a usar.</li>
+      </ul>` },
   ],
   practica: [
     'Mirá "Let\'s build GPT: from scratch" de Karpathy y reimplementá un mini-GPT a nivel de caracteres.',
@@ -664,11 +702,15 @@ respuesta = llm.generar(secuencia)                 # atiende a imagen y texto ju
     'Elegí 20 problemas: 10 de lógica o matemática y 10 de extracción simple. Resolvelos con y sin razonamiento extendido, medí exactitud, tokens y latencia, y escribí una regla de routing basada en los resultados.',
     'Abrí el config.json de dos modelos abiertos en Hugging Face, uno denso y uno MoE. Identificá capas, cabezas, cabezas KV, tipo de codificación de posición, cantidad de expertos y expertos activos, y calculá parámetros activos contra totales y la memoria de los pesos en 16 bits.',
     'Con un modelo de visión por API, probá 20 capturas de pantalla con texto de distintos tamaños. Medí cuántas lee bien enteras y cuántas recortando la zona del texto, y relacioná los fallos con la resolución.',
+    'Implementá el BPE de la lección y entrenalo con 10 párrafos en español hasta 200 fusiones. Mirá qué tokens aparecen primero y compará cuántos tokens necesita un párrafo en español contra el mismo párrafo en inglés con tu vocabulario y con un tokenizador real como tiktoken.',
   ],
   recursos: [
     { t: 'Attention Is All You Need (paper original)', url: 'https://arxiv.org/abs/1706.03762' },
     { t: 'The Illustrated Transformer (Jay Alammar)', url: 'https://jalammar.github.io/illustrated-transformer/' },
     { t: 'Hugging Face — LLM Course', url: 'https://huggingface.co/learn/llm-course' },
+    { t: 'BPE para subpalabras (paper de Sennrich y otros, 2015)', url: 'https://arxiv.org/abs/1508.07909' },
+    { t: 'Karpathy — minbpe (BPE mínimo, para leer y aprender)', url: 'https://github.com/karpathy/minbpe' },
+    { t: 'tiktoken — tokenizador BPE rápido', url: 'https://github.com/openai/tiktoken' },
     { t: 'ViT: An Image is Worth 16x16 Words (paper)', url: 'https://arxiv.org/abs/2010.11929' },
     { t: 'LLaVA: Visual Instruction Tuning (paper)', url: 'https://arxiv.org/abs/2304.08485' },
     { t: 'RoFormer: Rotary Position Embedding (paper de RoPE)', url: 'https://arxiv.org/abs/2104.09864' },
@@ -704,6 +746,11 @@ respuesta = llm.generar(secuencia)                 # atiende a imagen y texto ju
     { q: 'Una imagen de 224×224 píxeles se corta en parches de 14×14. ¿Cuántos tokens visuales salen?', opciones: ['14', '256', '224', '50.176'], correcta: 1, explicacion: '224 / 14 = 16 parches por lado, y 16 × 16 = 256. 50.176 serían los píxeles.' },
     { q: 'Un modelo de visión falla al leer texto chico en una captura de pantalla grande. ¿Causa probable?', opciones: ['Que el modelo no sabe leer', 'La temperatura', 'El idioma del texto', 'La imagen se reduce a la resolución del codificador y el texto queda en muy pocos parches: conviene recortar la zona'], correcta: 3, explicacion: 'Al reducir una captura grande, una línea de texto puede ocupar unos pocos píxeles de alto. Recortarla le da más parches y la vuelve legible.' },
     { q: '¿Cómo generó LLaVA sus datos de instrucciones visuales?', opciones: ['Con etiquetado humano masivo', 'Con imágenes sintéticas', 'Con GPT-4 de solo texto, a partir de descripciones de las imágenes', 'Copiando conversaciones de foros'], correcta: 2, explicacion: 'GPT-4 nunca vio las imágenes: recibió descripciones en texto y generó a partir de ellas preguntas y respuestas sobre cada imagen.' },
+    { q: 'En BPE, ¿cómo se construye el vocabulario?', opciones: ['Fusionando una y otra vez el par de símbolos vecinos más frecuente, hasta llegar al tamaño deseado', 'Con una lista de palabras de un diccionario', 'Al azar', 'Con una red neuronal entrenada aparte'], correcta: 0, explicacion: 'BPE es un algoritmo simple de conteo y fusión. Por eso lo que abunda en el corpus termina en tokens largos.' },
+    { q: 'Le pedís a un LLM que cuente cuántas letras "r" tiene una palabra y se equivoca. ¿Por qué es difícil para él?', opciones: ['Porque no sabe el abecedario', 'Porque ve tokens, no letras sueltas: la palabra puede ser uno o pocos tokens', 'Porque la temperatura es alta', 'Porque el contexto es corto'], correcta: 1, explicacion: 'La información de cada letra queda "adentro" del token. Para tareas así conviene una herramienta (por ejemplo, ejecutar código) o pedirle que deletree antes.' },
+    { q: 'El mismo texto ocupa más tokens en un idioma poco representado que en inglés. ¿Qué implica?', opciones: ['Nada', 'Que el modelo entiende mejor ese idioma', 'Mayor costo por texto y menos contenido dentro de la ventana de contexto', 'Que la API rechaza el texto'], correcta: 2, explicacion: 'Se paga por token y el contexto se mide en tokens. Al estimar costos, conviene medir con textos reales en tu idioma.' },
+    { q: 'Querés estimar el costo de tu app con un modelo de Claude. ¿Cómo contás los tokens?', opciones: ['Contando palabras y dividiendo por dos', 'Con el tokenizador de otro proveedor', 'Contando caracteres', 'Con el contador de tokens del proveedor que vas a usar, porque cada modelo tiene su tokenizador'], correcta: 3, explicacion: 'Los tokenizadores difieren entre modelos: el mismo texto puede dar cantidades distintas. Las reglas de "palabras por token" son solo aproximaciones.' },
+    { q: '¿Qué ventaja tiene BPE a nivel de bytes?', opciones: ['Que cualquier texto se puede representar, incluidos emojis o idiomas raros, sin tokens desconocidos', 'Que usa menos memoria que cualquier otro método', 'Que cada palabra es siempre un solo token', 'Que no necesita entrenamiento'], correcta: 0, explicacion: 'Como parte de los 256 bytes posibles, siempre hay una forma de representar el texto, aunque sea con muchos tokens.' },
   ],
 },
 {
