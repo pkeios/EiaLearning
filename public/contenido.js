@@ -198,6 +198,7 @@ X_centrada = X - X.mean(axis=1, keepdims=True)
     'Decidir entre un LLM y un clasificador clásico sobre embeddings, y elegir umbrales según el costo de cada error',
     'Explorar grandes volúmenes de texto con embeddings, reducción de dimensionalidad y clustering',
     'Validar sin engañarse con datos temporales y agrupados (TimeSeriesSplit y GroupKFold)',
+    'Construir y evaluar sistemas de recomendación por contenido y colaborativos',
   ],
   lecciones: [
     { titulo: 'Qué es aprender a partir de datos', html: `
@@ -325,6 +326,30 @@ puntaje_grupos = cross_val_score(modelo, X, y, cv=GroupKFold(n_splits=5), groups
         <li>La nota cae fuerte al pasar de una partición al azar a una por tiempo o por grupo.</li>
       </ul>
       <p><strong>Lo mismo vale para LLMs:</strong> si tu dataset de evals tiene varias preguntas sobre el mismo documento, no son independientes (lo viste en evals con los errores agrupados), y si afinás un modelo, separá train y test por documento o por cliente, no por fila.</p>` },
+    { titulo: 'Sistemas de recomendación: contenido, colaborativo y embeddings', html: `
+      <p>"Te puede interesar…" está en casi todos los productos digitales. Hay dos ideas base, que en la práctica se combinan:</p>
+      <ul>
+        <li><strong>Por contenido:</strong> recomendás ítems parecidos a los que le gustaron al usuario, comparando sus características. Hoy lo habitual es usar <strong>embeddings</strong> de la descripción, la imagen o el texto del ítem. Funciona con ítems nuevos, porque no necesita historial.</li>
+        <li><strong>Filtrado colaborativo:</strong> usás los patrones de interacción: si a usuarios parecidos a vos les gustó algo, probablemente te guste. La técnica clásica es la <em>factorización de matrices</em>: la tabla usuarios × ítems, casi vacía, se aproxima con un vector por usuario y otro por ítem, y su producto punto predice el interés.</li>
+      </ul>
+      <pre><code>import numpy as np
+
+E = normalizar(embed(descripciones_items))          # (n_items, d), una fila por ítem
+
+def similares(i, k=5):                              # por contenido: ítems parecidos al i
+    s = E @ E[i]
+    s[i] = -1                                       # no recomendar el mismo ítem
+    return np.argsort(-s)[:k]
+
+perfil = E[items_que_le_gustaron].mean(axis=0)      # perfil del usuario
+recomendados = np.argsort(-(E @ perfil))[:10]       # (en producción, filtrá lo que ya vio)</code></pre>
+      <p><strong>Arquitectura en dos etapas:</strong> en catálogos grandes, primero una <em>recuperación</em> rápida trae unos cientos de candidatos (con embeddings y búsqueda de vecinos, como en RAG), y después un modelo de <em>ranking</em> más preciso ordena solo esos.</p>
+      <p><strong>Problemas típicos:</strong></p>
+      <ul>
+        <li><strong>Arranque en frío:</strong> ítems o usuarios nuevos sin interacciones. El contenido y las preguntas iniciales ayudan.</li>
+        <li><strong>Sesgo de popularidad:</strong> si siempre recomendás lo más popular, lo de nicho nunca se muestra y nunca junta datos. Hace falta algo de diversidad y exploración.</li>
+        <li><strong>Evaluación:</strong> offline, con precision@k, recall@k o NDCG sobre interacciones apartadas (separadas por tiempo, como viste en la lección de validación). Pero la prueba real es online, con un test A/B.</li>
+      </ul>` },
   ],
   practica: [
     'Con scikit-learn y el dataset Titanic (o cualquiera de Kaggle), entrená una regresión logística y un random forest. Compará accuracy, precision, recall y F1 en test.',
@@ -333,10 +358,13 @@ puntaje_grupos = cross_val_score(modelo, X, y, cv=GroupKFold(n_splits=5), groups
     'Etiquetá con un LLM 2.000 textos (por ejemplo, reseñas) y revisá 100 a mano. Entrená una regresión logística sobre embeddings, elegí un umbral con la curva precision-recall y compará contra clasificar todo con el LLM: exactitud, costo por cada 1.000 textos y latencia.',
     'Juntá 2.000 consultas o reseñas reales, agrupalas con embeddings y HDBSCAN, nombrá cada grupo con un LLM y visualizalos con UMAP. Revisá a mano tres grupos y anotá si el nombre describe bien sus ejemplos.',
     'Tomá un dataset con fechas o con varias filas por cliente. Compará la nota de una validación cruzada al azar contra TimeSeriesSplit o GroupKFold, y explicá la diferencia. ¿Cuál se parece más a lo que pasaría en producción?',
+    'Con un dataset de calificaciones como MovieLens, armá un recomendador por contenido con embeddings de las descripciones y uno colaborativo simple. Separá las últimas interacciones de cada usuario como test y compará precision@10 y la diversidad de lo que recomienda cada uno.',
   ],
   recursos: [
     { t: 'Guía de usuario de scikit-learn', url: 'https://scikit-learn.org/stable/user_guide.html' },
     { t: 'scikit-learn — Ensembles: gradient boosting, random forests y más', url: 'https://scikit-learn.org/stable/modules/ensemble.html' },
+    { t: 'Google — Curso de sistemas de recomendación', url: 'https://developers.google.com/machine-learning/recommendation' },
+    { t: 'MovieLens — datasets de calificaciones (GroupLens)', url: 'https://grouplens.org/datasets/movielens/' },
     { t: 'scikit-learn — Validación cruzada (incluye TimeSeriesSplit y GroupKFold)', url: 'https://scikit-learn.org/stable/modules/cross_validation.html' },
     { t: 'scikit-learn — Clustering', url: 'https://scikit-learn.org/stable/modules/clustering.html' },
     { t: 'scikit-learn — Descomposición (PCA y más)', url: 'https://scikit-learn.org/stable/modules/decomposition.html' },
@@ -375,6 +403,11 @@ puntaje_grupos = cross_val_score(modelo, X, y, cv=GroupKFold(n_splits=5), groups
     { q: 'En tu modelo de abandono de clientes, la feature más importante es la fecha de cierre de la cuenta. ¿Qué sospechás?', opciones: ['Que es una gran feature', 'Que falta regularización', 'Que el modelo es muy simple', 'Data leakage: esa fecha solo se conoce después de que el cliente abandona, así que en producción no está disponible'], correcta: 3, explicacion: 'Una feature que codifica la respuesta da notas excelentes en validación y no sirve en producción, porque al momento de predecir todavía no existe.' },
     { q: 'Al pasar de una validación al azar a una por tiempo, tu nota cae de 92% a 78%. ¿Qué concluís?', opciones: ['Que la validación al azar estaba inflada y 78% se parece más a lo que vas a ver en producción', 'Que la validación por tiempo está mal hecha', 'Que hay que volver a la validación al azar', 'Que el modelo empeoró'], correcta: 0, explicacion: 'El modelo es el mismo: lo que cambió es qué tan honesta es la medición. La caída muestra cuánto dependía la nota de "ver el futuro".' },
     { q: 'Tenés un dataset de evals con 10 preguntas sobre cada uno de 30 documentos, y vas a afinar un modelo. ¿Cómo separás train y test?', opciones: ['Por pregunta, al azar', 'Usando las mismas preguntas en los dos', 'Por documento: todas las preguntas de un documento van del mismo lado', 'Por largo de la pregunta'], correcta: 2, explicacion: 'Si preguntas del mismo documento quedan en los dos lados, el modelo puede apoyarse en lo que memorizó de ese documento. Separar por documento mide si generaliza.' },
+    { q: 'Agregás un producto nuevo al catálogo y todavía nadie lo compró. ¿Qué enfoque puede recomendarlo?', opciones: ['Por contenido, con los embeddings de su descripción, porque no necesita historial', 'Filtrado colaborativo puro', 'Recomendar solo lo más popular', 'Ninguno'], correcta: 0, explicacion: 'Es el problema de arranque en frío. El colaborativo necesita interacciones que el producto nuevo todavía no tiene.' },
+    { q: '¿En qué se basa el filtrado colaborativo?', opciones: ['En la descripción de los ítems', 'En el precio', 'En reglas escritas a mano', 'En los patrones de interacción: a usuarios parecidos les gustan ítems parecidos'], correcta: 3, explicacion: 'No mira qué es el ítem, sino quién interactuó con él. Por eso descubre relaciones que la descripción no muestra.' },
+    { q: '¿Qué métrica offline usás para evaluar una lista de 10 recomendaciones?', opciones: ['Precision@10, recall@10 o NDCG sobre interacciones reales apartadas', 'El error cuadrático de los embeddings', 'La exactitud de un clasificador', 'La latencia'], correcta: 0, explicacion: 'Medís cuántas de las recomendaciones coinciden con lo que el usuario efectivamente eligió después. NDCG además premia que lo relevante esté arriba.' },
+    { q: 'Tu sistema recomienda casi siempre los mismos productos populares. ¿Qué problema hay?', opciones: ['Ninguno: lo popular vende', 'Que es más rápido', 'Que es más barato', 'Sesgo de popularidad: lo de nicho nunca se muestra y nunca junta datos; hace falta algo de diversidad y exploración'], correcta: 3, explicacion: 'Es un círculo: lo que no se muestra no recibe clics, y lo que no recibe clics no se recomienda. La exploración rompe ese círculo.' },
+    { q: '¿Cuál es la arquitectura habitual de un recomendador con un catálogo grande?', opciones: ['Una sola red que puntúa todo el catálogo para cada usuario', 'Dos etapas: una recuperación rápida de cientos de candidatos y después un ranking más preciso sobre ellos', 'Ordenar el catálogo alfabéticamente', 'Elegir al azar'], correcta: 1, explicacion: 'Puntuar millones de ítems con un modelo preciso es demasiado caro. La recuperación achica el problema y el ranking afina el orden.' },
   ],
 },
 {
