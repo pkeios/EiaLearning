@@ -11,4 +11,5 @@ Es un sitio estático, sin build. El progreso se guarda en el navegador (localSt
   - `/mejorar nuevo`: crea un módulo nuevo.
   - `/evolucionar`: un paso de mejora (contenido o una tarea de `BACKLOG.md`), validado y publicado.
   - `/loop 30m /evolucionar`: mejora y publica sola cada 30 minutos mientras la sesión siga abierta.
+  - `/validar-aprendizaje`: revisa el módulo más flojo con metodologías de aprendizaje basadas en evidencia (`node tools/metodologia.js` muestra el puntaje de cada módulo) y aplica una mejora.
 - **Historial de mejoras:** `MEJORAS.md`.
