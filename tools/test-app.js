@@ -8,8 +8,8 @@ const ctx = { window: {}, document: { getElementById: id => id === 'tema' ? boto
 vm.createContext(ctx);
 vm.runInContext(leer('contenido.js'), ctx);
 vm.runInContext(leer('glosario.js'), ctx);
-vm.runInContext(leer('app.js') + ';this.X = { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor };', ctx);
-const { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor } = ctx.X;
+vm.runInContext(leer('app.js') + ';this.X = { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas };', ctx);
+const { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas } = ctx.X;
 const plano = o => JSON.parse(JSON.stringify(o));
 
 // Inicio renderiza con progreso vacío
@@ -82,6 +82,11 @@ ctx.location.hash = '#/glosario';
 vm.runInContext('render()', ctx);
 assert.ok(el.h.indexOf('<dt>AdamW</dt>') < el.h.indexOf('<dt>Ventana de contexto</dt>'));
 assert.ok(el.h.includes('href="#/m/rag"'));
+
+// Fallas por módulo: agrupa, cuenta y respeta el orden del temario
+const fallas = [{ m: 'rag' }, { m: 'fundamentos' }, { m: 'rag' }];
+assert.deepStrictEqual(plano(modulosAFallas(fallas).map(([m, n]) => [m.id, n])), [['fundamentos', 1], ['rag', 2]]);
+assert.equal(modulosAFallas([]).length, 0);
 
 // Repaso vacío muestra un mensaje en lugar de un formulario
 guardado = null;

@@ -9,5 +9,5 @@
 - [x] Botón "Copiar prompt de tutor" en cada módulo, que copie un prompt para que Claude te tome examen oral sobre ese módulo
 - [x] Modo claro/oscuro con un botón en la cabecera, que se recuerde
 - [x] Glosario de términos (token, embedding, RAG...) generado a partir de las lecciones
-- [ ] Mostrar al final de cada quiz las preguntas falladas con un botón para ir directo a la lección del módulo
+- [x] Mostrar al final de cada quiz las preguntas falladas con un botón para ir directo a la lección del módulo
 - [ ] Al buscar, abrir directamente la lección encontrada (no solo el módulo) y resaltar la palabra buscada

@@ -238,6 +238,9 @@ function glosario() {
   filtro.focus();
 }
 
+// Agrupa las preguntas falladas por módulo, en el orden del temario: [[modulo, cantidad], ...]
+const modulosAFallas = fallas => T.map(m => [m, fallas.filter(q => q.m === m.id).length]).filter(([, n]) => n);
+
 function quiz(titulo, preguntas, alTerminar, vacio = 'No hay preguntas pendientes. 🎉') {
   app.innerHTML = `<a class="volver" href="#/">← Temario</a><h1>${esc(titulo)}</h1>
     ${preguntas.length ? `<div class="quiz-estado"><span id="contador">0/${preguntas.length} respondidas</span>${barra(0)}</div>` : `<section class="card"><p>${esc(vacio)}</p></section>`}
@@ -257,9 +260,11 @@ function quiz(titulo, preguntas, alTerminar, vacio = 'No hay preguntas pendiente
     e.preventDefault();
     const datos = new FormData(form), p = cargar(), campos = form.querySelectorAll('fieldset');
     let bien = 0;
+    const fallas = [];
     preguntas.forEach((q, i) => {
       const elegida = Number(datos.get('p' + i)), ok = elegida === q.correcta, opciones = campos[i].querySelectorAll('.opcion');
       bien += ok;
+      if (!ok) fallas.push(q);
       campos[i].classList.add(ok ? 'bien' : 'mal');
       opciones[q.correcta].classList.add('correcta');
       if (!ok) opciones[elegida].classList.add('incorrecta');
@@ -277,6 +282,8 @@ function quiz(titulo, preguntas, alTerminar, vacio = 'No hay preguntas pendiente
     res.innerHTML = `<section class="card resultado ${pct >= APROBADO ? 'ok' : ''}">
       <div class="nota">${pct}%</div>
       <p><strong>${bien} de ${preguntas.length} correctas.</strong> ${pct >= APROBADO ? '¡Aprobado! 🎉' : 'Leé las explicaciones de arriba y volvé a intentarlo.'}</p>
+      ${fallas.length ? `<p><strong>Para repasar:</strong></p><div class="repasar">${modulosAFallas(fallas).map(([m, n]) =>
+        `<a class="boton secundario" href="#/m/${m.id}">${icono(m)} ${esc(m.titulo)} (${n} ${n === 1 ? 'fallada' : 'falladas'})</a>`).join('')}</div>` : ''}
       <button onclick="render()">↻ Reintentar</button> <a class="boton secundario" href="#/">Volver al temario</a>
     </section>`;
     res.scrollIntoView({ behavior: 'smooth' });
