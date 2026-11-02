@@ -1724,7 +1724,15 @@ else:
         <li><strong>Por código:</strong> ¿es JSON válido?, ¿contiene el campo?, ¿coincide exactamente?, ¿pasa los tests? Rápidas, deterministas, ideales para CI.</li>
         <li><strong>LLM-as-judge:</strong> un modelo evalúa con una rúbrica concreta (preferiblemente veredicto binario pasa/falla con justificación). Para criterios subjetivos: tono, fidelidad al contexto, utilidad.</li>
         <li><strong>Humana:</strong> la referencia de verdad, cara. Se usa para crear etiquetas y calibrar jueces.</li>
-      </ul>` },
+      </ul>
+      <p><strong>Ejemplo de análisis de errores</strong> en un asistente de soporte (números ilustrativos): leés 80 trazas y anotás qué falló en cada una.</p>
+      <pre><code>categoría de fallo                         casos   cómo se mide después
+inventa una política que no existe            14    juez LLM: "¿cada afirmación está en el contexto?"
+no pide el número de pedido y adivina         9    código: ¿la respuesta contiene la pregunta?
+responde en inglés a un usuario en español    4    código: detector de idioma
+tono demasiado formal                          2    (poco frecuente: por ahora no se mide)
+sin fallo                                     51</code></pre>
+      <p>En una tarde pasaste de "anda más o menos" a saber que el problema principal es inventar políticas, que eso pide un juez LLM, y que dos fallos se miden con código gratis. Fijate que la lista no salió de una métrica genérica sino de tus trazas: es lo mismo que vas a hacer con agentes en la lección de evaluar agentes.</p>` },
     { titulo: 'Montar un pipeline de evals', html: `
       <ol>
         <li><strong>Dataset dorado:</strong> 20-50 casos reales al principio (crecé a cientos), con la salida esperada o criterios. Incluí casos difíciles y casos que ya fallaron en producción.</li>
@@ -1733,7 +1741,26 @@ else:
         <li><strong>Regresiones:</strong> un cambio que mejora un caso no puede romper otros diez.</li>
       </ol>
       <p><strong>Sesgos del LLM-as-judge:</strong> prefiere respuestas largas, la primera opción en comparaciones, y a veces sus propias respuestas. Mitigaciones: rúbricas específicas, veredictos binarios, alternar el orden, y <em>medir el acuerdo del juez con etiquetas humanas</em> antes de confiar en él.</p>
-      <p><strong>Offline vs online:</strong> offline = dataset fijo antes de desplegar. Online = señales en producción (feedback del usuario, tasa de éxito de tareas, A/B tests).</p>` },
+      <p><strong>Offline vs online:</strong> offline = dataset fijo antes de desplegar. Online = señales en producción (feedback del usuario, tasa de éxito de tareas, A/B tests).</p>
+      <p><strong>Ejemplo mínimo de pipeline</strong> en Python, que corre en CI y falla si algo empeora:</p>
+      <pre><code>casos = cargar("evals/soporte.jsonl")        # 40 casos: entrada + criterios
+resultados = []
+for c in casos:
+    salida = app.responder(c["entrada"])
+    resultados.append({
+        "id": c["id"],
+        "json_valido": es_json_valido(salida),             # código
+        "pide_pedido": "número de pedido" in salida,       # código
+        "fiel": juez(c["contexto"], salida),               # juez LLM calibrado
+    })
+guardar(resultados, version_prompt="soporte-v8")
+
+base = cargar_resultados("soporte-v7")
+for metrica in ["json_valido", "pide_pedido", "fiel"]:
+    antes, ahora = tasa(base, metrica), tasa(resultados, metrica)
+    print(f"{metrica}: {antes:.0%} → {ahora:.0%}")
+    assert ahora &gt;= antes - 0.05, f"regresión en {metrica}"   # tolerancia por ruido</code></pre>
+      <p>Cada métrica corresponde a un modo de fallo del análisis de errores, los resultados quedan guardados por versión y la regresión frena el deploy. La tolerancia de 5 puntos existe porque con 40 casos hay ruido (lo ves a fondo en la lección de rigor estadístico).</p>` },
     { titulo: 'Evals con rigor: error estándar, comparación pareada y pass@k', html: `
       <p>"La versión nueva saca 84% y la vieja 80%" no dice nada sin un margen de error. Los modelos no son deterministas y tu dataset es una muestra, así que cada nota trae ruido.</p>
       <p><strong>1. Reportá el error estándar.</strong> Para una tasa de aciertos p con n casos, <code>SEM = √(p·(1−p)/n)</code> y el intervalo de confianza del 95% es <code>p ± 1,96·SEM</code>. Con 50 casos y 80% de aciertos: SEM ≈ 0,057, o sea <strong>±11 puntos</strong> (de 69% a 91%). Con 500 casos baja a unos ±3,5. Si la mejora que buscás es de 4 puntos, 50 casos no alcanzan para verla.</p>
