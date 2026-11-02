@@ -657,6 +657,7 @@ tokens_imagen(200, 200)     # 64
     'Construir un pipeline RAG completo: ingestión, chunking, retrieval y generación',
     'Diagnosticar y mejorar un RAG: híbrido, reranking, evaluación del retrieval',
     'Elegir entre contexto largo, RAG clásico y RAG agéntico, aplicando permisos en el retrieval',
+    'Elegir modelo de embeddings e índice vectorial, y ajustar el equilibrio entre recall y latencia',
   ],
   lecciones: [
     { titulo: 'Embeddings y búsqueda semántica', html: `
@@ -700,18 +701,47 @@ def buscar_docs(consulta, usuario, producto=None):
     return busqueda_hibrida(consulta, filtros=filtros, k=8)</code></pre>
       <p><strong>Las mejoras de retrieval se suman.</strong> En el experimento de Contextual Retrieval de Anthropic, la tasa de fallo del top-20 bajó 35% con embeddings contextuales, 49% al sumar BM25 contextual y 67% al agregar reranking. Lo importante es el método: cada técnica se agrega y se mide contra una métrica como tasa de fallo o recall@k.</p>
       <p><strong>Regla práctica:</strong> empezá por lo más simple que funcione con tus datos (contexto completo si entra), pasá a RAG clásico cuando el tamaño, el costo o los permisos lo exijan, y a RAG agéntico solo para las preguntas que lo necesiten.</p>` },
+    { titulo: 'Embeddings e índices vectoriales en la práctica', html: `
+      <p>Dos decisiones técnicas sostienen cualquier RAG: qué modelo de embeddings usás y cómo indexás los vectores.</p>
+      <p><strong>Elegir el modelo de embeddings:</strong></p>
+      <ul>
+        <li>El leaderboard <strong>MTEB</strong> sirve para preseleccionar, pero mide tareas genéricas. Decidí con <strong>recall@k sobre tus propias consultas</strong>, y si tus documentos están en español, probá modelos multilingües.</li>
+        <li><strong>Las dimensiones cuestan:</strong> 10 millones de vectores de 1.536 dimensiones en float32 son 10M × 1.536 × 4 bytes ≈ 61 GB, solo de vectores.</li>
+        <li><strong>Mismo modelo para indexar y consultar.</strong> Vectores de modelos distintos no son comparables: si cambiás de modelo, hay que reindexar todo.</li>
+        <li>Si los vectores están <strong>normalizados</strong> (largo 1), el producto punto es igual a la similitud coseno, que es más barato de calcular.</li>
+      </ul>
+      <p><strong>Búsqueda exacta o aproximada.</strong> La búsqueda exacta compara la consulta con todos los vectores: recall perfecto, pero se vuelve lenta al crecer. Los índices de vecinos aproximados (ANN) cambian un poco de recall por mucha velocidad. En pgvector:</p>
+      <ul>
+        <li><strong>HNSW:</strong> un grafo de varias capas. Mejor equilibrio entre velocidad y recall, pero tarda más en construirse y usa más memoria. El parámetro <code>hnsw.ef_search</code> (40 por defecto) sube el recall a cambio de latencia.</li>
+        <li><strong>IVFFlat:</strong> agrupa los vectores en listas y busca solo en las más cercanas. Se construye más rápido y usa menos memoria, pero su equilibrio es peor, y conviene crearlo cuando la tabla ya tiene datos.</li>
+      </ul>
+      <pre><code>CREATE EXTENSION vector;
+CREATE TABLE chunks (id bigserial PRIMARY KEY, cliente_id int, texto text, embedding vector(1024));
+CREATE INDEX ON chunks USING hnsw (embedding vector_cosine_ops);
+
+SET hnsw.ef_search = 100;   -- más recall, más latencia (por defecto: 40)
+SELECT id, texto, 1 - (embedding &lt;=&gt; $1) AS similitud   -- &lt;=&gt; es distancia coseno
+FROM chunks
+WHERE cliente_id = $2
+ORDER BY embedding &lt;=&gt; $1
+LIMIT 5;</code></pre>
+      <p><strong>Cuidado con los filtros:</strong> si el índice aproximado trae k candidatos y después el filtro descarta varios (por ejemplo, documentos de otro cliente), podés terminar con menos resultados de los que pediste. Pedí más candidatos, ajustá el índice o usá una solución con filtrado integrado, y medilo.</p>
+      <p><strong>Medí siempre contra la búsqueda exacta:</strong> agregar un índice aproximado puede cambiar los resultados. Calculá el recall@k del índice tomando como referencia la búsqueda exacta y elegí el punto de recall y latencia que tu producto necesita.</p>` },
   ],
   practica: [
     'Construí un RAG sobre tus propios apuntes (o la documentación de una librería): chunking, embeddings, pgvector o Chroma, y respuestas con citas.',
     'Creá 30 preguntas con el chunk correcto esperado y medí recall@5 con búsqueda vectorial, BM25 e híbrida.',
     'Agregá un reranker y medí cuánto cambia la calidad de las respuestas.',
     'Sobre tus apuntes, compará tres variantes en 30 preguntas (5 de ellas de varios saltos): todo en el contexto con caching, RAG clásico y RAG agéntico. Medí exactitud, costo y latencia por pregunta, y escribí cuál elegirías y por qué.',
+    'Indexá 100.000 chunks en pgvector. Medí recall@10 y latencia con búsqueda exacta y con HNSW usando ef_search de 40, 100 y 200, graficá recall contra latencia y elegí el punto para tu caso.',
   ],
   recursos: [
     { t: 'Paper original de RAG (Lewis et al., 2020)', url: 'https://arxiv.org/abs/2005.11401' },
     { t: 'Anthropic — Contextual Retrieval', url: 'https://www.anthropic.com/news/contextual-retrieval' },
     { t: 'pgvector (búsqueda vectorial en Postgres)', url: 'https://github.com/pgvector/pgvector' },
     { t: 'Sentence Transformers (embeddings open source)', url: 'https://www.sbert.net/' },
+    { t: 'MTEB Leaderboard (comparativa de modelos de embeddings)', url: 'https://huggingface.co/spaces/mteb/leaderboard' },
+    { t: 'HNSW: búsqueda aproximada de vecinos con grafos (paper)', url: 'https://arxiv.org/abs/1603.09320' },
     { t: 'Lost in the Middle: How Language Models Use Long Contexts (paper)', url: 'https://arxiv.org/abs/2307.03172' },
   ],
   quiz: [
@@ -726,6 +756,11 @@ def buscar_docs(consulta, usuario, producto=None):
     { q: 'En el RAG interno de tu empresa, un vendedor recibe en una respuesta datos de sueldos de Recursos Humanos. ¿Cuál es el arreglo correcto?', opciones: ['Agregar al system prompt "no reveles sueldos"', 'Bajar el k del retrieval', 'Cambiar el modelo de embeddings', 'Filtrar por los permisos del usuario en el retrieval, antes de que los documentos lleguen al modelo'], correcta: 3, explicacion: 'Si el documento llega al contexto, el modelo puede filtrarlo, sobre todo ante prompt injection. El control de acceso tiene que estar en la búsqueda, no en una instrucción.' },
     { q: 'Ponés 40 documentos en el contexto y el modelo ignora un dato clave que está en el documento 20. ¿Qué fenómeno es y cómo lo mitigás?', opciones: ['Overfitting: regularizás el modelo', 'Lost in the middle: ponés menos contexto pero más relevante, con lo importante al principio o al final', 'Alucinación: ponés temperatura 0', 'Rate limit: reintentás'], correcta: 1, explicacion: 'Los modelos tienden a usar peor la información en el medio de contextos largos. Recuperar menos y mejor, o reordenar, ayuda más que agregar documentos.' },
     { q: 'En el experimento de Anthropic, combinar embeddings contextuales, BM25 contextual y reranking redujo 67% los fallos del top-20. ¿Qué lección práctica sacás?', opciones: ['Que los embeddings no sirven', 'Que siempre hay que usar el modelo más grande', 'Que las mejoras de retrieval se suman, y cada una se valida con una métrica como tasa de fallo o recall@k', 'Que BM25 quedó obsoleto'], correcta: 2, explicacion: 'Cada técnica aportó por separado y juntas sumaron. Al revés de lo que dice la opción sobre BM25: sumarlo mejoró el resultado.' },
+    { q: 'Cambiás el modelo de embeddings que usás para las consultas, pero no reindexás los documentos. ¿Qué pasa?', opciones: ['Funciona igual o mejor', 'Los resultados pasan a ser basura: vectores de modelos distintos no son comparables, hay que reindexar todo', 'La calidad baja solo un poco', 'Mejora la latencia'], correcta: 1, explicacion: 'Cada modelo define su propio espacio vectorial. Comparar un vector de un modelo con los de otro es como medir distancias entre mapas distintos.' },
+    { q: 'Agregaste un índice HNSW y ahora algunas búsquedas ya no devuelven un documento que antes aparecía. ¿Por qué?', opciones: ['Es un bug de Postgres', 'Cambió el modelo de embeddings', 'Se borraron datos', 'La búsqueda aproximada cambia algo de recall por velocidad: subí ef_search y medí el recall contra la búsqueda exacta'], correcta: 3, explicacion: 'Sin índice, pgvector hace búsqueda exacta con recall perfecto. Con HNSW la búsqueda es aproximada, y ef_search controla cuánto recall recuperás a cambio de latencia.' },
+    { q: 'Tenés 10 millones de chunks con embeddings de 1.536 dimensiones en float32. ¿Cuánta memoria ocupan aproximadamente solo los vectores?', opciones: ['Unos 6 GB', 'Unos 61 GB', 'Unos 600 GB', 'Unos 1,5 GB'], correcta: 1, explicacion: '10.000.000 × 1.536 × 4 bytes ≈ 61 GB. Por eso las dimensiones y la cuantización de vectores importan a escala.' },
+    { q: 'Tenés que elegir un modelo de embeddings para documentos en español. ¿Cómo decidís?', opciones: ['Tomás el primero del leaderboard MTEB', 'Elegís el más grande', 'Elegís siempre el más barato', 'Preseleccionás con MTEB teniendo en cuenta el idioma y decidís midiendo recall@k sobre tus propias consultas'], correcta: 3, explicacion: 'MTEB mide tareas genéricas, mayormente en inglés. Lo que importa es cómo rinde con tus documentos y tus preguntas.' },
+    { q: 'Pedís el top-5 con el filtro "solo documentos del cliente X" y a veces volvés con menos de 5 resultados. ¿Por qué?', opciones: ['El índice aproximado trajo k candidatos y el filtro, aplicado después, descartó varios: pedí más candidatos o usá filtrado integrado', 'El modelo de embeddings está mal', 'Los vectores no están normalizados', 'Es un rate limit'], correcta: 0, explicacion: 'Si la mayoría de los vecinos cercanos son de otros clientes, el filtro los saca y quedan menos de k. Es un problema común al combinar ANN con filtros.' },
   ],
 },
 {

@@ -27,6 +27,7 @@ window.GLOSARIO = [
   { t: 'Fine-tuning', d: 'Seguir entrenando un modelo preentrenado con datos propios para una tarea, un formato o un estilo.', m: 'fine-tuning' },
   { t: 'GQA', d: 'Grouped-query attention: varias cabezas de query comparten keys y values, lo que reduce el KV cache.', m: 'fine-tuning' },
   { t: 'Gradient boosting', d: 'Ensemble de árboles entrenados en secuencia, cada uno corrigiendo los errores de los anteriores.', m: 'ml-clasico' },
+  { t: 'HNSW', d: 'Índice de búsqueda aproximada de vecinos basado en un grafo de varias capas. Muy rápido, con algo menos de recall que la búsqueda exacta.', m: 'rag' },
   { t: 'Idempotencia', d: 'Propiedad de una operación que puede repetirse sin efectos extra. Es clave al reintentar acciones como cobros.', m: 'apis' },
   { t: 'KV cache', d: 'Keys y values de los tokens anteriores guardados para no recalcularlos en cada paso de generación.', m: 'fine-tuning' },
   { t: 'LLM-as-judge', d: 'Usar un modelo con una rúbrica para evaluar las salidas de otro sistema.', m: 'evals' },
