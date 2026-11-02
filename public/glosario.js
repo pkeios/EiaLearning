@@ -48,6 +48,7 @@ window.GLOSARIO = [
   { t: 'LoRA', d: 'Fine-tuning que entrena matrices de bajo rango añadidas y deja congelados los pesos originales.', m: 'fine-tuning' },
   { t: 'MCP', d: 'Model Context Protocol: estándar abierto para conectar aplicaciones de IA con herramientas y fuentes de datos.', m: 'agentes' },
   { t: 'Mixture of Experts (MoE)', d: 'Arquitectura con varios expertos por capa y un router que activa solo algunos por token: mucha capacidad con poco cómputo, pero toda la memoria.', m: 'llms' },
+  { t: 'Modelo multimodal (VLM)', d: 'Modelo que procesa más de un tipo de dato, por ejemplo imagen y texto, convirtiendo la imagen en tokens que comparten la secuencia con el texto.', m: 'llms' },
   { t: 'Modelo de razonamiento', d: 'Modelo entrenado para generar una cadena de razonamiento larga antes de responder.', m: 'llms' },
   { t: 'Negativo difícil', d: 'Ejemplo que se parece al positivo en la superficie pero significa otra cosa. Es el que más enseña en el aprendizaje contrastivo.', m: 'deep-learning' },
   { t: 'Olvido catastrófico', d: 'Pérdida de capacidades generales que sufre un modelo al afinarlo para una tarea específica.', m: 'fine-tuning' },
@@ -80,5 +81,6 @@ window.GLOSARIO = [
   { t: 'Tool use', d: 'El modelo pide llamar a una herramienta con ciertos argumentos y tu código la ejecuta.', m: 'agentes' },
   { t: 'Token visual', d: 'Bloque de una imagen (en Claude, de 28×28 píxeles) que el modelo procesa como un token. Determina el costo de la imagen.', m: 'apis' },
   { t: 'TTFT', d: 'Time to first token: tiempo hasta que llega el primer token de la respuesta.', m: 'produccion' },
+  { t: 'ViT (Vision Transformer)', d: 'Transformer para imágenes que corta la imagen en parches y los procesa como si fueran tokens.', m: 'llms' },
   { t: 'Ventana de contexto', d: 'Máximo de tokens, entre entrada y salida, que el modelo puede procesar a la vez.', m: 'llms' },
 ];

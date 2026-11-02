@@ -482,6 +482,7 @@ for i, (x, y) in enumerate(loader):
     'Entender parámetros de muestreo, ventana de contexto y alucinaciones',
     'Saber cuándo conviene un modelo de razonamiento y cuáles son sus límites (costo y fidelidad del razonamiento)',
     'Reconocer los componentes de un LLM moderno: pre-norm, RoPE, SwiGLU, MoE y FlashAttention',
+    'Entender cómo los modelos multimodales convierten imágenes en tokens y qué implica en costo y limitaciones',
   ],
   lecciones: [
     { titulo: 'De texto a predicción: tokens, embeddings y atención', html: `
@@ -531,6 +532,27 @@ for i, (x, y) in enumerate(loader):
 def mlp_swiglu(x):
     return W_baja(silu(W_compuerta(x)) * W_sube(x))   # la compuerta regula lo que pasa</code></pre>
       <p>Al elegir un modelo abierto, estos detalles importan en la práctica: un MoE grande puede ser rápido por token pero necesitar mucha más memoria que un modelo denso con el mismo cómputo, y el tipo de atención y de posición condicionan cuánto contexto podés usar con el hardware que tenés.</p>` },
+    { titulo: 'Modelos multimodales: cómo un LLM "ve" una imagen', html: `
+      <p>Un LLM procesa secuencias de tokens. Para que entienda una imagen, hay que convertirla en algo parecido a tokens. Así funciona la receta más común:</p>
+      <ol>
+        <li><strong>Parches (ViT):</strong> el Vision Transformer corta la imagen en cuadraditos, por ejemplo de 14×14 o 16×16 píxeles, convierte cada uno en un vector y los procesa con un Transformer como si fueran palabras. De ahí el título del paper: "una imagen vale 16×16 palabras".</li>
+        <li><strong>Codificador de visión:</strong> en muchos modelos es un codificador tipo CLIP, entrenado con aprendizaje contrastivo para que imágenes y textos queden en un espacio compartido.</li>
+        <li><strong>Proyección:</strong> una capa lleva esos vectores a la dimensión de los embeddings del LLM.</li>
+        <li><strong>Una sola secuencia:</strong> los "tokens visuales" se ubican junto a los tokens de texto, y el LLM los atiende como a cualquier otro token.</li>
+      </ol>
+      <pre><code>parches = cortar(imagen, lado=14)                  # 224×224 píxeles → 16×16 = 256 parches
+v = codificador_vision(parches)                    # (256, 1024)
+tokens_visuales = proyeccion(v)                    # (256, dimensión del LLM)
+secuencia = concatenar(tokens_visuales, embeber(texto))
+respuesta = llm.generar(secuencia)                 # atiende a imagen y texto juntos</code></pre>
+      <p><strong>Entrenamiento:</strong> primero se alinea la proyección con pares imagen-texto, y después se afina con instrucciones visuales ("¿qué hay en esta foto?", "¿qué dice este gráfico?"). LLaVA, por ejemplo, generó esos datos de instrucciones con GPT-4 de solo texto, a partir de descripciones de las imágenes.</p>
+      <p><strong>Lo que esto explica en la práctica:</strong></p>
+      <ul>
+        <li><strong>Las imágenes cuestan tokens</strong> según su tamaño en parches (lo viste en el módulo de APIs).</li>
+        <li><strong>El texto chico se pierde:</strong> si la imagen se reduce a la resolución del codificador, una línea de texto puede quedar repartida en muy pocos parches. Recortar la zona ayuda más que mandar la imagen entera.</li>
+        <li><strong>Contar y ubicar es aproximado,</strong> y también hay alucinaciones visuales: el modelo puede describir algo que no está.</li>
+        <li><strong>Audio y video siguen la misma idea:</strong> se codifican en tokens que comparten la secuencia con el texto.</li>
+      </ul>` },
   ],
   practica: [
     'Mirá "Let\'s build GPT: from scratch" de Karpathy y reimplementá un mini-GPT a nivel de caracteres.',
@@ -538,11 +560,14 @@ def mlp_swiglu(x):
     'Implementá la atención de una cabeza en NumPy con Q, K, V aleatorios y verificá que cada fila de los pesos de atención suma 1.',
     'Elegí 20 problemas: 10 de lógica o matemática y 10 de extracción simple. Resolvelos con y sin razonamiento extendido, medí exactitud, tokens y latencia, y escribí una regla de routing basada en los resultados.',
     'Abrí el config.json de dos modelos abiertos en Hugging Face, uno denso y uno MoE. Identificá capas, cabezas, cabezas KV, tipo de codificación de posición, cantidad de expertos y expertos activos, y calculá parámetros activos contra totales y la memoria de los pesos en 16 bits.',
+    'Con un modelo de visión por API, probá 20 capturas de pantalla con texto de distintos tamaños. Medí cuántas lee bien enteras y cuántas recortando la zona del texto, y relacioná los fallos con la resolución.',
   ],
   recursos: [
     { t: 'Attention Is All You Need (paper original)', url: 'https://arxiv.org/abs/1706.03762' },
     { t: 'The Illustrated Transformer (Jay Alammar)', url: 'https://jalammar.github.io/illustrated-transformer/' },
     { t: 'Hugging Face — LLM Course', url: 'https://huggingface.co/learn/llm-course' },
+    { t: 'ViT: An Image is Worth 16x16 Words (paper)', url: 'https://arxiv.org/abs/2010.11929' },
+    { t: 'LLaVA: Visual Instruction Tuning (paper)', url: 'https://arxiv.org/abs/2304.08485' },
     { t: 'RoFormer: Rotary Position Embedding (paper de RoPE)', url: 'https://arxiv.org/abs/2104.09864' },
     { t: 'Mixtral of Experts (paper)', url: 'https://arxiv.org/abs/2401.04088' },
     { t: 'FlashAttention (paper)', url: 'https://arxiv.org/abs/2205.14135' },
@@ -571,6 +596,11 @@ def mlp_swiglu(x):
     { q: '¿Qué es FlashAttention?', opciones: ['Atención exacta reorganizada para minimizar las lecturas y escrituras en la memoria de la GPU: más rápida y con menos memoria', 'Una atención aproximada que sacrifica precisión', 'Un tokenizador', 'Una técnica de cuantización'], correcta: 0, explicacion: 'Da el mismo resultado que la atención estándar. Lo que cambia es el orden de los cálculos, para no mover tanta información en la memoria.' },
     { q: '¿Qué hace RoPE?', opciones: ['Normaliza las activaciones', 'Es una función de activación', 'Es un tipo de experto en MoE', 'Codifica la posición rotando queries y keys, de modo que la atención depende de la distancia relativa entre tokens'], correcta: 3, explicacion: 'En lugar de sumar un vector de posición, rota Q y K. El producto entre ellos queda en función de cuán lejos están los tokens.' },
     { q: '¿Por qué los LLMs modernos aplican la normalización antes de cada subcapa (pre-norm)?', opciones: ['Porque reduce la cantidad de parámetros', 'Porque hace más estable el entrenamiento de redes profundas, al normalizar la entrada de cada subcapa y dejar limpio el camino residual', 'Porque elimina la necesidad de atención', 'Porque acelera la tokenización'], correcta: 1, explicacion: 'Con la normalización después de la suma, los gradientes de redes muy profundas se vuelven inestables. Pre-norm mantiene un camino residual directo.' },
+    { q: '¿Cómo procesa una imagen un Vision Transformer (ViT)?', opciones: ['Píxel por píxel, con una red recurrente', 'Primero la convierte en una descripción de texto', 'La corta en parches, convierte cada uno en un vector y los procesa como tokens con un Transformer', 'Usa solo el color promedio de la imagen'], correcta: 2, explicacion: 'Cada parche cumple el papel de una palabra. Por eso el paper se llama "una imagen vale 16×16 palabras".' },
+    { q: 'En un modelo multimodal tipo LLaVA, ¿qué hace la capa de proyección?', opciones: ['Lleva los vectores del codificador de visión a la dimensión de los embeddings del LLM, para que entren en la misma secuencia que el texto', 'Comprime la imagen a JPEG', 'Traduce la imagen a palabras', 'Borra el fondo de la imagen'], correcta: 0, explicacion: 'El codificador de visión y el LLM hablan "dimensiones" distintas. La proyección es el puente que permite mezclar tokens visuales y de texto.' },
+    { q: 'Una imagen de 224×224 píxeles se corta en parches de 14×14. ¿Cuántos tokens visuales salen?', opciones: ['14', '256', '224', '50.176'], correcta: 1, explicacion: '224 / 14 = 16 parches por lado, y 16 × 16 = 256. 50.176 serían los píxeles.' },
+    { q: 'Un modelo de visión falla al leer texto chico en una captura de pantalla grande. ¿Causa probable?', opciones: ['Que el modelo no sabe leer', 'La temperatura', 'El idioma del texto', 'La imagen se reduce a la resolución del codificador y el texto queda en muy pocos parches: conviene recortar la zona'], correcta: 3, explicacion: 'Al reducir una captura grande, una línea de texto puede ocupar unos pocos píxeles de alto. Recortarla le da más parches y la vuelve legible.' },
+    { q: '¿Cómo generó LLaVA sus datos de instrucciones visuales?', opciones: ['Con etiquetado humano masivo', 'Con imágenes sintéticas', 'Con GPT-4 de solo texto, a partir de descripciones de las imágenes', 'Copiando conversaciones de foros'], correcta: 2, explicacion: 'GPT-4 nunca vio las imágenes: recibió descripciones en texto y generó a partir de ellas preguntas y respuestas sobre cada imagen.' },
   ],
 },
 {
