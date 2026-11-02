@@ -289,7 +289,7 @@ function modulo(id, abrir = null) {
     copia.querySelectorAll('pre').forEach(pre => pre.remove());
     const trozos = trozosParaVoz(copia.textContent);
     trozos.forEach((t, i) => {
-      const u = Object.assign(new SpeechSynthesisUtterance(t), { lang: 'es-ES' });
+      const u = Object.assign(new SpeechSynthesisUtterance(t), { lang: 'es-419', voice: vozLatina(speechSynthesis.getVoices()) });
       if (i === trozos.length - 1) u.onend = () => { b.textContent = '🔊 Escuchar'; delete b.dataset.activo; };
       speechSynthesis.speak(u);
     });
@@ -655,6 +655,11 @@ function trozosParaVoz(texto, max = 220) {
     else trozos.push(o);
   }
   return trozos;
+}
+// Voz en español latino si el dispositivo tiene una; si no, cualquier voz en español (null = la del navegador).
+function vozLatina(voces) {
+  const es = voces.filter(v => /^es/i.test(v.lang));
+  return es.find(v => /^es[-_](419|AR|MX|US|CO|CL|PE|UY|VE)/i.test(v.lang)) || es.find(v => !/^es[-_]ES/i.test(v.lang)) || es[0] || null;
 }
 // Teclado: la pregunta objetivo es la que tiene el foco; si ninguna lo tiene, la primera sin responder.
 function preguntaObjetivo(campos, activo) {
