@@ -12,6 +12,7 @@ window.GLOSARIO = [
   { t: 'Canary', d: 'Dar la versión nueva a un porcentaje chico de usuarios antes de liberarla para todos.', m: 'produccion' },
   { t: 'Chunking', d: 'Partir documentos en trozos para indexarlos y recuperarlos en un RAG.', m: 'rag' },
   { t: 'Compactación', d: 'Resumir el historial cuando se acerca al límite de contexto y seguir trabajando desde ese resumen.', m: 'prompting' },
+  { t: 'Computer use', d: 'Capacidad de un modelo de manejar una computadora con capturas de pantalla, clics y teclado, ejecutados por tu aplicación en un entorno controlado.', m: 'agentes' },
   { t: 'Context engineering', d: 'Decidir qué información entra en la ventana de contexto en cada paso de un agente.', m: 'prompting' },
   { t: 'Context rot', d: 'Degradación de la capacidad del modelo para usar la información a medida que el contexto crece.', m: 'prompting' },
   { t: 'Cuantización', d: 'Representar los pesos del modelo con menos bits para ahorrar memoria y ganar velocidad, con algo de pérdida de calidad.', m: 'fine-tuning' },
