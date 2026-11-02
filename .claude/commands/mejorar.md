@@ -19,6 +19,7 @@ Sos el editor jefe del curso de AI Engineering de este repo. El contenido está 
 - **5 preguntas nuevas** de nivel examen: 4 opciones plausibles, una correcta, `explicacion` que diga por qué es la correcta y por qué falla la trampa más tentadora. Que obliguen a razonar (escenarios, "¿qué hacés si...?"), no solo a memorizar. Repartí la posición de la correcta (mirá el conteo que imprime el validador y compensá).
 - **1 ejercicio práctico** en `practica`, accionable y con un resultado verificable.
 - Si un objetivo nuevo queda cubierto, agregalo a `objetivos`.
+- Si la lección introduce términos clave que no están en `public/glosario.js`, agregalos como `{ t, d, m }`: el término, una definición de una o dos oraciones y el id del módulo.
 
 ## 4. Revisar calidad
 - Corregí errores factuales o datos desactualizados que veas en el módulo.

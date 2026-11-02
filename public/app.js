@@ -221,6 +221,23 @@ function busqueda() {
   input.focus();
 }
 
+function glosario() {
+  const G = [...(window.GLOSARIO || [])].sort((a, b) => a.t.localeCompare(b.t, 'es'));
+  app.innerHTML = `<a class="volver" href="#/">← Temario</a><h1>📖 Glosario</h1>
+    <input id="filtro" type="search" class="buscador" placeholder="Filtrar términos..." aria-label="Filtrar el glosario">
+    <dl class="glosario">${G.map(g => {
+      const m = T.find(x => x.id === g.m);
+      return `<div data-texto="${esc(normal(g.t + ' ' + g.d))}"><dt>${esc(g.t)}</dt>
+        <dd>${esc(g.d)}${m ? ` <a href="#/m/${m.id}">${icono(m)} Ver módulo</a>` : ''}</dd></div>`;
+    }).join('')}</dl>`;
+  const filtro = app.querySelector('#filtro');
+  filtro.oninput = () => {
+    const q = normal(filtro.value.trim());
+    app.querySelectorAll('.glosario > div').forEach(d => { d.hidden = !!q && !d.dataset.texto.includes(q); });
+  };
+  filtro.focus();
+}
+
 function quiz(titulo, preguntas, alTerminar, vacio = 'No hay preguntas pendientes. 🎉') {
   app.innerHTML = `<a class="volver" href="#/">← Temario</a><h1>${esc(titulo)}</h1>
     ${preguntas.length ? `<div class="quiz-estado"><span id="contador">0/${preguntas.length} respondidas</span>${barra(0)}</div>` : `<section class="card"><p>${esc(vacio)}</p></section>`}
@@ -270,6 +287,7 @@ function render() {
   const [, ruta, id] = location.hash.split('/');
   if (ruta === 'm') modulo(id);
   else if (ruta === 'buscar') busqueda();
+  else if (ruta === 'glosario') glosario();
   else if (ruta === 'quiz' && T.some(m => m.id === id)) {
     const m = T.find(x => x.id === id);
     quiz(`${icono(m)} Quiz: ${m.titulo}`, mezclar(preguntasDe(m)), (p, pct) => { p.notas[m.id] = Math.max(p.notas[m.id] ?? 0, pct); });

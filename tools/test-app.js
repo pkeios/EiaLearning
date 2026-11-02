@@ -7,6 +7,7 @@ let guardado = null;
 const ctx = { window: {}, document: { getElementById: id => id === 'tema' ? botonTema : el, documentElement: { dataset: { tema: 'oscuro' } } }, localStorage: { getItem: () => guardado, setItem: (k, v) => { guardado = v; } }, location: { hash: '' }, addEventListener() {}, scrollTo() {}, Date, URL };
 vm.createContext(ctx);
 vm.runInContext(leer('contenido.js'), ctx);
+vm.runInContext(leer('glosario.js'), ctx);
 vm.runInContext(leer('app.js') + ';this.X = { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor };', ctx);
 const { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor } = ctx.X;
 const plano = o => JSON.parse(JSON.stringify(o));
@@ -75,6 +76,12 @@ assert.equal(botonTema.textContent, '🌙');
 assert.equal(guardado, 'claro');
 botonTema.onclick();
 assert.equal(ctx.document.documentElement.dataset.tema, 'oscuro');
+
+// Glosario: se renderiza ordenado y cada término enlaza a su módulo
+ctx.location.hash = '#/glosario';
+vm.runInContext('render()', ctx);
+assert.ok(el.h.indexOf('<dt>AdamW</dt>') < el.h.indexOf('<dt>Ventana de contexto</dt>'));
+assert.ok(el.h.includes('href="#/m/rag"'));
 
 // Repaso vacío muestra un mensaje en lugar de un formulario
 guardado = null;
