@@ -1222,6 +1222,7 @@ respuesta = llm(f"Pregunta: {pregunta}\\nResultado: {filas}\\nRespondé en una f
     'Decidir cuándo un sistema multi-agente vale su costo, y delegar y evaluar bien',
     'Construir agentes de computer use seguros y saber cuándo conviene otra interfaz',
     'Diseñar herramientas para agentes: pocas y de alto impacto, con respuestas eficientes, errores útiles y validadas con evals',
+    'Diseñar memoria de largo plazo para agentes, segura y separada por usuario',
   ],
   lecciones: [
     { titulo: 'Tool use: el bucle que da superpoderes', html: `
@@ -1327,6 +1328,30 @@ Formato: tabla con producto | plan gratuito | precio por millón de vectores | f
   }
 }</code></pre>
       <p>Pensalo así: el agente solo conoce tu herramienta por su nombre, su descripción y lo que devuelve. Todo lo que no esté ahí, no existe para él.</p>` },
+    { titulo: 'Memoria de largo plazo para agentes', html: `
+      <p>La ventana de contexto es la memoria de trabajo del agente: se pierde al terminar la sesión o al compactar. Para que un agente recuerde entre sesiones (las preferencias de un cliente, el avance de un proyecto, lo que aprendió de un error) necesita <strong>memoria de largo plazo</strong> fuera del contexto. El paper MemGPT lo plantea como un sistema operativo: el contexto es la RAM y la memoria externa es el disco.</p>
+      <p><strong>La herramienta de memoria de Claude</strong> funciona así: el modelo pide operaciones sobre archivos dentro de <code>/memories</code> (ver, crear, reemplazar texto, insertar, borrar, renombrar) y <strong>tu aplicación las ejecuta</strong> sobre el almacenamiento que elijas. La memoria vive en tu sistema, no en el modelo. Al empezar una tarea, el agente revisa su memoria; mientras trabaja, anota lo que aprende.</p>
+      <p><strong>Qué conviene guardar:</strong> decisiones, preferencias, progreso y lecciones aprendidas, no el historial completo. Para trabajos de varias sesiones, la documentación sugiere un patrón: una sesión inicial arma un registro de progreso y una lista de tareas; cada sesión nueva los lee al empezar y los actualiza al terminar; y una tarea se marca completa solo después de verificarla de punta a punta.</p>
+      <p><strong>Riesgos, y la responsabilidad es tuya porque tu código ejecuta todo:</strong></p>
+      <ul>
+        <li><strong>Rutas maliciosas:</strong> un pedido como <code>/memories/../../secrets.env</code> puede escaparse del directorio. Validá cada ruta.</li>
+        <li><strong>Mezcla de usuarios:</strong> la memoria de cada usuario va separada; si no, uno puede leer datos de otro.</li>
+        <li><strong>Memoria envenenada:</strong> si el agente guarda contenido no confiable (una web, un email), ese texto puede volver como "instrucciones" en sesiones futuras. Es prompt injection diferida.</li>
+        <li><strong>Datos sensibles y crecimiento:</strong> filtrá lo sensible antes de escribir, limitá el tamaño y borrá lo que no se usa hace tiempo.</li>
+      </ul>
+      <pre><code>from pathlib import Path
+RAIZ = Path("/datos/memorias").resolve()
+
+def ruta_segura(usuario_id, ruta_pedida):
+    # "/memories/notas.md" se guarda en /datos/memorias/&lt;usuario&gt;/notas.md, sin escaparse con ../
+    if not ruta_pedida.startswith("/memories"):
+        raise ValueError("ruta fuera de /memories")
+    base = (RAIZ / usuario_id).resolve()
+    real = (base / ruta_pedida.removeprefix("/memories").lstrip("/")).resolve()
+    if not real.is_relative_to(base):
+        raise ValueError("intento de salir del directorio de memoria")
+    return real</code></pre>
+      <p>La memoria se combina con la compactación: la compactación mantiene chico el contexto activo, y la memoria guarda lo que tiene que sobrevivir a ese resumen.</p>` },
   ],
   practica: [
     'Implementá desde cero (sin frameworks) un agente con 3 herramientas: calculadora, búsqueda en tus archivos y lectura de una URL. Logueá cada paso.',
@@ -1335,11 +1360,15 @@ Formato: tabla con producto | plan gratuito | precio por millón de vectores | f
     'Implementá un orquestador que lance 3 subagentes en paralelo, cada uno con objetivo, límites y formato de salida explícitos. Comparalo contra un solo agente en 10 preguntas de investigación: calidad (con un juez de rúbrica), tokens totales y tiempo. Decidí con números si vale la pena.',
     'En una máquina virtual o contenedor, armá un agente de computer use que complete un formulario de prueba en una web local, con confirmación humana antes de enviar, límite de pasos y verificación por captura. Medí tokens por tarea y tasa de éxito en 10 corridas.',
     'Reescribí las herramientas de tu agente siguiendo estos principios: consolidar, formato conciso, paginación y errores que digan cómo corregir. Medí 10 tareas de varios pasos antes y después: tasa de éxito, llamadas a herramientas y tokens.',
+    'Implementá el manejador de memoria de tu agente con validación de rutas y separación por usuario. Escribí tests con 5 rutas maliciosas (con ../, absolutas, codificadas) y verificá que todas se rechazan. Después comprobá que el agente recuerda una preferencia entre dos sesiones distintas.',
   ],
   recursos: [
     { t: 'Anthropic — Building effective agents', url: 'https://www.anthropic.com/engineering/building-effective-agents' },
     { t: 'Model Context Protocol (documentación oficial)', url: 'https://modelcontextprotocol.io/' },
     { t: 'Documentación de tool use de Claude', url: 'https://docs.claude.com/en/docs/agents-and-tools/tool-use/overview' },
+    { t: 'Claude — Herramienta de memoria', url: 'https://platform.claude.com/docs/en/agents-and-tools/tool-use/memory-tool' },
+    { t: 'MemGPT: LLMs como sistemas operativos (paper)', url: 'https://arxiv.org/abs/2310.08560' },
+    { t: 'Anthropic — Effective harnesses for long-running agents', url: 'https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents' },
     { t: 'Anthropic — Writing effective tools for agents', url: 'https://www.anthropic.com/engineering/writing-tools-for-agents' },
     { t: 'Claude — Computer use', url: 'https://platform.claude.com/docs/en/agents-and-tools/tool-use/computer-use-tool' },
     { t: 'Anthropic — How we built our multi-agent research system', url: 'https://www.anthropic.com/engineering/multi-agent-research-system' },
@@ -1366,6 +1395,11 @@ Formato: tabla con producto | plan gratuito | precio por millón de vectores | f
     { q: 'La herramienta de logs devuelve 200.000 líneas y llena el contexto del agente. ¿Qué hacés?', opciones: ['Usás un modelo con más contexto', 'Compactás el historial después de cada llamada', 'La reemplazás por una búsqueda con filtros, límites por defecto y paginación, que avise cómo acotar si trunca', 'Sacás la herramienta'], correcta: 2, explicacion: 'El problema está en lo que devuelve la herramienta. Más contexto o compactar solo esconden el síntoma, y sacarla deja al agente sin la capacidad.' },
     { q: 'Tu agente falla una y otra vez con una fecha mal formateada, y la herramienta responde "Error 422". ¿Qué mejora más?', opciones: ['Reintentar automáticamente hasta que funcione', 'Cambiar de modelo', 'Ocultarle el error al agente', 'Un mensaje de error que diga cómo corregir: el formato esperado y un ejemplo'], correcta: 3, explicacion: 'Con un código opaco el agente adivina. Con el formato y un ejemplo, se corrige en el siguiente intento.' },
     { q: 'Cambiaste la descripción de una herramienta. ¿Cómo sabés si mejoró?', opciones: ['Le preguntás al modelo si le gusta más', 'Con un eval de tareas realistas de varios pasos: éxito, llamadas, errores y tokens, más leer transcripciones', 'Por intuición', 'Contando las palabras de la descripción'], correcta: 1, explicacion: 'Las descripciones son prompts: cambios chicos tienen efectos grandes y a veces inesperados. Solo medirlo con tareas reales lo confirma.' },
+    { q: 'Con la herramienta de memoria de Claude, ¿dónde se guarda la memoria del agente?', opciones: ['En los servidores del modelo', 'En tu aplicación: el modelo pide operaciones sobre archivos y tu código las ejecuta en tu almacenamiento', 'Dentro del prompt', 'En los pesos del modelo'], correcta: 1, explicacion: 'La herramienta funciona del lado del cliente. Por eso vos controlás dónde se guarda, cuánto tiempo y quién accede, y también sos responsable de su seguridad.' },
+    { q: 'El agente pide leer /memories/../../secrets.env. ¿Qué hace tu código?', opciones: ['Lo ejecuta: el agente sabrá por qué lo pide', 'Le pide al modelo que no vuelva a hacerlo', 'Valida y resuelve la ruta, y rechaza todo lo que quede fuera del directorio de memoria de ese usuario', 'Lo ignora en silencio'], correcta: 2, explicacion: 'Es un ataque de recorrido de rutas: puede venir de un error del modelo o de una prompt injection. La defensa tiene que estar en tu código, no en el modelo.' },
+    { q: 'Tu agente usa una sola memoria compartida para todos los usuarios. ¿Qué riesgo tiene?', opciones: ['Ninguno', 'Que sea más lenta', 'Que sea más cara', 'Que un usuario vea datos de otro, o que alguien envenene la memoria con instrucciones que después afecten a otros'], correcta: 3, explicacion: 'La memoria es contenido que el agente lee como contexto. Separarla por usuario evita filtraciones y limita el alcance de una memoria envenenada.' },
+    { q: 'En un agente que trabaja durante horas, ¿cómo se combinan la compactación y la memoria?', opciones: ['Son lo mismo', 'La compactación resume el contexto activo y la memoria guarda lo que tiene que sobrevivir a ese resumen: conviene usar las dos', 'Solo se puede usar una de las dos', 'La memoria reemplaza siempre a la compactación'], correcta: 1, explicacion: 'Al compactar se pierden detalles. Lo que el agente necesita sí o sí (progreso, decisiones) va a la memoria, que no depende del resumen.' },
+    { q: 'Para un proyecto que el agente va a trabajar en varias sesiones, ¿qué patrón recomienda la documentación?', opciones: ['Que cada sesión explore todo de nuevo desde cero', 'Guardar en la memoria todo el historial de cada sesión', 'Una sesión inicial arma un registro de progreso y una lista de tareas; cada sesión los lee al empezar y los actualiza al terminar', 'No usar memoria y confiar en la ventana de contexto'], correcta: 2, explicacion: 'El registro de progreso evita reexplorar y repetir decisiones. Guardar todo el historial llena la memoria de ruido.' },
   ],
 },
 {

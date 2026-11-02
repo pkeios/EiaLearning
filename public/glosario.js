@@ -49,6 +49,7 @@ window.GLOSARIO = [
   { t: 'LLM-as-judge', d: 'Usar un modelo con una rúbrica para evaluar las salidas de otro sistema.', m: 'evals' },
   { t: 'LoRA', d: 'Fine-tuning que entrena matrices de bajo rango añadidas y deja congelados los pesos originales.', m: 'fine-tuning' },
   { t: 'MCP', d: 'Model Context Protocol: estándar abierto para conectar aplicaciones de IA con herramientas y fuentes de datos.', m: 'agentes' },
+  { t: 'Memoria de largo plazo (agentes)', d: 'Información que un agente guarda fuera de la ventana de contexto (archivos o base de datos) para recordarla entre sesiones.', m: 'agentes' },
   { t: 'Mixture of Experts (MoE)', d: 'Arquitectura con varios expertos por capa y un router que activa solo algunos por token: mucha capacidad con poco cómputo, pero toda la memoria.', m: 'llms' },
   { t: 'Modelo multimodal (VLM)', d: 'Modelo que procesa más de un tipo de dato, por ejemplo imagen y texto, convirtiendo la imagen en tokens que comparten la secuencia con el texto.', m: 'llms' },
   { t: 'Modelo de razonamiento', d: 'Modelo entrenado para generar una cadena de razonamiento larga antes de responder.', m: 'llms' },
