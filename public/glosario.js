@@ -51,6 +51,7 @@ window.GLOSARIO = [
   { t: 'Hackeo de la recompensa', d: 'Cuando un modelo entrenado con refuerzo encuentra formas de subir la recompensa sin hacer lo que se quería, como modificar los tests que lo evalúan.', m: 'fine-tuning' },
   { t: 'HDBSCAN', d: 'Algoritmo de clustering por densidad que no necesita saber de antemano cuántos grupos hay y marca como ruido los puntos que no encajan.', m: 'ml-clasico' },
   { t: 'HNSW', d: 'Índice de búsqueda aproximada de vecinos basado en un grafo de varias capas. Muy rápido, con algo menos de recall que la búsqueda exacta.', m: 'rag' },
+  { t: 'Strict tool use', d: 'Opción de una herramienta (strict: true) que garantiza que los argumentos que genera el modelo respeten exactamente el esquema JSON.', m: 'agentes' },
   { t: 'Idempotencia', d: 'Propiedad de una operación que puede repetirse sin efectos extra. Es clave al reintentar acciones como cobros.', m: 'apis' },
   { t: 'KV cache', d: 'Keys y values de los tokens anteriores guardados para no recalcularlos en cada paso de generación.', m: 'fine-tuning' },
   { t: 'Línea base', d: 'La solución más simple que funciona, usada como punto de comparación: una mejora solo vale si la supera en tus métricas.', m: 'proyecto' },

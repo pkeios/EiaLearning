@@ -1462,6 +1462,7 @@ respuesta = llm(f"Pregunta: {pregunta}\\nResultado: {filas}\\nRespondé en una f
     'Construir agentes de computer use seguros y saber cuándo conviene otra interfaz',
     'Diseñar herramientas para agentes: pocas y de alto impacto, con respuestas eficientes, errores útiles y validadas con evals',
     'Diseñar memoria de largo plazo para agentes, segura y separada por usuario',
+    'Hacer robusto el bucle de un agente: errores con is_error, idempotencia, aprobaciones por código, presupuestos y trazas',
   ],
   lecciones: [
     { titulo: 'Tool use: el bucle que da superpoderes', html: `
@@ -1591,6 +1592,47 @@ def ruta_segura(usuario_id, ruta_pedida):
         raise ValueError("intento de salir del directorio de memoria")
     return real</code></pre>
       <p>La memoria se combina con la compactación: la compactación mantiene chico el contexto activo, y la memoria guarda lo que tiene que sobrevivir a ese resumen.</p>` },
+    { titulo: 'El bucle del agente en producción: errores, efectos y aprobaciones', html: `
+      <p>El bucle de tool use de la primera lección funciona en una demo. En producción, las herramientas fallan, la red se corta, el modelo pide algo mal formado y algunas acciones no se pueden deshacer. La diferencia entre un agente de juguete y uno confiable está casi toda en <strong>tu código alrededor del modelo</strong>, no en el prompt.</p>
+      <h3>1. Los errores de herramientas vuelven al modelo, no rompen el bucle</h3>
+      <p>Si una herramienta falla, no tires una excepción que corte todo: devolvé un <code>tool_result</code> con <code>"is_error": true</code> y un mensaje que diga <strong>qué pasó y qué probar</strong> ("Límite de uso excedido, reintentá en 60 segundos", "Falta el parámetro fecha en formato AAAA-MM-DD"). Con eso el modelo puede corregir y reintentar; la documentación de Claude indica que, ante llamadas inválidas, el modelo reintenta 2 o 3 veces con correcciones antes de rendirse. Para eliminar de raíz los parámetros faltantes o de tipo incorrecto, activá <strong>strict tool use</strong> (<code>strict: true</code> en la definición), que garantiza que la entrada respete el esquema.</p>
+      <h3>2. Reglas de formato que rompen agentes en silencio</h3>
+      <ul>
+        <li>Cada <code>tool_use</code> necesita su <code>tool_result</code> con el mismo <code>tool_use_id</code> en el mensaje siguiente, incluso si la herramienta falló o la cancelaste (en ese caso, un resultado con error que lo explique).</li>
+        <li>En ese mensaje de usuario, los bloques <code>tool_result</code> van <strong>primero</strong>; el texto, si hay, va después. Al revés, la API devuelve un error 400.</li>
+        <li>El contenido que traen las herramientas (páginas web, mails, archivos) es <strong>no confiable</strong>: dejalo dentro del <code>tool_result</code>, nunca lo copies al system prompt.</li>
+      </ul>
+      <h3>3. Efectos secundarios: reintentar puede duplicar</h3>
+      <p>Si <code>enviar_mail</code> da timeout, no sabés si el mail salió. Reintentar a ciegas puede mandarlo dos veces. Las herramientas con efectos deben ser <strong>idempotentes</strong>: tu código genera una clave única por acción y el servicio ignora repeticiones con la misma clave.</p>
+      <h3>4. Aprobaciones decididas por código</h3>
+      <p>Clasificá cada herramienta: <strong>lectura</strong> (corre sola), <strong>escritura reversible</strong> (corre y queda registrada) e <strong>irreversible</strong> (pagar, borrar, enviar: requiere confirmación humana). La regla vive en tu código, no en el prompt, porque una prompt injection puede convencer al modelo pero no a un <code>if</code>. Los SDKs de agentes traen esto como modos de permisos y reglas de permitir o denegar por herramienta.</p>
+      <h3>5. Presupuestos y trazas</h3>
+      <p>Poné límites de pasos, tokens y tiempo, y al llegar al límite cortá con un mensaje claro en vez de seguir gastando. Registrá cada paso (herramienta, argumentos, resultado, tokens, duración): sin trazas no podés depurar por qué el agente hizo algo raro.</p>
+      <pre><code>IRREVERSIBLES = {"enviar_mail", "borrar_archivo", "cobrar"}
+
+def ejecutar(bloque):
+    if bloque.name in IRREVERSIBLES and not aprobado_por_humano(bloque):
+        return {"type": "tool_result", "tool_use_id": bloque.id, "is_error": True,
+                "content": "Acción rechazada por el usuario. Proponé otra opción."}
+    try:
+        salida = HERRAMIENTAS[bloque.name](**bloque.input, clave=clave_idempotencia(bloque))
+        return {"type": "tool_result", "tool_use_id": bloque.id, "content": salida}
+    except TimeoutError:
+        return {"type": "tool_result", "tool_use_id": bloque.id, "is_error": True,
+                "content": "Timeout. Es seguro reintentar: la operación es idempotente."}
+
+for paso in range(MAX_PASOS):
+    resp = client.messages.create(model=MODELO, tools=TOOLS, messages=mensajes, max_tokens=4096)
+    traza.registrar(paso, resp)
+    mensajes.append({"role": "assistant", "content": resp.content})
+    if resp.stop_reason != "tool_use":
+        break
+    resultados = [ejecutar(b) for b in resp.content if b.type == "tool_use"]
+    mensajes.append({"role": "user", "content": resultados})   # todos juntos, primero
+else:
+    avisar("Se alcanzó el límite de pasos sin terminar.")</code></pre>
+      <p>Si no querés escribir este bucle, el <strong>tool runner</strong> del SDK o el Agent SDK lo manejan por vos; igual conviene entender qué hacen, porque las decisiones de aprobación, idempotencia y presupuesto siguen siendo tuyas.</p>
+    ` },
   ],
   practica: [
     'Implementá desde cero (sin frameworks) un agente con 3 herramientas: calculadora, búsqueda en tus archivos y lectura de una URL. Logueá cada paso.',
@@ -1600,6 +1642,7 @@ def ruta_segura(usuario_id, ruta_pedida):
     'En una máquina virtual o contenedor, armá un agente de computer use que complete un formulario de prueba en una web local, con confirmación humana antes de enviar, límite de pasos y verificación por captura. Medí tokens por tarea y tasa de éxito en 10 corridas.',
     'Reescribí las herramientas de tu agente siguiendo estos principios: consolidar, formato conciso, paginación y errores que digan cómo corregir. Medí 10 tareas de varios pasos antes y después: tasa de éxito, llamadas a herramientas y tokens.',
     'Implementá el manejador de memoria de tu agente con validación de rutas y separación por usuario. Escribí tests con 5 rutas maliciosas (con ../, absolutas, codificadas) y verificá que todas se rechazan. Después comprobá que el agente recuerda una preferencia entre dos sesiones distintas.',
+    'Tomá tu agente y agregale: clasificación de herramientas (lectura, reversible, irreversible) con confirmación humana para las irreversibles, errores devueltos con is_error, clave de idempotencia en una herramienta con efectos y límite de pasos. Probalo con 3 fallas forzadas (timeout, error 500 y parámetro inválido) y verificá en la traza que el agente se recupera sin duplicar acciones.',
   ],
   recursos: [
     { t: 'Anthropic — Building effective agents', url: 'https://www.anthropic.com/engineering/building-effective-agents' },
@@ -1611,6 +1654,7 @@ def ruta_segura(usuario_id, ruta_pedida):
     { t: 'Anthropic — Writing effective tools for agents', url: 'https://www.anthropic.com/engineering/writing-tools-for-agents' },
     { t: 'Claude — Computer use', url: 'https://platform.claude.com/docs/en/agents-and-tools/tool-use/computer-use-tool' },
     { t: 'Anthropic — How we built our multi-agent research system', url: 'https://www.anthropic.com/engineering/multi-agent-research-system' },
+    { t: 'Claude — Manejar llamadas a herramientas y errores (is_error)', url: 'https://platform.claude.com/docs/en/agents-and-tools/tool-use/handle-tool-calls' },
   ],
   quiz: [
     { q: 'En tool use, ¿quién ejecuta la herramienta?', opciones: ['El modelo, en los servidores del proveedor', 'Tu aplicación; el modelo solo pide la llamada con argumentos', 'El navegador del usuario siempre', 'Nadie, es simulado'], correcta: 1, explicacion: 'El modelo genera una solicitud estructurada; tu código decide si la ejecuta y devuelve el resultado. (Existen herramientas del lado del servidor del proveedor, pero el patrón base es este.)' },
@@ -1639,6 +1683,11 @@ def ruta_segura(usuario_id, ruta_pedida):
     { q: 'Tu agente usa una sola memoria compartida para todos los usuarios. ¿Qué riesgo tiene?', opciones: ['Ninguno', 'Que sea más lenta', 'Que sea más cara', 'Que un usuario vea datos de otro, o que alguien envenene la memoria con instrucciones que después afecten a otros'], correcta: 3, explicacion: 'La memoria es contenido que el agente lee como contexto. Separarla por usuario evita filtraciones y limita el alcance de una memoria envenenada.' },
     { q: 'En un agente que trabaja durante horas, ¿cómo se combinan la compactación y la memoria?', opciones: ['Son lo mismo', 'La compactación resume el contexto activo y la memoria guarda lo que tiene que sobrevivir a ese resumen: conviene usar las dos', 'Solo se puede usar una de las dos', 'La memoria reemplaza siempre a la compactación'], correcta: 1, explicacion: 'Al compactar se pierden detalles. Lo que el agente necesita sí o sí (progreso, decisiones) va a la memoria, que no depende del resumen.' },
     { q: 'Para un proyecto que el agente va a trabajar en varias sesiones, ¿qué patrón recomienda la documentación?', opciones: ['Que cada sesión explore todo de nuevo desde cero', 'Guardar en la memoria todo el historial de cada sesión', 'Una sesión inicial arma un registro de progreso y una lista de tareas; cada sesión los lee al empezar y los actualiza al terminar', 'No usar memoria y confiar en la ventana de contexto'], correcta: 2, explicacion: 'El registro de progreso evita reexplorar y repetir decisiones. Guardar todo el historial llena la memoria de ruido.' },
+    { q: 'Una herramienta de tu agente falla porque la API externa devolvió un 500. ¿Qué hace tu bucle?', opciones: ['Lanza la excepción y termina la ejecución', 'Omite el tool_result de esa llamada y sigue', 'Devuelve un tool_result con is_error: true y un mensaje que diga qué pasó y qué conviene probar', 'Le pide al modelo en el system prompt que no use más esa herramienta'], correcta: 2, explicacion: 'Con is_error y un mensaje útil el modelo puede reintentar o adaptarse. Omitir el tool_result es la trampa: cada tool_use necesita su resultado, o la API rechaza el siguiente pedido.' },
+    { q: 'Tu agente arma el mensaje de resultados como [texto "Acá van los resultados", tool_result]. La API responde 400. ¿Por qué?', opciones: ['Porque falta el system prompt', 'Porque el texto no puede estar en mensajes de usuario', 'Porque hay que mandar un mensaje por cada tool_result', 'Porque los tool_result tienen que ir primero en el contenido; el texto va después'], correcta: 3, explicacion: 'La regla de formato exige los tool_result al principio del mensaje de usuario. Mandar un mensaje por resultado tampoco sirve: los resultados de la misma respuesta van juntos en el mensaje siguiente.' },
+    { q: 'La herramienta enviar_factura dio timeout y tu código la reintenta. El cliente recibe dos facturas. ¿Qué faltó?', opciones: ['Un modelo más grande', 'Bajar el timeout', 'Idempotencia: una clave única por acción para que el servicio ignore la repetición', 'Pedirle al modelo que no reintente'], correcta: 2, explicacion: 'Tras un timeout no sabés si la acción ocurrió; con una clave de idempotencia reintentar es seguro. Pedírselo al modelo no sirve: el reintento lo hizo tu código.' },
+    { q: 'Querés que tu agente nunca borre archivos sin permiso, aunque una página web le diga que lo haga. ¿Dónde ponés esa regla?', opciones: ['En el system prompt, en mayúsculas', 'En la descripción de la herramienta', 'En los ejemplos de few-shot', 'En tu código: las herramientas irreversibles piden confirmación humana antes de ejecutarse'], correcta: 3, explicacion: 'Una prompt injection puede convencer al modelo, pero no a un control determinista en tu código. Las instrucciones en el prompt ayudan, pero no garantizan nada.' },
+    { q: 'Tu agente a veces llama a una herramienta sin un parámetro obligatorio. ¿Qué lo elimina de raíz?', opciones: ['Activar strict tool use (strict: true) para que la entrada siempre respete el esquema', 'Subir max_tokens', 'Repetir la definición de la herramienta en el system prompt', 'Hacer opcionales todos los parámetros'], correcta: 0, explicacion: 'Strict tool use garantiza entradas válidas según el esquema. Hacer todo opcional esconde el problema: la herramienta recibe datos incompletos y falla después.' },
   ],
 },
 {
