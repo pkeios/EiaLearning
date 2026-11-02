@@ -8,8 +8,8 @@ const ctx = { window: {}, document: { getElementById: id => id === 'tema' ? boto
 vm.createContext(ctx);
 vm.runInContext(leer('contenido.js'), ctx);
 vm.runInContext(leer('glosario.js'), ctx);
-vm.runInContext(leer('app.js') + ';this.X = { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos, avance, clavePractica, registrarExamen, planDeHoy, apuntesMarkdown, esCorrecta };', ctx);
-const { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos, avance, clavePractica, registrarExamen, planDeHoy, apuntesMarkdown, esCorrecta } = ctx.X;
+vm.runInContext(leer('app.js') + ';this.X = { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos, avance, clavePractica, registrarExamen, planDeHoy, apuntesMarkdown, esCorrecta, preguntasDeNivel };', ctx);
+const { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos, avance, clavePractica, registrarExamen, planDeHoy, apuntesMarkdown, esCorrecta, preguntasDeNivel } = ctx.X;
 const plano = o => JSON.parse(JSON.stringify(o));
 
 // Inicio renderiza con progreso vacío
@@ -190,6 +190,19 @@ guardado = null;
 ctx.location.hash = '#/examen-tiempo';
 vm.runInContext('render()', ctx);
 assert.ok(el.h.includes('id="reloj"') && el.textContent.includes('25:00'));
+
+// Quiz por nivel: cada pregunta pertenece a un módulo de ese nivel, y entre todos los niveles están todas
+const TT = ctx.window.TEMARIO, totalPreguntas = TT.reduce((s, m) => s + m.quiz.length, 0);
+const porNivel = ['basico', 'intermedio', 'avanzado', 'proyecto'].map(c => preguntasDeNivel(c));
+assert.equal(porNivel.reduce((s, x) => s + x.length, 0), totalPreguntas);
+assert.ok(porNivel[0].length > 0 && porNivel[0].every(q => TT.find(m => m.id === q.m).nivel === 'Básico'));
+guardado = null;
+ctx.location.hash = '#/nivel';
+vm.runInContext('render()', ctx);
+assert.ok(el.h.includes('#/nivel/intermedio'));
+ctx.location.hash = '#/nivel/avanzado';
+vm.runInContext('render()', ctx);
+assert.ok(el.h.includes('Quiz de nivel Avanzado') && (el.h.match(/class="pregunta"/g) || []).length === 15);
 
 // Repaso vacío muestra un mensaje en lugar de un formulario
 guardado = null;

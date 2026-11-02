@@ -21,4 +21,5 @@
 - [x] Descargar todos tus apuntes "Explicalo con tus palabras" en un archivo Markdown, ordenados por módulo
 - [x] Modo examen por módulo con tiempo límite (por ejemplo, 1 minuto por pregunta) para practicar bajo presión, opcional
 - [x] Revisión del examen final: al terminar, poder ver solo las preguntas falladas con su explicación, en una lista compacta
-- [ ] Quiz mezclado por nivel: elegir Básico, Intermedio o Avanzado y responder 15 preguntas al azar de los módulos de ese nivel
+- [x] Quiz mezclado por nivel: elegir Básico, Intermedio o Avanzado y responder 15 preguntas al azar de los módulos de ese nivel
+- [ ] Atajos de teclado en los quizzes: teclas 1 a 4 para elegir opción en la pregunta enfocada y Enter para corregir

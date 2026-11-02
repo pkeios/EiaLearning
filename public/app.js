@@ -118,6 +118,7 @@ function inicio() {
       <a class="boton" href="#/m/${siguiente.id}">${aprobados || leidas ? 'Continuar' : 'Empezar'}: ${icono(siguiente)} ${esc(siguiente.titulo)} →</a>
       <div class="datos">
         <a class="boton secundario" href="#/hoy">📋 Qué estudiar hoy</a>
+        <a class="boton secundario" href="#/nivel">🎯 Quiz por nivel</a>
         <a class="boton secundario" href="#/progreso">📊 Progreso por módulo</a>
         ${p.examen >= APROBADO ? '<a class="boton secundario" href="#/certificado">🎓 Certificado</a>' : ''}
         <button class="secundario" id="apuntes">📝 Descargar mis apuntes</button>
@@ -435,6 +436,18 @@ function hoy() {
       : '<section class="card"><p>No queda nada pendiente. 🎉 Volvé mañana para el repaso.</p></section>'}`;
 }
 
+// Quiz por nivel: preguntas de todos los módulos de un nivel (basico, intermedio, avanzado o proyecto).
+const NIVELES = [['basico', 'Básico'], ['intermedio', 'Intermedio'], ['avanzado', 'Avanzado'], ['proyecto', 'Proyecto final']];
+const preguntasDeNivel = clase => T.filter(m => nivelClase(m.nivel) === clase).flatMap(preguntasDe);
+function elegirNivel() {
+  app.innerHTML = `<a class="volver" href="#/">← Temario</a><h1>🎯 Quiz por nivel</h1>
+    <p class="suave">15 preguntas al azar de todos los módulos del nivel que elijas.</p>
+    <div class="grilla">${NIVELES.map(([clase, nombre]) => `
+      <a class="tarjeta" href="#/nivel/${clase}"><div class="tarjeta-top"><span class="badge ${clase}">${nombre}</span></div>
+        <h3>${T.filter(m => nivelClase(m.nivel) === clase).map(m => icono(m)).join(' ')}</h3>
+        <small>${preguntasDeNivel(clase).length} preguntas disponibles</small></a>`).join('')}</div>`;
+}
+
 // Una pregunta sin responder (null) nunca cuenta como acierto, aunque la correcta sea la opción 0.
 const esCorrecta = (elegida, q) => elegida !== null && Number(elegida) === q.correcta;
 let temporizador = null;
@@ -518,6 +531,11 @@ function render() {
   else if (ruta === 'progreso') progreso();
   else if (ruta === 'certificado') certificado();
   else if (ruta === 'hoy') hoy();
+  else if (ruta === 'nivel' && NIVELES.some(([c]) => c === id)) {
+    const nombre = NIVELES.find(([c]) => c === id)[1];
+    quiz(`🎯 Quiz de nivel ${nombre}: 15 preguntas al azar`, mezclar(preguntasDeNivel(id)).slice(0, 15));
+  }
+  else if (ruta === 'nivel') elegirNivel();
   else if (ruta === 'quiz' && T.some(m => m.id === id)) {
     const m = T.find(x => x.id === id);
     quiz(`${icono(m)} Quiz: ${m.titulo}`, mezclar(preguntasDe(m)), (p, pct) => { p.notas[m.id] = Math.max(p.notas[m.id] ?? 0, pct); });
