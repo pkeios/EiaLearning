@@ -45,6 +45,7 @@ window.GLOSARIO = [
   { t: 'Modelo de razonamiento', d: 'Modelo entrenado para generar una cadena de razonamiento larga antes de responder.', m: 'llms' },
   { t: 'Negativo difícil', d: 'Ejemplo que se parece al positivo en la superficie pero significa otra cosa. Es el que más enseña en el aprendizaje contrastivo.', m: 'deep-learning' },
   { t: 'Olvido catastrófico', d: 'Pérdida de capacidades generales que sufre un modelo al afinarlo para una tarea específica.', m: 'fine-tuning' },
+  { t: 'Optimización de prompts', d: 'Buscar automáticamente instrucciones y ejemplos que maximicen una métrica sobre datos etiquetados, como hacen los optimizadores de DSPy.', m: 'prompting' },
   { t: 'Overfitting', d: 'El modelo memoriza los datos de entrenamiento y generaliza mal a datos nuevos.', m: 'ml-clasico' },
   { t: 'pass@k', d: 'Probabilidad de que al menos uno de k intentos salga bien.', m: 'evals' },
   { t: 'pass^k', d: 'Probabilidad de que los k intentos salgan bien. Mide confiabilidad.', m: 'evals' },

@@ -526,6 +526,7 @@ def mlp_swiglu(x):
     'Iterar prompts con criterios de éxito y casos de prueba, como un ingeniero',
     'Gestionar el contexto de agentes largos: compactación, recuperación just-in-time, notas y subagentes',
     'Escribir prompts sobre documentos largos que reduzcan alucinaciones: orden, estructura, citas verificables y permiso para decir "no sé"',
+    'Optimizar prompts con datos y métricas (por ejemplo, con DSPy) sin sobreajustar',
   ],
   lecciones: [
     { titulo: 'Las técnicas que realmente funcionan', html: `
@@ -601,6 +602,36 @@ Después, usando solo esas citas, respondé: ¿qué pasa si el proveedor entrega
 Si los documentos no lo dicen, respondé "No figura en los documentos".</code></pre>
       <p><strong>Verificá las citas en código:</strong> que cada cita aparezca textual en el documento es un chequeo barato y determinista. Si una cita no existe, la respuesta no está respaldada. Algunas APIs ofrecen esto de forma nativa, como la función de citas de Claude, que devuelve qué fragmento del documento respalda cada afirmación.</p>
       <p>Todo esto se combina con lo que viste en RAG: si los documentos no entran o son muchos, primero recuperás los relevantes y después aplicás esta misma estructura.</p>` },
+    { titulo: 'Optimizar prompts con datos: DSPy y la mejora automática', html: `
+      <p>Si ya tenés evals, podés ir un paso más allá: dejar que un algoritmo pruebe instrucciones y ejemplos, y se quede con lo que mejor puntúa en tu métrica. <strong>DSPy</strong> es el framework más conocido para esto. Su lema es "programá, no escribas prompts".</p>
+      <ul>
+        <li><strong>Signature:</strong> declarás qué entra y qué sale de la tarea. El framework arma el prompt.</li>
+        <li><strong>Módulo:</strong> la estrategia de ejecución: <code>dspy.Predict</code> (respuesta directa), <code>dspy.ChainOfThought</code> (razonamiento paso a paso) o <code>dspy.ReAct</code> (con herramientas).</li>
+        <li><strong>Optimizador:</strong> ajusta instrucciones y ejemplos few-shot contra tu métrica. Algunos: BootstrapFewShot, MIPROv2 y GEPA.</li>
+      </ul>
+      <pre><code>import dspy
+dspy.configure(lm=dspy.LM("proveedor/modelo"))
+
+class Clasificar(dspy.Signature):
+    """Clasificá el ticket de soporte en una categoría."""
+    ticket: str = dspy.InputField()
+    categoria: str = dspy.OutputField(desc="facturacion, bug, pedido_funcionalidad u otro")
+
+programa = dspy.Predict(Clasificar)
+
+def metrica(ejemplo, prediccion, trace=None):
+    return ejemplo.categoria == prediccion.categoria
+
+optimizado = dspy.BootstrapFewShot(metric=metrica).compile(programa, trainset=ejemplos_train)
+# medí "optimizado" en un conjunto aparte, nunca en ejemplos_train</code></pre>
+      <p><strong>Lo que necesitás:</strong> una métrica que se pueda calcular y ejemplos etiquetados. Sin eso no hay nada que optimizar, y por eso las evals vienen primero.</p>
+      <p><strong>Trampas:</strong></p>
+      <ul>
+        <li><strong>Sobreajuste:</strong> el optimizador puede encontrar instrucciones que funcionan solo con tus ejemplos de entrenamiento. Medí siempre en un conjunto de validación que no vio.</li>
+        <li><strong>Costo:</strong> la búsqueda hace muchas llamadas al modelo. Presupuestalas y empezá con un modelo barato.</li>
+        <li><strong>Métrica pobre, resultado pobre:</strong> el optimizador maximiza exactamente lo que medís. Si la métrica no captura lo importante, vas a obtener un prompt que la satisface sin servir.</li>
+      </ul>
+      <p><strong>Cuándo conviene:</strong> tareas estables, con una métrica clara, donde ajustar el prompt a mano ya no mejora. Para un prototipo que cambia todos los días, todavía no.</p>` },
   ],
   practica: [
     'Elegí una tarea real (resumir mails, clasificar gastos). Escribí 20 casos de prueba con la respuesta esperada y medí 3 versiones de prompt.',
@@ -608,10 +639,13 @@ Si los documentos no lo dicen, respondé "No figura en los documentos".</code></
     'Hacé el tutorial interactivo de prompt engineering de Anthropic de principio a fin.',
     'Tomá el agente del módulo de agentes y registrá los tokens de contexto en cada paso. Agregá limpieza de resultados viejos de herramientas y un archivo NOTES.md, y compará tasa de éxito y tokens totales en 10 tareas largas antes y después.',
     'Tomá 3 documentos largos (contratos, manuales o informes) y 15 preguntas, 5 de ellas sin respuesta en los documentos. Compará un prompt con la pregunta al principio contra uno con documentos arriba, citas primero y permiso para decir "no sé". Medí exactitud, respuestas inventadas y citas que no existen (verificalas con código).',
+    'Tomá un clasificador de tickets: medí tu prompt manual en 50 casos de validación, optimizalo con DSPy usando 100 casos de entrenamiento y comparalo en los mismos 50 de validación. Anotá cuántas llamadas al modelo costó la optimización.',
   ],
   recursos: [
     { t: 'Anthropic — Guía de prompt engineering', url: 'https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/overview' },
     { t: 'Anthropic — Tutorial interactivo de prompt engineering (GitHub)', url: 'https://github.com/anthropics/prompt-eng-interactive-tutorial' },
+    { t: 'DSPy — Documentación', url: 'https://dspy.ai/' },
+    { t: 'DSPy: Compiling Declarative Language Model Calls (paper)', url: 'https://arxiv.org/abs/2310.03714' },
     { t: 'Claude — Prompting best practices (incluye contexto largo)', url: 'https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices' },
     { t: 'Claude — Reducir alucinaciones', url: 'https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/reduce-hallucinations' },
     { t: 'Claude — Citas (citations)', url: 'https://platform.claude.com/docs/en/build-with-claude/citations' },
@@ -635,6 +669,11 @@ Si los documentos no lo dicen, respondé "No figura en los documentos".</code></
     { q: '¿Para qué sirve pedirle al modelo que extraiga citas textuales antes de responder?', opciones: ['Para hacer la respuesta más larga', 'Para gastar menos tokens', 'Para que el modelo use su conocimiento general', 'Para enfocarlo en las partes relevantes y poder verificar que la respuesta está respaldada'], correcta: 3, explicacion: 'Las citas lo hacen buscar antes de responder y te dan algo comprobable. Gasta algunos tokens más, no menos.' },
     { q: 'Le pasás 5 documentos al modelo. ¿Por qué conviene envolver cada uno en etiquetas con su fuente?', opciones: ['Para que distinga los documentos y pueda decir de cuál sacó cada dato', 'Porque el modelo no lee texto sin etiquetas', 'Para reducir el costo', 'Para que no haga falta escribir instrucciones'], correcta: 0, explicacion: 'Sin separación, el modelo puede mezclar datos de un documento con otro. Con la fuente, puede citar y vos podés verificar.' },
     { q: 'El modelo devolvió citas para respaldar su respuesta. ¿Cómo verificás barato que no las inventó?', opciones: ['Le preguntás al mismo modelo si las citas son reales', 'Comprobás en código que cada cita aparezca textual en el documento', 'Confiás si la respuesta suena segura', 'Pedís a un humano que lea todo el documento cada vez'], correcta: 1, explicacion: 'Buscar el texto exacto es determinista y casi gratis. Preguntarle al mismo modelo no es una verificación independiente.' },
+    { q: '¿Qué necesita un optimizador de prompts como los de DSPy para funcionar?', opciones: ['Una métrica que se pueda calcular y ejemplos etiquetados', 'Solo un prompt inicial bien escrito', 'Un modelo previamente afinado', 'Una GPU propia'], correcta: 0, explicacion: 'El optimizador prueba variantes y se queda con la que mejor puntúa: sin métrica no sabe qué es mejor, y sin ejemplos no tiene con qué medir.' },
+    { q: 'Optimizaste un prompt con 50 ejemplos y en esos mismos 50 da 98% de aciertos. ¿Qué hacés?', opciones: ['Lo publicás', 'Seguís optimizando para llegar a 100%', 'Lo medís en un conjunto aparte que el optimizador no vio, porque puede estar sobreajustado', 'Bajás la temperatura'], correcta: 2, explicacion: 'Medir en los mismos datos con los que optimizaste es como corregir un examen con las respuestas a la vista. Solo un conjunto aparte dice si generaliza.' },
+    { q: '¿Cuándo conviene usar optimización automática de prompts?', opciones: ['Siempre, desde el primer día', 'Cuando no hay una métrica clara', 'En tareas que cambian todos los días', 'Cuando la tarea es estable, hay una métrica clara y ajustar a mano ya no mejora'], correcta: 3, explicacion: 'La optimización necesita una métrica fija y una tarea que no cambie. En un prototipo que cambia a diario, el esfuerzo no se amortiza.' },
+    { q: 'En DSPy, ¿qué define una signature?', opciones: ['Las entradas y salidas de la tarea, y el framework arma el prompt a partir de eso', 'La firma digital del modelo', 'El costo máximo de la llamada', 'La temperatura de muestreo'], correcta: 0, explicacion: 'La signature describe el qué; el módulo elige el cómo (respuesta directa, razonamiento o herramientas), y el optimizador ajusta el prompt resultante.' },
+    { q: '¿Cuál es un costo que se suele olvidar al optimizar prompts automáticamente?', opciones: ['Ninguno', 'Que cambia el tokenizador del modelo', 'Las muchas llamadas al modelo durante la búsqueda: conviene presupuestarlas y empezar con un modelo barato', 'Que borra los datos de entrenamiento'], correcta: 2, explicacion: 'Cada variante probada se evalúa contra los ejemplos, y eso multiplica las llamadas. Medilo antes de lanzarlo con un modelo caro.' },
   ],
 },
 {
