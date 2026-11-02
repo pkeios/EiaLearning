@@ -148,6 +148,16 @@ mark { background: rgba(250, 204, 21, .4); color: inherit; border-radius: 3px; p
 .resultado .nota { font-size: 3.5rem; font-weight: 900; color: var(--mal); }
 .resultado.ok .nota { color: var(--ok); }
 
+.certificado { text-align: center; border: 3px double var(--acento); border-radius: var(--radio); padding: 3rem 2rem; margin: 1rem 0; background: var(--card); }
+.certificado h1 { font-size: 2.6rem; margin: .2rem 0 1rem; }
+.certificado h2 { font-size: 2rem; margin: .5rem 0; }
+@media print {
+  header, .no-imprimir { display: none !important; }
+  body { background: #fff; color: #000; }
+  .certificado { border-color: #555; background: #fff; }
+  .certificado .suave { color: #555; }
+}
+
 @media (max-width: 600px) {
   header { padding: .7rem 1rem; }
   main { padding: 1.2rem 1rem 3rem; }

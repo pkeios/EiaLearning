@@ -8,8 +8,8 @@ const ctx = { window: {}, document: { getElementById: id => id === 'tema' ? boto
 vm.createContext(ctx);
 vm.runInContext(leer('contenido.js'), ctx);
 vm.runInContext(leer('glosario.js'), ctx);
-vm.runInContext(leer('app.js') + ';this.X = { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos, avance, clavePractica };', ctx);
-const { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos, avance, clavePractica } = ctx.X;
+vm.runInContext(leer('app.js') + ';this.X = { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos, avance, clavePractica, registrarExamen };', ctx);
+const { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos, avance, clavePractica, registrarExamen } = ctx.X;
 const plano = o => JSON.parse(JSON.stringify(o));
 
 // Inicio renderiza con progreso vacío
@@ -142,6 +142,23 @@ guardado = null;
 ctx.location.hash = '#/m/' + mp.id;
 vm.runInContext('render()', ctx);
 assert.ok(el.h.includes('data-practica="0"'));
+
+// Examen y certificado: guarda la mejor nota y la fecha de la primera aprobación
+const ex = cargar();
+registrarExamen(ex, 60);
+assert.equal(ex.examen, 60); assert.equal(ex.examenFecha, undefined);
+registrarExamen(ex, 84); registrarExamen(ex, 70);
+assert.equal(ex.examen, 84); assert.equal(ex.examenFecha, dia());
+const lc = limpiarProgreso({ nombre: '<b>Ana</b>', examenFecha: 'ayer' });
+assert.equal(lc.nombre, '<b>Ana</b>'); assert.equal(lc.examenFecha, undefined);
+guardado = JSON.stringify({ examen: 84, examenFecha: '2026-11-01', nombre: '<b>Ana</b>' });
+ctx.location.hash = '#/certificado';
+vm.runInContext('render()', ctx);
+assert.ok(el.h.includes('84%') && el.h.includes('&lt;b&gt;Ana&lt;/b&gt;') && !el.h.includes('<b>Ana'));
+guardado = JSON.stringify({ examen: 50 });
+vm.runInContext('render()', ctx);
+assert.ok(el.h.includes('se habilita al aprobar'));
+guardado = null;
 
 // Repaso vacío muestra un mensaje en lugar de un formulario
 guardado = null;

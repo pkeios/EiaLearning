@@ -72,6 +72,11 @@ function contarAcierto(p, q, ok) {
   if (ok) a.ok++;
 }
 const pctAciertos = a => a && a.total ? Math.round(100 * a.ok / a.total) : null;
+// Examen final: guarda la mejor nota y la fecha en que se aprobó por primera vez.
+function registrarExamen(p, pct) {
+  p.examen = Math.max(p.examen ?? 0, pct);
+  if (pct >= APROBADO && !p.examenFecha) p.examenFecha = dia();
+}
 function registrar(p, k, ok) {
   if (!ok) { p.falladas[k] = true; p.agenda[k] = { n: 0, d: dia(INTERVALOS[0]) }; return; }
   if (!p.falladas[k]) return;
@@ -113,6 +118,7 @@ function inicio() {
       <a class="boton" href="#/m/${siguiente.id}">${aprobados || leidas ? 'Continuar' : 'Empezar'}: ${icono(siguiente)} ${esc(siguiente.titulo)} →</a>
       <div class="datos">
         <a class="boton secundario" href="#/progreso">📊 Progreso por módulo</a>
+        ${p.examen >= APROBADO ? '<a class="boton secundario" href="#/certificado">🎓 Certificado</a>' : ''}
         <button class="secundario" id="exportar">⬇ Exportar progreso</button>
         <button class="secundario" id="importar">⬆ Importar progreso</button>
         <input type="file" id="archivo" accept=".json,application/json" hidden>
@@ -162,6 +168,8 @@ function limpiarProgreso(d) {
     p.tarjetas[c] = { n: Math.max(0, parseInt(a.n) || 0), d: /^\d{4}-\d{2}-\d{2}$/.test(a.d) ? a.d : dia() };
   }
   for (const c in d.dias || {}) if (/^\d{4}-\d{2}-\d{2}$/.test(c)) p.dias[c] = Math.max(0, parseInt(d.dias[c]) || 0);
+  if (typeof d.nombre === 'string') p.nombre = d.nombre.slice(0, 100);
+  if (/^\d{4}-\d{2}-\d{2}$/.test(d.examenFecha)) p.examenFecha = d.examenFecha;
   if (d.examen != null) p.examen = Math.min(100, Math.max(0, Number(d.examen) || 0));
   return p;
 }
@@ -355,6 +363,33 @@ function progreso() {
       </section>`).join('')}`;
 }
 
+function certificado() {
+  const p = cargar();
+  if (!(p.examen >= APROBADO)) {
+    app.innerHTML = `<a class="volver" href="#/">← Temario</a><h1>🎓 Certificado</h1>
+      <section class="card"><p>El certificado se habilita al aprobar el <a href="#/examen">examen final</a> con ${APROBADO}% o más.${p.examen != null ? ' Tu mejor nota hasta ahora: ' + p.examen + '%.' : ''}</p></section>`;
+    return;
+  }
+  const aprobados = T.filter(m => aprobado(m, p)).length;
+  app.innerHTML = `<a class="volver no-imprimir" href="#/">← Temario</a>
+    <p class="no-imprimir"><label>Tu nombre para el certificado: <input id="nombre" class="buscador" value="${esc(p.nombre || '')}" maxlength="100"></label></p>
+    <section class="certificado">
+      <p class="suave">Certificado de finalización</p>
+      <h1>AI Engineering</h1>
+      <p>Se deja constancia de que</p>
+      <h2 id="nombre-cert">${esc(p.nombre || 'Tu nombre')}</h2>
+      <p>completó el curso de autoaprendizaje de AI Engineering y aprobó el examen final con <strong>${p.examen}%</strong>${p.examenFecha ? ' el ' + p.examenFecha : ''}.</p>
+      <p>Módulos aprobados: ${aprobados} de ${T.length}.</p>
+      <p class="suave">Curso de autoaprendizaje: no es una certificación oficial.</p>
+    </section>
+    <p class="no-imprimir"><button id="imprimir">🖨 Imprimir o guardar como PDF</button></p>`;
+  app.querySelector('#nombre').oninput = e => {
+    const p = cargar(); p.nombre = e.target.value.slice(0, 100); guardar(p);
+    app.querySelector('#nombre-cert').textContent = p.nombre || 'Tu nombre';
+  };
+  app.querySelector('#imprimir').onclick = () => print();
+}
+
 function quiz(titulo, preguntas, alTerminar, vacio = 'No hay preguntas pendientes. 🎉') {
   app.innerHTML = `<a class="volver" href="#/">← Temario</a><h1>${esc(titulo)}</h1>
     ${preguntas.length ? `<div class="quiz-estado"><span id="contador">0/${preguntas.length} respondidas</span>${barra(0)}</div>` : `<section class="card"><p>${esc(vacio)}</p></section>`}
@@ -413,11 +448,12 @@ function render() {
   else if (ruta === 'glosario') glosario();
   else if (ruta === 'tarjetas') tarjetas();
   else if (ruta === 'progreso') progreso();
+  else if (ruta === 'certificado') certificado();
   else if (ruta === 'quiz' && T.some(m => m.id === id)) {
     const m = T.find(x => x.id === id);
     quiz(`${icono(m)} Quiz: ${m.titulo}`, mezclar(preguntasDe(m)), (p, pct) => { p.notas[m.id] = Math.max(p.notas[m.id] ?? 0, pct); });
   }
-  else if (ruta === 'examen') quiz('🏁 Examen final: 25 preguntas al azar', mezclar(todas()).slice(0, 25), (p, pct) => { p.examen = Math.max(p.examen ?? 0, pct); });
+  else if (ruta === 'examen') quiz('🏁 Examen final: 25 preguntas al azar', mezclar(todas()).slice(0, 25), registrarExamen);
   else if (ruta === 'repaso') {
     const p = cargar(), pendientes = todas().filter(q => p.falladas[clave(q)]);
     const proxima = pendientes.map(q => p.agenda[clave(q)]?.d).filter(Boolean).sort()[0];
