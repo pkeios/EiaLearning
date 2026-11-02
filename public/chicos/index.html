@@ -112,6 +112,7 @@ const MISIONES = [
   { emoji: '⚖️', titulo: 'Justa y honesta', color: '#d6457a', pasos: [
     { idea: '🪞', t: 'La IA copia lo que ve en sus ejemplos. También los errores de las personas.' },
     { q: 'Una IA siempre dibuja a los científicos como hombres 👨‍🔬. ¿Está bien?', o: ['✅ Sí, es así', '❌ No, es un error: hay muchas científicas 👩‍🔬'], c: 1, e: 'Se llama sesgo. La IA repite lo que más vio, aunque no sea justo.' },
+    { taller: 'sesgo', t: '¡Tu turno! Arreglá el sesgo dándole a la IA ejemplos variados.' },
     { idea: '🤝', t: 'Si usaste IA para un trabajo, contalo.' },
     { q: 'Usaste IA para buscar ideas. ¿Qué hacés?', o: ['🗣️ Le cuento a mi profe cómo la usé', '🙈 Lo escondo'], c: 0, e: 'Ser honesto con la IA es igual que con todo lo demás.' },
     { idea: '💪', t: 'Tu cerebro crece cuando lo usás. La IA ayuda, no te reemplaza.' },
@@ -214,6 +215,7 @@ const TALLER = [
   { id: 'palabras', emoji: '✍️', titulo: 'Autocompletar', color: '#1f9dd6' },
   { id: 'robot', emoji: '🤖', titulo: 'Programá el robot', color: '#1f9d55' },
   { id: 'tapar', emoji: '🕵️', titulo: 'Tapá los datos', color: '#d6457a' },
+  { id: 'sesgo', emoji: '⚖️', titulo: 'Arreglá el sesgo', color: '#e0a100' },
 ];
 const cargarTaller = () => { try { return JSON.parse(localStorage.getItem('chicos-taller')) || {}; } catch { return {}; } };
 const logro = id => { const t = cargarTaller(); t[id] = true; localStorage.setItem('chicos-taller', JSON.stringify(t)); };
@@ -283,6 +285,11 @@ const MENSAJE = [
   ['Hola IA, soy ', 0], ['Martina López', 1], [', vivo en ', 0], ['Calle Las Flores 123', 1], [' y voy a la ', 0],
   ['Escuela N° 5', 1], ['. Mi contraseña es ', 0], ['gatito99', 1], ['. ¿Me ayudás con la tarea de ', 0], ['los volcanes', 2], [' para el ', 0], ['jueves', 2], ['?', 0],
 ];
+// Sesgo: la IA "dibuja" copiando la proporción de sus ejemplos. Se arregla con datos más variados.
+const SESGO_INICIO = ['👨‍🔬', '👨‍🔬', '👨‍🔬', '👨‍🔬', '👨‍🔬', '👩‍🔬'];
+const SESGO_AGREGAR = ['👩‍🔬', '👩🏽‍🔬', '👩🏿‍🔬', '👨🏾‍🔬'];
+const dibujarIA = (datos, n = 5) => Array.from({ length: n }, (_, i) => datos[Math.floor((i + 0.5) * datos.length / n)]);
+const masComun = datos => Math.max(...datos.map(x => datos.filter(y => y === x).length)) / datos.length;
 const DEMO = [
   ['hoy gané el partido de fútbol', 0], ['me encanta jugar con mis amigos', 0], ['saqué un diez en la prueba', 0], ['mañana vamos a la playa', 0],
   ['se me rompió el juguete', 1], ['perdí mi cartuchera nueva', 1], ['hoy llueve y no puedo salir', 1], ['me peleé con mi amigo', 1],
@@ -361,6 +368,27 @@ function montarTaller(id, cont, alLograr) {
       res.textContent = --faltan ? '✅ ¡Bien! Quedan ' + faltan + ' datos.' : '🎉 ¡Listo! Ahora el mensaje es seguro y la IA igual puede ayudar con la tarea.';
       if (!faltan) alLograr(true);
     });
+  } else if (id === 'sesgo') {
+    const datos = [...SESGO_INICIO];
+    cont.innerHTML = (`<div class="grande">⚖️</div>
+      <p class="texto">Esta IA aprendió a dibujar científicos con estos ejemplos:</p>
+      <p class="programa" id="datos"></p>
+      <p class="texto">Le pedimos: "dibujá 5 científicos" 👇</p>
+      <p class="programa" id="dibujo"></p>
+      <p class="texto">¿Es justo? Agregá ejemplos variados:</p>
+      <div class="fila">${SESGO_AGREGAR.map(e => `<button class="opcion" data-e="${e}" aria-label="Agregar ejemplo">+ ${e}</button>`).join('')}</div>
+      <div id="resultado" class="aviso" aria-live="polite"></div>`);
+    const res = cont.querySelector('#resultado');
+    const pintar = () => {
+      cont.querySelector('#datos').textContent = datos.join('');
+      cont.querySelector('#dibujo').textContent = dibujarIA([...datos].sort()).join(' ');
+      if (masComun(datos) > 0.5) return;
+      res.className = 'aviso bien';
+      res.textContent = '🎉 ¡Arreglaste el sesgo! Con ejemplos variados, la IA dibuja científicos de todo tipo.';
+      alLograr(true);
+    };
+    cont.querySelectorAll('[data-e]').forEach(b => b.onclick = () => { datos.push(b.dataset.e); pintar(); });
+    pintar();
   } else {
     let nivel = 0, prog = [];
     const pintar = (pos = null) => {

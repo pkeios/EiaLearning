@@ -125,3 +125,4 @@ Lo completa el comando `/mejorar`. Una línea por ejecución.
 - 2026-11-02 · rag · metodología: 5 explicaciones ahora corrigen la opción tentadora
 - 2026-11-02 · deep-learning · metodología: 5 explicaciones ahora corrigen la opción tentadora
 - 2026-11-02 · fundamentos · metodología: 5 explicaciones ahora corrigen la opción tentadora
+- 2026-11-02 · app · versión para chicos: actividad "Arreglá el sesgo" dentro de la misión Justa y honesta y en el Taller
