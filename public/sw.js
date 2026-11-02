@@ -1,0 +1,24 @@
+// Service worker: permite estudiar sin conexión.
+// Responde desde la caché si puede y, en paralelo, baja la versión nueva: la próxima visita ya ve el contenido actualizado.
+const CACHE = 'curso-v1';
+const ARCHIVOS = ['./', 'index.html', 'styles.css', 'app.js', 'contenido.js', 'glosario.js', 'manifest.webmanifest', 'icono-192.png', 'icono-512.png'];
+
+self.addEventListener('install', e => {
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(ARCHIVOS)));
+  self.skipWaiting();
+});
+
+self.addEventListener('activate', e => {
+  e.waitUntil(caches.keys().then(claves => Promise.all(claves.filter(k => k !== CACHE).map(k => caches.delete(k)))));
+  self.clients.claim();
+});
+
+self.addEventListener('fetch', e => {
+  if (e.request.method !== 'GET' || new URL(e.request.url).origin !== location.origin) return;
+  const red = fetch(e.request).then(async r => {
+    if (r.ok) (await caches.open(CACHE)).put(e.request, r.clone());
+    return r;
+  });
+  e.waitUntil(red.catch(() => {}));
+  e.respondWith(caches.match(e.request).then(enCache => enCache || red));
+});

@@ -504,5 +504,8 @@ botonTema.onclick = () => {
 };
 iconoTema();
 
+// Sin conexión: el service worker solo funciona servido por http(s), no abriendo el archivo local.
+if (window.navigator?.serviceWorker && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js');
+
 addEventListener('hashchange', render);
 render();

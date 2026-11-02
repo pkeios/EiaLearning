@@ -16,4 +16,5 @@
 - [x] Casillas para marcar cada ejercicio de práctica como hecho, que cuenten en el avance del módulo
 - [x] Al terminar el examen final con 80% o más, mostrar un certificado de finalización imprimible con la fecha y la nota
 - [x] Página "Qué estudiar hoy" que junte en una lista corta: repaso pendiente, tarjetas del día, la próxima lección sin leer y la próxima práctica sin hacer del módulo actual
-- [ ] Instalable y sin conexión (PWA): manifest y service worker para estudiar desde el celular sin internet
+- [x] Instalable y sin conexión (PWA): manifest y service worker para estudiar desde el celular sin internet
+- [ ] Aviso discreto "Hay contenido nuevo, recargá" cuando el service worker descarga una versión nueva del curso

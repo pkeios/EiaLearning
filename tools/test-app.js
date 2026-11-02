@@ -179,4 +179,8 @@ ctx.location.hash = '#/repaso';
 vm.runInContext('render()', ctx);
 assert.ok(el.h.includes('No tenés preguntas falladas'));
 
+// Service worker: cada archivo que precarga tiene que existir, o la instalación sin conexión falla entera
+const sw = leer('sw.js'), lista = JSON.parse(sw.match(/const ARCHIVOS = (\[[^\]]*\])/)[1].replace(/'/g, '"'));
+for (const archivo of lista.filter(x => x !== './')) assert.ok(fs.existsSync(path.join(__dirname, '..', 'public', archivo)), 'sw.js precarga un archivo que no existe: ' + archivo);
+
 console.log('test-app OK');
