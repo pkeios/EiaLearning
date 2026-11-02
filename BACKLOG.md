@@ -28,4 +28,5 @@
 - [x] Lectura en voz alta de una lección con la síntesis de voz del navegador (speechSynthesis), con botón de play y pausa
 - [x] Estadística de tiempo de estudio: registrar minutos activos por día y mostrar un gráfico de las últimas 4 semanas en la página de progreso
 - [x] Meta semanal configurable (por ejemplo, 120 minutos) con barra de avance en el inicio
-- [ ] Compartir un logro: al aprobar un módulo, botón para copiar un texto corto ("Aprobé el módulo X del curso de AI Engineering con 90%") para publicar
+- [x] Compartir un logro: al aprobar un módulo, botón para copiar un texto corto ("Aprobé el módulo X del curso de AI Engineering con 90%") para publicar
+- [ ] Comparar dos intentos del mismo quiz: mostrar qué preguntas pasaron de mal a bien y cuáles siguen fallando

@@ -8,8 +8,8 @@ const ctx = { window: {}, document: { getElementById: id => id === 'tema' ? boto
 vm.createContext(ctx);
 vm.runInContext(leer('contenido.js'), ctx);
 vm.runInContext(leer('glosario.js'), ctx);
-vm.runInContext(leer('app.js') + ';this.X = { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos, avance, clavePractica, registrarExamen, planDeHoy, apuntesMarkdown, esCorrecta, preguntasDeNivel, preguntaObjetivo, cambiarLetra, novedades, marcarConocidas, iniciarNovedades, todasLasLecciones, trozosParaVoz, sumarMinuto, serieMinutos, minutosSemana };', ctx);
-const { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos, avance, clavePractica, registrarExamen, planDeHoy, apuntesMarkdown, esCorrecta, preguntasDeNivel, preguntaObjetivo, cambiarLetra, novedades, marcarConocidas, iniciarNovedades, todasLasLecciones, trozosParaVoz, sumarMinuto, serieMinutos, minutosSemana } = ctx.X;
+vm.runInContext(leer('app.js') + ';this.X = { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos, avance, clavePractica, registrarExamen, planDeHoy, apuntesMarkdown, esCorrecta, preguntasDeNivel, preguntaObjetivo, cambiarLetra, novedades, marcarConocidas, iniciarNovedades, todasLasLecciones, trozosParaVoz, sumarMinuto, serieMinutos, minutosSemana, textoLogro };', ctx);
+const { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos, avance, clavePractica, registrarExamen, planDeHoy, apuntesMarkdown, esCorrecta, preguntasDeNivel, preguntaObjetivo, cambiarLetra, novedades, marcarConocidas, iniciarNovedades, todasLasLecciones, trozosParaVoz, sumarMinuto, serieMinutos, minutosSemana, textoLogro } = ctx.X;
 const plano = o => JSON.parse(JSON.stringify(o));
 
 // Inicio renderiza con progreso vacío
@@ -264,6 +264,10 @@ assert.equal(minutosSemana(ps), 50);
 assert.equal(limpiarProgreso({ metaSemanal: '99999' }).metaSemanal, 3000);
 assert.equal(limpiarProgreso({ metaSemanal: 'x' }).metaSemanal, 120);
 assert.equal(cargar().metaSemanal, 120);
+
+// Logro para compartir: incluye qué se aprobó, la nota y el enlace
+const tl = textoLogro('el módulo "RAG"', 92, 'https://ejemplo.dev/curso/');
+assert.ok(tl.includes('el módulo "RAG"') && tl.includes('92%') && tl.endsWith('https://ejemplo.dev/curso/'));
 
 // Repaso vacío muestra un mensaje en lugar de un formulario
 guardado = null;

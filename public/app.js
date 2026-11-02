@@ -541,6 +541,7 @@ function elegirNivel() {
 // Una pregunta sin responder (null) nunca cuenta como acierto, aunque la correcta sea la opción 0.
 const esCorrecta = (elegida, q) => elegida !== null && Number(elegida) === q.correcta;
 let temporizador = null;
+const textoLogro = (que, pct, url) => `Aprobé ${que} del curso de AI Engineering con ${pct}% 🎉 Estudio con este curso abierto de autoaprendizaje: ${url}`;
 // Voz: algunos navegadores cortan los textos largos, así que se lee en trozos de una o pocas oraciones.
 function trozosParaVoz(texto, max = 220) {
   const oraciones = texto.replace(/\s+/g, ' ').trim().match(/[^.!?:]+[.!?:]*/g) || [];
@@ -558,7 +559,7 @@ function preguntaObjetivo(campos, activo) {
   return enfocada >= 0 ? enfocada : campos.findIndex(c => !c.querySelector('input:checked'));
 }
 
-function quiz(titulo, preguntas, alTerminar, vacio = 'No hay preguntas pendientes. 🎉', { segundos = 0, aviso = '' } = {}) {
+function quiz(titulo, preguntas, alTerminar, vacio = 'No hay preguntas pendientes. 🎉', { segundos = 0, aviso = '', logro = '' } = {}) {
   app.innerHTML = `<a class="volver" href="#/">← Temario</a><h1>${esc(titulo)}</h1>${aviso}
     ${preguntas.length ? `<div class="quiz-estado"><span id="contador">0/${preguntas.length} respondidas</span><span id="reloj"></span><span class="atajos"> · Teclado: 1 a 4 eligen, Enter corrige</span>${barra(0)}</div>` : `<section class="card"><p>${esc(vacio)}</p></section>`}
     <form id="quiz">${preguntas.map((q, i) => `
@@ -603,8 +604,14 @@ function quiz(titulo, preguntas, alTerminar, vacio = 'No hay preguntas pendiente
       <p><strong>${bien} de ${preguntas.length} correctas.</strong> ${pct >= APROBADO ? '¡Aprobado! 🎉' : 'Leé las explicaciones de arriba y volvé a intentarlo.'}</p>
       ${fallas.length ? `<p><strong>Para repasar:</strong></p><div class="repasar">${modulosAFallas(fallas).map(([m, n]) =>
         `<a class="boton secundario" href="#/m/${m.id}">${icono(m)} ${esc(m.titulo)} (${n} ${n === 1 ? 'fallada' : 'falladas'})</a>`).join('')}</div>` : ''}
-      ${fallas.length && bien ? '<button id="solo-falladas" class="secundario">👁 Ver solo las falladas</button> ' : ''}<button onclick="render()">↻ Reintentar</button> <a class="boton secundario" href="#/">Volver al temario</a>
+      ${logro && pct >= APROBADO ? '<button id="compartir" class="secundario">📣 Copiar logro para compartir</button> ' : ''}${fallas.length && bien ? '<button id="solo-falladas" class="secundario">👁 Ver solo las falladas</button> ' : ''}<button onclick="render()">↻ Reintentar</button> <a class="boton secundario" href="#/">Volver al temario</a>
     </section>`;
+    const compartir = res.querySelector('#compartir');
+    if (compartir) compartir.onclick = async () => {
+      const texto = textoLogro(logro, pct, location.origin + location.pathname);
+      try { await navigator.clipboard.writeText(texto); compartir.textContent = '✔ Copiado: pegalo donde quieras'; }
+      catch { prompt('Copiá este texto:', texto); } // sin permiso de portapapeles
+    };
     const filtro = res.querySelector('#solo-falladas');
     if (filtro) filtro.onclick = () => {
       const solo = form.classList.toggle('solo-falladas');
@@ -667,12 +674,13 @@ function render() {
   else if (ruta === 'novedades') novedadesPagina();
   else if (ruta === 'quiz' && T.some(m => m.id === id)) {
     const m = T.find(x => x.id === id);
-    quiz(`${icono(m)} Quiz: ${m.titulo}`, mezclar(preguntasDe(m)), (p, pct) => { p.notas[m.id] = Math.max(p.notas[m.id] ?? 0, pct); });
+    quiz(`${icono(m)} Quiz: ${m.titulo}`, mezclar(preguntasDe(m)), (p, pct) => { p.notas[m.id] = Math.max(p.notas[m.id] ?? 0, pct); }, undefined,
+      { logro: `el módulo "${m.titulo}"` });
   }
   else if (ruta === 'examen') quiz('🏁 Examen final: 25 preguntas al azar', mezclar(todas()).slice(0, 25), registrarExamen, undefined,
-    { aviso: '<p><a href="#/examen-tiempo">⏱ Prefiero hacerlo con tiempo límite (1 minuto por pregunta)</a></p>' });
+    { aviso: '<p><a href="#/examen-tiempo">⏱ Prefiero hacerlo con tiempo límite (1 minuto por pregunta)</a></p>', logro: 'el examen final' });
   else if (ruta === 'examen-tiempo') quiz('⏱ Examen final con tiempo: 25 preguntas, 25 minutos', mezclar(todas()).slice(0, 25), registrarExamen, undefined,
-    { segundos: 25 * 60, aviso: '<p class="suave">Al terminar el tiempo se corrige solo; lo que quede sin responder cuenta como error.</p>' });
+    { segundos: 25 * 60, aviso: '<p class="suave">Al terminar el tiempo se corrige solo; lo que quede sin responder cuenta como error.</p>', logro: 'el examen final con tiempo límite' });
   else if (ruta === 'repaso') {
     const p = cargar(), pendientes = todas().filter(q => p.falladas[clave(q)]);
     const proxima = pendientes.map(q => p.agenda[clave(q)]?.d).filter(Boolean).sort()[0];
