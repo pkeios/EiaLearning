@@ -15,10 +15,35 @@ const dia = (mas = 0) => { const d = new Date(); d.setDate(d.getDate() + mas); r
 const tocaHoy = (p, k) => p.falladas[k] && (!p.agenda[k] || p.agenda[k].d <= dia());
 // Búsqueda sin distinguir mayúsculas ni tildes; el índice se arma una vez al cargar.
 const normal = s => s.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase();
-const INDICE = T.flatMap(m => m.lecciones.map(l => {
+const INDICE = T.flatMap(m => m.lecciones.map((l, n) => {
   const texto = (l.titulo + '. ' + l.html.replace(/<[^>]+>/g, ' ')).replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&').replace(/\s+/g, ' ');
-  return { m, l, texto, norm: normal(texto) + ' ' + normal(m.titulo) };
+  return { m, l, n, texto, norm: normal(texto) + ' ' + normal(m.titulo) };
 }));
+// Rangos [inicio, fin] de las palabras buscadas dentro de un texto, sin distinguir tildes ni mayúsculas.
+// shortcut: si normalizar cambia el largo del texto (caracteres raros), no se resalta; alcanza para español.
+function marcas(texto, consulta) {
+  const palabras = normal(consulta).split(/\s+/).filter(p => p.length > 1), norm = normal(texto);
+  if (!palabras.length || norm.length !== texto.length) return [];
+  const re = new RegExp(palabras.map(p => p.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|'), 'g');
+  return [...norm.matchAll(re)].map(x => [x.index, x.index + x[0].length]);
+}
+function resaltarEn(raiz, consulta) {
+  const caminante = document.createTreeWalker(raiz, NodeFilter.SHOW_TEXT), nodos = [];
+  while (caminante.nextNode()) nodos.push(caminante.currentNode);
+  for (const nodo of nodos) {
+    const texto = nodo.nodeValue, rangos = marcas(texto, consulta);
+    if (!rangos.length) continue;
+    const frag = document.createDocumentFragment();
+    let desde = 0;
+    for (const [a, b] of rangos) {
+      frag.append(texto.slice(desde, a), Object.assign(document.createElement('mark'), { textContent: texto.slice(a, b) }));
+      desde = b;
+    }
+    frag.append(texto.slice(desde));
+    nodo.replaceWith(frag);
+  }
+}
+let ultimaBusqueda = '';
 function buscar(consulta) {
   const palabras = normal(consulta).split(/\s+/).filter(p => p.length > 1);
   if (!palabras.length) return [];
@@ -124,7 +149,7 @@ async function importar(archivo) {
   inicio();
 }
 
-function modulo(id) {
+function modulo(id, abrir = null) {
   const m = T.find(x => x.id === id);
   if (!m) return inicio();
   const p = cargar(), i = T.indexOf(m), prev = T[i - 1], next = T[i + 1];
@@ -137,7 +162,7 @@ function modulo(id) {
     </header>
     <section class="card"><h2>🎯 Objetivos</h2><ul class="checks">${m.objetivos.map(o => `<li>${esc(o)}</li>`).join('')}</ul></section>
     <h2>📖 Lecciones</h2>${m.lecciones.map((l, n) => `
-      <details class="leccion ${leida(n) ? 'leida' : ''}" ${leida(n) ? '' : 'open'}>
+      <details class="leccion ${leida(n) ? 'leida' : ''}" ${leida(n) && n !== abrir ? '' : 'open'}>
         <summary><span class="num">${leida(n) ? '✔' : n + 1}</span>${esc(l.titulo)}</summary>
         <div class="contenido">${l.html}</div>
         ${leida(n) ? '' : `<button data-leida="${n}">✔ Marcar como leída</button>`}
@@ -168,6 +193,11 @@ function modulo(id) {
     const p = cargar(); p.leidas[m.id + ':' + b.dataset.leida] = true; estudiar(p); guardar(p); modulo(id);
   });
   app.querySelector('#apunte').oninput = e => { const p = cargar(); p.apuntes[m.id] = e.target.value; guardar(p); };
+  const buscada = abrir != null && app.querySelectorAll('details.leccion')[abrir];
+  if (buscada) {
+    if (ultimaBusqueda) resaltarEn(buscada.querySelector('.contenido'), ultimaBusqueda);
+    buscada.scrollIntoView();
+  }
   app.querySelector('#tutor').onclick = async e => {
     const texto = promptTutor(m, cargar().apuntes[m.id]), caja = app.querySelector('#prompt-tutor');
     try {
@@ -208,12 +238,14 @@ function busqueda() {
     <input id="consulta" type="search" class="buscador" placeholder="Ej.: embeddings, KV cache, overfitting..." aria-label="Buscar en las lecciones">
     <div id="resultados" aria-live="polite"></div>`;
   const input = app.querySelector('#consulta'), salida = app.querySelector('#resultados');
+  input.value = ultimaBusqueda;
   input.oninput = () => {
+    ultimaBusqueda = input.value;
     const r = buscar(input.value);
     salida.innerHTML = input.value.trim().length < 2 ? '<p class="suave">Escribí al menos 2 letras.</p>'
       : !r.length ? '<p class="suave">Sin resultados. Probá con otra palabra.</p>'
       : `<p class="suave">${r.length} ${r.length === 1 ? 'lección' : 'lecciones'}</p>` + r.map(x => `
-        <a class="resultado-busqueda" href="#/m/${x.m.id}">
+        <a class="resultado-busqueda" href="#/m/${x.m.id}/${x.n}">
           <small>${icono(x.m)} ${esc(x.m.titulo)}</small><strong>${esc(x.l.titulo)}</strong><span>${esc(x.fragmento)}</span>
         </a>`).join('');
   };
@@ -291,8 +323,9 @@ function quiz(titulo, preguntas, alTerminar, vacio = 'No hay preguntas pendiente
 }
 
 function render() {
-  const [, ruta, id] = location.hash.split('/');
-  if (ruta === 'm') modulo(id);
+  const [, ruta, id, leccion] = location.hash.split('/');
+  scrollTo(0, 0);
+  if (ruta === 'm') modulo(id, leccion != null && leccion !== '' ? Number(leccion) : null);
   else if (ruta === 'buscar') busqueda();
   else if (ruta === 'glosario') glosario();
   else if (ruta === 'quiz' && T.some(m => m.id === id)) {
@@ -307,7 +340,6 @@ function render() {
       proxima ? `Nada para repasar hoy. Próximo repaso: ${proxima} (${pendientes.length} preguntas en agenda).` : 'No tenés preguntas falladas. 🎉');
   }
   else inicio();
-  scrollTo(0, 0);
 }
 
 // El tema se aplica en index.html antes de pintar, para evitar un parpadeo; acá solo el botón.

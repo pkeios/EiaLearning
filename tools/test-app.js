@@ -8,8 +8,8 @@ const ctx = { window: {}, document: { getElementById: id => id === 'tema' ? boto
 vm.createContext(ctx);
 vm.runInContext(leer('contenido.js'), ctx);
 vm.runInContext(leer('glosario.js'), ctx);
-vm.runInContext(leer('app.js') + ';this.X = { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas };', ctx);
-const { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas } = ctx.X;
+vm.runInContext(leer('app.js') + ';this.X = { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas };', ctx);
+const { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas } = ctx.X;
 const plano = o => JSON.parse(JSON.stringify(o));
 
 // Inicio renderiza con progreso vacío
@@ -87,6 +87,22 @@ assert.ok(el.h.includes('href="#/m/rag"'));
 const fallas = [{ m: 'rag' }, { m: 'fundamentos' }, { m: 'rag' }];
 assert.deepStrictEqual(plano(modulosAFallas(fallas).map(([m, n]) => [m.id, n])), [['fundamentos', 1], ['rag', 2]]);
 assert.equal(modulosAFallas([]).length, 0);
+
+// Resaltado: encuentra palabras sin tildes ni mayúsculas y devuelve rangos sobre el texto original
+assert.deepStrictEqual(plano(marcas('La Atención y la atencion', 'atención')), [[3, 11], [17, 25]]);
+assert.deepStrictEqual(plano(marcas('costo (USD) total', 'usd)')), [[7, 11]]);
+assert.equal(marcas('hola', '').length, 0);
+
+// El buscador enlaza a la lección exacta
+vm.runInContext('ultimaBusqueda = "kv cache"', ctx);
+ctx.location.hash = '#/buscar';
+vm.runInContext('render()', ctx);
+assert.match(el.h, /href="#\/m\/fine-tuning\/\d+"/);
+vm.runInContext('ultimaBusqueda = ""', ctx);
+guardado = null;
+ctx.location.hash = '#/m/rag/1';
+vm.runInContext('render()', ctx);
+assert.ok(el.h.includes('Embeddings y RAG'));
 
 // Repaso vacío muestra un mensaje en lugar de un formulario
 guardado = null;

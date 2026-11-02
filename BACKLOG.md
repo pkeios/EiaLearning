@@ -10,4 +10,5 @@
 - [x] Modo claro/oscuro con un botón en la cabecera, que se recuerde
 - [x] Glosario de términos (token, embedding, RAG...) generado a partir de las lecciones
 - [x] Mostrar al final de cada quiz las preguntas falladas con un botón para ir directo a la lección del módulo
-- [ ] Al buscar, abrir directamente la lección encontrada (no solo el módulo) y resaltar la palabra buscada
+- [x] Al buscar, abrir directamente la lección encontrada (no solo el módulo) y resaltar la palabra buscada
+- [ ] Modo tarjetas (flashcards) con los términos del glosario: ver el término, pensar la definición, darla vuelta y marcar si la sabías; las que no, vuelven antes

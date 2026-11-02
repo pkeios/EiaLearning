@@ -112,6 +112,8 @@ textarea { width: 100%; background: var(--bg); color: var(--texto); border: 1px 
 .resultado-busqueda small, .resultado-busqueda span { color: var(--suave); }
 .resultado-busqueda span { font-size: .9rem; }
 
+mark { background: rgba(250, 204, 21, .4); color: inherit; border-radius: 3px; padding: 0 .1em; }
+
 /* Glosario */
 .glosario { margin: 0; }
 .glosario > div { background: var(--card); border: 1px solid var(--borde); border-radius: 12px; padding: .8rem 1.1rem; margin: .6rem 0; }
