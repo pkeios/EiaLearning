@@ -60,6 +60,7 @@ window.GLOSARIO = [
   { t: 'MCP', d: 'Model Context Protocol: estándar abierto para conectar aplicaciones de IA con herramientas y fuentes de datos.', m: 'agentes' },
   { t: 'Memoria de largo plazo (agentes)', d: 'Información que un agente guarda fuera de la ventana de contexto (archivos o base de datos) para recordarla entre sesiones.', m: 'agentes' },
   { t: 'Mixture of Experts (MoE)', d: 'Arquitectura con varios expertos por capa y un router que activa solo algunos por token: mucha capacidad con poco cómputo, pero toda la memoria.', m: 'llms' },
+  { t: 'Modelo de referencia', d: 'En DPO y RLHF, copia congelada del modelo antes del ajuste; la pérdida mide cuánto se aleja el modelo entrenado de ella para que no pierda lo que ya sabía.', m: 'fine-tuning' },
   { t: 'Modelo multimodal (VLM)', d: 'Modelo que procesa más de un tipo de dato, por ejemplo imagen y texto, convirtiendo la imagen en tokens que comparten la secuencia con el texto.', m: 'llms' },
   { t: 'Modelo de razonamiento', d: 'Modelo entrenado para generar una cadena de razonamiento larga antes de responder.', m: 'llms' },
   { t: 'Negativo difícil', d: 'Ejemplo que se parece al positivo en la superficie pero significa otra cosa. Es el que más enseña en el aprendizaje contrastivo.', m: 'deep-learning' },

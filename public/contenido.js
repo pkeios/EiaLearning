@@ -1891,6 +1891,7 @@ def calificar(entorno, transcripcion):
     'Preparar datos de fine-tuning de calidad y evaluar el resultado contra la línea base y el olvido catastrófico',
     'Destilar un modelo grande en uno chico para una tarea acotada, y decidir con costo, latencia y calidad',
     'Ajustar modelos con refuerzo (GRPO) usando recompensas verificables, y prevenir el hackeo de la recompensa',
+    'Ajustar un modelo con preferencias usando DPO: armar pares elegida y rechazada, elegir beta y detectar los fallos típicos',
   ],
   lecciones: [
     { titulo: '¿Cuándo hacer fine-tuning?', html: `
@@ -2004,6 +2005,39 @@ trainer.train()</code></pre>
         <li>Evaluar en un conjunto aparte con criterios que la recompensa no ve.</li>
       </ul>
       <p><strong>Cuándo conviene:</strong> tareas con un verificador confiable y donde el modelo base ya acierta a veces. Si nunca acierta, todas las recompensas del grupo son iguales y no hay nada que reforzar: primero hace falta un ajuste supervisado o un modelo mejor.</p>` },
+    { titulo: 'Ajuste por preferencias a fondo: de RLHF a DPO', html: `
+      <p>El SFT le enseña al modelo a <strong>imitar</strong> respuestas buenas. Pero muchas cualidades son más fáciles de <strong>comparar</strong> que de escribir: entre dos respuestas, cualquiera ve cuál es más clara, más honesta o mejor formateada, aunque no sepa escribir la ideal. El ajuste por preferencias aprovecha eso.</p>
+      <h3>RLHF: el camino clásico</h3>
+      <ol>
+        <li>Se generan varias respuestas por prompt y personas marcan cuál prefieren.</li>
+        <li>Con esos pares se entrena un <strong>modelo de recompensa</strong> que puntúa respuestas.</li>
+        <li>Se ajusta el LLM con aprendizaje por refuerzo (típicamente PPO) para maximizar esa recompensa, con una penalización de divergencia KL que le impide alejarse demasiado del modelo original.</li>
+      </ol>
+      <p>Funciona, pero son varios modelos en memoria, muestreo durante el entrenamiento y muchos hiperparámetros: el paper de DPO lo describe como un procedimiento complejo y a menudo inestable.</p>
+      <h3>DPO: la misma meta con una pérdida de clasificación</h3>
+      <p><strong>Direct Preference Optimization</strong> (Rafailov y otros, 2023) mostró que el objetivo de RLHF se puede resolver sin modelo de recompensa explícito ni RL: alcanza con una pérdida que, para cada trío (prompt, elegida, rechazada), <strong>agranda la distancia</strong> entre la probabilidad de la elegida y la de la rechazada, medidas en relación con un <strong>modelo de referencia</strong> congelado (normalmente el mismo modelo antes de DPO, ya con SFT). El modelo es, en palabras del paper, "secretamente un modelo de recompensa".</p>
+      <pre><code>{"prompt":   [{"role": "user", "content": "¿Cómo reinicio el router?"}],
+ "chosen":   [{"role": "assistant", "content": "1. Desenchufalo 30 segundos. 2. ..."}],
+ "rejected": [{"role": "assistant", "content": "Los routers son dispositivos de red que..."}]}
+
+from trl import DPOConfig, DPOTrainer
+args = DPOConfig(beta=0.1, learning_rate=1e-6)   # valores por defecto en TRL
+trainer = DPOTrainer(model="mi-modelo-sft", args=args, train_dataset=pares)
+trainer.train()</code></pre>
+      <h3>Las perillas que importan</h3>
+      <ul>
+        <li><strong>beta</strong> controla cuánto puede alejarse del modelo de referencia: más alto, más conservador. TRL usa 0,1 por defecto.</li>
+        <li><strong>Learning rate muy bajo:</strong> el valor por defecto de DPO en TRL es 1e-6, mucho menor que el de SFT; con LoRA se suele subir (alrededor de 1e-5) porque solo se entrenan parámetros nuevos.</li>
+        <li><strong>Empezá desde un modelo con SFT:</strong> DPO pule preferencias; no enseña una tarea desde cero.</li>
+      </ul>
+      <h3>Trampas frecuentes</h3>
+      <ul>
+        <li><strong>Sesgo de longitud:</strong> si las elegidas suelen ser más largas, el modelo aprende "más largo es mejor" y se vuelve verborrágico. Revisá la longitud media de elegidas y rechazadas; variantes como la normalización por longitud (SimPO) apuntan a esto.</li>
+        <li><strong>Pares sin señal:</strong> si elegida y rechazada son casi iguales, o la etiqueta es dudosa, el modelo aprende ruido. Los mejores pares difieren justo en la cualidad que querés enseñar.</li>
+        <li><strong>Mirar solo la pérdida:</strong> que suba <em>rewards/accuracies</em> (la proporción de pares donde la elegida gana) no garantiza mejores respuestas. Evaluá con tu eval de tareas reales antes y después, y vigilá regresiones en lo que ya funcionaba.</li>
+      </ul>
+      <p><strong>¿Cuándo usar cada uno?</strong> SFT para enseñar formato y tarea; DPO para preferencias de estilo, tono o seguridad cuando tenés pares; RL con recompensas verificables (como GRPO, de la lección anterior) cuando la respuesta se puede comprobar automáticamente, como en matemática o código.</p>
+    ` },
   ],
   practica: [
     'Instalá Ollama, corré un modelo abierto de 7-8B y compará calidad y velocidad en 4 bits vs 8 bits con 10 prompts tuyos.',
@@ -2012,6 +2046,7 @@ trainer.train()</code></pre>
     'Armá 300 ejemplos curados para una tarea y separá 50 de test sin duplicados. Afiná con LoRA usando la plantilla de chat del modelo y comparalo contra el modelo base con few-shot. Medí también 20 tareas generales antes y después para detectar olvido catastrófico.',
     'Destilá una tarea de clasificación o extracción: generá 2.000 pares con un modelo grande, filtrá los que no pasen tus chequeos y afiná un modelo chico con LoRA. Compará alumno y maestro en 200 casos de test aparte: exactitud, costo por 1.000 pedidos y latencia.',
     'Con TRL, entrená con GRPO un modelo chico para responder problemas de aritmética con un formato fijo, con una recompensa por resultado correcto y otra por formato. Leé 20 respuestas a mitad del entrenamiento buscando trampas, y compará con el modelo base en un conjunto de test aparte.',
+    'Armá 200 pares (prompt, elegida, rechazada) para una cualidad concreta, por ejemplo respuestas con pasos numerados frente a respuestas en párrafo. Medí la longitud media de elegidas y rechazadas, entrená con DPO (LoRA sobre un modelo chico con SFT) y compará antes y después con 30 prompts nuevos: cuántas respuestas tienen la cualidad y si cambió la longitud.',
   ],
   recursos: [
     { t: 'LoRA (paper)', url: 'https://arxiv.org/abs/2106.09685' },
@@ -2029,6 +2064,7 @@ trainer.train()</code></pre>
     { t: 'PagedAttention / vLLM (paper)', url: 'https://arxiv.org/abs/2309.06180' },
     { t: 'Documentación de vLLM', url: 'https://docs.vllm.ai/en/latest/' },
     { t: 'GQA: Grouped-Query Attention (paper)', url: 'https://arxiv.org/abs/2305.13245' },
+    { t: 'DPO — Direct Preference Optimization (paper)', url: 'https://arxiv.org/abs/2305.18290' },
   ],
   quiz: [
     { q: '¿Qué hace LoRA?', opciones: ['Entrena todos los pesos con menor learning rate', 'Entrena matrices de bajo rango añadidas, con los pesos originales congelados', 'Elimina capas del modelo', 'Cuantiza el modelo a 4 bits'], correcta: 1, explicacion: 'Aprende un "delta" de bajo rango por capa. Mucho menos memoria y almacenamiento que un fine-tuning completo.' },
@@ -2057,6 +2093,11 @@ trainer.train()</code></pre>
     { q: 'Entrenás con una recompensa que vale 1 si "pasan los tests", y la recompensa sube rápido. Al leer las respuestas ves que el modelo modifica los tests. ¿Qué pasó?', opciones: ['El modelo aprendió a programar mejor', 'Faltaron epochs', 'Bajó el learning rate', 'Hackeo de la recompensa: maximizó lo que medías, no lo que querías; necesitás tests ocultos o un sandbox que no pueda tocar'], correcta: 3, explicacion: 'Por eso hay que leer muestras durante el entrenamiento: la curva de recompensa subiendo no prueba que el modelo esté haciendo lo correcto.' },
     { q: 'El modelo base nunca acierta ningún problema de tu tarea. ¿Qué pasa si aplicás GRPO directamente?', opciones: ['Aprende igual, más lento', 'Todas las recompensas del grupo son iguales, así que no hay ventaja y no hay nada que reforzar: primero hace falta un ajuste supervisado o un modelo mejor', 'Aprende más rápido', 'Se vuelve más creativo'], correcta: 1, explicacion: 'Si todas las respuestas de un grupo valen 0, la ventaja es 0 para todas. El refuerzo necesita que el modelo acierte al menos a veces.' },
     { q: 'Tu recompensa solo mide si el resultado es correcto, y el modelo empieza a escribir respuestas larguísimas y desordenadas. ¿Qué agregás?', opciones: ['Nada, mientras acierte', 'Más temperatura', 'Recompensas adicionales, por ejemplo de formato y de largo razonable, y evaluación en un conjunto aparte', 'Más datos de entrenamiento'], correcta: 2, explicacion: 'Combinar recompensas expresa mejor lo que querés. El conjunto aparte, con criterios que la recompensa no ve, detecta efectos indeseados.' },
+    { q: '¿Qué se ahorra DPO respecto de RLHF con PPO?', opciones: ['Los datos de preferencias', 'Entrenar un modelo de recompensa explícito y la etapa de aprendizaje por refuerzo', 'El modelo de referencia', 'El ajuste supervisado previo'], correcta: 1, explicacion: 'DPO usa los mismos pares de preferencias pero los optimiza con una pérdida de clasificación. Sigue necesitando un modelo de referencia: la trampa es creer que lo elimina.' },
+    { q: 'Después de DPO, tu modelo da respuestas el doble de largas y con relleno. En los datos, las elegidas eran mucho más largas que las rechazadas. ¿Qué pasó?', opciones: ['beta era demasiado alto', 'Sesgo de longitud: el modelo aprendió que más largo es preferido', 'Faltó cuantizar el modelo', 'El learning rate era muy bajo'], correcta: 1, explicacion: 'Si la longitud correlaciona con la preferencia, el modelo aprende esa señal fácil. Se corrige balanceando longitudes en los pares o con variantes normalizadas por longitud.' },
+    { q: 'Tu modelo con DPO se alejó tanto del original que empezó a perder habilidades que tenía. ¿Qué perilla ajustás primero?', opciones: ['Bajar beta', 'Sacar el modelo de referencia', 'Usar más pares casi idénticos', 'Subir beta, para mantenerlo más cerca del modelo de referencia'], correcta: 3, explicacion: 'Un beta más alto penaliza más alejarse de la referencia. Bajarlo es la trampa: le da todavía más libertad para desviarse.' },
+    { q: 'Querés enseñarle a un modelo base un formato de salida JSON que nunca vio, y tenés 2.000 ejemplos de entrada y salida correcta. ¿Qué usás?', opciones: ['SFT, porque tenés ejemplos de la respuesta ideal y querés enseñar una tarea nueva', 'DPO directamente sobre el modelo base', 'RLHF con PPO', 'Solo un modelo de recompensa'], correcta: 0, explicacion: 'Para enseñar formato y tarea con respuestas ideales, SFT. DPO pule preferencias sobre un modelo que ya hace la tarea, no la enseña desde cero.' },
+    { q: 'Durante el entrenamiento con DPO, rewards/accuracies llega a 0,95. ¿Qué concluís?', opciones: ['El modelo es un 95% mejor', 'Hay que parar: el modelo está roto', 'El modelo separa bien elegidas de rechazadas en esos pares, pero falta evaluar con tareas reales y buscar regresiones', 'Que beta es demasiado bajo'], correcta: 2, explicacion: 'La métrica solo mide qué tan bien distingue los pares de entrenamiento. Leerla como "95% mejor" es la trampa: la calidad real se mide con tu eval, antes y después.' },
   ],
 },
 {
