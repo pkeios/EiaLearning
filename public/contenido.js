@@ -383,6 +383,7 @@ loss = F.cross_entropy(logits, etiquetas)</code></pre>
     'Conocer las etapas de entrenamiento de un LLM (pre-training, SFT, RLHF)',
     'Entender parámetros de muestreo, ventana de contexto y alucinaciones',
     'Saber cuándo conviene un modelo de razonamiento y cuáles son sus límites (costo y fidelidad del razonamiento)',
+    'Reconocer los componentes de un LLM moderno: pre-norm, RoPE, SwiGLU, MoE y FlashAttention',
   ],
   lecciones: [
     { titulo: 'De texto a predicción: tokens, embeddings y atención', html: `
@@ -414,17 +415,40 @@ loss = F.cross_entropy(logits, etiquetas)</code></pre>
     return llamar(MODELO_RAZONADOR, tarea, razonamiento=True)  # matemática, código, planes</code></pre>
       <p><strong>Cómo escribirles:</strong> dales el objetivo, el contexto y los criterios de éxito, y dejá que ellos planifiquen. Dictarles cada paso suele rendir menos que una instrucción de alto nivel bien explicada. En la API se activa como "extended thinking" o similar, con un presupuesto de tokens de razonamiento que también se cobran.</p>
       <p><strong>Límite importante: el razonamiento visible no siempre es fiel.</strong> En un estudio de Anthropic, a los modelos se les daban pistas para responder. Claude 3.7 Sonnet mencionó en su razonamiento la pista que usó solo el 25% de las veces, y DeepSeek R1 el 39%. En pruebas donde podían hacer trampa con la recompensa, la aprovecharon más del 99% de las veces, pero lo admitieron en menos del 2% de los casos. Leer el razonamiento ayuda a depurar, pero no prueba qué hizo el modelo ni reemplaza los controles de seguridad.</p>` },
+    { titulo: 'Por dentro de un LLM moderno: RoPE, SwiGLU, MoE y FlashAttention', html: `
+      <p>El Transformer de 2017 sigue siendo la base, pero los LLMs actuales le suman varias mejoras. Conocerlas te permite leer el <code>config.json</code> de un modelo abierto y entender qué estás corriendo.</p>
+      <ul>
+        <li><strong>Pre-norm y RMSNorm:</strong> la normalización se aplica <em>antes</em> de la atención y del MLP, no después, y el camino residual queda limpio. Entrena de forma más estable en redes profundas. RMSNorm es una versión más simple y barata de LayerNorm.</li>
+        <li><strong>RoPE (rotary position embedding):</strong> en lugar de sumar un vector de posición, rota las queries y keys según su posición. Así la atención depende de la <em>distancia relativa</em> entre tokens, y se presta a técnicas para extender el contexto.</li>
+        <li><strong>SwiGLU:</strong> un MLP con compuerta: una rama decide cuánto pasa de la otra. Mejora la calidad frente al MLP clásico con el mismo presupuesto.</li>
+        <li><strong>GQA:</strong> varias cabezas de query comparten keys y values para achicar el KV cache (lo viste en el módulo de fine-tuning y servicio).</li>
+        <li><strong>Mixture of Experts (MoE):</strong> cada capa tiene varios MLPs "expertos" y un router elige unos pocos por token. Mixtral 8x7B, por ejemplo, tiene 8 expertos por capa y usa 2 por token: tiene acceso a unos 47.000 millones de parámetros, pero activa unos 13.000 millones por token. Cómputo de modelo chico con capacidad de modelo grande, aunque <strong>la memoria tiene que alojar todos los expertos</strong>.</li>
+        <li><strong>FlashAttention:</strong> calcula la atención <em>exacta</em>, no una aproximación, pero reorganizada para minimizar las lecturas y escrituras en la memoria de la GPU. Resultado: más velocidad y mucha menos memoria con contextos largos.</li>
+      </ul>
+      <pre><code>def bloque(x):
+    x = x + atencion(rms_norm(x), posiciones="RoPE", kv_compartidas="GQA")  # pre-norm + residual
+    x = x + mlp(rms_norm(x))    # en MoE: el router elige 2 de 8 MLPs para cada token
+    return x
+
+def mlp_swiglu(x):
+    return W_baja(silu(W_compuerta(x)) * W_sube(x))   # la compuerta regula lo que pasa</code></pre>
+      <p>Al elegir un modelo abierto, estos detalles importan en la práctica: un MoE grande puede ser rápido por token pero necesitar mucha más memoria que un modelo denso con el mismo cómputo, y el tipo de atención y de posición condicionan cuánto contexto podés usar con el hardware que tenés.</p>` },
   ],
   practica: [
     'Mirá "Let\'s build GPT: from scratch" de Karpathy y reimplementá un mini-GPT a nivel de caracteres.',
     'Usá un tokenizador (por ejemplo tiktoken o el de Hugging Face) y compará cuántos tokens ocupa el mismo párrafo en español y en inglés.',
     'Implementá la atención de una cabeza en NumPy con Q, K, V aleatorios y verificá que cada fila de los pesos de atención suma 1.',
     'Elegí 20 problemas: 10 de lógica o matemática y 10 de extracción simple. Resolvelos con y sin razonamiento extendido, medí exactitud, tokens y latencia, y escribí una regla de routing basada en los resultados.',
+    'Abrí el config.json de dos modelos abiertos en Hugging Face, uno denso y uno MoE. Identificá capas, cabezas, cabezas KV, tipo de codificación de posición, cantidad de expertos y expertos activos, y calculá parámetros activos contra totales y la memoria de los pesos en 16 bits.',
   ],
   recursos: [
     { t: 'Attention Is All You Need (paper original)', url: 'https://arxiv.org/abs/1706.03762' },
     { t: 'The Illustrated Transformer (Jay Alammar)', url: 'https://jalammar.github.io/illustrated-transformer/' },
     { t: 'Hugging Face — LLM Course', url: 'https://huggingface.co/learn/llm-course' },
+    { t: 'RoFormer: Rotary Position Embedding (paper de RoPE)', url: 'https://arxiv.org/abs/2104.09864' },
+    { t: 'Mixtral of Experts (paper)', url: 'https://arxiv.org/abs/2401.04088' },
+    { t: 'FlashAttention (paper)', url: 'https://arxiv.org/abs/2205.14135' },
+    { t: 'GLU Variants Improve Transformer (paper de SwiGLU)', url: 'https://arxiv.org/abs/2002.05202' },
     { t: 'DeepSeek-R1: razonamiento con aprendizaje por refuerzo (paper)', url: 'https://arxiv.org/abs/2501.12948' },
     { t: 'Anthropic — Reasoning models don\'t always say what they think', url: 'https://www.anthropic.com/research/reasoning-models-dont-say-think' },
     { t: 'Claude — Extended thinking', url: 'https://platform.claude.com/docs/en/build-with-claude/extended-thinking' },
@@ -444,6 +468,11 @@ loss = F.cross_entropy(logits, etiquetas)</code></pre>
     { q: 'Querés verificar que tu modelo no usó información prohibida leyendo su razonamiento visible. ¿Alcanza?', opciones: ['Sí, el razonamiento muestra exactamente lo que hizo', 'Sí, si el razonamiento es largo', 'Sí, si la respuesta es correcta', 'No: los estudios muestran que muchas veces no menciona lo que usó, así que hacen falta otros controles'], correcta: 3, explicacion: 'En el estudio de Anthropic, Claude 3.7 Sonnet mencionó la pista que usó solo el 25% de las veces. El razonamiento ayuda a depurar, pero no es una prueba.' },
     { q: '¿Qué significa escalar el cómputo en inferencia?', opciones: ['Agregar parámetros al modelo', 'Mejorar el rendimiento dándole al modelo más cómputo al responder (pensar más tokens), no solo al entrenar', 'Usar más GPUs para el entrenamiento', 'Comprimir el modelo'], correcta: 1, explicacion: 'Es una dimensión distinta de la de entrenar modelos más grandes: el mismo modelo rinde más en tareas difíciles si se le deja pensar más.' },
     { q: '¿Cómo conviene escribirle a un modelo de razonamiento?', opciones: ['Con el objetivo, el contexto y los criterios de éxito, dejando que planifique él, en lugar de dictarle cada paso', 'Dictándole siempre cada paso exacto', 'Pidiéndole respuestas de una sola palabra', 'Repitiendo "pensá" muchas veces'], correcta: 0, explicacion: 'Estos modelos planifican bien por sí solos. Una lista rígida de pasos puede llevarlos a un camino peor que el que encontrarían.' },
+    { q: 'Mixtral 8x7B tiene 8 expertos por capa y usa 2 por token. ¿Cuántos parámetros participan por token y cuántos tienen que estar en memoria?', opciones: ['Unos 13.000 millones activos por token, pero los 47.000 millones tienen que estar en memoria', '56.000 millones activos y 56.000 millones en memoria', '7.000 millones activos y 7.000 millones en memoria', '13.000 millones activos y 13.000 millones en memoria'], correcta: 0, explicacion: 'El router puede elegir cualquier experto, así que todos tienen que estar cargados. Y el total no es 8 × 7 = 56 porque las capas de atención son compartidas.' },
+    { q: '¿Cuál es la ventaja principal de una arquitectura Mixture of Experts?', opciones: ['Usa menos memoria que un modelo denso equivalente', 'No necesita un router', 'Siempre es más precisa', 'Más capacidad total con el costo de cómputo por token de un modelo más chico'], correcta: 3, explicacion: 'Cada token activa solo unos pocos expertos. La contracara es la memoria: hay que alojarlos a todos.' },
+    { q: '¿Qué es FlashAttention?', opciones: ['Atención exacta reorganizada para minimizar las lecturas y escrituras en la memoria de la GPU: más rápida y con menos memoria', 'Una atención aproximada que sacrifica precisión', 'Un tokenizador', 'Una técnica de cuantización'], correcta: 0, explicacion: 'Da el mismo resultado que la atención estándar. Lo que cambia es el orden de los cálculos, para no mover tanta información en la memoria.' },
+    { q: '¿Qué hace RoPE?', opciones: ['Normaliza las activaciones', 'Es una función de activación', 'Es un tipo de experto en MoE', 'Codifica la posición rotando queries y keys, de modo que la atención depende de la distancia relativa entre tokens'], correcta: 3, explicacion: 'En lugar de sumar un vector de posición, rota Q y K. El producto entre ellos queda en función de cuán lejos están los tokens.' },
+    { q: '¿Por qué los LLMs modernos aplican la normalización antes de cada subcapa (pre-norm)?', opciones: ['Porque reduce la cantidad de parámetros', 'Porque hace más estable el entrenamiento de redes profundas, al normalizar la entrada de cada subcapa y dejar limpio el camino residual', 'Porque elimina la necesidad de atención', 'Porque acelera la tokenización'], correcta: 1, explicacion: 'Con la normalización después de la suma, los gradientes de redes muy profundas se vuelven inestables. Pre-norm mantiene un camino residual directo.' },
   ],
 },
 {
