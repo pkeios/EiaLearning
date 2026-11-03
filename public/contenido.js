@@ -1356,42 +1356,54 @@ bpe(["bajo", "bajar", "bajamos", "trabajo"], 3)
   ],
   lecciones: [
     { titulo: 'Las técnicas que realmente funcionan', html: `
+      <p><strong>En pocas palabras:</strong> un <strong>prompt</strong> es el mensaje con instrucciones que le escribís al modelo. Escribirlo bien se parece mucho a pedirle un trabajo a una persona nueva en el equipo: decile qué querés, para qué, mostrale un ejemplo y decile cómo entregarlo.</p>
       <ul>
-        <li><strong>Sé claro y directo:</strong> escribí como si se lo explicaras a un colega brillante que no tiene contexto. Decí el objetivo, para quién es y qué es "bien hecho".</li>
+        <li><strong>Sé claro y directo:</strong> escribí como si se lo explicaras a un colega brillante que no sabe nada de tu proyecto. Decí el objetivo, para quién es y qué es "bien hecho".</li>
         <li><strong>Dá contexto y el porqué:</strong> "Respondé breve porque se lee en el celular" funciona mejor que "respondé breve".</li>
-        <li><strong>Ejemplos (few-shot):</strong> 2-5 ejemplos variados de entrada → salida. Es la forma más fuerte de fijar formato y estilo.</li>
-        <li><strong>Estructura con etiquetas XML:</strong> separá instrucciones, documentos y ejemplos (<code>&lt;documento&gt;...&lt;/documento&gt;</code>). Reduce confusiones.</li>
-        <li><strong>System prompt:</strong> rol y reglas persistentes de la conversación.</li>
-        <li><strong>Espacio para pensar:</strong> pedir razonamiento paso a paso (o usar el modo de razonamiento del modelo) mejora tareas de varios pasos.</li>
-        <li><strong>Prompt chaining:</strong> dividir una tarea grande en pasos (extraer → analizar → redactar), cada uno con su llamada. Más fácil de depurar.</li>
-        <li><strong>Formato de salida:</strong> pedí JSON con un esquema concreto, o usá las salidas estructuradas de la API.</li>
+        <li><strong>Ejemplos (few-shot):</strong> mostrar 2 a 5 ejemplos variados de "esto entra, esto sale". <em>Few-shot</em> quiere decir "con pocos ejemplos". Es la forma más fuerte de fijar el formato y el estilo.</li>
+        <li><strong>Estructura con etiquetas XML:</strong> XML es un formato de etiquetas que abren y cierran, como <code>&lt;documento&gt;...&lt;/documento&gt;</code>. Sirve para separar las instrucciones, los documentos y los ejemplos, como carpetas con nombre. Reduce confusiones.</li>
+        <li><strong>System prompt</strong> (instrucciones de sistema): un mensaje especial, aparte de la conversación, con el rol y las reglas que valen siempre ("Sos el asistente de soporte de...").</li>
+        <li><strong>Espacio para pensar:</strong> pedirle que razone paso a paso antes de responder (o usar el modo de razonamiento del modelo) mejora las tareas de varios pasos.</li>
+        <li><strong>Prompt chaining</strong> (prompts encadenados): dividir una tarea grande en pasos (extraer, después analizar, después redactar), cada uno con su propia llamada al modelo. Así, si algo sale mal, sabés en qué paso fue.</li>
+        <li><strong>Formato de salida:</strong> si un programa va a leer la respuesta, pedí <strong>JSON</strong>, un formato de texto con campos y valores, como <code>{"categoria": "bug"}</code>, que cualquier programa entiende. Indicá un <em>esquema</em> concreto (qué campos y de qué tipo), o usá las <em>salidas estructuradas</em> de la API, una opción que garantiza que el JSON cumpla el esquema.</li>
       </ul>
+      <p>Un ejemplo que junta varias técnicas: rol, etiquetas y formato JSON. <code>{texto_del_ticket}</code> se reemplaza por el texto real de cada ticket.</p>
       <pre><code>Sos un analista de soporte. Clasificá el ticket en una categoría.
 &lt;categorias&gt;facturacion, bug, pedido_funcionalidad, otro&lt;/categorias&gt;
 &lt;ticket&gt;{texto_del_ticket}&lt;/ticket&gt;
 Respondé solo con JSON: {"categoria": "...", "motivo": "una frase"}</code></pre>` },
     { titulo: 'Prompting como ingeniería: medir, no adivinar', html: `
-      <p>Cambiar palabras "a ojo" no es ingeniería. El proceso:</p>
+      <p><strong>En pocas palabras:</strong> si cambiás una receta, la probás antes de servirla a los invitados. Con los prompts igual: armás una lista de casos de prueba, medís cuántos salen bien y recién ahí sabés si el cambio mejoró o empeoró. Cambiar palabras "a ojo" no es ingeniería.</p>
+      <p>El proceso:</p>
       <ol>
-        <li><strong>Definí criterios de éxito</strong> medibles (ej.: "clasifica bien el 95% de los tickets", "JSON válido siempre").</li>
-        <li><strong>Armá casos de prueba</strong> realistas, incluyendo casos difíciles y bordes.</li>
-        <li><strong>Escribí una primera versión</strong> simple y medila.</li>
-        <li><strong>Leé los fallos</strong>, formulá una hipótesis y cambiá <em>una cosa</em> a la vez.</li>
-        <li><strong>Versioná los prompts</strong> como código (git) y guardá los resultados de cada versión.</li>
+        <li><strong>Definí criterios de éxito</strong> medibles, por ejemplo "clasifica bien el 95% de los tickets" o "siempre devuelve un JSON válido".</li>
+        <li><strong>Armá casos de prueba</strong> realistas, incluyendo los difíciles y los <em>casos borde</em>: los raros o extremos, como un ticket vacío, en otro idioma o con dos problemas a la vez.</li>
+        <li><strong>Escribí una primera versión</strong> simple y medila con esos casos.</li>
+        <li><strong>Leé los fallos</strong>, pensá por qué fallaron (una <em>hipótesis</em>) y cambiá <em>una sola cosa</em> por vez. Si cambiás tres, no sabés cuál ayudó.</li>
+        <li><strong>Guardá cada versión del prompt</strong>, como se hace con el código (por ejemplo, en git, el sistema que guarda el historial de cambios), junto con su resultado.</li>
       </ol>
+      <p>A este conjunto de casos de prueba con su medición se le dice <strong>evals</strong> (evaluaciones); tienen un módulo propio más adelante.</p>
       <p>Los prompts suelen fallar por falta de contexto, no por falta de palabras mágicas. Si un humano experto no podría hacer la tarea con ese prompt, el modelo tampoco.</p>` },
     { titulo: 'De prompt engineering a context engineering', html: `
-      <p>En agentes que trabajan durante muchos pasos, el problema deja de ser "qué palabras pongo en el prompt" y pasa a ser <strong>qué información hay en la ventana de contexto en cada momento</strong>: system prompt, herramientas, ejemplos, historial, resultados de herramientas, documentos. A eso se le llama <strong>context engineering</strong>.</p>
-      <p><strong>Por qué importa:</strong> a medida que crece el contexto, los modelos recuerdan y usan peor la información (<em>context rot</em>). El contexto es un recurso finito, un "presupuesto de atención": cada token irrelevante le resta foco a los relevantes. El objetivo es el <strong>conjunto más chico de tokens de alta señal</strong> que logra el resultado.</p>
+      <p><strong>En pocas palabras:</strong> el modelo tiene un escritorio de tamaño fijo. Si lo llenás de papeles que no sirven, trabaja peor, aunque todo entre. Context engineering es decidir qué papeles hay sobre el escritorio en cada momento: solo lo útil, y lo demás guardado en cajones de donde se pueda sacar cuando haga falta.</p>
+      <p>Un <strong>agente</strong> es un LLM que, además de responder, usa <strong>herramientas</strong>: funciones de tu programa que puede pedir ejecutar, como buscar en una base de datos, leer un archivo o mandar un mail. Trabaja en muchos pasos seguidos (tienen su propio módulo más adelante).</p>
+      <p>En los agentes, el problema deja de ser "qué palabras pongo en el prompt" y pasa a ser <strong>qué información hay en la ventana de contexto en cada momento</strong>: el system prompt, la lista de herramientas, los ejemplos, el historial de la conversación, lo que devolvió cada herramienta y los documentos. A eso se le llama <strong>context engineering</strong> (ingeniería de contexto).</p>
+      <p><strong>Por qué importa:</strong> a medida que crece el contexto, los modelos recuerdan y usan peor la información (<em>context rot</em>, que viste en LLMs). El contexto es un recurso limitado, un "presupuesto de atención": cada token que no sirve le resta foco a los que sí. El objetivo es el <strong>conjunto más chico de tokens útiles</strong> que logra el resultado.</p>
       <ul>
-        <li><strong>System prompt a la altura justa:</strong> ni una lista frágil de reglas if-else para cada caso borde, ni una guía vaga. Principios claros y heurísticas, organizados en secciones.</li>
-        <li><strong>Ejemplos canónicos:</strong> en vez de 40 reglas, unos pocos ejemplos variados que muestren el comportamiento esperado.</li>
-        <li><strong>Herramientas eficientes:</strong> pocas, sin solaparse, que devuelvan resultados concisos. Un set de herramientas inflado genera decisiones ambiguas.</li>
-        <li><strong>Recuperación just-in-time:</strong> el agente guarda referencias livianas (rutas de archivos, consultas, links) y carga el contenido con herramientas solo cuando lo necesita, en lugar de precargar todo.</li>
-        <li><strong>Compactación:</strong> cuando la conversación se acerca al límite, se resume y se sigue en una ventana nueva con ese resumen. Una versión liviana es borrar los resultados viejos de herramientas que ya se usaron.</li>
-        <li><strong>Notas estructuradas:</strong> el agente escribe su progreso fuera del contexto (una lista de tareas, un NOTES.md) y lo relee. Así sobrevive a la compactación en tareas de horas.</li>
-        <li><strong>Subagentes:</strong> un subagente explora a fondo en su propia ventana limpia y devuelve solo un resumen condensado al agente principal.</li>
+        <li><strong>System prompt a la altura justa:</strong> ni una lista frágil de reglas "si pasa esto, hacé aquello" para cada caso raro, ni una guía vaga. Principios claros y criterios generales, organizados en secciones.</li>
+        <li><strong>Ejemplos típicos:</strong> en vez de 40 reglas, unos pocos ejemplos variados que muestren el comportamiento esperado.</li>
+        <li><strong>Herramientas eficientes:</strong> pocas, que no se pisen entre sí y que devuelvan resultados cortos. Con demasiadas herramientas parecidas, el modelo duda cuál usar.</li>
+        <li><strong>Recuperación "justo a tiempo":</strong> el agente guarda solo referencias livianas (la ruta de un archivo, un link) y carga el contenido con una herramienta cuando lo necesita, en lugar de cargar todo de entrada.</li>
+        <li><strong>Compactación:</strong> cuando la conversación se acerca al límite, se resume y se sigue en una conversación nueva con ese resumen. Una versión liviana es borrar los resultados viejos de herramientas que ya se usaron.</li>
+        <li><strong>Notas estructuradas:</strong> el agente escribe su progreso afuera del contexto (una lista de tareas, un archivo NOTES.md) y lo relee. Así no pierde el hilo en tareas de horas, aunque se compacte la conversación.</li>
+        <li><strong>Subagentes:</strong> el agente principal le encarga una búsqueda a otro agente, que trabaja en su propia conversación limpia y le devuelve solo un resumen. Como mandar a alguien a investigar y que te traiga una página, no toda la biblioteca.</li>
       </ul>
+      <p>El código es un esquema (no corre) de cómo un agente arma su contexto antes de cada llamada:</p>
+      <ol>
+        <li>Limpia lo viejo.</li>
+        <li>Si igual se pasa del límite, resume.</li>
+        <li>Siempre agrega las notas.</li>
+      </ol>
       <pre><code>LIMITE = 100_000
 def preparar_contexto(mensajes, notas):
     # 1) limpiar resultados de herramientas viejos (ya se usaron)
@@ -1404,13 +1416,15 @@ def preparar_contexto(mensajes, notas):
     return [{"role": "user", "content": "Notas: " + notas}] + mensajes</code></pre>
       <p>Regla práctica: antes de agregar algo al contexto, preguntate si un experto humano necesitaría eso para el próximo paso. Si no, va a una herramienta o a un archivo de notas.</p>` },
     { titulo: 'Prompts con documentos largos: orden, estructura, citas y "no sé"', html: `
-      <p>Analizar contratos, informes o historiales es de las tareas más comunes, y donde un buen prompt cambia más el resultado. La guía oficial de Claude recomienda, para entradas de más de unos 20.000 tokens:</p>
+      <p><strong>En pocas palabras:</strong> si le das a alguien un contrato de 50 páginas, rinde más si primero lo lee y después le hacés la pregunta, si cada documento está en su carpeta con nombre, si le pedís que te marque con resaltador dónde lo dice y si le aclarás que puede contestar "no figura". Con el modelo pasa exactamente lo mismo.</p>
+      <p>Analizar contratos, informes o historiales es de las tareas más comunes, y donde un buen prompt cambia más el resultado. La guía oficial de Claude recomienda, para textos de más de unos 20.000 tokens (unas 30 páginas):</p>
       <ol>
         <li><strong>Documentos arriba, pregunta al final.</strong> Poné los documentos largos al principio del prompt y las instrucciones y la pregunta después. En sus pruebas, la pregunta al final mejoró la calidad de las respuestas hasta un 30%, sobre todo con varios documentos complejos.</li>
-        <li><strong>Cada documento en sus etiquetas, con metadatos</strong> (fuente, fecha). Así el modelo distingue un documento de otro y puede decir de dónde sacó cada dato.</li>
+        <li><strong>Cada documento en sus etiquetas, con metadatos</strong> (datos sobre el documento, como la fuente o la fecha). Así el modelo distingue un documento de otro y puede decir de dónde sacó cada dato.</li>
         <li><strong>Primero las citas, después la tarea.</strong> Pedile que extraiga las partes relevantes textuales y que responda basándose solo en ellas. Lo enfoca en lo importante y te deja verificar.</li>
-        <li><strong>Permitile decir "no sé".</strong> Si la respuesta no está en los documentos, que lo diga en vez de completar con lo que "suena" bien. Es una de las formas más simples de reducir alucinaciones.</li>
+        <li><strong>Permitile decir "no sé".</strong> Si la respuesta no está en los documentos, que lo diga en vez de completar con lo que "suena" bien. Es una de las formas más simples de reducir alucinaciones (respuestas inventadas).</li>
       </ol>
+      <p>El ejemplo aplica las cuatro cosas. Las llaves, como <code>{CONTRATO}</code>, se reemplazan por el texto real.</p>
       <pre><code>&lt;documentos&gt;
   &lt;documento indice="1"&gt;
     &lt;fuente&gt;contrato_proveedor_2026.pdf&lt;/fuente&gt;
@@ -1426,15 +1440,17 @@ Primero copiá en &lt;citas&gt; las frases textuales de los documentos que hable
 penalidades por demora, indicando el número de documento.
 Después, usando solo esas citas, respondé: ¿qué pasa si el proveedor entrega 15 días tarde?
 Si los documentos no lo dicen, respondé "No figura en los documentos".</code></pre>
-      <p><strong>Verificá las citas en código:</strong> que cada cita aparezca textual en el documento es un chequeo barato y determinista. Si una cita no existe, la respuesta no está respaldada. Algunas APIs ofrecen esto de forma nativa, como la función de citas de Claude, que devuelve qué fragmento del documento respalda cada afirmación.</p>
-      <p>Todo esto se combina con lo que viste en RAG: si los documentos no entran o son muchos, primero recuperás los relevantes y después aplicás esta misma estructura.</p>` },
+      <p><strong>Verificá las citas en código:</strong> comprobar con un programa que cada cita aparezca textual en el documento (buscar el texto, como con Ctrl+F) es barato y <em>determinista</em>, o sea que da siempre el mismo resultado, sin depender de otra IA. Si una cita no existe, la respuesta no está respaldada. Algunas APIs ya lo traen hecho, como la función de citas de Claude, que devuelve qué fragmento del documento respalda cada afirmación.</p>
+      <p>Todo esto se combina con RAG, que vas a ver más adelante: si los documentos no entran o son muchos, primero buscás los relevantes y después aplicás esta misma estructura.</p>` },
     { titulo: 'Optimizar prompts con datos: DSPy y la mejora automática', html: `
-      <p>Si ya tenés evals, podés ir un paso más allá: dejar que un algoritmo pruebe instrucciones y ejemplos, y se quede con lo que mejor puntúa en tu métrica. <strong>DSPy</strong> es el framework más conocido para esto. Su lema es "programá, no escribas prompts".</p>
+      <p><strong>En pocas palabras:</strong> en vez de probar vos mil versiones del prompt a mano, le das a un programa tus casos de prueba y una forma de puntuar, y él prueba variantes y se queda con la que saca mejor nota. Es como un afinador automático: necesita saber qué nota es la correcta.</p>
+      <p>Si ya tenés evals (casos de prueba con una forma de medir, como en la lección 2), podés ir un paso más allá: dejar que un algoritmo pruebe instrucciones y ejemplos, y se quede con lo que mejor puntúa en tu <em>métrica</em> (el número que mide qué tan bien sale). <strong>DSPy</strong> es el <em>framework</em> (una librería que te da una forma de trabajar armada) más conocido para esto. Su lema es "programá, no escribas prompts". Tiene tres piezas:</p>
       <ul>
-        <li><strong>Signature:</strong> declarás qué entra y qué sale de la tarea. El framework arma el prompt.</li>
-        <li><strong>Módulo:</strong> la estrategia de ejecución: <code>dspy.Predict</code> (respuesta directa), <code>dspy.ChainOfThought</code> (razonamiento paso a paso) o <code>dspy.ReAct</code> (con herramientas).</li>
-        <li><strong>Optimizador:</strong> ajusta instrucciones y ejemplos few-shot contra tu métrica. Algunos: BootstrapFewShot, MIPROv2 y GEPA.</li>
+        <li><strong>Signature</strong> (firma): declarás qué entra y qué sale de la tarea, por ejemplo "entra un ticket, sale una categoría". DSPy escribe el prompt por vos.</li>
+        <li><strong>Módulo:</strong> cómo se resuelve. <code>dspy.Predict</code> responde directo, <code>dspy.ChainOfThought</code> razona paso a paso y <code>dspy.ReAct</code> usa herramientas.</li>
+        <li><strong>Optimizador:</strong> prueba variantes de las instrucciones y de los ejemplos few-shot, y se queda con las que mejor puntúan. Algunos: BootstrapFewShot, MIPROv2 y GEPA.</li>
       </ul>
+      <p>En el código, <code>metrica</code> devuelve verdadero si la categoría predicha es la correcta, y <code>compile</code> corre la optimización con los ejemplos de entrenamiento.</p>
       <pre><code>import dspy
 dspy.configure(lm=dspy.LM("proveedor/modelo"))
 
@@ -1453,15 +1469,16 @@ optimizado = dspy.BootstrapFewShot(metric=metrica).compile(programa, trainset=ej
       <p><strong>Lo que necesitás:</strong> una métrica que se pueda calcular y ejemplos etiquetados. Sin eso no hay nada que optimizar, y por eso las evals vienen primero.</p>
       <p><strong>Trampas:</strong></p>
       <ul>
-        <li><strong>Sobreajuste:</strong> el optimizador puede encontrar instrucciones que funcionan solo con tus ejemplos de entrenamiento. Medí siempre en un conjunto de validación que no vio.</li>
+        <li><strong>Sobreajuste</strong> (overfitting, como en Machine Learning clásico): el optimizador puede encontrar instrucciones que funcionan solo con tus ejemplos de entrenamiento. Medí siempre en un conjunto de validación que no vio.</li>
         <li><strong>Costo:</strong> la búsqueda hace muchas llamadas al modelo. Presupuestalas y empezá con un modelo barato.</li>
         <li><strong>Métrica pobre, resultado pobre:</strong> el optimizador maximiza exactamente lo que medís. Si la métrica no captura lo importante, vas a obtener un prompt que la satisface sin servir.</li>
       </ul>
       <p><strong>Cuándo conviene:</strong> tareas estables, con una métrica clara, donde ajustar el prompt a mano ya no mejora. Para un prototipo que cambia todos los días, todavía no.</p>` },
     { titulo: 'Controlar el formato y el estilo de la respuesta', html: `
+      <p><strong>En pocas palabras:</strong> "no pienses en un elefante rosa" hace que pienses en el elefante. Con los modelos pasa algo parecido: funciona mejor decirles qué hacer que qué no hacer, y explicarles el motivo. Esta lección son trucos para que la respuesta salga del largo, el tono y el formato que necesitás.</p>
       <p>Que la respuesta tenga el largo, el tono y el formato que tu producto necesita es uno de los pedidos más frecuentes. La guía de prompting de Claude da varias técnicas que funcionan:</p>
       <ol>
-        <li><strong>Decí qué hacer, no qué evitar.</strong> En lugar de "no uses Markdown", probá "respondé en párrafos de prosa continua". Una instrucción positiva le da al modelo un objetivo claro.</li>
+        <li><strong>Decí qué hacer, no qué evitar.</strong> En lugar de "no uses Markdown" (Markdown es el formato con asteriscos y numerales que se convierte en negritas, títulos y listas), probá "respondé en párrafos de prosa continua". Una instrucción positiva le da al modelo un objetivo claro.</li>
         <li><strong>Explicá el porqué.</strong> "Nunca uses puntos suspensivos" funciona peor que "tu respuesta la va a leer un sintetizador de voz, que no sabe pronunciar puntos suspensivos". Con el motivo, el modelo generaliza a casos que no previste.</li>
         <li><strong>Que tu prompt se parezca a la salida que querés.</strong> El estilo del prompt influye en el de la respuesta: un prompt lleno de viñetas tiende a producir viñetas.</li>
         <li><strong>Usá etiquetas para delimitar la salida</strong>, por ejemplo "escribí el resumen dentro de &lt;resumen&gt;", y extraelo con código.</li>
@@ -1474,7 +1491,7 @@ Más efectivo:
   Tu respuesta se muestra en una notificación del celular, donde el Markdown
   se ve como símbolos sueltos. Respondé en una o dos oraciones de texto plano,
   empezando directamente por la información.</code></pre>
-      <p><strong>Una técnica que cambió: el prefill.</strong> Durante años se usó escribir el comienzo de la respuesta del asistente (por ejemplo, abrir una llave para forzar JSON) para que el modelo siguiera desde ahí. Según la documentación de Claude, desde los modelos Claude 4.6, dejar una respuesta del asistente a medio escribir al final de la conversación ya no se admite. Las alternativas:</p>
+      <p><strong>Una técnica que cambió: el prefill</strong> (prellenado). Durante años se usó escribir uno mismo el comienzo de la respuesta del asistente (por ejemplo, abrir una llave para forzar JSON) para que el modelo siguiera desde ahí. Según la documentación de Claude, desde los modelos Claude 4.6, dejar una respuesta del asistente a medio escribir al final de la conversación ya no se admite. Las alternativas:</p>
       <ul>
         <li><strong>Para forzar un formato:</strong> salidas estructuradas.</li>
         <li><strong>Para evitar preámbulos</strong> como "Aquí está el resumen:": una instrucción directa en el system prompt, o pedir la salida dentro de etiquetas.</li>
@@ -1482,14 +1499,22 @@ Más efectivo:
       </ul>
       <p>Como siempre, comprobá el efecto con tus evals: un cambio de formato puede afectar también la calidad del contenido.</p>` },
     { titulo: 'Prompts para agentes: autonomía, alcance y verificación', html: `
-      <p>Un agente no solo responde: actúa. Su system prompt tiene que decirle cuánta iniciativa tomar, hasta dónde llegar y cómo comprobar lo que hace. La guía de prompting de Claude trae secciones específicas para sistemas agénticos; estas son las más útiles:</p>
+      <p><strong>En pocas palabras:</strong> a un empleado nuevo le decís qué puede hacer solo y qué tiene que consultarte antes, que no haga más de lo que le pediste y que revise su trabajo. Con un agente (un LLM que usa herramientas y actúa, como vimos en la lección 3) es igual, pero tenés que escribirlo explícitamente en su system prompt.</p>
+      <p>Un agente no solo responde: actúa. Su system prompt tiene que decirle cuánta iniciativa tomar, hasta dónde llegar y cómo comprobar lo que hace. La guía de prompting de Claude trae secciones específicas para <em>sistemas agénticos</em> (los que funcionan como agentes); estas son las más útiles:</p>
       <ul>
-        <li><strong>Autonomía según la reversibilidad:</strong> libertad para acciones locales y reversibles (editar un archivo, correr tests), y confirmación antes de lo difícil de revertir, lo que afecta sistemas compartidos o lo destructivo (borrar, forzar un push, mandar mensajes). Y nunca usar una acción destructiva como atajo ante un obstáculo, como saltear un chequeo de seguridad.</li>
-        <li><strong>Alcance acotado:</strong> sin guía, algunos modelos tienden a hacer de más: archivos extra, abstracciones o configurabilidad que nadie pidió. Pedí solo los cambios solicitados o claramente necesarios.</li>
-        <li><strong>Soluciones generales, no trampas:</strong> pedí que la solución funcione para cualquier entrada válida, sin valores fijos para pasar los tests, y que avise si un test está mal en lugar de esquivarlo.</li>
+        <li><strong>Autonomía según si se puede deshacer:</strong>
+          <ul>
+            <li>Libertad para lo local y reversible, que se deshace fácil: editar un archivo, correr los tests (las pruebas automáticas del código).</li>
+            <li>Confirmación antes de lo difícil de deshacer, lo que afecta a otros o lo destructivo: borrar, mandar mensajes, o forzar un <em>push</em> (pisar el código compartido en GitHub).</li>
+            <li>Nunca usar una acción destructiva como atajo ante un obstáculo, por ejemplo saltear un chequeo de seguridad para que algo funcione.</li>
+          </ul>
+        </li>
+        <li><strong>Alcance acotado:</strong> sin guía, algunos modelos tienden a hacer de más: archivos extra, estructuras "por si acaso" u opciones que nadie pidió. Pedí solo los cambios solicitados o claramente necesarios.</li>
+        <li><strong>Soluciones generales, no trampas:</strong> pedí que la solución funcione para cualquier dato válido, no con valores escritos a mano solo para que pasen las pruebas. Y que avise si una prueba está mal, en lugar de esquivarla.</li>
         <li><strong>Investigar antes de responder:</strong> que nunca especule sobre código o documentos que no abrió.</li>
-        <li><strong>Paralelismo:</strong> las llamadas a herramientas independientes van en paralelo (leer 3 archivos a la vez), y en secuencia solo cuando una necesita el resultado de otra. Nunca inventar parámetros que faltan.</li>
+        <li><strong>Paralelismo:</strong> las llamadas a herramientas que no dependen entre sí van a la vez (leer 3 archivos juntos), y una detrás de otra solo cuando una necesita el resultado de la anterior. Nunca inventar datos que faltan para llamar a una herramienta.</li>
       </ul>
+      <p>Así puede quedar esa parte del system prompt, separada en etiquetas:</p>
       <pre><code>&lt;autonomia&gt;
 Hacé sin preguntar lo local y reversible: leer, editar archivos, correr tests.
 Antes de borrar, publicar, enviar mensajes o tocar sistemas compartidos, pedí confirmación.
@@ -1502,7 +1527,7 @@ Hacé solo lo pedido o lo claramente necesario. Sin funciones, archivos ni abstr
 Leé los archivos antes de opinar sobre ellos. Resolvé el problema en general, no para los
 tests. Si un test parece incorrecto, avisame en lugar de esquivarlo.
 &lt;/verificacion&gt;</code></pre>
-      <p><strong>Un límite que ya viste:</strong> estas instrucciones se cumplen casi siempre, pero no siempre. Lo que no admite excepciones (no borrar producción, no mandar datos afuera) va además en controles deterministas: permisos, hooks o confirmaciones fuera del modelo.</p>` },
+      <p><strong>Un límite importante:</strong> estas instrucciones se cumplen casi siempre, pero no siempre. Lo que no admite excepciones (no borrar los datos reales del sistema, no mandar datos afuera) va además en controles que no dependen del modelo: permisos, <em>hooks</em> (código que se ejecuta automáticamente antes de cada acción y puede bloquearla) o confirmaciones de una persona.</p>` },
   ],
   practica: [
     'Elegí una tarea real (resumir mails, clasificar gastos). Escribí 20 casos de prueba con la respuesta esperada y medí 3 versiones de prompt.',
