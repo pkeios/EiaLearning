@@ -205,10 +205,11 @@ function mision(i) {
       aviso.textContent = '🛠️ Completá la actividad para poder seguir.';
       montarTaller(s.taller, app.querySelector('#actividad'), () => { logro(s.taller); seguir.disabled = false; aviso.className = 'aviso bien'; aviso.textContent = '✅ ¡Actividad completa! Ya podés seguir.'; });
     }
-    app.querySelectorAll('.opcion').forEach(b => b.onclick = () => {
+    // Solo los botones de la pregunta y los chips de clasificar: las actividades del taller usan las mismas clases.
+    app.querySelectorAll('.opcion[data-j]').forEach(b => b.onclick = () => {
       if (Number(b.dataset.j) === s.c) {
         b.classList.add('bien');
-        app.querySelectorAll('.opcion').forEach(x => x.disabled = true);
+        app.querySelectorAll('.opcion[data-j]').forEach(x => x.disabled = true);
         aviso.className = 'aviso bien'; aviso.textContent = '🎉 ¡Bien! ' + s.e;
         listo();
       } else {
@@ -218,7 +219,7 @@ function mision(i) {
       }
     });
     let faltan = s.items?.length || 0;
-    app.querySelectorAll('.chip').forEach(chip => chip.querySelectorAll('button').forEach(b => b.onclick = () => {
+    app.querySelectorAll('.chips > .chip[data-k]').forEach(chip => chip.querySelectorAll('button').forEach(b => b.onclick = () => {
       const bien = Number(b.dataset.g) === s.items[chip.dataset.k][1];
       chip.classList.remove('mal'); void chip.offsetWidth;
       chip.classList.add(bien ? 'bien' : 'mal');

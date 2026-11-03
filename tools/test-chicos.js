@@ -71,4 +71,6 @@ assert.equal(X.expandir([R, '×4', D, '×4']).length, 8);
 assert.deepStrictEqual(X.expandir(['×3']), []);
 X.MAX_BLOQUES.forEach((m, n) => { if (m) assert(X.correrRobot(X.NIVELES[n], X.expandir([R, '×4', D, '×4'])).fin === 'estrella' && 4 <= m); });
 assert.equal(X.MAX_BLOQUES.length, X.NIVELES.length);
+// Las misiones no pueden enganchar los botones del taller (los dos usan .opcion y .chip): solo los de la pregunta
+assert(!h.includes("app.querySelectorAll('.opcion')") && !h.includes("app.querySelectorAll('.chip')") && h.includes("app.querySelectorAll('.opcion[data-j]')"));
 console.log('test-chicos OK');
