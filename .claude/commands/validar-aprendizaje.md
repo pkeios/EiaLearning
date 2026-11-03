@@ -29,7 +29,7 @@ Las 6 estrategias de The Learning Scientists (https://www.learningscientists.org
 ## 2. Mejorar (una sola cosa, la de mayor impacto)
 Elegí la falla que más afecte el aprendizaje. Prioridad: retroalimentación y práctica de recuperación primero, después ejemplos y visuales, después el resto. Mejoras válidas:
 - **Reescribir explicaciones** flojas de 5 preguntas para que digan por qué falla la trampa más tentadora. La explicación se puede cambiar; el texto de la pregunta y las opciones **no** (son la clave del progreso del alumno).
-- **Agregar 5 preguntas de aplicación** (casos, decisiones, "¿qué hacés si...?") al final de `quiz`, repartiendo la posición de la correcta según el conteo del validador.
+- **Agregar 5 preguntas de aplicación** (casos, decisiones, "¿qué hacés si...?") al final de `quiz`, repartiendo la posición de la correcta según el conteo del validador. **Solo sobre lo que enseñan las lecciones de ese módulo o de módulos anteriores:** antes de escribir cada pregunta, buscá en esas lecciones los conceptos de la respuesta correcta; si falta alguno, primero agregalo a una lección. El alumno no tiene que necesitar ayuda externa para aprobar.
 - **Agregar a una lección** un ejemplo concreto, una tabla o un diagrama en texto (dentro de `<pre><code>`), o un párrafo que la conecte con otro módulo. El título de la lección no se cambia.
 - **Partir una lección demasiado larga**: dejá la original más corta y agregá la segunda parte como lección nueva **al final** del módulo.
 - **Reescribir objetivos** vagos ("entender X") como verificables ("elegir entre X e Y según...").

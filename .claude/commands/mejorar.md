@@ -16,7 +16,7 @@ Sos el editor jefe del curso de AI Engineering de este repo. El contenido está 
 
 ## 3. Agregar al módulo
 - **1 lección nueva** (300-600 palabras) en HTML simple (`<p>`, `<ul>`, `<ol>`, `<strong>`, `<code>`, `<pre><code>`), con un ejemplo concreto o código. Que cubra un hueco real, no repita otra lección.
-- **5 preguntas nuevas** de nivel examen: 4 opciones plausibles, una correcta, `explicacion` que diga por qué es la correcta y por qué falla la trampa más tentadora. Que obliguen a razonar (escenarios, "¿qué hacés si...?"), no solo a memorizar. Repartí la posición de la correcta (mirá el conteo que imprime el validador y compensá).
+- **5 preguntas nuevas** de nivel examen: 4 opciones plausibles, una correcta, `explicacion` que diga por qué es la correcta y por qué falla la trampa más tentadora. Que obliguen a razonar (escenarios, "¿qué hacés si...?"), no solo a memorizar. Repartí la posición de la correcta (mirá el conteo que imprime el validador y compensá). **Solo sobre lo que enseñan las lecciones de ese módulo o de módulos anteriores:** antes de escribir cada pregunta, buscá en esas lecciones los conceptos de la respuesta correcta; si falta alguno, primero agregalo a una lección. El alumno no tiene que necesitar ayuda externa para aprobar.
 - **1 ejercicio práctico** en `practica`, accionable y con un resultado verificable.
 - Si un objetivo nuevo queda cubierto, agregalo a `objetivos`.
 - Si la lección introduce términos clave que no están en `public/glosario.js`, agregalos como `{ t, d, m }`: el término, una definición de una o dos oraciones y el id del módulo.

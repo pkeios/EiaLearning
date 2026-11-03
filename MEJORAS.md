@@ -163,3 +163,4 @@ Lo completa el comando `/mejorar`. Una línea por ejecución.
 - 2026-11-02 · app · versión para chicos: nivel 4 del robot que enseña bucles con bloques de repetición
 - 2026-11-02 · llms · metodología: 6 preguntas nuevas de casos
 - 2026-11-02 · fundamentos · metodología: 7 preguntas nuevas que aplican fundamentos a casos
+- 2026-11-02 · fundamentos, ml-clasico, llms · metodología: las lecciones ahora enseñan lo que piden 7 preguntas del quiz (429 y backoff, comparación pareada, cambio de distribución, error por segmento, elegir k, context rot, benchmarks contaminados); regla nueva: no preguntar lo que las lecciones no enseñan

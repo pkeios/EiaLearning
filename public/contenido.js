@@ -66,6 +66,7 @@ perplexity = np.exp(entropia_cruzada)            # ≈ 2,0</code></pre>
         <li><strong><code>asyncio.gather</code>:</strong> lanza muchas tareas a la vez y junta los resultados en el mismo orden.</li>
         <li><strong><code>asyncio.Semaphore</code>:</strong> limita cuántas corren al mismo tiempo, para no chocar con los rate limits del proveedor.</li>
         <li><strong><code>return_exceptions=True</code>:</strong> hace que una llamada que falla no tire abajo las otras 499. Después reintentás solo las fallidas.</li>
+        <li><strong>Error 429 (demasiados pedidos):</strong> el proveedor te avisa que pasaste tu límite. No reintentes al instante: esperá 1 segundo, después 2, después 4 (<strong>backoff exponencial</strong>), así no volvés a chocar con el mismo límite.</li>
       </ul>
       <pre><code>import asyncio
 from anthropic import AsyncAnthropic
@@ -102,7 +103,8 @@ fallidos = [t for t, r in zip(textos, resultados) if isinstance(r, Exception)]</
 lat = np.array(latencias_ms)
 print("promedio", lat.mean())
 print("p50, p95, p99", np.percentile(lat, [50, 95, 99]))</code></pre>
-      <p><strong>4. Tamaño de muestra: pocos casos, mucho ruido.</strong> Con 10 casos, cada uno mueve la nota 10 puntos. Un 90% con 10 casos y un 90% con 500 no significan lo mismo. Ya lo viste en el módulo de evals con el error estándar: antes de celebrar una mejora, mirá cuántos casos la respaldan.</p>` },
+      <p><strong>4. Tamaño de muestra: pocos casos, mucho ruido.</strong> Con 10 casos, cada uno mueve la nota 10 puntos. Un 90% con 10 casos y un 90% con 500 no significan lo mismo. Antes de celebrar una mejora, mirá cuántos casos la respaldan (en el módulo de evals vas a ver cómo calcular ese margen).</p>
+      <p><strong>Comparar dos versiones:</strong> si A acierta 82% y B 85% sobre 40 casos distintos cada una, esos 3 puntos pueden ser pura suerte. Corré las dos sobre <strong>los mismos casos</strong> (<strong>comparación pareada</strong>): así la diferencia viene de la versión y no de que a una le tocaron casos más fáciles. Si igual es chica, sumá casos.</p>` },
     { titulo: 'Formas y broadcasting: la fuente de bugs más común', html: `
       <p>En NumPy y PyTorch, casi todos los errores raros vienen de la <strong>forma</strong> (shape) de los arrays. Y los peores no dan error: producen números equivocados en silencio.</p>
       <p><strong>Convenciones y reglas básicas:</strong></p>
@@ -236,7 +238,9 @@ print(modelo.score(X_te, y_te))</code></pre>` },
         <li><strong>F1</strong>: media armónica de ambas.</li>
       </ul>
       <p>Con clases desbalanceadas, la accuracy engaña: si el 99% de los casos son negativos, un modelo que siempre dice "negativo" tiene 99% de accuracy y no sirve para nada.</p>
-      <p><strong>Data leakage:</strong> información que no tendrías en producción se cuela en el entrenamiento (por ejemplo, normalizar usando estadísticas del dataset completo antes de separar test). Da resultados irrealmente buenos.</p>` },
+      <p><strong>Data leakage:</strong> información que no tendrías en producción se cuela en el entrenamiento (por ejemplo, normalizar usando estadísticas del dataset completo antes de separar test). Da resultados irrealmente buenos.</p>
+      <p><strong>Cambio de distribución:</strong> un modelo solo sabe lo que vio. Si lo entrenaste con casas de una ciudad y lo usás en otra, con otros precios y zonas, va a fallar aunque el código esté perfecto. Necesitás datos de la nueva región (o un modelo por región).</p>
+      <p><strong>El promedio esconde segmentos:</strong> un modelo de demanda con error bajo en promedio puede fallar justo en feriados y promociones, que son pocos días pero los más importantes. Medí el error por segmento y agregá features que los representen (por ejemplo, <code>es_feriado</code>). Sacar esos días del dataset mejora el número, no el modelo.</p>` },
     { titulo: 'Árboles, ensembles y pipelines: lo que gana en datos tabulares', html: `
       <p>Aunque los LLMs dominan el texto, en <strong>datos tabulares</strong> (planillas, bases de datos de clientes, transacciones) los modelos basados en árboles siguen siendo la primera opción: un estudio de 2022 mostró que superan a las redes neuronales en la mayoría de los benchmarks tabulares de tamaño medio.</p>
       <ul>
@@ -299,6 +303,7 @@ def clasificar(texto):
         <li><strong>Embeddings</strong> de cada texto.</li>
         <li><strong>Reducir dimensiones</strong> (opcional): con PCA a unas 50 dimensiones para bajar ruido y costo, conservando la mayor parte de la varianza.</li>
         <li><strong>Clustering:</strong> k-means si sabés cuántos grupos querés (asume grupos más o menos esféricos); HDBSCAN si no lo sabés: encuentra grupos por densidad y marca como ruido lo que no encaja en ninguno.</li>
+        <li><strong>Elegir k en k-means:</strong> k-means no lo elige solo. Probás varios valores (por ejemplo, de 2 a 10), mirás el <strong>silhouette</strong> (de −1 a 1: qué tan cerca está cada punto de su grupo comparado con el grupo vecino; más alto es mejor) y, sobre todo, si los grupos tienen sentido para lo que vas a hacer con ellos.</li>
         <li><strong>Nombrar cada grupo:</strong> pasale a un LLM 15 ejemplos del cluster y pedile un nombre corto. BERTopic automatiza este flujo.</li>
       </ol>
       <pre><code>from sklearn.decomposition import PCA
@@ -663,6 +668,8 @@ opt = torch.optim.AdamW([
         <li><strong>Razonamiento:</strong> modelos entrenados (a menudo con RL) para "pensar" antes de responder; mejoran en matemáticas, código y tareas de varios pasos a cambio de más tokens y latencia.</li>
       </ol>
       <p><strong>Ventana de contexto:</strong> máximo de tokens (entrada + salida) que el modelo procesa a la vez. Fuera de ahí, no existe para el modelo.</p>
+      <p><strong>Que entre no significa que lo use bien:</strong> con muchísimo contexto (por ejemplo, un manual de 180.000 tokens en cada llamada), el modelo usa peor la información, se dispersa u olvida instrucciones (se le dice <em>context rot</em>). Mandá solo las partes relevantes para cada pregunta: eso es lo que hace RAG, que vas a ver más adelante.</p>
+      <p><strong>Benchmarks:</strong> los proveedores publican puntajes en pruebas públicas (MMLU, SWE-bench...). Sirven de orientación, pero miden tareas genéricas y pueden estar <strong>contaminados</strong>: si las preguntas aparecieron en los datos de entrenamiento, el modelo las recuerda en lugar de razonarlas. Para elegir, compará los modelos con tus propios casos, mirando también costo y latencia.</p>
       <p><strong>Muestreo:</strong> <em>temperatura</em> baja = más determinista; alta = más variado. <em>Top-p</em> limita la elección a los tokens que acumulan probabilidad p. Ojo: no todas las APIs los exponen. En la API de Claude, la versión 2026-10-21 eliminó <code>temperature</code>, <code>top_p</code> y <code>top_k</code> (devuelven error 400) y el comportamiento se guía con el prompt. Siguen existiendo en muchos otros proveedores y en modelos abiertos.</p>
       <p><strong>Alucinaciones:</strong> el modelo genera texto plausible, no necesariamente verdadero. Se mitiga dando contexto (RAG), pidiendo citas, permitiendo "no sé" y evaluando.</p>
       <p><strong>Leyes de escalado:</strong> el rendimiento mejora de forma predecible con más parámetros, datos y cómputo, y también con más cómputo en inferencia (pensar más).</p>` },
