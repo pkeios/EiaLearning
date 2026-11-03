@@ -3759,6 +3759,7 @@ WER = 2 / 6 ≈ 33%</code></pre>
   ],
   lecciones: [
     { titulo: 'La ruta de proyectos', html: `
+      <p><strong>En pocas palabras:</strong> se aprende haciendo. Esta es una escalera de cinco proyectos, del más simple al más completo, que juntan todo el curso. Lo que hace brillar un proyecto no es que sea grande, sino que muestre con números qué probaste, qué decidiste y en qué todavía falla.</p>
       <ol>
         <li><strong>Chatbot de terminal</strong> con historial, streaming, costo por turno y manejo de errores.</li>
         <li><strong>RAG sobre tus apuntes</strong> con citas, búsqueda híbrida y evals de retrieval (recall@k).</li>
@@ -3766,7 +3767,7 @@ WER = 2 / 6 ≈ 33%</code></pre>
         <li><strong>Sistema de evals</strong>: dataset dorado, juez calibrado contra humanos, ejecución en CI.</li>
         <li><strong>Desplegado de punta a punta</strong>: backend, observabilidad, routing de modelos, defensas contra prompt injection y un informe de costo/latencia.</li>
       </ol>
-      <p><strong>Qué hace destacar un proyecto:</strong> un README que explique el problema, las decisiones y sus alternativas, métricas de evaluación con números reales, una demo que funcione y lo que aprendiste de los fallos.</p>
+      <p><strong>Qué hace destacar un proyecto:</strong> un README (el archivo de presentación que se ve primero en GitHub) que explique el problema, las decisiones y sus alternativas, métricas de evaluación con números reales, una demo que funcione y lo que aprendiste de los fallos.</p>
       <p><strong>Ejemplo:</strong> el corazón del README del proyecto 2 podría verse así (los números son ilustrativos; los tuyos salen de tus evals):</p>
       <pre><code>## Resultados (50 preguntas con respuesta esperada)
 | versión                     | recall@5 | exactitud | costo/consulta | p95    |
@@ -3783,11 +3784,12 @@ Descarté fine-tuning: el error principal era de búsqueda (recall), no de redac
 Preguntas que combinan dos documentos: 6 de 8 fallan. Próximo paso: descomponer la consulta.</code></pre>
       <p>Fijate que cada fila cambia <strong>una sola cosa</strong>, que la decisión se justifica con números y que los fallos se muestran en vez de esconderse. Es lo mismo que practicaste en el módulo de evals, aplicado a contar tu trabajo.</p>` },
     { titulo: 'Diseñar un sistema de IA de punta a punta (y la entrevista de system design)', html: `
-      <p>Las entrevistas de AI engineering ya no piden solo sistemas distribuidos clásicos: te dan una consigna como "diseñá un chatbot RAG de soporte" o "un agente que procese reclamos de seguros controlando el costo de tokens" y tenés unos 60 minutos. El mismo método sirve para tus proyectos reales.</p>
+      <p><strong>En pocas palabras:</strong> antes de construir una casa, el arquitecto pregunta para cuántas personas es, cuánta plata hay y qué no puede fallar. Después hace un plano simple y lo va mejorando. Diseñar un sistema de IA es igual, y en las entrevistas de trabajo te piden justamente eso, en voz alta y con números.</p>
+      <p>En las entrevistas de <em>system design</em> (diseño de sistemas) para AI engineering ya no te piden solo los sistemas clásicos de servidores: te dan una consigna como "diseñá un chatbot RAG de soporte" o "un agente que procese reclamos de seguros controlando el costo de tokens" y tenés unos 60 minutos. El mismo método sirve para tus proyectos reales.</p>
       <ol>
-        <li><strong>Aclarar requisitos antes de dibujar nada:</strong> quién lo usa, volumen (consultas por día o QPS), latencia aceptable, presupuesto, qué es una respuesta "correcta" y qué pasa si se equivoca (riesgo).</li>
+        <li><strong>Aclarar requisitos antes de dibujar nada:</strong> quién lo usa, volumen (consultas por día, o QPS: consultas por segundo), latencia aceptable, presupuesto, qué es una respuesta "correcta" y qué pasa si se equivoca (riesgo).</li>
         <li><strong>Línea base simple:</strong> una llamada al modelo con buen prompt. Todo lo demás se justifica contra esto.</li>
-        <li><strong>Arquitectura:</strong> datos e ingestión, retrieval (híbrido + reranker), elección de modelo, herramientas, y dónde va la lógica determinista (código) vs la del modelo.</li>
+        <li><strong>Arquitectura</strong> (las piezas y cómo se conectan): de dónde salen los datos, cómo se busca (híbrido + reranker), qué modelo, qué herramientas, y qué decide el código (lo que tiene que dar siempre igual) y qué decide el modelo.</li>
         <li><strong>Evals:</strong> cómo sabrías que funciona: dataset con casos reales, métrica por modo de fallo, monitoreo en producción.</li>
         <li><strong>Costo y latencia con números:</strong> un cálculo rápido en la pizarra vale más que adjetivos.</li>
         <li><strong>Guardrails y seguridad:</strong> prompt injection, permisos, humano en el bucle, datos personales.</li>
@@ -3798,15 +3800,22 @@ Preguntas que combinan dos documentos: 6 de 8 fallan. Próximo paso: descomponer
 100.000 consultas/día ×   300 tokens salida  =  30M tokens →  30 × 15 = 450 USD/día
 Total ≈ 1.350 USD/día ≈ 40.500 USD/mes</code></pre>
       <p>Con ese número sobre la mesa aparecen las palancas obvias: si 2.000 de esos 3.000 tokens son un system prompt fijo, el <strong>prompt caching</strong> los abarata mucho; si el 70% de las consultas son simples, el <strong>routing</strong> a un modelo chico baja el costo; si hay preguntas repetidas, una cache de respuestas. Y cada palanca se valida con evals.</p>
-      <p><strong>Señales de nivel senior:</strong> preguntar antes de proponer, empezar simple, tratar costo y guardrails como restricciones de diseño (no como un agregado final), y decir explícitamente qué medirías y qué harías si la métrica sale mal.</p>` },
+      <p><strong>Señales de nivel senior</strong> (de alguien con experiencia): preguntar antes de proponer, empezar simple, tratar costo y guardrails como restricciones de diseño (no como un agregado final), y decir explícitamente qué medirías y qué harías si la métrica sale mal.</p>` },
     { titulo: 'Cómo aprender más rápido que el resto', html: `
+      <p><strong>En pocas palabras:</strong> releer y subrayar da la sensación de que aprendiste, pero se olvida rápido. Lo que funciona es tratar de recordar sin mirar (como en un quiz), volver a repasar a los pocos días y construir cosas. Esta lección te muestra cómo organizar una semana así.</p>
       <ul>
         <li><strong>Construí más de lo que leés.</strong> Por cada hora de teoría, dos de práctica.</li>
-        <li><strong>Técnica Feynman:</strong> explicá cada concepto con palabras simples (el cuadro de cada módulo). Donde te trabás, hay un hueco.</li>
-        <li><strong>Recuerdo activo y repetición espaciada:</strong> hacer quizzes y repasar lo fallado a intervalos crecientes rinde mucho más que releer. Usá la sección Repaso de este sitio.</li>
-        <li><strong>Papers:</strong> leé abstract, figuras y conclusiones; reproducí una parte en código. Entender un paper = poder implementarlo.</li>
-        <li><strong>Construí en público:</strong> blog, GitHub, posts. Enseñar consolida y te conecta con gente mejor que vos.</li>
-        <li><strong>Mantenete al día:</strong> changelogs de los proveedores, arXiv, blogs de ingeniería de los labs. Probá cada novedad relevante en un proyecto chico ese mismo día.</li>
+        <li><strong>Técnica Feynman</strong> (por el físico Richard Feynman): explicá cada concepto con palabras simples, como en el cuadro "Explicalo con tus palabras" de cada módulo. Donde te trabás, hay algo que no entendiste.</li>
+        <li><strong>Recuerdo activo y repetición espaciada:</strong> tratar de recordar (con quizzes) y repasar lo que fallaste cada vez más espaciado (a 1, 3, 7 días) rinde mucho más que releer. Usá la sección Repaso de este sitio.</li>
+        <li><strong>Papers:</strong> leé el resumen (<em>abstract</em>), las figuras y las conclusiones, y reproducí una parte en código. Entender un paper es poder programarlo. Lección 6.</li>
+        <li><strong>Construí en público:</strong> blog, GitHub, publicaciones. Enseñar afianza lo aprendido y te conecta con gente que sabe más que vos.</li>
+        <li><strong>Mantenete al día:</strong>
+          <ul>
+            <li>Los <em>changelogs</em> de los proveedores (sus listas de novedades).</li>
+            <li><em>arXiv</em>, el sitio donde se publican los papers de IA.</li>
+            <li>Los blogs de ingeniería de las empresas de IA.</li>
+          </ul>
+          Probá cada novedad importante en un proyecto chico ese mismo día.</li>
       </ul>
       <p><strong>Por qué funciona:</strong> una revisión de diez técnicas de estudio (Dunlosky y otros, 2013) calificó como de alta utilidad solo dos: <strong>practicar con preguntas</strong> y <strong>espaciar el estudio</strong>. Releer y subrayar, que son lo que más hace la gente, quedaron como de baja utilidad: dan sensación de saber porque reconocés el texto, pero no te obligan a recordarlo.</p>
       <p><strong>Ejemplo de una semana aplicando esto</strong> (unas 6 horas):</p>
@@ -3819,15 +3828,16 @@ sábado     quiz del módulo de la semana pasada, sin releer (15 min)  ← espac
 domingo    descanso</code></pre>
       <p>Lo importante no son los horarios sino el patrón: <strong>primero intentás recordar, después mirás</strong>, y volvés a lo de días anteriores en vez de solo avanzar. La página "Qué estudiar hoy" de este sitio te arma esa lista sola.</p>` },
     { titulo: 'Programar con agentes de código (sin engañarte)', html: `
-      <p>Un AI engineer pasa buena parte del día trabajando con agentes de código como Claude Code. Antes del método, un dato para no confiar en la sensación: en un ensayo controlado de METR (16 desarrolladores experimentados, 246 tareas en sus propios proyectos, herramientas de principios de 2025), con IA tardaron <strong>19% más</strong>, aunque después creían haber ido un 20% más rápido. Las herramientas mejoran rápido, pero la lección queda: <strong>medí, no supongas</strong>.</p>
+      <p><strong>En pocas palabras:</strong> un agente de código es como un programador muy rápido que recién entra al equipo. Rinde mucho si le contás lo que no puede adivinar, le pedís algo concreto y le das una forma de comprobar si lo hizo bien. Si no, entrega algo que <em>parece</em> terminado. Y ojo: sentir que vas más rápido no es lo mismo que ir más rápido.</p>
+      <p>Un AI engineer pasa buena parte del día trabajando con agentes de código como Claude Code. Antes del método, un dato para no confiar en la sensación. En un experimento controlado de METR (una organización que evalúa IA) (16 desarrolladores experimentados, 246 tareas en sus propios proyectos, herramientas de principios de 2025), con IA tardaron <strong>19% más</strong>, aunque después creían haber ido un 20% más rápido. Las herramientas mejoran rápido, pero la lección queda: <strong>medí, no supongas</strong>.</p>
       <p><strong>Lo que más rinde, según la guía oficial de Claude Code:</strong></p>
       <ul>
-        <li><strong>Decile lo que no puede ver.</strong> El agente lee muy bien el código, pero no sabe del deploy que está en la cabeza de alguien ni de la variable de entorno que piden los tests. Eso va en un <code>CLAUDE.md</code> corto, con los comandos exactos para correr tests y typecheck, y las trampas del entorno. Lo que el agente puede descubrir solo no se escribe ahí.</li>
+        <li><strong>Decile lo que no puede ver.</strong> El agente lee muy bien el código, pero no sabe del deploy que está en la cabeza de alguien ni de la variable de entorno que piden los tests. Eso va en un <code>CLAUDE.md</code> corto (un archivo de instrucciones que el agente lee al empezar). Ahí van los comandos exactos para correr los tests y el <em>typecheck</em> (el chequeo de que los tipos de datos del código cuadran), y las trampas del entorno. Lo que el agente puede descubrir solo no se escribe ahí.</li>
         <li><strong>Prompt específico.</strong> No "arreglá el bug del login", sino "los usuarios reportan que el login falla cuando expira la sesión; mirá el refresh de tokens en src/auth/, escribí un test que lo reproduzca y después arreglalo".</li>
         <li><strong>Dale un chequeo que pueda correr.</strong> Sin tests, el agente se detiene cuando el trabajo <em>parece</em> terminado, y vos terminás siendo el test. Con tests, cierra el ciclo solo: cambia, corre, lee el error, corrige. Pedile <strong>evidencia</strong>: el comando que corrió y su salida.</li>
-        <li><strong>Spec primero:</strong> para algo grande, armá un SPEC.md con el agente y construí desde una sesión nueva con esa definición de "terminado".</li>
-        <li><strong>Revisión de alguien que no lo escribió:</strong> otro agente o una persona que no vio la conversación encuentra lo que el autor no ve. Pedile que revise contra la spec y que ignore el estilo, o vas a terminar con abstracciones de más.</li>
-        <li><strong>Reglas sin excepción, en controles deterministas.</strong> Si "nunca commitear sin typecheck" se ignora aunque esté en CLAUDE.md con mayúsculas, no sumes énfasis: convertilo en un hook o en CI que bloquee.</li>
+        <li><strong>Spec primero:</strong> una <em>spec</em> (especificación) es la descripción escrita de qué tiene que hacer el programa. Para algo grande, armá un SPEC.md con el agente y después construí desde una sesión nueva, con esa definición de "terminado".</li>
+        <li><strong>Revisión de alguien que no lo escribió:</strong> otro agente, o una persona que no vio la conversación, encuentra lo que el autor no ve. Pedile que revise contra la spec y que no se fije en el estilo, o vas a terminar con complicaciones de más.</li>
+        <li><strong>Reglas sin excepción, en controles automáticos.</strong> Supongamos que la regla "nunca guardar cambios (<em>commitear</em>) sin pasar el typecheck" se ignora, aunque esté en CLAUDE.md con mayúsculas. No le sumes más énfasis: convertila en un hook o en un paso de la CI que bloquee el cambio.</li>
       </ul>
       <pre><code># CLAUDE.md (corto: solo lo que el agente no puede ver)
 # Comandos
@@ -3838,7 +3848,8 @@ domingo    descanso</code></pre>
 - El progreso del alumno se guarda por texto de pregunta: no lo cambies</code></pre>
       <p>Este mismo sitio se construye así: <code>/mejorar</code> y <code>/evolucionar</code> le dan instrucciones al agente, y <code>validar.js</code> y <code>test-app.js</code> son los chequeos que corre antes de publicar, también en CI.</p>` },
     { titulo: 'Proyecto guiado: un asistente RAG evaluado en un fin de semana', html: `
-      <p>Este proyecto junta casi todo el curso en algo que podés mostrar. La regla de oro: <strong>cada versión se mide</strong> y se anota en una tabla.</p>
+      <p><strong>En pocas palabras:</strong> vas a armar un asistente que responde preguntas sobre tus documentos, citando de dónde sacó cada dato. El primer día lo construís con un examen ya preparado. El segundo lo mejorás de a un paso, anotando la nota de cada versión en una tabla. Al final tenés algo real para mostrar.</p>
+      <p>Este proyecto junta casi todo el curso en algo que podés mostrar. La regla de oro: <strong>cada versión se mide</strong> y se anota en una tabla. Así quedan organizadas las carpetas:</p>
       <pre><code>asistente-rag/
   datos/                    # documentos fuente (manuales, apuntes, políticas)
   evals/preguntas.jsonl     # {"pregunta": ..., "respuesta": ..., "fuente": ...}
@@ -3869,7 +3880,8 @@ domingo    descanso</code></pre>
 | + reranker         |   0,93   |   0,87    |     0,97      |   0/5   |    1,60     |</code></pre>
       <p>Los números del ejemplo son ilustrativos; los tuyos van a ser otros. Lo que importa es que cualquiera que lea el README pueda ver qué probaste, qué funcionó, cuánto cuesta y dónde falla. Eso es lo que distingue a un AI engineer de alguien que armó un demo.</p>` },
     { titulo: 'Leer papers sin ahogarse: el método de las tres pasadas', html: `
-      <p>Salen decenas de papers de IA por día. No se trata de leerlos todos, sino de filtrar rápido y entender a fondo los pocos que importan. Un método clásico es el de las tres pasadas, de S. Keshav ("How to Read a Paper").</p>
+      <p><strong>En pocas palabras:</strong> un paper se lee como se elige un libro en una librería. Primero mirás la tapa y la contratapa (5 minutos) y decidís si te interesa. Si sí, lo leés con cuidado pero salteando lo más difícil. Y solo si es muy importante para vos, lo estudiás a fondo rehaciéndolo.</p>
+      <p>Un <em>paper</em> es un artículo de investigación. Salen decenas de papers de IA por día. No se trata de leerlos todos, sino de filtrar rápido y entender a fondo los pocos que importan. Un método clásico es el de las tres pasadas, de S. Keshav ("How to Read a Paper").</p>
       <ol>
         <li><strong>Primera pasada (5 a 10 minutos):</strong> título, resumen, introducción, títulos de secciones, conclusiones y figuras. Al terminar tenés que poder responder las <strong>cinco C</strong>: categoría (qué tipo de paper es), contexto (con qué trabajos se relaciona), correctitud (si los supuestos parecen válidos), contribuciones (qué aporta) y claridad (si está bien escrito). Con eso decidís si seguís.</li>
         <li><strong>Segunda pasada (hasta una hora):</strong> leés con cuidado, salteando las demostraciones. Mirás bien figuras y tablas: qué miden los ejes, contra qué se compara, en qué datos. Anotás las referencias que te faltan.</li>
@@ -3891,6 +3903,7 @@ Dudas y supuestos:
 ¿Lo aplicaría? Dónde, y cómo lo mediría:</code></pre>
       <p><strong>Una rutina que se sostiene:</strong> un paper por semana con esta plantilla en tus apuntes, y un experimento chico por mes para reproducir algo. Es mucho más valioso que leer veinte resúmenes por semana sin quedarte con nada.</p>` },
     { titulo: 'Proyecto guiado 2: un agente con herramientas, seguro y evaluado', html: `
+      <p><strong>En pocas palabras:</strong> vas a armar un agente de atención al cliente que consulta pedidos y puede devolver plata. Como puede hacer daño, lleva límites: un tope de monto, la aprobación de una persona y pruebas de ataque. Igual que en el primer proyecto, cada versión se mide y se anota.</p>
       <p>El segundo proyecto junta los módulos de agentes, evals, seguridad y producción: un agente de soporte que consulta pedidos y puede pedir reembolsos. La regla es la misma que en el primero: <strong>cada versión se mide</strong>.</p>
       <pre><code>agente-soporte/
   herramientas/          # buscar_pedido, estado_envio, crear_reembolso
