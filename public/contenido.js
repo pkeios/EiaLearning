@@ -117,6 +117,7 @@ entrada = 50_000 * 1_000 / 1e6 * 3     # 150 USD
 salida  = 50_000 * 200   / 1e6 * 15    # 150 USD: pocos tokens, pero 5 veces más caros</code></pre>
       <p><strong>3. Percentiles: el promedio esconde lo que molesta.</strong> Una latencia promedio de 800 ms puede ocultar que una de cada veinte respuestas tarda 8 segundos. Medí la mediana (p50), el p95 y el p99.</p>
       <pre><code>import numpy as np
+latencias_ms = np.random.default_rng(0).lognormal(6.5, 0.6, 1000)   # 1000 latencias inventadas
 lat = np.array(latencias_ms)
 print("promedio", lat.mean())
 print("p50, p95, p99", np.percentile(lat, [50, 95, 99]))</code></pre>
@@ -286,8 +287,10 @@ print(np.array([[1, 0, 2], [0, 1, 1]]) @ np.array([3, 4, 5]))    # [13  9]</code
       <p>Siempre separás los datos: <strong>train</strong> (aprender), <strong>validación</strong> (elegir hiperparámetros) y <strong>test</strong> (medir al final, una sola vez). Si mirás el test para tomar decisiones, tu número final miente.</p>
       <pre><code>from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
+from sklearn.datasets import load_breast_cancer
+X, y = load_breast_cancer(return_X_y=True)     # datos de ejemplo: 569 tumores, benignos o malignos
 X_tr, X_te, y_tr, y_te = train_test_split(X, y, test_size=0.2, random_state=0)
-modelo = LogisticRegression().fit(X_tr, y_tr)
+modelo = LogisticRegression(max_iter=5000).fit(X_tr, y_tr)
 print(modelo.score(X_te, y_te))</code></pre>` },
     { titulo: 'Overfitting, métricas y errores clásicos', html: `
       <p><strong>Overfitting:</strong> el modelo memoriza el entrenamiento (train muy bien, test mal). <strong>Underfitting:</strong> es demasiado simple (mal en ambos). Remedios contra overfitting: más datos, regularización, modelos más simples, early stopping, validación cruzada.</p>
@@ -316,6 +319,13 @@ from sklearn.pipeline import make_pipeline
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import HistGradientBoostingClassifier
 from sklearn.model_selection import cross_val_score
+import numpy as np, pandas as pd
+
+# Datos inventados para probar: compra (1) si tiene más de 40 años e ingresos altos, con algo de ruido
+rng = np.random.default_rng(0)
+X = pd.DataFrame({"edad": rng.integers(18, 70, 400), "ingresos": rng.normal(50, 15, 400),
+                  "ciudad": rng.choice(["Rosario", "Córdoba", "Mendoza"], 400)})
+y = ((X.edad &gt; 40) &amp; (X.ingresos &gt; 50) |(rng.random(400) &lt; 0.1)).astype(int)
 
 prep = make_column_transformer(
     (StandardScaler(), ["edad", "ingresos"]),
@@ -391,12 +401,21 @@ for c in sorted(set(etiquetas) - {-1}):
       <p><strong>1. Datos con tiempo.</strong> Si predecís demanda, fraude o abandono, en producción siempre predecís el <em>futuro</em> con datos del <em>pasado</em>. Mezclar al azar deja que el modelo "vea el futuro" al entrenar. La solución es validar respetando el orden: entrenar con lo anterior y evaluar con lo posterior. En scikit-learn, <code>TimeSeriesSplit</code>.</p>
       <p><strong>2. Datos agrupados.</strong> Si tenés varias filas del mismo cliente, paciente o documento, y algunas quedan en train y otras en test, el modelo puede reconocer al cliente en lugar de aprender el patrón. En producción vas a ver clientes nuevos. La solución es que cada grupo quede entero de un solo lado: <code>GroupKFold</code>.</p>
       <pre><code>from sklearn.model_selection import TimeSeriesSplit, GroupKFold, cross_val_score
+from sklearn.datasets import make_classification
+from sklearn.linear_model import LogisticRegression
+import numpy as np
+
+# Datos inventados para probar: 300 filas, 3 por cliente
+X, y = make_classification(n_samples=300, random_state=0)
+ids_cliente = np.arange(300) // 3
+modelo = LogisticRegression()
 
 # Datos ordenados por fecha: cada fold entrena con el pasado y evalúa con lo que sigue
 puntaje_tiempo = cross_val_score(modelo, X, y, cv=TimeSeriesSplit(n_splits=5))
 
 # Varias filas por cliente: ningún cliente aparece en train y en test a la vez
-puntaje_grupos = cross_val_score(modelo, X, y, cv=GroupKFold(n_splits=5), groups=ids_cliente)</code></pre>
+puntaje_grupos = cross_val_score(modelo, X, y, cv=GroupKFold(n_splits=5), groups=ids_cliente)
+print("por tiempo:", puntaje_tiempo.round(2), " por cliente:", puntaje_grupos.round(2))</code></pre>
       <p><strong>Señales de que tu validación está mintiendo:</strong></p>
       <ul>
         <li>El modelo da mucho mejor en validación que en producción.</li>
