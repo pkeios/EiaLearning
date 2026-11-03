@@ -252,12 +252,15 @@ async function importar(archivo) {
 const PYODIDE = 'https://cdn.jsdelivr.net/pyodide/v0.29.3/full/';
 // Librerías que no corren en el navegador (PyTorch y compañía) o que necesitan una clave de API: esos fragmentos no llevan laboratorio.
 const NO_NAVEGADOR = /\b(anthropic|openai|torch|transformers|trl|peft|dspy|opentelemetry|vllm|safetensors)\b/;
-const esPython = codigo => /^\s*(import |from \S+ import |def |class |print\(|async def )/m.test(codigo) && !/[→↗]/.test(codigo) && !NO_NAVEGADOR.test(codigo);
+// Tampoco los que llaman a un modelo de embeddings o a un LLM sin definirlo: son ejemplos a escala real.
+const usaModelo = codigo => /\b(embed|llm)\(/.test(codigo) && !/def (embed|llm)\(/.test(codigo);
+const esPython = codigo => /^\s*(import |from \S+ import |def |class |print\(|async def )/m.test(codigo) && !/[→↗]/.test(codigo) && !NO_NAVEGADOR.test(codigo) && !usaModelo(codigo);
 let pyodide;
 function cargarPython() {
   pyodide ??= new Promise((ok, mal) => {
     const s = Object.assign(document.createElement('script'), { src: PYODIDE + 'pyodide.js' });
-    s.onload = () => loadPyodide({ indexURL: PYODIDE }).then(ok, mal);
+    // Se silencian los avisos internos de Pyodide, que no le sirven al alumno
+    s.onload = () => loadPyodide({ indexURL: PYODIDE }).then(py => { py.runPython('import warnings; warnings.filterwarnings("ignore", message="JsProxy")'); ok(py); }, mal);
     s.onerror = () => { pyodide = null; mal(new Error('No se pudo descargar Python. Revisá tu conexión.')); };
     document.head.append(s);
   });
@@ -288,7 +291,7 @@ function montarLab(pre) {
         salida.textContent = '⏳ Ejecutando...';
         py.setStdout({ batched: s => { texto += s + '\n'; } });
         py.setStderr({ batched: s => { texto += s + '\n'; } });
-        await py.loadPackagesFromImports(area.value);
+        await py.loadPackagesFromImports(area.value, { messageCallback: () => {} });
         const r = await py.runPythonAsync(area.value);
         if (r !== undefined) texto += String(r);
         salida.textContent = texto || '✔ Terminó sin imprimir nada. Usá print() para ver resultados.';

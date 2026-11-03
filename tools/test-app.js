@@ -292,6 +292,8 @@ assert(esPython('import numpy as np\nprint(np.zeros(3))'));
 assert(esPython('x = 1\nprint(x)'));
 assert(!esPython('python -m venv .venv'));
 assert(!esPython('import torch\nprint(torch.zeros(2))'));
+assert(!esPython('from sklearn.cluster import HDBSCAN\nX = embed(consultas)'));
+assert(esPython('import numpy as np\ndef embed(t):\n    return np.zeros(3)\nprint(embed(1))'));
 assert(!esPython('  y\n  ^\n2 |   ↗  [3, 2]\nprint(1)'));
 // La ronda del módulo es corta y trae primero las falladas pendientes
 {

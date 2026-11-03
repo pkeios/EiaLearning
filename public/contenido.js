@@ -387,6 +387,23 @@ for c in sorted(set(etiquetas) - {-1}):
     ejemplos = [q for q, e in zip(consultas, etiquetas) if e == c][:15]
     nombre = llm("Poné un nombre corto al tema común de estas consultas:\\n" + "\\n".join(ejemplos))
     print(c, nombre, (etiquetas == c).sum())</code></pre>
+      <p><strong>Probalo en chiquito.</strong> El mismo flujo con 12 consultas, para que veas los grupos aparecer. Como en el navegador no hay un modelo de embeddings, usamos <strong>TF-IDF</strong>, que convierte cada texto en un vector según qué palabras tiene. Agrupa por palabras compartidas, no por significado: "no puedo entrar" y "olvidé la contraseña" quedan juntas acá porque las dos dicen "cuenta", y un modelo de embeddings las juntaría aunque no compartieran ninguna palabra.</p>
+      <pre><code>from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.decomposition import PCA
+from sklearn.cluster import KMeans
+
+consultas = [
+    "no puedo entrar a mi cuenta", "olvidé la contraseña de mi cuenta", "me bloquearon la cuenta",
+    "cambiar el mail de mi cuenta", "quiero devolver un producto", "cómo hago para devolver una compra",
+    "llegó roto, lo quiero devolver", "plazo para devolver un producto", "cuándo llega mi pedido",
+    "mi pedido está demorado", "dónde está mi pedido", "el pedido no llegó",
+]
+X = TfidfVectorizer().fit_transform(consultas).toarray()    # de texto a vectores (acá con TF-IDF)
+X2 = PCA(n_components=2).fit_transform(X)                   # de unas 33 dimensiones (una por palabra) a 2
+etiquetas = KMeans(n_clusters=3, n_init=10, random_state=0).fit_predict(X2)
+
+for c in range(3):
+    print("Grupo", c, [q for q, e in zip(consultas, etiquetas) if e == c])</code></pre>
       <p><strong>Para visualizar</strong>, UMAP (o t-SNE) proyecta a 2D conservando bien los vecindarios: los puntos parecidos quedan juntos. Cuidado: las distancias <em>entre</em> grupos lejanos en el gráfico no son confiables, así que no concluyas que dos grupos son "muy distintos" solo porque aparecen lejos.</p>
       <p><strong>Usos típicos en AI engineering:</strong></p>
       <ul>
