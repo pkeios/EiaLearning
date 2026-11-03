@@ -31,6 +31,7 @@ y = W @ x                   # producto matriz-vector -> shape (4,)
 print(y.shape)</code></pre>
       <p>Esa última línea es, literalmente, lo que hace una capa de una red neuronal.</p>` },
     { titulo: 'Matemáticas mínimas (y por qué importan)', html: `
+      <p><strong>¿Nunca viste vectores ni matrices?</strong> Empezá por <a href="#/m/fundamentos/6">Matemática desde cero</a>, la última lección de este módulo: son ejemplos resueltos a mano, solo con sumas y multiplicaciones. Después volvé acá.</p>
       <p><strong>Vectores:</strong> una lista de números. Un texto, una imagen o un usuario se representan como vectores (embeddings).</p>
       <p><strong>Producto punto:</strong> <code>a·b = Σ aᵢbᵢ</code>. Mide cuánto "apuntan en la misma dirección" dos vectores. Es el corazón de la atención en Transformers y de la búsqueda semántica. La <strong>similitud coseno</strong> es el producto punto normalizado: compara dirección e ignora magnitud.</p>
       <p><strong>Matrices:</strong> transformaciones. Una matriz m×n convierte vectores de n dimensiones en vectores de m dimensiones.</p>
@@ -151,6 +152,45 @@ X_centrada = X - X.mean(axis=1, keepdims=True)
         <li>Usá <code>keepdims=True</code> al reducir si después vas a operar con el original.</li>
         <li>Ante un resultado raro, imprimí las formas antes de sospechar del modelo.</li>
       </ul>` },
+    { titulo: 'Matemática desde cero: vectores, matrices y pendientes con ejemplos a mano', html: `
+      <p>Si nunca viste vectores ni matrices, esta lección es para vos. Solo hace falta sumar y multiplicar.</p>
+      <p><strong>1. Un vector es una lista de números que describe algo.</strong> La ficha de Ana, [edad, altura], es [30, 1,65]. Cada número es una <em>dimensión</em>. Con dos dimensiones lo podés dibujar como una flecha:</p>
+      <pre><code>  y
+  ^
+2 |        ↗  [3, 2]: 3 a la derecha, 2 para arriba
+1 |    ↗
+  +------------&gt; x
+     1   2   3</code></pre>
+      <p>En IA, el significado de una palabra se guarda como un vector de cientos de números (un <strong>embedding</strong>). No se puede dibujar, pero las cuentas son las mismas.</p>
+      <p><strong>2. Producto punto: multiplicar pareja por pareja y sumar.</strong></p>
+      <pre><code>[1, 2, 3] · [4, 5, 6] = 1×4 + 2×5 + 3×6 = 4 + 10 + 18 = 32</code></pre>
+      <p>Cuando veas <code>a·b = Σ aᵢbᵢ</code>, es exactamente esa cuenta: la letra Σ (sigma) significa "sumá todo", y aᵢ es el número que está en la posición i.</p>
+      <p><strong>¿Para qué sirve?</strong> Mide cuánto se parecen dos vectores. Ejemplo con gustos [acción, romance]:</p>
+      <table>
+        <tr><th>Usuario</th><th>Película</th><th>Producto punto</th><th>Lectura</th></tr>
+        <tr><td>[1, 0]</td><td>[0,9, 0,1] (acción)</td><td>1×0,9 + 0×0,1 = 0,9</td><td>Se parecen: recomendala</td></tr>
+        <tr><td>[1, 0]</td><td>[0, 1] (romance)</td><td>1×0 + 0×1 = 0</td><td>Nada en común</td></tr>
+      </table>
+      <p><strong>3. Largo y similitud coseno.</strong> El largo de [3, 4] es √(3² + 4²) = √25 = 5 (Pitágoras). La <strong>similitud coseno</strong> es el producto punto dividido por los dos largos, y va de −1 (opuestos) a 1 (misma dirección). Sirve para comparar la dirección sin que importe el tamaño: [1, 0] y [2, 0] dan coseno 1, aunque uno sea el doble de largo.</p>
+      <p><strong>4. Una matriz es una tabla de números, y multiplicarla por un vector es hacer un producto punto por cada fila.</strong></p>
+      <pre><code>W = [[1, 0, 2],      2 filas × 3 columnas
+     [0, 1, 1]]
+x = [3, 4, 5]        3 números: tienen que coincidir con las 3 columnas
+
+fila 1: 1×3 + 0×4 + 2×5 = 13
+fila 2: 0×3 + 1×4 + 1×5 = 9
+W @ x = [13, 9]      un número por fila: entra un vector de 3, sale uno de 2</code></pre>
+      <p>Eso hace una capa de una red neuronal: transforma un vector en otro. "Una matriz m×n convierte vectores de n dimensiones en vectores de m" quiere decir justo eso.</p>
+      <p><strong>5. La derivada es la pendiente: te dice si la curva sube o baja.</strong> Imaginá que estás en una montaña con niebla y querés llegar al valle: mirás para dónde baja el piso y das un paso para ese lado. Con la loss f(x) = (x − 3)², la pendiente en cada punto es 2·(x − 3) (no hace falta saber derivar: las librerías la calculan solas).</p>
+      <pre><code>x = 5    pendiente = 2·(5 − 3) = 4   positiva: hacia la derecha sube
+paso:    x nuevo = 5 − 0,1 × 4 = 4,6  (0,1 es el learning rate: el tamaño del paso)
+repetís: 4,6 → 4,28 → 4,02 → ... → 3, el valle</code></pre>
+      <p>Eso es el <strong>descenso de gradiente</strong>. El <strong>gradiente</strong> es lo mismo con muchas variables: la lista de pendientes de cada una.</p>
+      <p><strong>Comprobalo en Python:</strong></p>
+      <pre><code>import numpy as np
+print(np.array([1, 2, 3]) @ np.array([4, 5, 6]))                 # 32
+print(np.array([[1, 0, 2], [0, 1, 1]]) @ np.array([3, 4, 5]))    # [13  9]</code></pre>
+      <p>Con esto ya podés leer "Matemáticas mínimas" y la lección de formas: usan estas mismas cuentas.</p>` },
   ],
   practica: [
     'Implementá producto punto, similitud coseno y softmax solo con NumPy y comprobá los resultados a mano con vectores pequeños.',
@@ -214,6 +254,10 @@ X_centrada = X - X.mean(axis=1, keepdims=True)
     { q: 'Tu loss de entrenamiento es 0,05 y la de validación 2,3 en un problema de 10 clases. ¿Qué te dice el 2,3?', opciones: ['Que el modelo es excelente', 'Que la validación tiene un bug seguro', 'Que la loss de train está mal calculada', 'Que en validación el modelo rinde como si adivinara al azar (−ln(1/10) ≈ 2,3): memorizó el train y no generaliza'], correcta: 3, explicacion: 'Adivinar al azar entre 10 clases da p = 0,1 y −ln(0,1) ≈ 2,3: es lo que da repartir la probabilidad por igual. Pensar que la validación tiene un bug tienta porque la diferencia es enorme, pero es la firma típica del overfitting.' },
     { q: 'Querés estimar cuánto vas a gastar por mes: 50.000 consultas, cada una con 1.000 tokens de entrada a 3 USD por millón y 200 de salida a 15 USD por millón. ¿Cuánto da?', opciones: ['300 USD: 150 de entrada y 150 de salida', '45 USD', '3.000 USD', '150 USD, porque la salida no se cobra'], correcta: 0, explicacion: 'Entrada: 50.000 × 1.000 = 50 millones × 3 = 150 USD; salida: 50.000 × 200 = 10 millones × 15 = 150 USD. Ignorar la salida tienta porque son pocos tokens, pero su precio por token es 5 veces mayor.' },
     { q: 'Tu script asíncrono lanza 300 llamadas con asyncio.gather y a veces termina con muchos errores 429. ¿Qué cambiás?', opciones: ['Lo hacés secuencial', 'Sacás el manejo de errores', 'Limitás la concurrencia con un semáforo y reintentás los 429 con backoff', 'Lanzás las 300 dos veces'], correcta: 2, explicacion: 'El 429 dice que superaste el límite del proveedor. Volver a lo secuencial tienta porque elimina los errores, pero tarda 300 veces lo que dura una llamada cuando podrías ir de a 10 o 20.' },
+    { q: 'Calculá a mano el producto punto de [2, 0, 1] y [3, 5, 4]. ¿Cuánto da?', opciones: ['5', '10: 2×3 + 0×5 + 1×4', '[6, 0, 4]', '0'], correcta: 1, explicacion: 'Se multiplica pareja por pareja y se suma: 6 + 0 + 4 = 10. [6, 0, 4] tienta porque son las multiplicaciones, pero falta sumarlas: el producto punto da un solo número.' },
+    { q: 'La matriz W tiene 2 filas y 3 columnas, y x = [1, 1, 1]. ¿Qué obtenés con W @ x?', opciones: ['Un vector de 3', 'Una matriz de 2×3', 'Un error', 'Un vector de 2: un número por cada fila'], correcta: 3, explicacion: 'Cada fila hace un producto punto con x y da un número: 2 filas, 2 números. Un vector de 3 tienta porque x tiene 3 elementos, pero ese largo es el que tiene que coincidir con las columnas, no el del resultado.' },
+    { q: 'Un usuario es [1, 0] en [acción, romance]. ¿Qué película le recomendás según el producto punto?', opciones: ['La de [0, 1]', 'La de [0,9, 0,1]: da 0,9, contra 0 de las otras', 'La de [0, 0]', 'Cualquiera: el producto punto da lo mismo'], correcta: 1, explicacion: '1×0,9 + 0×0,1 = 0,9; con [0, 1] y con [0, 0] da 0. Pensar que da lo mismo tienta si no hacés la cuenta, pero justamente el producto punto mide cuánto coinciden los gustos.' },
+    { q: 'En x = 5 la pendiente de la loss es 4 (positiva). En descenso de gradiente, ¿hacia dónde movés x?', opciones: ['Hacia arriba, por ejemplo a 9', 'No la movés', 'Directo a 0', 'Hacia abajo: x nuevo = 5 − learning rate × 4'], correcta: 3, explicacion: 'Pendiente positiva quiere decir que hacia la derecha la loss sube, así que das un paso en contra. Ir hacia arriba tienta porque "el gradiente apunta para ahí", pero apunta hacia donde la loss crece, y vos querés que baje.' },
   ],
 },
 {

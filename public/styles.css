@@ -87,6 +87,8 @@ a.stat:hover { border-color: var(--acento); text-decoration: none; }
 .leccion[open] summary::after { transform: rotate(180deg); }
 .leccion.leida summary { color: var(--suave); }
 .leccion .contenido { padding: 0 1.5rem; border-top: 1px solid var(--borde); }
+.leccion .contenido table { border-collapse: collapse; margin: .8rem 0; display: block; overflow-x: auto; }
+.leccion .contenido th, .leccion .contenido td { padding: .3rem .6rem; border: 1px solid var(--borde); text-align: left; }
 .acciones-leccion { display: flex; gap: .6rem; flex-wrap: wrap; margin: 0 1.5rem 1.3rem; }
 .num { display: inline-grid; place-items: center; min-width: 30px; height: 30px; border-radius: 50%; background: var(--card2); border: 1px solid var(--borde); font-size: .85rem; font-weight: 800; flex-shrink: 0; }
 .leida .num { background: rgba(52, 211, 153, .15); color: var(--ok); border-color: transparent; }
