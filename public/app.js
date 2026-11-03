@@ -50,6 +50,35 @@ function resaltarEn(raiz, consulta) {
     nodo.replaceWith(frag);
   }
 }
+// Glosario dentro de las lecciones: la primera vez que aparece cada término, se puede tocar para ver qué significa.
+// Sin lo que va entre paréntesis ("Percentil (p95, p99)" busca "percentil"), y acepta el plural.
+const reTermino = t => new RegExp('(?<![\\p{L}\\d])' + t.replace(/\s*\(.*\)$/, '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '(?:es|s)?(?![\\p{L}\\d])', 'iu');
+function marcarGlosario(raiz) {
+  // Los más largos primero: "Matriz de confusión" antes que "Matriz"
+  for (const g of [...(window.GLOSARIO || [])].sort((a, b) => b.t.length - a.t.length)) {
+    const re = reTermino(g.t);
+    const caminante = document.createTreeWalker(raiz, NodeFilter.SHOW_TEXT, {
+      acceptNode: n => n.parentElement.closest('pre, code, a, button, .def') ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT,
+    });
+    let nodo;
+    while ((nodo = caminante.nextNode())) {
+      const m = re.exec(nodo.nodeValue);
+      if (!m) continue;
+      const resto = nodo.splitText(m.index);
+      resto.nodeValue = resto.nodeValue.slice(m[0].length);
+      const boton = Object.assign(document.createElement('button'), { type: 'button', className: 'termino', textContent: m[0], title: 'Tocá para ver qué significa' });
+      boton.setAttribute('aria-expanded', 'false');
+      boton.onclick = () => {
+        const abierta = boton.nextElementSibling?.classList.contains('def');
+        if (abierta) boton.nextElementSibling.remove();
+        else boton.after(Object.assign(document.createElement('span'), { className: 'def', textContent: g.t.replace(/\s*\(.*\)$/, '') + ': ' + g.d }));
+        boton.setAttribute('aria-expanded', String(!abierta));
+      };
+      resto.before(boton);
+      break;
+    }
+  }
+}
 let ultimaBusqueda = '';
 function buscar(consulta) {
   const palabras = normal(consulta).split(/\s+/).filter(p => p.length > 1);
@@ -381,6 +410,7 @@ function modulo(id, abrir = null) {
     guardar(p);
     modulo(id);
   });
+  app.querySelectorAll('.contenido').forEach(marcarGlosario);
   app.querySelectorAll('.contenido pre').forEach(pre => { if (esPython(pre.textContent)) montarLab(pre); });
   const buscada = abrir != null && app.querySelectorAll('details.leccion')[abrir];
   if (buscada) {

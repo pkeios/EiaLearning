@@ -17,11 +17,11 @@ window.TEMARIO = [
   ],
   lecciones: [
     { titulo: 'Python para IA: lo imprescindible', html: `
-      <p><strong>En pocas palabras:</strong> Python es el idioma en el que se escribe casi todo lo de IA. Igual que para cocinar alcanza con saber usar el cuchillo, la hornalla y la balanza, acá alcanza con unas pocas herramientas. Esta lección te dice cuáles.</p>
+      <p class="idea">Python es el idioma en el que se escribe casi todo lo de IA. Igual que para cocinar alcanza con saber usar el cuchillo, la hornalla y la balanza, acá alcanza con unas pocas cosas. Esta lección te dice cuáles.</p>
       <p>Casi todas las herramientas de IA (librerías, ejemplos, tutoriales) están en Python. No necesitás ser experto, pero sí manejarte con:</p>
       <ul>
         <li><strong>Lo básico del lenguaje:</strong> listas (<code>[1, 2, 3]</code>), diccionarios (<code>{"nombre": "Ana"}</code>, guardan pares nombre-valor), funciones y clases. También las <em>comprensiones</em>, una forma corta de armar una lista: <code>[x * 2 for x in numeros]</code> duplica cada número. Y <code>async/await</code>, que sirve para hacer muchas llamadas a internet a la vez (lo ves en la lección 4).</li>
-        <li><strong>Entornos virtuales:</strong> una carpeta aparte con las librerías de cada proyecto, para que no se mezclen entre proyectos. Se crea con <code>python -m venv .venv</code> (o con la herramienta <code>uv</code>). "Fijar las dependencias" quiere decir anotar la versión exacta de cada librería, así el proyecto funciona igual en otra computadora.</li>
+        <li><strong>Entornos virtuales:</strong> una carpeta aparte con las librerías de cada proyecto, para que no se mezclen entre proyectos. Se crea con <code>python -m venv .venv</code> (o con el programa <code>uv</code>). "Fijar las dependencias" quiere decir anotar la versión exacta de cada librería, así el proyecto funciona igual en otra computadora.</li>
         <li><strong>NumPy:</strong> la librería para trabajar con muchos números juntos. Su pieza central es el <em>array</em>: una lista de números que puede tener varias dimensiones (una fila, una tabla, una pila de tablas). Sus operaciones son <em>vectorizadas</em>: en vez de recorrer los números de a uno con un bucle de Python, opera sobre todos a la vez con código ya compilado en C (un lenguaje mucho más rápido). Resultado: entre 10 y 100 veces más rápido.</li>
         <li><strong>Pandas:</strong> para trabajar con tablas, como un Excel desde código. <strong>Jupyter:</strong> un cuaderno donde escribís código en bloques chicos y ves el resultado de cada uno al instante; ideal para probar.</li>
       </ul>
@@ -34,7 +34,7 @@ print(y.shape)</code></pre>
       <p>Qué mirar: <code>shape</code> es la <strong>forma</strong> del array, cuántos números tiene en cada dimensión. Imprime <code>(4,)</code>: una lista de 4 números. La línea <code>W @ x</code> es, literalmente, lo que hace una <em>capa</em> de una red neuronal (uno de los pasos en los que una IA transforma los números que recibe).</p>` },
     { titulo: 'Matemáticas mínimas (y por qué importan)', html: `
       <p><strong>¿Nunca viste vectores ni matrices?</strong> Empezá por <a href="#/m/fundamentos/6">Matemática desde cero</a>, la última lección de este módulo: son ejemplos resueltos a mano, solo con sumas y multiplicaciones. Después volvé acá.</p>
-      <p><strong>En pocas palabras:</strong> una IA no entiende palabras ni fotos; solo maneja listas de números. Estas cinco ideas explican qué hace con esas listas: compararlas, transformarlas, corregirse cuando se equivoca y elegir la respuesta más probable.</p>
+      <p class="idea">una IA no entiende palabras ni fotos; solo maneja listas de números. Estas cinco ideas explican qué hace con esas listas: compararlas, transformarlas, corregirse cuando se equivoca y elegir la respuesta más probable.</p>
       <p><strong>1. Vectores:</strong> una lista de números que describe algo. Un texto, una imagen o un usuario se guardan como vectores. Cuando ese vector representa el significado de algo, se llama <strong>embedding</strong>: dos textos que dicen lo mismo con otras palabras tienen embeddings parecidos.</p>
       <p><strong>2. Producto punto:</strong> <code>a·b = Σ aᵢbᵢ</code>, que en palabras es "multiplicá pareja por pareja y sumá todo". Mide cuánto "apuntan para el mismo lado" dos vectores, o sea, cuánto se parecen. Lo vas a ver en dos lugares clave:</p>
       <ul>
@@ -56,7 +56,7 @@ print(y.shape)</code></pre>
     return e / e.sum()</code></pre>
       <p>El <strong>overflow</strong> pasa cuando un número es tan grande que la computadora no lo puede guardar. Por ejemplo, e¹⁰⁰⁰ da infinito. Restar el máximo deja los números chicos y el resultado no cambia. La cuenta hecha a mano, con logits [2, 1, 0], está en la tabla de bolsillo de la lección siguiente.</p>` },
     { titulo: 'Entropía, entropía cruzada y perplexity: la matemática de la loss', html: `
-      <p><strong>En pocas palabras:</strong> para entrenar una IA hace falta un número que diga "qué tan mal le fue". Acá ese número mide la <em>sorpresa</em>. Si el modelo estaba casi seguro de la respuesta correcta, la sorpresa es chica. Si le parecía casi imposible, la sorpresa es enorme y el castigo también. Es como un pronosticador del tiempo: si dijo "99% de sol" y llovió, queda mucho peor que si había dicho "50 y 50".</p>
+      <p class="idea">para entrenar una IA hace falta un número que diga "qué tan mal le fue". Acá ese número mide la <em>sorpresa</em>. Si el modelo estaba casi seguro de la respuesta correcta, la sorpresa es chica. Si le parecía casi imposible, la sorpresa es enorme y el castigo también. Es como un pronosticador del tiempo: si dijo "99% de sol" y llovió, queda mucho peor que si había dicho "50 y 50".</p>
       <p>Cuando entrenás o evaluás un LLM vas a ver tres palabras en todos lados: "loss" (pérdida), "cross-entropy" (entropía cruzada) y "perplexity". Vienen de la <em>teoría de la información</em>, la rama de la matemática que mide cuánta información o sorpresa hay en algo. Son más simples de lo que parecen.</p>
       <p><strong>Antes, el logaritmo.</strong> <code>log</code> es la cuenta inversa de elevar: pregunta "¿a qué número hay que elevar la base para llegar a este?". Para estas lecciones alcanza con tres cosas:</p>
       <ul>
@@ -100,7 +100,7 @@ perplexity = np.exp(entropia_cruzada)            # ≈ 2,0</code></pre>
         <li><strong>Para softmax a mano:</strong> e⁰ = 1, e¹ ≈ 2,72, e² ≈ 7,39. Con logits [2, 1, 0]: 7,39 / (7,39 + 2,72 + 1) ≈ 0,67.</li>
       </ul>` },
     { titulo: 'Python asíncrono: muchas llamadas a la API en paralelo', html: `
-      <p><strong>En pocas palabras:</strong> si pedís 100 pizzas por teléfono, no esperás a que llegue una para pedir la siguiente: hacés todos los pedidos y esperás a que lleguen juntas. Programar "asíncrono" es eso: lanzar muchos pedidos y esperarlos todos a la vez, en lugar de uno por uno.</p>
+      <p class="idea">si pedís 100 pizzas por teléfono, no esperás a que llegue una para pedir la siguiente: hacés todos los pedidos y esperás a que lleguen juntas. Programar "asíncrono" es eso: lanzar muchos pedidos y esperarlos todos a la vez, en lugar de uno por uno.</p>
       <p>Para usar un LLM desde tu programa, le mandás un pedido por internet a la <strong>API</strong> del proveedor (Anthropic, OpenAI, etc.). La API es la "ventanilla" por la que los programas piden cosas a otro servicio. Cada pedido pasa casi todo su tiempo <strong>esperando la respuesta por la red</strong>. Si hacés 100 pedidos de 2 segundos uno detrás de otro, tardás 200 segundos. Si los superponés, con un máximo de 10 a la vez, tardás unos 20. Para eso está <code>asyncio</code>, que viene incluido en Python.</p>
       <ul>
         <li><strong><code>async</code> / <code>await</code>:</strong> <code>async def</code> crea una función que puede pausarse. <code>await</code> marca el punto donde espera: ahí "suelta" el control y Python avanza con otras tareas mientras tanto.</li>
@@ -138,7 +138,7 @@ fallidos = [t for t, r in zip(textos, resultados) if isinstance(r, Exception)]</
       <p><strong>Streaming con generadores:</strong> streaming es mostrar la respuesta a medida que llega, como hace ChatGPT cuando escribe de a poco. Para eso se usa un <em>generador</em>: una función que, en vez de devolver todo junto al final, entrega cada pedacito apenas lo tiene (con <code>yield</code>, o con <code>async for</code> en código asíncrono).</p>
       <p>Si tenés miles de tareas que no son urgentes, compará con la <strong>API batch</strong> del proveedor: le mandás todo junto, te lo devuelve horas más tarde y suele cobrarte la mitad.</p>` },
     { titulo: 'Probabilidad y estadística para decidir: Bayes, valor esperado y percentiles', html: `
-      <p><strong>En pocas palabras:</strong> cuatro trampas de sentido común con los números. Una alarma que "acierta el 95%" puede equivocarse casi siempre. El promedio puede esconder a los usuarios enojados. Y con pocos ejemplos, una mejora puede ser pura suerte. Esta lección te enseña a no caer.</p>
+      <p class="idea">cuatro trampas de sentido común con los números. Una alarma que "acierta el 95%" puede equivocarse casi siempre. El promedio puede esconder a los usuarios enojados. Y con pocos ejemplos, una mejora puede ser pura suerte. Esta lección te enseña a no caer.</p>
       <p>Cuatro ideas de probabilidad y estadística que aparecen todo el tiempo cuando armás productos con IA, y que evitan decisiones equivocadas.</p>
       <p><strong>1. Teorema de Bayes: cuidado con los eventos raros.</strong> Primero, el caso. Un <strong>prompt injection</strong> es un ataque: alguien escribe un mensaje que intenta que la IA ignore sus instrucciones ("olvidá todo lo anterior y..."). Supongamos que tu detector de prompt injection encuentra el 95% de los ataques y da falsa alarma en el 5% de los mensajes normales. Solo el 1% de los mensajes son ataques. Si suena la alarma, ¿qué probabilidad hay de que sea un ataque de verdad?</p>
       <p><strong>Sin fórmulas, con 10.000 mensajes:</strong></p>
@@ -180,7 +180,7 @@ print("p50, p95, p99", np.percentile(lat, [50, 95, 99]))</code></pre>
       <p><strong>4. Tamaño de muestra: pocos casos, mucho ruido.</strong> Con 10 casos, cada uno mueve la nota 10 puntos. Un 90% con 10 casos y un 90% con 500 no significan lo mismo. Antes de celebrar una mejora, mirá cuántos casos la respaldan. En el módulo de evals (evaluaciones: pruebas sistemáticas de qué tan bien responde tu IA) vas a ver cómo calcular ese margen.</p>
       <p><strong>Comparar dos versiones:</strong> si A acierta 82% y B 85% sobre 40 casos distintos cada una, esos 3 puntos pueden ser pura suerte. Corré las dos sobre <strong>los mismos casos</strong> (<strong>comparación pareada</strong>): así la diferencia viene de la versión y no de que a una le tocaron casos más fáciles. Si igual es chica, sumá casos.</p>` },
     { titulo: 'Formas y broadcasting: la fuente de bugs más común', html: `
-      <p><strong>En pocas palabras:</strong> cuando operás con tablas de números, importa cuántas filas y columnas tiene cada una. Si sumás una columna con una fila, Python a veces no se queja: arma solo una tabla gigante con todas las combinaciones. El resultado sale mal y nadie te avisa. Esta lección te enseña a darte cuenta.</p>
+      <p class="idea">cuando operás con tablas de números, importa cuántas filas y columnas tiene cada una. Si sumás una columna con una fila, Python a veces no se queja: arma solo una tabla gigante con todas las combinaciones. El resultado sale mal y nadie te avisa. Esta lección te enseña a darte cuenta.</p>
       <p>En NumPy y en <strong>PyTorch</strong> (la librería más usada para entrenar redes neuronales), casi todos los errores raros vienen de la <strong>forma</strong> (shape) de los arrays. La forma es cuántos números hay en cada dimensión:</p>
       <ul>
         <li><code>(3,)</code> es una lista de 3 números.</li>
@@ -230,7 +230,7 @@ X_centrada = X - X.mean(axis=1, keepdims=True)
         <li>Ante un resultado raro, imprimí las formas antes de sospechar del modelo.</li>
       </ul>` },
     { titulo: 'Matemática desde cero: vectores, matrices y pendientes con ejemplos a mano', html: `
-      <p><strong>En pocas palabras:</strong> si nunca viste vectores ni matrices, esta lección es para vos. Solo hace falta sumar y multiplicar: cada idea viene con una cuenta resuelta a mano.</p>
+      <p class="idea">si nunca viste vectores ni matrices, esta lección es para vos. Solo hace falta sumar y multiplicar: cada idea viene con una cuenta resuelta a mano.</p>
       <p><strong>1. Un vector es una lista de números que describe algo.</strong> La ficha de Ana, [edad, altura], es [30, 1,65]. Cada número es una <em>dimensión</em>. Con dos dimensiones lo podés dibujar como una flecha:</p>
       <pre><code>  y
   ^
@@ -355,7 +355,7 @@ print(np.array([[1, 0, 2], [0, 1, 1]]) @ np.array([3, 4, 5]))    # [13  9]</code
   ],
   lecciones: [
     { titulo: 'Qué es aprender a partir de datos', html: `
-      <p><strong>En pocas palabras:</strong> en vez de escribirle a la computadora las reglas ("si tiene más de 3 ambientes, vale más"), le mostrás muchos ejemplos con la respuesta y ella encuentra las reglas sola. Es como aprender a tasar casas mirando cientos de ventas, sin que nadie te dé una fórmula.</p>
+      <p class="idea">en vez de escribirle a la computadora las reglas ("si tiene más de 3 ambientes, vale más"), le mostrás muchos ejemplos con la respuesta y ella encuentra las reglas sola. Es como aprender a tasar casas mirando cientos de ventas, sin que nadie te dé una fórmula.</p>
       <p>Machine Learning (aprendizaje automático) es encontrar, a partir de ejemplos, una regla que funcione también con casos que nunca vio. A eso se le dice <strong>generalizar</strong>: no sirve memorizar los ejemplos, hay que acertar con los nuevos.</p>
       <p><strong>El vocabulario básico</strong>, con una planilla de departamentos:</p>
       <table>
@@ -412,7 +412,7 @@ X_tr, X_te, y_tr, y_te = train_test_split(X, y, test_size=0.2, random_state=0)
 modelo = LogisticRegression(max_iter=5000).fit(X_tr, y_tr)
 print(modelo.score(X_te, y_te))</code></pre>` },
     { titulo: 'Overfitting, métricas y errores clásicos', html: `
-      <p><strong>En pocas palabras:</strong> un alumno que memoriza las respuestas de la guía saca 10 en la guía y 2 en el examen. A un modelo le pasa lo mismo, y se llama overfitting. Esta lección te enseña a detectarlo y a medir bien los aciertos, porque "acierta el 99%" puede no querer decir nada.</p>
+      <p class="idea">un alumno que memoriza las respuestas de la guía saca 10 en la guía y 2 en el examen. A un modelo le pasa lo mismo, y se llama overfitting. Esta lección te enseña a detectarlo y a medir bien los aciertos, porque "acierta el 99%" puede no querer decir nada.</p>
       <p><strong>Overfitting</strong> (sobreajuste): el modelo memoriza el entrenamiento, con sus casualidades y su ruido. Le va muy bien en train y mal en test. <strong>Underfitting</strong> (subajuste): el modelo es demasiado simple para el problema y le va mal en los dos. Remedios contra el overfitting:</p>
       <ul>
         <li>Más datos.</li>
@@ -477,7 +477,7 @@ for profundidad in [1, 2, 3, 5, 8, None]:                # None = sin límite
       <p><strong>Cambio de distribución:</strong> un modelo solo sabe lo que vio. Si lo entrenaste con casas de una ciudad y lo usás en otra, con otros precios y zonas, va a fallar aunque el código esté perfecto. Necesitás datos de la nueva región (o un modelo por región).</p>
       <p><strong>El promedio esconde segmentos:</strong> un <em>segmento</em> es un subgrupo de tus datos, como los feriados, un tipo de cliente o una región. Un modelo de demanda (que predice cuánto se va a vender) con error bajo en promedio puede fallar justo en feriados y promociones, que son pocos días pero los más importantes. Medí el error por segmento y agregá features que los representen (por ejemplo, <code>es_feriado</code>). Sacar esos días del dataset mejora el número, no el modelo.</p>` },
     { titulo: 'Árboles, ensembles y pipelines: lo que gana en datos tabulares', html: `
-      <p><strong>En pocas palabras:</strong> un árbol de decisión es el juego de las 20 preguntas: "¿gana más de 50.000? ¿tiene más de 40 años?", hasta llegar a una respuesta. Un solo árbol se equivoca bastante, pero muchos árboles que votan juntos aciertan mucho. Para datos en planillas, eso suele ganarle a todo lo demás.</p>
+      <p class="idea">un árbol de decisión es el juego de las 20 preguntas: "¿gana más de 50.000? ¿tiene más de 40 años?", hasta llegar a una respuesta. Un solo árbol se equivoca bastante, pero muchos árboles que votan juntos aciertan mucho. Para datos en planillas, eso suele ganarle a todo lo demás.</p>
       <p>Aunque los LLMs dominan el texto, en <strong>datos tabulares</strong> (planillas, bases de datos de clientes, transacciones) los modelos basados en árboles siguen siendo la primera opción. Un estudio de 2022 mostró que superan a las redes neuronales en la mayoría de los <em>benchmarks</em> (pruebas estándar para comparar modelos) tabulares de tamaño medio.</p>
       <ul>
         <li><strong>Árbol de decisión:</strong> preguntas encadenadas del tipo "¿ingresos &gt; 50.000?". Es interpretable, porque podés leer las preguntas. Pero un árbol profundo (con muchas preguntas) hace overfitting con facilidad: termina haciendo una pregunta a medida para cada ejemplo.</li>
@@ -533,7 +533,7 @@ for nombre, modelo in [("lineal", lineal), ("boosting", boosting)]:
     print(nombre, f1.mean().round(3), "±", f1.std().round(3))</code></pre>
       <p>Regla práctica: empezá con un modelo lineal como <strong>línea base</strong> (el punto de comparación más simple), después probá gradient boosting. Si el boosting no mejora claramente, el problema está en los datos o en las features, no en el algoritmo.</p>` },
     { titulo: '¿LLM o modelo clásico? Embeddings, clasificadores y umbrales', html: `
-      <p><strong>En pocas palabras:</strong> preguntarle a un LLM cada vez es como llamar a un experto caro para cada consulta. Si las consultas se repiten, conviene que el experto te enseñe con unos miles de ejemplos y armar un modelo chico y barato que haga lo mismo. Al experto lo llamás solo para los casos difíciles.</p>
+      <p class="idea">preguntarle a un LLM cada vez es como llamar a un experto caro para cada consulta. Si las consultas se repiten, conviene que el experto te enseñe con unos miles de ejemplos y armar un modelo chico y barato que haga lo mismo. Al experto lo llamás solo para los casos difíciles.</p>
       <p>Un error caro es usar un LLM para todo. Supongamos que tenés que clasificar millones de textos en categorías fijas. Un modelo clásico entrenado sobre <strong>embeddings</strong> (los vectores que representan el significado de cada texto, que viste en Fundamentos) tiene cuatro ventajas:</p>
       <ul>
         <li>Suele ser cientos de veces más barato.</li>
@@ -591,8 +591,8 @@ for umbral in [0.9, 0.5, 0.2, 0.05]:
       </ol>
       <p><strong>Cuándo sí un LLM:</strong> pocas consultas, categorías que cambian seguido, sin datos etiquetados, o tareas que requieren razonar o generar texto.</p>` },
     { titulo: 'Explorar texto a escala: embeddings, clustering y reducción de dimensionalidad', html: `
-      <p><strong>En pocas palabras:</strong> tenés miles de mensajes y no podés leerlos todos. Le pedís a la computadora que los separe en pilas de mensajes parecidos, como ordenar ropa por color sin saber de antemano cuántos colores hay. Después leés unos pocos de cada pila y ya sabés de qué se trata cada una.</p>
-      <p>Tenés 50.000 consultas de usuarios, o 10.000 <em>trazas</em> (el registro de todo lo que hizo tu sistema en una conversación) donde algo falló. Querés saber <strong>de qué se tratan</strong> sin leerlas una por una y sin tener categorías armadas de antes. Eso es aprendizaje no supervisado, y es una de las herramientas más útiles para entender errores a gran escala.</p>
+      <p class="idea">tenés miles de mensajes y no podés leerlos todos. Le pedís a la computadora que los separe en pilas de mensajes parecidos, como ordenar ropa por color sin saber de antemano cuántos colores hay. Después leés unos pocos de cada pila y ya sabés de qué se trata cada una.</p>
+      <p>Tenés 50.000 consultas de usuarios, o 10.000 <em>trazas</em> (el registro de todo lo que hizo tu sistema en una conversación) donde algo falló. Querés saber <strong>de qué se tratan</strong> sin leerlas una por una y sin tener categorías armadas de antes. Eso es aprendizaje no supervisado, y es uno de los recursos más útiles para entender errores a gran escala.</p>
       <p><strong>El proceso, paso a paso</strong> (a una cadena de pasos así también se le dice <em>pipeline</em>):</p>
       <ol>
         <li><strong>Embeddings</strong> de cada texto: cada texto pasa a ser un vector, por ejemplo de 1024 números.</li>
@@ -650,7 +650,7 @@ for c in range(3):
       </ul>
       <p>Revisá siempre algunos clusters a mano: el algoritmo agrupa por parecido, pero el nombre que le pone el LLM puede ser engañoso.</p>` },
     { titulo: 'Validación que no miente: datos temporales y agrupados', html: `
-      <p><strong>En pocas palabras:</strong> si querés saber si alguien predice bien el clima, no le podés mostrar el diario de mañana. Y si querés saber si reconoce caras nuevas, no le podés tomar examen con fotos de las mismas personas con las que practicó. Esta lección es sobre no hacer trampa sin darte cuenta.</p>
+      <p class="idea">si querés saber si alguien predice bien el clima, no le podés mostrar el diario de mañana. Y si querés saber si reconoce caras nuevas, no le podés tomar examen con fotos de las mismas personas con las que practicó. Esta lección es sobre no hacer trampa sin darte cuenta.</p>
       <p>La validación cruzada clásica mezcla los datos al azar. Eso supone que cada ejemplo es <em>independiente</em>: que conocer uno no te da pistas sobre otro. En muchos problemas reales no es así. Cuando no lo es, la nota sale inflada y el modelo decepciona en producción, cuando ya lo usan personas reales.</p>
       <p><strong>1. Datos con tiempo.</strong> Si predecís cuánto se va a vender (demanda), si una compra es una estafa (fraude) o si un cliente se va a dar de baja (abandono), en producción siempre predecís el <em>futuro</em> con datos del <em>pasado</em>. Mezclar al azar deja que el modelo "vea el futuro" al entrenar. La solución es validar respetando el orden: entrenar con lo anterior y evaluar con lo posterior. En scikit-learn, <code>TimeSeriesSplit</code>.</p>
       <p><strong>2. Datos agrupados.</strong> Si tenés varias filas del mismo cliente, paciente o documento, y algunas quedan en train y otras en test, el modelo puede reconocer al cliente en lugar de aprender el patrón. En producción vas a ver clientes nuevos. La solución es que cada grupo quede entero de un solo lado: <code>GroupKFold</code>.</p>
@@ -683,7 +683,7 @@ print("por tiempo:", puntaje_tiempo.round(2), " por cliente:", puntaje_grupos.ro
         <li>Si <em>afinás</em> un modelo (lo seguís entrenando con tus propios datos), separá train y test por documento o por cliente, no por fila.</li>
       </ul>` },
     { titulo: 'Sistemas de recomendación: contenido, colaborativo y embeddings', html: `
-      <p><strong>En pocas palabras:</strong> hay dos formas de recomendar. "Te gustó una de terror, acá tenés otra de terror" es recomendar por contenido. "A la gente que vio lo mismo que vos también le gustó esta" es el filtrado colaborativo. Netflix o Spotify mezclan las dos.</p>
+      <p class="idea">hay dos formas de recomendar. "Te gustó una de terror, acá tenés otra de terror" es recomendar por contenido. "A la gente que vio lo mismo que vos también le gustó esta" es el filtrado colaborativo. Netflix o Spotify mezclan las dos.</p>
       <p>"Te puede interesar…" está en casi todos los productos digitales. A cada cosa que se puede recomendar (película, producto, canción) se le dice <strong>ítem</strong>. Hay dos ideas base, que en la práctica se combinan:</p>
       <ul>
         <li><strong>Por contenido:</strong> recomendás ítems parecidos a los que le gustaron al usuario, comparando sus características. Hoy lo habitual es usar <strong>embeddings</strong> de la descripción, la imagen o el texto del ítem. Funciona con ítems nuevos, porque no necesita que nadie los haya visto antes.</li>
@@ -829,7 +829,7 @@ for i in [0, 1, 3]:
   ],
   lecciones: [
     { titulo: 'Cómo aprende una red neuronal', html: `
-      <p><strong>En pocas palabras:</strong> una red neuronal es una cadena de pasos que transforman números: entra una foto o un texto (convertidos en números) y sale una respuesta. Aprende como alguien que tira al aro: tira, ve por cuánto le erró, corrige un poquito la puntería y vuelve a tirar, miles de veces.</p>
+      <p class="idea">una red neuronal es una cadena de pasos que transforman números: entra una foto o un texto (convertidos en números) y sale una respuesta. Aprende como alguien que tira al aro: tira, ve por cuánto le erró, corrige un poquito la puntería y vuelve a tirar, miles de veces.</p>
       <p>Cada paso de la cadena es una <strong>capa</strong>, y calcula <code>y = activación(W·x + b)</code>:</p>
       <ul>
         <li><code>x</code> es el vector que entra.</li>
@@ -864,7 +864,7 @@ for i in [0, 1, 3]:
         loss.backward()         # backprop
         optimizer.step()        # actualizar pesos</code></pre>` },
     { titulo: 'Arquitecturas: MLP, CNN, RNN y el salto a Transformers', html: `
-      <p><strong>En pocas palabras:</strong> así como hay herramientas distintas para cortar madera o metal, hay formas distintas de armar una red según el tipo de dato: tablas, fotos o texto. La <em>arquitectura</em> es esa forma de armarla. Hoy casi todo usa la última de la lista, los Transformers.</p>
+      <p class="idea">así como hay sierras distintas para cortar madera o metal, hay formas distintas de armar una red según el tipo de dato: tablas, fotos o texto. La <em>arquitectura</em> es esa forma de armarla. Hoy casi todo usa la última de la lista, los Transformers.</p>
       <ul>
         <li><strong>MLP</strong> (perceptrón multicapa): capas <em>densas</em>, donde cada número de entrada se conecta con todos los de salida. Es lo que viste en la lección anterior. Sirve para datos tabulares y como pieza dentro de modelos más grandes.</li>
         <li><strong>CNN</strong> (red convolucional): usa <em>filtros</em>, ventanitas chicas que recorren la imagen buscando un patrón, como una lupa que pasás por toda la foto. El mismo filtro se usa en todas partes (comparte pesos), así que si aprende a ver un borde, lo ve en cualquier lugar. Capturan patrones locales, como bordes y texturas, y dominaron la visión por computadora (el reconocimiento de imágenes).</li>
@@ -883,7 +883,7 @@ for i in [0, 1, 3]:
         <li><strong>Dropout:</strong> durante el entrenamiento, "apagar" al azar algunas neuronas (algunos números de la capa). Es una forma de regularización: obliga a la red a no depender de una sola pieza.</li>
       </ul>` },
     { titulo: 'Entrenar bien: AdamW, warmup, mixed precision y cómo leer las curvas', html: `
-      <p><strong>En pocas palabras:</strong> entrenar una red es como hacer un asado: no alcanza con buena carne (la arquitectura), también hay que manejar el fuego. Fuego fuerte de entrada, y se quema; fuego flojo, y nunca se cocina. Esta lección son los trucos para manejar "el fuego" del entrenamiento y para darte cuenta, mirando un gráfico, cuando algo anda mal.</p>
+      <p class="idea">entrenar una red es como hacer un asado: no alcanza con buena carne (la arquitectura), también hay que manejar el fuego. Fuego fuerte de entrada, y se quema; fuego flojo, y nunca se cocina. Esta lección son los trucos para manejar "el fuego" del entrenamiento y para darte cuenta, mirando un gráfico, cuando algo anda mal.</p>
       <ul>
         <li><strong>AdamW:</strong> el optimizador más usado para Transformers. Adam le da a cada peso su propio tamaño de paso, según cómo vino variando su gradiente en los últimos pasos (un promedio móvil): los pesos con gradientes inestables avanzan con más cuidado. AdamW le agrega el <em>weight decay</em>, una regularización que en cada paso achica un poquito todos los pesos.</li>
         <li><strong>Warmup + decaimiento coseno:</strong> un plan para el learning rate (el tamaño del paso).
@@ -931,7 +931,7 @@ for x, y in loader:
         <li>No se mueve nada: casi siempre un bug. Por ejemplo, pesos <em>congelados</em> (marcados para no cambiar), etiquetas que no corresponden a sus ejemplos, o un <code>zero_grad</code> que falta.</li>
       </ul>` },
     { titulo: 'Aprendizaje contrastivo: cómo se entrenan los embeddings (y CLIP)', html: `
-      <p><strong>En pocas palabras:</strong> es el juego de unir con flechas. Le das al modelo una columna de preguntas y otra de respuestas mezcladas, y lo premiás cuando une cada pregunta con su respuesta y no con las otras. Después de millones de rondas, aprende a poner cerca las cosas que van juntas.</p>
+      <p class="idea">es el juego de unir con flechas. Le das al modelo una columna de preguntas y otra de respuestas mezcladas, y lo premiás cuando une cada pregunta con su respuesta y no con las otras. Después de millones de rondas, aprende a poner cerca las cosas que van juntas.</p>
       <p>Los modelos de embeddings que vas a usar en RAG (buscar documentos para que un LLM responda con ellos, módulo de RAG) no se entrenan para predecir el siguiente token. Se entrenan con <strong>aprendizaje contrastivo</strong>: acercar los vectores de lo que va junto y alejar los de lo que no. Imaginá cada embedding como un punto en un mapa (el <em>espacio vectorial</em>): lo relacionado tiene que quedar cerca.</p>
       <p><strong>La idea, paso a paso:</strong></p>
       <ol>
@@ -962,7 +962,7 @@ loss = F.cross_entropy(logits, etiquetas)</code></pre>
       <p><strong>CLIP</strong> (OpenAI, 2021) aplicó esta idea a imágenes y texto: entrenó un codificador de imágenes y uno de texto con unos 400 millones de pares imagen-descripción, con la loss en las dos direcciones. Así, imágenes y textos quedan en el mismo espacio y se puede <strong>clasificar sin entrenar</strong> (zero-shot): comparás el embedding de una imagen con los de textos como "una foto de un perro" o "una foto de un gato" y elegís el más parecido.</p>
       <p>Por eso, cuando un modelo de embeddings genérico no distingue bien los conceptos de tu <em>dominio</em> (tu área: legal, médica, tu empresa), una opción es <em>afinarlo</em> (seguir entrenándolo) con pares propios y negativos difíciles. Librerías como Sentence Transformers traen estas losses listas.</p>` },
     { titulo: 'Entrenar modelos grandes: memoria, acumulación de gradientes y paralelismo', html: `
-      <p><strong>En pocas palabras:</strong> un modelo grande no entra en la memoria de una placa de video, igual que una mudanza no entra en un auto. Las opciones son las mismas: hacer más viajes (acumulación de gradientes), llevar solo lo imprescindible (checkpointing, LoRA) o usar varios autos a la vez (varias GPUs). Esta lección te enseña a hacer la cuenta antes de cargar.</p>
+      <p class="idea">un modelo grande no entra en la memoria de una placa de video, igual que una mudanza no entra en un auto. Las opciones son las mismas: hacer más viajes (acumulación de gradientes), llevar solo lo imprescindible (checkpointing, LoRA) o usar varios autos a la vez (varias GPUs). Esta lección te enseña a hacer la cuenta antes de cargar.</p>
       <p>Entrenar consume mucha más memoria que usar el modelo. La memoria que importa es la de la GPU, que es limitada: 24, 80 GB. Además de los pesos, hay que guardar tres cosas más:</p>
       <ul>
         <li><strong>Gradientes:</strong> uno por peso.</li>
@@ -999,7 +999,7 @@ for i, (x, y) in enumerate(loader):
       </ul>
       <p>Hacer esta cuenta antes de entrenar te dice si entra, cuánto va a costar y qué técnica necesitás, sin descubrirlo con un error de memoria a mitad de camino.</p>` },
     { titulo: 'Transfer learning: no entrenes desde cero', html: `
-      <p><strong>En pocas palabras:</strong> si sabés andar en bicicleta, aprender a andar en moto te cuesta mucho menos que a alguien que nunca anduvo en nada. Con los modelos pasa igual: uno que ya aprendió a ver fotos en general aprende rápido a reconocer tus productos, con pocos ejemplos.</p>
+      <p class="idea">si sabés andar en bicicleta, aprender a andar en moto te cuesta mucho menos que a alguien que nunca anduvo en nada. Con los modelos pasa igual: uno que ya aprendió a ver fotos en general aprende rápido a reconocer tus productos, con pocos ejemplos.</p>
       <p>Casi nunca conviene entrenar un modelo desde cero. Un modelo <em>preentrenado</em>, que alguien ya entrenó con millones de imágenes o miles de millones de palabras, ya aprendió cosas útiles: bordes y formas en imágenes, gramática y significado en texto. <strong>Transfer learning</strong> (transferencia de aprendizaje) es reutilizar ese conocimiento y adaptarlo a tu tarea con pocos datos.</p>
       <p><strong>Dos formas, de menor a mayor costo:</strong></p>
       <ol>
@@ -1111,7 +1111,7 @@ opt = torch.optim.AdamW([
   ],
   lecciones: [
     { titulo: 'De texto a predicción: tokens, embeddings y atención', html: `
-      <p><strong>En pocas palabras:</strong> un LLM es un autocompletar gigante. Corta tu texto en pedacitos, convierte cada pedacito en números y, mirando todo lo anterior, adivina cuál es el pedacito que viene. Después agrega ese y vuelve a adivinar, hasta terminar la respuesta.</p>
+      <p class="idea">un LLM es un autocompletar gigante. Corta tu texto en pedacitos, convierte cada pedacito en números y, mirando todo lo anterior, adivina cuál es el pedacito que viene. Después agrega ese y vuelve a adivinar, hasta terminar la respuesta.</p>
       <p>El camino tiene tres etapas:</p>
       <p><strong>1. Tokenización:</strong> el texto se parte en tokens (trozos de palabra) con algoritmos como BPE, que se explica en la última lección del módulo. Un token no es una palabra:</p>
       <ul>
@@ -1137,7 +1137,7 @@ opt = torch.optim.AdamW([
       <p><strong>Multi-head</strong> (varias cabezas): se hacen varias atenciones en paralelo y cada una aprende a fijarse en algo distinto. Por ejemplo, una en la gramática y otra en a quién se refiere cada pronombre.</p>
       <p>Los LLMs actuales son mayormente <strong>decoder-only</strong> (solo decodificador), entrenados para <strong>predecir el siguiente token</strong>. Usan una <em>máscara causal</em>: cada token solo puede mirar a los anteriores, nunca a los que vienen después, porque eso sería hacer trampa. Generar texto es repetir esa predicción una y otra vez.</p>` },
     { titulo: 'Cómo se entrena y se usa un LLM', html: `
-      <p><strong>En pocas palabras:</strong> primero el modelo lee una biblioteca enorme y aprende a continuar textos. Después le enseñan con ejemplos a contestar como un asistente, y por último personas le dicen qué respuestas son mejores. Esta lección también cubre sus límites: cuánto puede leer de una vez, por qué a veces inventa y cómo compararlos.</p>
+      <p class="idea">primero el modelo lee una biblioteca enorme y aprende a continuar textos. Después le enseñan con ejemplos a contestar como un asistente, y por último personas le dicen qué respuestas son mejores. Esta lección también cubre sus límites: cuánto puede leer de una vez, por qué a veces inventa y cómo compararlos.</p>
       <p>Un LLM se entrena en etapas:</p>
       <ol>
         <li><strong>Pre-training</strong> (preentrenamiento): lee billones de tokens de texto (libros, webs, código) con un único objetivo, adivinar el siguiente token. Sale un modelo que "completa" texto, pero que todavía no sabe conversar.</li>
@@ -1169,7 +1169,7 @@ opt = torch.optim.AdamW([
       </ul>
       <p><strong>Leyes de escalado:</strong> el rendimiento mejora de forma predecible con más parámetros, más datos y más cómputo (más horas de GPU). También mejora con más cómputo en <em>inferencia</em>, que es el momento de usarlo y no de entrenarlo: dejarlo pensar más.</p>` },
     { titulo: 'Modelos de razonamiento: pensar antes de responder', html: `
-      <p><strong>En pocas palabras:</strong> es la diferencia entre contestar de memoria y agarrar un papel para hacer la cuenta. Estos modelos escriben primero un "borrador" de pensamiento y después responden. Aciertan más en problemas difíciles, pero tardan más y cuestan más, así que no conviene usarlos para todo.</p>
+      <p class="idea">es la diferencia entre contestar de memoria y agarrar un papel para hacer la cuenta. Estos modelos escriben primero un "borrador" de pensamiento y después responden. Aciertan más en problemas difíciles, pero tardan más y cuestan más, así que no conviene usarlos para todo.</p>
       <p>Los modelos de razonamiento generan una <em>cadena de pensamiento</em> larga (el borrador) antes de la respuesta final. Abren una segunda forma de mejorar un modelo: además de entrenar modelos más grandes, se puede gastar más <strong>cómputo en inferencia</strong>, es decir, al momento de responder, dejando que el modelo piense más tokens en las tareas difíciles.</p>
       <p><strong>Cómo se entrenan:</strong> con aprendizaje por refuerzo (premio cuando acierta) sobre tareas de <em>recompensa verificable</em>, donde una computadora puede comprobar sola si la respuesta está bien: matemáticas con resultado exacto, o código que pasa sus <em>tests</em> (pruebas automáticas). El ciclo es simple:</p>
       <ol>
@@ -1188,7 +1188,7 @@ opt = torch.optim.AdamW([
       <p><strong>Cómo escribirles:</strong> dales el objetivo, el contexto y los criterios de éxito, y dejá que ellos planifiquen. Dictarles cada paso suele rendir menos que una instrucción de alto nivel bien explicada. En la API se activa como "extended thinking" o similar, con un presupuesto de tokens de razonamiento que también se cobran.</p>
       <p><strong>Límite importante: el razonamiento visible no siempre es fiel.</strong> En un estudio de Anthropic, a los modelos se les daban pistas para responder. Claude 3.7 Sonnet mencionó en su razonamiento la pista que usó solo el 25% de las veces, y DeepSeek R1 el 39%. En pruebas donde podían hacer trampa con la recompensa, la aprovecharon más del 99% de las veces, pero lo admitieron en menos del 2% de los casos. Leer el razonamiento ayuda a depurar, pero no prueba qué hizo el modelo ni reemplaza los controles de seguridad.</p>` },
     { titulo: 'Por dentro de un LLM moderno: RoPE, SwiGLU, MoE y FlashAttention', html: `
-      <p><strong>En pocas palabras:</strong> el motor original de 2017 sigue siendo el mismo, pero los autos de hoy le agregaron mejoras: mejor inyección, turbo, frenos ABS. Esta lección es el "manual del mecánico". No la necesitás para usar un LLM, pero sí para elegir un modelo abierto y saber cuánta memoria y velocidad te va a pedir.</p>
+      <p class="idea">el motor original de 2017 sigue siendo el mismo, pero los autos de hoy le agregaron mejoras: mejor inyección, turbo, frenos ABS. Esta lección es el "manual del mecánico". No la necesitás para usar un LLM, pero sí para elegir un modelo abierto y saber cuánta memoria y velocidad te va a pedir.</p>
       <p>El Transformer de 2017 sigue siendo la base, pero los LLMs actuales le suman varias mejoras. Conocerlas te permite leer el <code>config.json</code> de un modelo abierto (el archivo que describe cómo está armado) y entender qué estás corriendo. Cada mejora, con qué problema resuelve:</p>
       <ul>
         <li><strong>Pre-norm y RMSNorm:</strong> la normalización (reajustar los números a una escala estable, que viste en Deep Learning) se aplica <em>antes</em> de la atención y del MLP, no después. Así el atajo residual queda limpio y las redes muy profundas entrenan de forma más estable. RMSNorm es una versión más simple y barata de LayerNorm.</li>
@@ -1208,7 +1208,7 @@ def mlp_swiglu(x):
     return W_baja(silu(W_compuerta(x)) * W_sube(x))   # la compuerta regula lo que pasa</code></pre>
       <p>Al elegir un modelo abierto, estos detalles importan en la práctica: un MoE grande puede ser rápido por token pero necesitar mucha más memoria que un modelo <em>denso</em> (sin expertos, que usa todos sus pesos en cada token) con el mismo cómputo, y el tipo de atención y de posición condicionan cuánto contexto podés usar con el hardware que tenés.</p>` },
     { titulo: 'Modelos multimodales: cómo un LLM "ve" una imagen', html: `
-      <p><strong>En pocas palabras:</strong> el LLM solo sabe leer tokens. Para mostrarle una foto, la cortás como un rompecabezas en cuadraditos y "traducís" cada pieza a un token. El modelo lee esas piezas junto con tu texto, como si fueran palabras de otro idioma que aprendió a entender.</p>
+      <p class="idea">el LLM solo sabe leer tokens. Para mostrarle una foto, la cortás como un rompecabezas en cuadraditos y "traducís" cada pieza a un token. El modelo lee esas piezas junto con tu texto, como si fueran palabras de otro idioma que aprendió a entender.</p>
       <p>Un modelo <strong>multimodal</strong> entiende más de un tipo de dato: texto, imágenes, audio. Un LLM procesa secuencias de tokens, así que para que entienda una imagen hay que convertirla en algo parecido a tokens. Así funciona la receta más común:</p>
       <ol>
         <li><strong>Parches (ViT):</strong> el Vision Transformer corta la imagen en cuadraditos llamados <em>parches</em>, por ejemplo de 14×14 o 16×16 <em>píxeles</em> (los puntitos de color que forman la imagen). Convierte cada parche en un vector y los procesa con un Transformer como si fueran palabras. De ahí el título del paper: "una imagen vale 16×16 palabras".</li>
@@ -1231,7 +1231,7 @@ respuesta = llm.generar(secuencia)                 # atiende a imagen y texto ju
         <li><strong>Audio y video siguen la misma idea:</strong> se codifican en tokens que comparten la secuencia con el texto.</li>
       </ul>` },
     { titulo: 'Tokenización por dentro: BPE y sus consecuencias', html: `
-      <p><strong>En pocas palabras:</strong> el modelo no lee letras ni palabras enteras, lee pedazos. Los pedazos se arman pegando las letras que aparecen juntas muy seguido: "q" y "u" casi siempre van juntas, así que "qu" pasa a ser un solo pedazo. Esto explica algunas rarezas, como que a un LLM le cueste contar las letras de una palabra.</p>
+      <p class="idea">el modelo no lee letras ni palabras enteras, lee pedazos. Los pedazos se arman pegando las letras que aparecen juntas muy seguido: "q" y "u" casi siempre van juntas, así que "qu" pasa a ser un solo pedazo. Esto explica algunas rarezas, como que a un LLM le cueste contar las letras de una palabra.</p>
       <p>Antes de entrar al modelo, el texto se parte en tokens. El algoritmo más usado es <strong>BPE</strong> (byte pair encoding, "codificación por pares"), propuesto para traducción automática en 2015. Dos palabras antes: el <em>corpus</em> es todo el texto de ejemplo con el que se arma el tokenizador, y el <em>vocabulario</em> es la lista de todos los tokens posibles. El algoritmo:</p>
       <ol>
         <li>Empezás con caracteres sueltos (o bytes, los códigos con que la computadora guarda cada caracter).</li>
@@ -1356,7 +1356,7 @@ bpe(["bajo", "bajar", "bajamos", "trabajo"], 3)
   ],
   lecciones: [
     { titulo: 'Las técnicas que realmente funcionan', html: `
-      <p><strong>En pocas palabras:</strong> un <strong>prompt</strong> es el mensaje con instrucciones que le escribís al modelo. Escribirlo bien se parece mucho a pedirle un trabajo a una persona nueva en el equipo: decile qué querés, para qué, mostrale un ejemplo y decile cómo entregarlo.</p>
+      <p class="idea">un <strong>prompt</strong> es el mensaje con instrucciones que le escribís al modelo. Escribirlo bien se parece mucho a pedirle un trabajo a una persona nueva en el equipo: decile qué querés, para qué, mostrale un ejemplo y decile cómo entregarlo.</p>
       <ul>
         <li><strong>Sé claro y directo:</strong> escribí como si se lo explicaras a un colega brillante que no sabe nada de tu proyecto. Decí el objetivo, para quién es y qué es "bien hecho".</li>
         <li><strong>Dá contexto y el porqué:</strong> "Respondé breve porque se lee en el celular" funciona mejor que "respondé breve".</li>
@@ -1373,7 +1373,7 @@ bpe(["bajo", "bajar", "bajamos", "trabajo"], 3)
 &lt;ticket&gt;{texto_del_ticket}&lt;/ticket&gt;
 Respondé solo con JSON: {"categoria": "...", "motivo": "una frase"}</code></pre>` },
     { titulo: 'Prompting como ingeniería: medir, no adivinar', html: `
-      <p><strong>En pocas palabras:</strong> si cambiás una receta, la probás antes de servirla a los invitados. Con los prompts igual: armás una lista de casos de prueba, medís cuántos salen bien y recién ahí sabés si el cambio mejoró o empeoró. Cambiar palabras "a ojo" no es ingeniería.</p>
+      <p class="idea">si cambiás una receta, la probás antes de servirla a los invitados. Con los prompts igual: armás una lista de casos de prueba, medís cuántos salen bien y recién ahí sabés si el cambio mejoró o empeoró. Cambiar palabras "a ojo" no es ingeniería.</p>
       <p>El proceso:</p>
       <ol>
         <li><strong>Definí criterios de éxito</strong> medibles, por ejemplo "clasifica bien el 95% de los tickets" o "siempre devuelve un JSON válido".</li>
@@ -1385,7 +1385,7 @@ Respondé solo con JSON: {"categoria": "...", "motivo": "una frase"}</code></pre
       <p>A este conjunto de casos de prueba con su medición se le dice <strong>evals</strong> (evaluaciones); tienen un módulo propio más adelante.</p>
       <p>Los prompts suelen fallar por falta de contexto, no por falta de palabras mágicas. Si un humano experto no podría hacer la tarea con ese prompt, el modelo tampoco.</p>` },
     { titulo: 'De prompt engineering a context engineering', html: `
-      <p><strong>En pocas palabras:</strong> el modelo tiene un escritorio de tamaño fijo. Si lo llenás de papeles que no sirven, trabaja peor, aunque todo entre. Context engineering es decidir qué papeles hay sobre el escritorio en cada momento: solo lo útil, y lo demás guardado en cajones de donde se pueda sacar cuando haga falta.</p>
+      <p class="idea">el modelo tiene un escritorio de tamaño fijo. Si lo llenás de papeles que no sirven, trabaja peor, aunque todo entre. Context engineering es decidir qué papeles hay sobre el escritorio en cada momento: solo lo útil, y lo demás guardado en cajones de donde se pueda sacar cuando haga falta.</p>
       <p>Un <strong>agente</strong> es un LLM que, además de responder, usa <strong>herramientas</strong>: funciones de tu programa que puede pedir ejecutar, como buscar en una base de datos, leer un archivo o mandar un mail. Trabaja en muchos pasos seguidos (tienen su propio módulo más adelante).</p>
       <p>En los agentes, el problema deja de ser "qué palabras pongo en el prompt" y pasa a ser <strong>qué información hay en la ventana de contexto en cada momento</strong>: el system prompt, la lista de herramientas, los ejemplos, el historial de la conversación, lo que devolvió cada herramienta y los documentos. A eso se le llama <strong>context engineering</strong> (ingeniería de contexto).</p>
       <p><strong>Por qué importa:</strong> a medida que crece el contexto, los modelos recuerdan y usan peor la información (<em>context rot</em>, que viste en LLMs). El contexto es un recurso limitado, un "presupuesto de atención": cada token que no sirve le resta foco a los que sí. El objetivo es el <strong>conjunto más chico de tokens útiles</strong> que logra el resultado.</p>
@@ -1416,7 +1416,7 @@ def preparar_contexto(mensajes, notas):
     return [{"role": "user", "content": "Notas: " + notas}] + mensajes</code></pre>
       <p>Regla práctica: antes de agregar algo al contexto, preguntate si un experto humano necesitaría eso para el próximo paso. Si no, va a una herramienta o a un archivo de notas.</p>` },
     { titulo: 'Prompts con documentos largos: orden, estructura, citas y "no sé"', html: `
-      <p><strong>En pocas palabras:</strong> si le das a alguien un contrato de 50 páginas, rinde más si primero lo lee y después le hacés la pregunta, si cada documento está en su carpeta con nombre, si le pedís que te marque con resaltador dónde lo dice y si le aclarás que puede contestar "no figura". Con el modelo pasa exactamente lo mismo.</p>
+      <p class="idea">si le das a alguien un contrato de 50 páginas, rinde más si primero lo lee y después le hacés la pregunta, si cada documento está en su carpeta con nombre, si le pedís que te marque con resaltador dónde lo dice y si le aclarás que puede contestar "no figura". Con el modelo pasa exactamente lo mismo.</p>
       <p>Analizar contratos, informes o historiales es de las tareas más comunes, y donde un buen prompt cambia más el resultado. La guía oficial de Claude recomienda, para textos de más de unos 20.000 tokens (unas 30 páginas):</p>
       <ol>
         <li><strong>Documentos arriba, pregunta al final.</strong> Poné los documentos largos al principio del prompt y las instrucciones y la pregunta después. En sus pruebas, la pregunta al final mejoró la calidad de las respuestas hasta un 30%, sobre todo con varios documentos complejos.</li>
@@ -1443,7 +1443,7 @@ Si los documentos no lo dicen, respondé "No figura en los documentos".</code></
       <p><strong>Verificá las citas en código:</strong> comprobar con un programa que cada cita aparezca textual en el documento (buscar el texto, como con Ctrl+F) es barato y <em>determinista</em>, o sea que da siempre el mismo resultado, sin depender de otra IA. Si una cita no existe, la respuesta no está respaldada. Algunas APIs ya lo traen hecho, como la función de citas de Claude, que devuelve qué fragmento del documento respalda cada afirmación.</p>
       <p>Todo esto se combina con RAG, que vas a ver más adelante: si los documentos no entran o son muchos, primero buscás los relevantes y después aplicás esta misma estructura.</p>` },
     { titulo: 'Optimizar prompts con datos: DSPy y la mejora automática', html: `
-      <p><strong>En pocas palabras:</strong> en vez de probar vos mil versiones del prompt a mano, le das a un programa tus casos de prueba y una forma de puntuar, y él prueba variantes y se queda con la que saca mejor nota. Es como un afinador automático: necesita saber qué nota es la correcta.</p>
+      <p class="idea">en vez de probar vos mil versiones del prompt a mano, le das a un programa tus casos de prueba y una forma de puntuar, y él prueba variantes y se queda con la que saca mejor nota. Es como un afinador automático: necesita saber qué nota es la correcta.</p>
       <p>Si ya tenés evals (casos de prueba con una forma de medir, como en la lección 2), podés ir un paso más allá: dejar que un algoritmo pruebe instrucciones y ejemplos, y se quede con lo que mejor puntúa en tu <em>métrica</em> (el número que mide qué tan bien sale). <strong>DSPy</strong> es el <em>framework</em> (una librería que te da una forma de trabajar armada) más conocido para esto. Su lema es "programá, no escribas prompts". Tiene tres piezas:</p>
       <ul>
         <li><strong>Signature</strong> (firma): declarás qué entra y qué sale de la tarea, por ejemplo "entra un ticket, sale una categoría". DSPy escribe el prompt por vos.</li>
@@ -1475,7 +1475,7 @@ optimizado = dspy.BootstrapFewShot(metric=metrica).compile(programa, trainset=ej
       </ul>
       <p><strong>Cuándo conviene:</strong> tareas estables, con una métrica clara, donde ajustar el prompt a mano ya no mejora. Para un prototipo que cambia todos los días, todavía no.</p>` },
     { titulo: 'Controlar el formato y el estilo de la respuesta', html: `
-      <p><strong>En pocas palabras:</strong> "no pienses en un elefante rosa" hace que pienses en el elefante. Con los modelos pasa algo parecido: funciona mejor decirles qué hacer que qué no hacer, y explicarles el motivo. Esta lección son trucos para que la respuesta salga del largo, el tono y el formato que necesitás.</p>
+      <p class="idea">"no pienses en un elefante rosa" hace que pienses en el elefante. Con los modelos pasa algo parecido: funciona mejor decirles qué hacer que qué no hacer, y explicarles el motivo. Esta lección son trucos para que la respuesta salga del largo, el tono y el formato que necesitás.</p>
       <p>Que la respuesta tenga el largo, el tono y el formato que tu producto necesita es uno de los pedidos más frecuentes. La guía de prompting de Claude da varias técnicas que funcionan:</p>
       <ol>
         <li><strong>Decí qué hacer, no qué evitar.</strong> En lugar de "no uses Markdown" (Markdown es el formato con asteriscos y numerales que se convierte en negritas, títulos y listas), probá "respondé en párrafos de prosa continua". Una instrucción positiva le da al modelo un objetivo claro.</li>
@@ -1499,7 +1499,7 @@ Más efectivo:
       </ul>
       <p>Como siempre, comprobá el efecto con tus evals: un cambio de formato puede afectar también la calidad del contenido.</p>` },
     { titulo: 'Prompts para agentes: autonomía, alcance y verificación', html: `
-      <p><strong>En pocas palabras:</strong> a un empleado nuevo le decís qué puede hacer solo y qué tiene que consultarte antes, que no haga más de lo que le pediste y que revise su trabajo. Con un agente (un LLM que usa herramientas y actúa, como vimos en la lección 3) es igual, pero tenés que escribirlo explícitamente en su system prompt.</p>
+      <p class="idea">a un empleado nuevo le decís qué puede hacer solo y qué tiene que consultarte antes, que no haga más de lo que le pediste y que revise su trabajo. Con un agente (un LLM que usa herramientas y actúa, como vimos en la lección 3) es igual, pero tenés que escribirlo explícitamente en su system prompt.</p>
       <p>Un agente no solo responde: actúa. Su system prompt tiene que decirle cuánta iniciativa tomar, hasta dónde llegar y cómo comprobar lo que hace. La guía de prompting de Claude trae secciones específicas para <em>sistemas agénticos</em> (los que funcionan como agentes); estas son las más útiles:</p>
       <ul>
         <li><strong>Autonomía según si se puede deshacer:</strong>
@@ -1605,7 +1605,7 @@ tests. Si un test parece incorrecto, avisame en lugar de esquivarlo.
   ],
   lecciones: [
     { titulo: 'Anatomía de una llamada', html: `
-      <p><strong>En pocas palabras:</strong> usar un LLM desde tu programa es como mandar un pedido a un restaurante por una app. Mandás un mensaje con lo que querés y tu "credencial" (la API key), y te vuelve la respuesta con la cuenta (cuántos tokens usaste). El restaurante no se acuerda de vos: en cada pedido tenés que repetir toda la conversación anterior.</p>
+      <p class="idea">usar un LLM desde tu programa es como mandar un pedido a un restaurante por una app. Mandás un mensaje con lo que querés y tu "credencial" (la API key), y te vuelve la respuesta con la cuenta (cuántos tokens usaste). El restaurante no se acuerda de vos: en cada pedido tenés que repetir toda la conversación anterior.</p>
       <p>Una <strong>API</strong> es la puerta por la que un programa le pide cosas a otro servicio. Las APIs de chat son <strong>stateless</strong> (sin estado): el modelo no recuerda nada entre una llamada y la siguiente. Para mantener una conversación, reenviás el historial completo cada vez.</p>
       <p>Para usarla necesitás una <strong>API key</strong>: una contraseña larga que identifica tu cuenta, y con la que el proveedor sabe a quién cobrarle. El código usa el <em>SDK</em> de Anthropic, una librería que arma los pedidos por vos. La clave se lee de una <em>variable de entorno</em>, un dato guardado en la configuración de la computadora y no escrito en el código.</p>
       <pre><code>import anthropic
@@ -1634,7 +1634,7 @@ print(resp.usage)  # tokens de entrada y salida = lo que pagás</code></pre>
       </ul>
       <p>Guardala en una variable de entorno y hacé las llamadas desde un <em>backend</em>: la parte de la app que corre en tu servidor, donde nadie más la ve.</p>` },
     { titulo: 'Lo que separa un demo de una app real', html: `
-      <p><strong>En pocas palabras:</strong> un <em>demo</em> (una prueba para mostrar) funciona cuando todo sale bien. Una app real tiene que seguir funcionando cuando algo sale mal: cuando el proveedor tarda, falla, cobra de más o devuelve algo raro. Esta lección es la lista de lo que hay que prever, y las siguientes lo explican en detalle.</p>
+      <p class="idea">un <em>demo</em> (una prueba para mostrar) funciona cuando todo sale bien. Una app real tiene que seguir funcionando cuando algo sale mal: cuando el proveedor tarda, falla, cobra de más o devuelve algo raro. Esta lección es la lista de lo que hay que prever, y las siguientes lo explican en detalle.</p>
       <ul>
         <li><strong>Streaming:</strong> mostrás los tokens a medida que llegan, como ChatGPT escribiendo de a poco. La respuesta completa no llega antes, pero la espera <em>percibida</em> baja muchísimo, porque el usuario ve algo en menos de un segundo.</li>
         <li><strong>Salidas estructuradas:</strong> pedí JSON con un esquema (o usá la función de salidas estructuradas o <em>tool use</em>, el uso de herramientas, que también devuelve JSON) y <em>validá</em> siempre en tu código que esté bien.</li>
@@ -1655,7 +1655,7 @@ print(resp.usage)  # tokens de entrada y salida = lo que pagás</code></pre>
           Tu app tiene que fallar con elegancia: mostrar un mensaje claro en vez de quedarse colgada.</li>
       </ul>` },
     { titulo: 'Código robusto: salidas estructuradas, validación y reintentos', html: `
-      <p><strong>En pocas palabras:</strong> pedirle datos a un LLM es como pedirle a alguien que complete un formulario. Aunque use el formulario correcto, puede poner un total negativo o un 31 de febrero. Y si el correo se pierde, hay que reenviar, pero sin pagar dos veces la misma factura. Esta lección enseña a revisar lo que vuelve y a reintentar con cuidado.</p>
+      <p class="idea">pedirle datos a un LLM es como pedirle a alguien que complete un formulario. Aunque use el formulario correcto, puede poner un total negativo o un 31 de febrero. Y si el correo se pierde, hay que reenviar, pero sin pagar dos veces la misma factura. Esta lección enseña a revisar lo que vuelve y a reintentar con cuidado.</p>
       <p>Un demo llama al modelo y confía en lo que vuelve. Una app real asume que <strong>todo puede fallar</strong>: la red, el proveedor, el formato y el contenido.</p>
       <p><strong>Salidas estructuradas nativas:</strong> varias APIs pueden obligar al modelo a responder con un JSON que cumpla un <em>JSON Schema</em> (la descripción de qué campos lleva y de qué tipo). En Claude se hace con <code>output_config.format</code> de tipo <code>json_schema</code>. Así el JSON siempre se puede <em>parsear</em>, o sea, leer como datos sin error. Pero el esquema garantiza la <em>forma</em>, no que los valores tengan sentido: un total negativo o una fecha 2026-02-31 pasan igual. Por eso validás las <em>reglas de negocio</em> (las reglas de tu caso: "el total es positivo") en tu código.</p>
       <p><strong>Qué reintentar y qué no:</strong></p>
@@ -1710,7 +1710,7 @@ def extraer(texto, intentos=3):
     raise ValueError("no se pudo extraer la factura")</code></pre>
       <p>Fijate en los topes: intentos máximos de validación, de reintentos y un tiempo máximo de espera. Un bucle de reintentos sin límite es una forma rápida de gastar presupuesto y empeorar una caída del proveedor.</p>` },
     { titulo: 'Más allá del texto: imágenes y PDFs en la API', html: `
-      <p><strong>En pocas palabras:</strong> también le podés mandar fotos y PDFs al modelo. Cada foto se cobra según su tamaño, como una fotocopia por hoja: más grande, más cara. Conviene mandar solo la parte que importa, derecha y legible.</p>
+      <p class="idea">también le podés mandar fotos y PDFs al modelo. Cada foto se cobra según su tamaño, como una fotocopia por hoja: más grande, más cara. Conviene mandar solo la parte que importa, derecha y legible.</p>
       <p>Muchas tareas reales llegan como imagen o PDF: recibos, capturas de pantalla, formularios escaneados, informes con gráficos. Los modelos actuales los entienden, pero tienen costo y límites propios.</p>
       <p><strong>Cuánto cuesta una imagen.</strong> En la API de Claude, la imagen se procesa en bloques de 28×28 píxeles y cada bloque es un token visual (como los parches que viste en LLMs). La fórmula es <code>tokens = ⌈ancho/28⌉ × ⌈alto/28⌉</code>, donde ⌈ ⌉ quiere decir "redondear para arriba". Una imagen de 1000×1000 son unos 1.296 tokens. Las imágenes más grandes que el máximo del modelo se reducen antes de procesarse: 1.568 px de lado largo en los modelos estándar y 2.576 px en los de alta resolución.</p>
       <pre><code>import math
@@ -1738,14 +1738,14 @@ tokens_imagen(200, 200)     # 64
       </ul>
       <p><strong>PDFs:</strong> la API puede recibir PDFs directamente y analizar el texto junto con el contenido visual de las páginas (tablas, gráficos). Si el PDF es solo texto y el volumen es alto, extraer el texto antes puede salir más barato. Medí las dos opciones con tus evals.</p>` },
     { titulo: 'Procesamiento por lotes: la mitad del precio para lo que no es urgente', html: `
-      <p><strong>En pocas palabras:</strong> es como mandar la ropa al lavadero en vez de lavarla en el momento. La dejás toda junta, te la devuelven más tarde (en general en menos de una hora, como mucho al día siguiente) y cobra la mitad. Sirve para todo lo que no tiene a nadie esperando.</p>
+      <p class="idea">es como mandar la ropa al lavadero en vez de lavarla en el momento. La dejás toda junta, te la devuelven más tarde (en general en menos de una hora, como mucho al día siguiente) y cobra la mitad. Sirve para todo lo que no tiene a nadie esperando.</p>
       <p>Clasificar dos millones de tickets viejos, correr una eval grande o completar las descripciones de un catálogo no necesitan respuesta inmediata. Para eso existen las APIs de lotes (<em>batch</em>). En la de Claude (Message Batches API):</p>
       <ul>
         <li>Cuesta <strong>50% menos</strong> que las llamadas estándar.</li>
         <li>Cada lote admite hasta 100.000 pedidos o 256 MB, lo que se alcance primero.</li>
         <li>La mayoría termina en menos de una hora; los resultados están disponibles cuando terminan todos los pedidos o a las 24 horas, lo que pase primero.</li>
         <li>Los resultados quedan disponibles 29 días.</li>
-        <li><strong>Los resultados pueden volver en cualquier orden.</strong> Cada pedido lleva un <code>custom_id</code>, una etiqueta que le ponés vos (como el número de ticket del lavadero), para saber qué resultado corresponde a qué pedido.</li>
+        <li><strong>Los resultados pueden volver en cualquier orden.</strong> Cada pedido lleva un <code>custom_id</code>, un nombre que le ponés vos (como el número de ticket del lavadero), para saber qué resultado corresponde a qué pedido.</li>
         <li>Se puede combinar con prompt caching (lección siguiente). Como los pedidos se procesan a la vez y sin orden fijo, no está garantizado que se aproveche la caché; la documentación sugiere la caché de 1 hora para mejorar las chances.</li>
       </ul>
       <p>El código hace dos cosas en dos momentos:</p>
@@ -1774,7 +1774,7 @@ if client.messages.batches.retrieve(lote.id).processing_status == "ended":
       <p><strong>Cuándo no:</strong> cualquier cosa con un usuario esperando, como un chat o una búsqueda en vivo. Ahí van las llamadas normales, con streaming.</p>
       <p>Diseñá el flujo para que sea asíncrono de verdad: guardá el id del lote, revisá el estado cada tanto (o con una tarea programada), procesá los resultados cuando estén y reintentá solo los que fallaron.</p>` },
     { titulo: 'Prompt caching en detalle: cómo aprovecharlo de verdad', html: `
-      <p><strong>En pocas palabras:</strong> si todos los días le leés el mismo manual de 30 páginas al modelo antes de cada pregunta, pagás 30 páginas cada vez. Con la caché, el proveedor "se acuerda" del manual por unos minutos y te cobra solo una décima parte cuando lo repetís. La trampa: tiene que ser <em>exactamente</em> igual, letra por letra, desde el principio.</p>
+      <p class="idea">si todos los días le leés el mismo manual de 30 páginas al modelo antes de cada pregunta, pagás 30 páginas cada vez. Con la caché, el proveedor "se acuerda" del manual por unos minutos y te cobra solo una décima parte cuando lo repetís. La trampa: tiene que ser <em>exactamente</em> igual, letra por letra, desde el principio.</p>
       <p>Ya viste que el prompt caching abarata los <em>prefijos</em> repetidos (el comienzo del pedido que es siempre igual). Para que funcione en serio hay que entender cómo decide qué se reutiliza. Así funciona en la API de Claude:</p>
       <ul>
         <li><strong>Prefijo idéntico:</strong> el pedido se lee en este orden: herramientas, system y mensajes. Se guarda en la caché todo lo que hay hasta el bloque que marcás con <code>cache_control</code>. Para que haya <em>acierto</em> (que se reutilice), todo ese comienzo tiene que ser idéntico. Se pueden marcar hasta 4 puntos, o usar el modo automático.</li>
@@ -1801,7 +1801,7 @@ print(u.cache_creation_input_tokens, u.cache_read_input_tokens, u.input_tokens)
         <li>Usar la caché de 5 minutos con consultas cada 20 minutos: expira antes de reutilizarse. Ahí conviene la de 1 hora.</li>
       </ul>` },
     { titulo: 'Streaming en detalle: eventos, herramientas y errores a mitad de camino', html: `
-      <p><strong>En pocas palabras:</strong> con streaming, la respuesta no llega en un solo paquete sino en muchos mensajitos seguidos: "empieza", "acá va texto", "más texto", "terminó". Tu programa tiene que saber leer cada tipo de mensajito y estar listo para un "se cortó" a mitad de camino.</p>
+      <p class="idea">con streaming, la respuesta no llega en un solo paquete sino en muchos mensajitos seguidos: "empieza", "acá va texto", "más texto", "terminó". Tu programa tiene que saber leer cada tipo de mensajito y estar listo para un "se cortó" a mitad de camino.</p>
       <p>Con <code>stream: true</code>, la API manda la respuesta por partes, con un formato estándar llamado <em>server-sent events</em> (SSE, "eventos enviados por el servidor"). Cada parte es un <em>evento</em>, un mensajito con un tipo y unos datos. Para mostrar texto alcanza con la función ya armada del SDK, pero una app real necesita entender qué llega y en qué orden. Según la documentación de Claude:</p>
       <ol>
         <li><code>message_start</code>: un mensaje con el contenido todavía vacío.</li>
@@ -1912,7 +1912,7 @@ registrar(final.stop_reason, final.usage)</code></pre>
   ],
   lecciones: [
     { titulo: 'Embeddings y búsqueda semántica', html: `
-      <p><strong>En pocas palabras:</strong> un buscador común busca las palabras exactas que escribiste. Uno semántico busca por <em>significado</em>, como un bibliotecario que entiende qué querés decir aunque uses otras palabras. Para lograrlo, convierte cada texto en un punto de un mapa donde los textos que hablan de lo mismo quedan cerca.</p>
+      <p class="idea">un buscador común busca las palabras exactas que escribiste. Uno semántico busca por <em>significado</em>, como un bibliotecario que entiende qué querés decir aunque uses otras palabras. Para lograrlo, convierte cada texto en un punto de un mapa donde los textos que hablan de lo mismo quedan cerca.</p>
       <p>Un <strong>modelo de embeddings</strong> convierte un texto en un vector (lo viste en Fundamentos): una lista de cientos o miles de números, donde textos de significado parecido quedan cerca. "¿Cómo reseteo mi clave?" y "olvidé mi contraseña" quedan próximos aunque no compartan palabras.</p>
       <p><strong>Búsqueda semántica,</strong> en tres pasos:</p>
       <ol>
@@ -1928,7 +1928,7 @@ q_vec = embed("¿cómo pido reembolso?")
 top = mas_cercanos(q_vec, docs_vec, k=5)</code></pre>
       <p>La <strong>búsqueda léxica</strong>, la de palabras exactas (su método más usado se llama BM25), sigue siendo excelente para nombres propios, códigos de producto y términos exactos. Una búsqueda por significado puede confundir "error 404" con "error 403"; una por palabras, no. Lo mejor suele ser combinarlas: eso se llama <strong>búsqueda híbrida</strong>.</p>` },
     { titulo: 'El pipeline RAG y cómo mejorarlo', html: `
-      <p><strong>En pocas palabras:</strong> es un examen a libro abierto. En vez de esperar que el modelo sepa todo de memoria, primero buscás en tus documentos las páginas que hablan del tema y se las das junto con la pregunta. Así responde con tu información, actualizada, y puede decir de qué página la sacó.</p>
+      <p class="idea">es un examen a libro abierto. En vez de esperar que el modelo sepa todo de memoria, primero buscás en tus documentos las páginas que hablan del tema y se las das junto con la pregunta. Así responde con tu información, actualizada, y puede decir de qué página la sacó.</p>
       <p><strong>RAG</strong> (Retrieval-Augmented Generation, "generación aumentada con búsqueda"): antes de responder, <em>recuperás</em> (buscás) documentos relevantes y se los pasás al modelo como contexto. Ventajas:</p>
       <ul>
         <li>El modelo usa información privada (la de tu empresa) y actualizada, sin tener que volver a entrenarlo.</li>
@@ -1960,7 +1960,7 @@ top = mas_cercanos(q_vec, docs_vec, k=5)</code></pre>
         <li><strong>RAG agéntico:</strong> el modelo decide qué buscar y cuándo (lección siguiente).</li>
       </ul>` },
     { titulo: '¿RAG, contexto largo o RAG agéntico?', html: `
-      <p><strong>En pocas palabras:</strong> si tus documentos son pocos, dáselos enteros al modelo y listo. Si son muchos, buscá primero las páginas útiles (RAG). Y si la pregunta necesita varias búsquedas encadenadas, dejá que el modelo busque solo, varias veces, como un investigador. Cada opción conviene en un caso distinto.</p>
+      <p class="idea">si tus documentos son pocos, dáselos enteros al modelo y listo. Si son muchos, buscá primero las páginas útiles (RAG). Y si la pregunta necesita varias búsquedas encadenadas, dejá que el modelo busque solo, varias veces, como un investigador. Cada opción conviene en un caso distinto.</p>
       <p>Hoy los modelos pueden leer cientos de miles de tokens de una vez, así que RAG ya no es automático. Hay tres opciones y cada una gana en un escenario distinto.</p>
       <p><strong>1. Todo en el contexto.</strong> Si tu <em>base de conocimiento</em> (el conjunto de documentos) es chica, podés meterla entera en el prompt. Anthropic sugiere hacerlo por debajo de unos 200.000 tokens, unas 500 páginas. Combinado con <strong>prompt caching</strong> (módulo de APIs), según Anthropic la respuesta llega más del doble de rápido y cuesta hasta un 90% menos en las llamadas repetidas. No hay errores de búsqueda porque no hay búsqueda. Contras: pagás ese contexto en cada consulta y, con mucho contexto, los modelos pueden usar peor la información, sobre todo la que queda en el medio (<em>lost in the middle</em>). Poné lo importante al principio o al final, y medí.</p>
       <p><strong>2. RAG clásico</strong> (una búsqueda, top-k, generación). Gana cuando la base es grande, cambia seguido, necesitás citar fuentes o <strong>cada usuario puede ver documentos distintos</strong>. Los permisos se aplican como filtro en la búsqueda, antes de que el texto llegue al modelo. Decirle en el prompt "no le muestres esto a tal usuario" no protege nada, porque el modelo puede desobedecer o ser engañado.</p>
@@ -1990,7 +1990,7 @@ def buscar_docs(consulta, usuario, producto=None):
       <p>Lo importante es el método: cada técnica se agrega de a una y se mide contra una métrica, como la tasa de fallo o el recall@k.</p>
       <p><strong>Regla práctica:</strong> empezá por lo más simple que funcione con tus datos (contexto completo si entra), pasá a RAG clásico cuando el tamaño, el costo o los permisos lo exijan, y a RAG agéntico solo para las preguntas que lo necesiten.</p>` },
     { titulo: 'Embeddings e índices vectoriales en la práctica', html: `
-      <p><strong>En pocas palabras:</strong> dos decisiones sostienen cualquier RAG. Primero, qué modelo convierte los textos en vectores: elegilo probándolo con tus propias preguntas. Segundo, cómo guardás los vectores para buscarlos rápido. Una búsqueda perfecta revisa todo y es lenta; una aproximada es rapidísima, pero a veces se le escapa algo, y hay que medir cuánto.</p>
+      <p class="idea">dos decisiones sostienen cualquier RAG. Primero, qué modelo convierte los textos en vectores: elegilo probándolo con tus propias preguntas. Segundo, cómo guardás los vectores para buscarlos rápido. Una búsqueda perfecta revisa todo y es lenta; una aproximada es rapidísima, pero a veces se le escapa algo, y hay que medir cuánto.</p>
       <p><strong>Elegir el modelo de embeddings:</strong></p>
       <ul>
         <li>El <em>leaderboard</em> (ranking público) <strong>MTEB</strong> sirve para armar una lista corta, pero mide tareas genéricas. Decidí con <strong>recall@k sobre tus propias consultas</strong>, y si tus documentos están en español, probá modelos multilingües.</li>
@@ -2022,7 +2022,7 @@ LIMIT 5;</code></pre>
       <p><strong>Cuidado con los filtros:</strong> si el índice aproximado trae k candidatos y después el filtro descarta varios (por ejemplo, documentos de otro cliente), podés terminar con menos resultados de los que pediste. Pedí más candidatos, ajustá el índice o usá una solución con filtrado integrado, y medilo.</p>
       <p><strong>Medí siempre contra la búsqueda exacta:</strong> agregar un índice aproximado puede cambiar los resultados. Calculá el recall@k del índice tomando como referencia la búsqueda exacta y elegí el punto de recall y latencia que tu producto necesita.</p>` },
     { titulo: 'Más allá de los chunks: text-to-SQL y GraphRAG', html: `
-      <p><strong>En pocas palabras:</strong> buscar párrafos sirve para preguntas como "¿cuál es la política de devoluciones?". Pero "¿cuánto vendimos en marzo?" se responde haciendo una cuenta en una planilla, no leyendo. Y "¿de qué hablan estos 5.000 informes?" necesita un resumen de todo, no 5 párrafos sueltos. Esta lección muestra una técnica para cada caso.</p>
+      <p class="idea">buscar párrafos sirve para preguntas como "¿cuál es la política de devoluciones?". Pero "¿cuánto vendimos en marzo?" se responde haciendo una cuenta en una planilla, no leyendo. Y "¿de qué hablan estos 5.000 informes?" necesita un resumen de todo, no 5 párrafos sueltos. Esta lección muestra una técnica para cada caso.</p>
       <p>Hay preguntas que la búsqueda de chunks no puede responder, por más buena que sea.</p>
       <p><strong>1. Datos estructurados: text-to-SQL.</strong> Datos <em>estructurados</em> son los que están en tablas, con filas y columnas. "¿Cuánto vendimos por región en marzo?" no está escrito en ningún documento: está en una base de datos. Text-to-SQL ("de texto a SQL") sigue este patrón:</p>
       <ol>
@@ -2057,7 +2057,7 @@ respuesta = llm(f"Pregunta: {pregunta}\\nResultado: {filas}\\nRespondé en una f
       </ol>
       <p>En preguntas de síntesis sobre un <em>corpus</em> (conjunto de documentos) de alrededor de un millón de tokens, mejoró bastante lo completo y diverso de las respuestas frente a un RAG clásico. El costo: indexar es mucho más caro, porque el LLM procesa todo el corpus. Conviene cuando las preguntas globales son frecuentes; para preguntas puntuales, el RAG clásico sigue siendo mejor opción.</p>` },
     { titulo: 'Evaluar un RAG de punta a punta', html: `
-      <p><strong>En pocas palabras:</strong> cuando un auto anda mal, el mecánico revisa por partes: motor, frenos, luces. Con un RAG igual: hay que saber si falló la búsqueda (no encontró la página correcta), la respuesta (la encontró pero contestó mal) o si la información directamente no estaba. Cada falla se arregla distinto.</p>
+      <p class="idea">cuando un auto anda mal, el mecánico revisa por partes: motor, frenos, luces. Con un RAG igual: hay que saber si falló la búsqueda (no encontró la página correcta), la respuesta (la encontró pero contestó mal) o si la información directamente no estaba. Cada falla se arregla distinto.</p>
       <p>"Las respuestas están bien" no es una métrica. Un RAG tiene partes que fallan de formas distintas, y conviene medirlas por separado:</p>
       <ul>
         <li><strong>Retrieval:</strong> ¿trajo lo necesario? <em>Recall@k</em> (si el fragmento correcto está entre los k primeros) y <em>precisión del contexto</em> (cuánto de lo recuperado es relevante, porque el resto es ruido que también paga tokens).</li>
@@ -2085,7 +2085,7 @@ respuesta = llm(f"Pregunta: {pregunta}\\nResultado: {filas}\\nRespondé en una f
       </ul>
       <p><strong>Sin respuestas de referencia:</strong> librerías como RAGAS proponen métricas que no necesitan que una persona marque la respuesta correcta, como la fidelidad calculada con un juez. Sirven para vigilar las conversaciones reales de los usuarios. Pero el juez también es un LLM y se equivoca: antes de confiar en él, compará sus notas con las de personas en algunos casos (eso es <em>calibrarlo</em>; lo vas a ver en el módulo de evals).</p>` },
     { titulo: 'Chunking a fondo: estrategias y cómo elegir', html: `
-      <p><strong>En pocas palabras:</strong> si cortás un libro en fichas para buscar después, ¿dónde cortás? Si cortás en cualquier lado, una ficha dice "esto se aplica desde el lunes" y no sabés qué es "esto". Si las fichas son enormes, cada una habla de diez cosas. Esta lección enseña a cortar bien y a comprobarlo.</p>
+      <p class="idea">si cortás un libro en fichas para buscar después, ¿dónde cortás? Si cortás en cualquier lado, una ficha dice "esto se aplica desde el lunes" y no sabés qué es "esto". Si las fichas son enormes, cada una habla de diez cosas. Esta lección enseña a cortar bien y a comprobarlo.</p>
       <p>Cómo partís los documentos en chunks define qué puede encontrar la búsqueda. Un buen criterio, según la guía de Pinecone (una empresa de bases vectoriales): <strong>cada chunk debería tener sentido para una persona sin el texto de alrededor</strong>.</p>
       <p><strong>Estrategias, de la más simple a la más elaborada:</strong></p>
       <ul>
@@ -2183,7 +2183,7 @@ respuesta = llm(f"Pregunta: {pregunta}\\nResultado: {filas}\\nRespondé en una f
   ],
   lecciones: [
     { titulo: 'Tool use: el bucle que da superpoderes', html: `
-      <p><strong>En pocas palabras:</strong> el modelo no puede hacer nada por sí mismo, solo escribir. Pero le podés dar un "menú" de cosas que tu programa sabe hacer (consultar el clima, buscar un cliente). El modelo pide "usá buscar_cliente con el nombre Ana", tu programa lo hace y le cuenta el resultado. Así, de pedido en pedido, resuelve tareas reales.</p>
+      <p class="idea">el modelo no puede hacer nada por sí mismo, solo escribir. Pero le podés dar un "menú" de cosas que tu programa sabe hacer (consultar el clima, buscar un cliente). El modelo pide "usá buscar_cliente con el nombre Ana", tu programa lo hace y le cuenta el resultado. Así, de pedido en pedido, resuelve tareas reales.</p>
       <p><strong>Tool use</strong> (uso de herramientas) funciona en ciclo:</p>
       <ol>
         <li>Le describís al modelo las herramientas disponibles: nombre, para qué sirve y qué datos recibe, en un esquema JSON. A esos datos se les dice <em>parámetros</em> o <em>argumentos</em>.</li>
@@ -2206,7 +2206,7 @@ for paso in range(10):                      # límite de pasos: siempre
     mensajes.append({"role": "user", "content": resultados})</code></pre>
       <p>Diseñar buenas herramientas importa tanto como el prompt: nombres claros, descripciones que digan cuándo usarla, parámetros documentados, errores que expliquen cómo corregir y respuestas concisas (no devuelvas 10.000 líneas).</p>` },
     { titulo: 'Workflows, agentes y MCP', html: `
-      <p><strong>En pocas palabras:</strong> un <em>workflow</em> es una receta fija: siempre los mismos pasos, en el mismo orden. Un agente es un cocinero que decide qué hacer según lo que encuentra en la heladera. La receta es más predecible y barata; el cocinero, más flexible. Casi siempre conviene empezar por la receta.</p>
+      <p class="idea">un <em>workflow</em> es una receta fija: siempre los mismos pasos, en el mismo orden. Un agente es un cocinero que decide qué hacer según lo que encuentra en la heladera. La receta es más predecible y barata; el cocinero, más flexible. Casi siempre conviene empezar por la receta.</p>
       <ul>
         <li><strong>Workflow</strong> (flujo de trabajo): el camino lo define tu código, primero el paso 1 y después el paso 2.</li>
         <li><strong>Agente:</strong> el modelo decide sobre la marcha qué hacer y qué herramientas usar.</li>
@@ -2233,7 +2233,7 @@ for paso in range(10):                      # límite de pasos: siempre
         <li>Un registro (<em>log</em>) de cada paso.</li>
       </ul>` },
     { titulo: 'Sistemas multi-agente: cuándo valen lo que cuestan', html: `
-      <p><strong>En pocas palabras:</strong> para investigar un tema grande, un jefe de equipo reparte partes a varias personas que trabajan a la vez y le traen un resumen. Funciona muy bien cuando las partes son independientes. Pero sale caro, y si todos necesitan saber lo mismo, coordinarlos cuesta más de lo que ayuda.</p>
+      <p class="idea">para investigar un tema grande, un jefe de equipo reparte partes a varias personas que trabajan a la vez y le traen un resumen. Funciona muy bien cuando las partes son independientes. Pero sale caro, y si todos necesitan saber lo mismo, coordinarlos cuesta más de lo que ayuda.</p>
       <p>Anthropic publicó cómo construyó su sistema de investigación <strong>multi-agente</strong> (varios agentes trabajando juntos):</p>
       <ul>
         <li>Un agente principal, el <em>orquestador</em>, planifica y lanza subagentes a la vez.</li>
@@ -2258,7 +2258,7 @@ Formato: tabla con producto | plan gratuito | precio por millón de vectores | f
       <p>Arriba, un ejemplo de encargo bien delegado a un subagente: objetivo, qué no cubrir, fuentes, herramientas y formato.</p>
       <p><strong>Evaluación:</strong> los agentes llegan al mismo resultado por caminos distintos, así que se juzga el <em>resultado</em> (exactitud, citas, que esté completo, calidad de las fuentes) con una <em>rúbrica</em> (una lista de criterios con puntaje, como la de un profe), no una secuencia fija de pasos. Empezaron con unas 20 consultas reales y sumaron revisiones de personas. Estas detectaron problemas que las pruebas automáticas no vieron, como que el agente prefería páginas armadas para aparecer primero en Google (granjas de contenido SEO) antes que fuentes serias.</p>` },
     { titulo: 'Agentes que usan la computadora (computer use)', html: `
-      <p><strong>En pocas palabras:</strong> es como guiar a alguien por teléfono para que use una computadora: "¿qué ves en pantalla? Hacé clic en el botón azul". El modelo mira capturas de pantalla y dice dónde hacer clic o qué escribir, y tu programa lo ejecuta. Sirve cuando no hay otra forma, pero es lento, caro y hay que encerrarlo en una computadora aparte por seguridad.</p>
+      <p class="idea">es como guiar a alguien por teléfono para que use una computadora: "¿qué ves en pantalla? Hacé clic en el botón azul". El modelo mira capturas de pantalla y dice dónde hacer clic o qué escribir, y tu programa lo ejecuta. Sirve cuando no hay otra forma, pero es lento, caro y hay que encerrarlo en una computadora aparte por seguridad.</p>
       <p>Con <strong>computer use</strong> (uso de la computadora), el modelo maneja una computadora como una persona. Pide capturas de pantalla y decide dónde hacer clic, qué escribir o qué tecla apretar. Tu aplicación ejecuta esas acciones en un entorno que vos controlás. Es el mismo bucle de tool use, con capturas como resultado.</p>
       <p><strong>Cuándo usarlo:</strong> cuando no hay otra interfaz, como un sistema viejo sin API o una web sin integración. Si existe una API, usala: es más rápida, más barata y más confiable que interpretar píxeles.</p>
       <p><strong>Costos y fallas típicas</strong> (según la documentación de Claude):</p>
@@ -2296,7 +2296,7 @@ Formato: tabla con producto | plan gratuito | precio por millón de vectores | f
     mensajes += [{"role": "assistant", "content": resp.content},
                  {"role": "user", "content": resultados}]</code></pre>` },
     { titulo: 'Diseñar herramientas que los agentes usen bien', html: `
-      <p><strong>En pocas palabras:</strong> el agente solo sabe de tus herramientas lo que dice su nombre y su descripción, como alguien que usa un aparato solo leyendo las etiquetas de los botones. Pocos botones claros, con nombres que se entienden y mensajes de error que dicen cómo arreglar el problema, hacen que el agente se equivoque mucho menos.</p>
+      <p class="idea">el agente solo sabe de tus herramientas lo que dice su nombre y su descripción, como alguien que usa un aparato solo leyendo lo que dicen los botones. Pocos botones claros, con nombres que se entienden y mensajes de error que dicen cómo arreglar el problema, hacen que el agente se equivoque mucho menos.</p>
       <p>Un agente es tan bueno como sus herramientas. La guía de ingeniería de Anthropic "Writing effective tools for agents" resume lo que funciona:</p>
       <ol>
         <li><strong>Pocas herramientas, de alto impacto.</strong> No conviertas en herramienta cada <em>endpoint</em> de tu API (cada operación que ofrece, como "listar usuarios"). En lugar de <code>listar_usuarios</code>, <code>listar_eventos</code> y <code>crear_evento</code>, una sola <code>agendar_reunion</code> que busca disponibilidad y reserva. En lugar de <code>leer_logs</code>, <code>buscar_en_logs</code>, que devuelve solo las líneas relevantes.</li>
@@ -2331,7 +2331,7 @@ Formato: tabla con producto | plan gratuito | precio por millón de vectores | f
 }</code></pre>
       <p>Pensalo así: el agente solo conoce tu herramienta por su nombre, su descripción y lo que devuelve. Todo lo que no esté ahí, no existe para él.</p>` },
     { titulo: 'Memoria de largo plazo para agentes', html: `
-      <p><strong>En pocas palabras:</strong> el agente es como alguien con amnesia que cada mañana se olvida de todo. La solución es la misma que en la película: un cuaderno de notas que lee al empezar el día y donde anota lo importante. Ese cuaderno lo guardás vos, y hay que cuidar que nadie le escriba instrucciones tramposas.</p>
+      <p class="idea">el agente es como alguien con amnesia que cada mañana se olvida de todo. La solución es la misma que en la película: un cuaderno de notas que lee al empezar el día y donde anota lo importante. Ese cuaderno lo guardás vos, y hay que cuidar que nadie le escriba instrucciones tramposas.</p>
       <p>La ventana de contexto es la memoria de trabajo del agente: se pierde al terminar la sesión o al compactar. Para que un agente recuerde entre sesiones (las preferencias de un cliente, el avance de un proyecto, lo que aprendió de un error), necesita <strong>memoria de largo plazo</strong> fuera del contexto. El paper MemGPT lo compara con una computadora: el contexto es la memoria RAM (rápida pero que se borra al apagar) y la memoria externa es el disco (que queda guardado).</p>
       <p><strong>La herramienta de memoria de Claude</strong> funciona así: el modelo pide operaciones sobre archivos dentro de una carpeta <code>/memories</code> (ver, crear, reemplazar texto, insertar, borrar, renombrar) y <strong>tu aplicación las ejecuta</strong> donde elijas guardarlas. La memoria vive en tu sistema, no en el modelo. Al empezar una tarea, el agente revisa su memoria; mientras trabaja, anota lo que aprende.</p>
       <p><strong>Qué conviene guardar:</strong> decisiones, preferencias, progreso y lecciones aprendidas, no el historial completo. Para trabajos de varias sesiones, la documentación sugiere un patrón: una sesión inicial arma un registro de progreso y una lista de tareas; cada sesión nueva los lee al empezar y los actualiza al terminar; y una tarea se marca completa solo después de verificarla de punta a punta.</p>
@@ -2357,7 +2357,7 @@ def ruta_segura(usuario_id, ruta_pedida):
     return real</code></pre>
       <p>La memoria se combina con la compactación: la compactación mantiene chico el contexto activo, y la memoria guarda lo que tiene que sobrevivir a ese resumen.</p>` },
     { titulo: 'El bucle del agente en producción: errores, efectos y aprobaciones', html: `
-      <p><strong>En pocas palabras:</strong> en una prueba todo sale bien. Con usuarios reales, las herramientas fallan, internet se corta y el agente a veces pide cosas mal. Esta lección es el "manual de emergencias": cómo avisarle al modelo de un error para que lo corrija, cómo no mandar dos veces el mismo mail y qué acciones necesitan que una persona diga "sí".</p>
+      <p class="idea">en una prueba todo sale bien. Con usuarios reales, las herramientas fallan, internet se corta y el agente a veces pide cosas mal. Esta lección es el "manual de emergencias": cómo avisarle al modelo de un error para que lo corrija, cómo no mandar dos veces el mismo mail y qué acciones necesitan que una persona diga "sí".</p>
       <p>El bucle de tool use de la primera lección funciona en una demo. En producción (con usuarios reales), las herramientas fallan, la red se corta, el modelo pide algo mal formado y algunas acciones no se pueden deshacer. La diferencia entre un agente de juguete y uno confiable está casi toda en <strong>tu código alrededor del modelo</strong>, no en el prompt.</p>
       <h3>1. Los errores de herramientas vuelven al modelo, no rompen el bucle</h3>
       <p>Si una herramienta falla, no tires una excepción (un error que corta el programa): devolvé un <code>tool_result</code> (el resultado de la herramienta) con <code>"is_error": true</code> y un mensaje que diga <strong>qué pasó y qué probar</strong> ("Límite de uso excedido, reintentá en 60 segundos", "Falta el parámetro fecha en formato AAAA-MM-DD"). Con eso el modelo puede corregir y reintentar; la documentación de Claude indica que, ante llamadas inválidas, el modelo reintenta 2 o 3 veces con correcciones antes de rendirse. Para eliminar de raíz los parámetros faltantes o de tipo incorrecto, activá <strong>strict tool use</strong> (<code>strict: true</code> en la definición), que garantiza que la entrada respete el esquema.</p>
@@ -2472,7 +2472,7 @@ else:
   ],
   lecciones: [
     { titulo: 'Por qué las evals son la habilidad número uno', html: `
-      <p><strong>En pocas palabras:</strong> una <strong>eval</strong> (evaluación) es un examen para tu IA: un conjunto de casos de prueba y una forma de corregirlos. Sin examen, cada cambio es "me parece que anda mejor". Con examen, sabés si mejoró, empeoró o rompió algo. Y el primer paso no es inventar el examen: es leer en qué se equivoca de verdad.</p>
+      <p class="idea">una <strong>eval</strong> (evaluación) es un examen para tu IA: un conjunto de casos de prueba y una forma de corregirlos. Sin examen, cada cambio es "me parece que anda mejor". Con examen, sabés si mejoró, empeoró o rompió algo. Y el primer paso no es inventar el examen: es leer en qué se equivoca de verdad.</p>
       <p>Sin evals, cada cambio de prompt, de modelo o de búsqueda es una apuesta. Con evals, es un experimento. Es lo que más diferencia a un AI engineer profesional.</p>
       <p><strong>Empezá por el análisis de errores:</strong></p>
       <ol>
@@ -2496,7 +2496,7 @@ tono demasiado formal                          2    (poco frecuente: por ahora n
 sin fallo                                     51</code></pre>
       <p>En una tarde pasaste de "anda más o menos" a saber que el problema principal es inventar políticas, que eso pide un juez LLM, y que dos fallos se miden con código gratis. Fijate que la lista no salió de una métrica genérica sino de tus trazas: es lo mismo que vas a hacer con agentes en la lección de evaluar agentes.</p>` },
     { titulo: 'Montar un pipeline de evals', html: `
-      <p><strong>En pocas palabras:</strong> armar un sistema de evals es como armar un examen que se toma solo cada vez que cambiás algo. Tiene preguntas fijas con sus respuestas correctas, una nota por cada tipo de error y una alarma que suena si la nota baja. Así, ningún cambio rompe algo sin que te enteres.</p>
+      <p class="idea">armar un sistema de evals es como armar un examen que se toma solo cada vez que cambiás algo. Tiene preguntas fijas con sus respuestas correctas, una nota por cada tipo de error y una alarma que suena si la nota baja. Así, ningún cambio rompe algo sin que te enteres.</p>
       <ol>
         <li><strong>Dataset dorado:</strong> tu conjunto de casos de prueba de referencia. Al principio, 20 a 50 casos reales, que con el tiempo crecen a cientos. Cada uno con la salida esperada o los criterios para corregirlo. Incluí casos difíciles y casos que ya fallaron con usuarios reales.</li>
         <li><strong>Métricas:</strong> una por cada <em>modo de fallo</em> importante (cada tipo de error que encontraste en el análisis).</li>
@@ -2534,7 +2534,7 @@ for metrica in ["json_valido", "pide_pedido", "fiel"]:
     assert ahora &gt;= antes - 0.05, f"regresión en {metrica}"   # tolerancia por ruido</code></pre>
       <p>Cada métrica corresponde a un modo de fallo del análisis de errores, los resultados quedan guardados por versión y, si hay una regresión, el <code>assert</code> frena el <em>deploy</em> (la publicación del cambio). La tolerancia de 5 puntos existe porque con 40 casos hay ruido (lo ves a fondo en la lección de rigor estadístico).</p>` },
     { titulo: 'Evals con rigor: error estándar, comparación pareada y pass@k', html: `
-      <p><strong>En pocas palabras:</strong> si tirás una moneda 10 veces y salen 7 caras, no quiere decir que la moneda esté cargada: puede ser suerte. Con las evals pasa lo mismo. Una versión que saca 84% contra 80% puede no ser mejor, sino haber tenido suerte. Esta lección te enseña a calcular cuánto "margen de suerte" tiene tu nota.</p>
+      <p class="idea">si tirás una moneda 10 veces y salen 7 caras, no quiere decir que la moneda esté cargada: puede ser suerte. Con las evals pasa lo mismo. Una versión que saca 84% contra 80% puede no ser mejor, sino haber tenido suerte. Esta lección te enseña a calcular cuánto "margen de suerte" tiene tu nota.</p>
       <p>"La versión nueva saca 84% y la vieja 80%" no dice nada sin un margen de error. Los modelos no responden siempre igual y tu conjunto de casos es solo una muestra, así que cada nota trae ruido.</p>
       <p><strong>1. Reportá el error estándar</strong> (SEM), que mide cuánto podría moverse la nota por azar. Para una tasa de aciertos p con n casos, <code>SEM = √(p·(1−p)/n)</code> y el <em>intervalo de confianza del 95%</em> (el rango donde casi seguro está la nota real) es <code>p ± 1,96·SEM</code>. Con 50 casos y 80% de aciertos: SEM ≈ 0,057, o sea <strong>±11 puntos</strong> (de 69% a 91%). Con 500 casos baja a unos ±3,5. Si la mejora que buscás es de 4 puntos, 50 casos no alcanzan para verla.</p>
       <p><strong>2. Compará de forma pareada</strong> (como viste en Fundamentos). Las dos versiones responden los mismos casos, así que analizá la diferencia caso por caso. Eso elimina el ruido de que a una le toquen casos más difíciles y achica el error. Si el intervalo de la diferencia incluye el 0, no hay mejora demostrada.</p>
@@ -2560,7 +2560,7 @@ def diferencia_pareada(a, b):         # mismos casos, mismo orden
       </ul>
       <p>Con 80% de éxito por intento (independientes): pass@3 = 1 − 0,2³ ≈ <strong>99%</strong>, pero pass^3 = 0,8³ ≈ <strong>51%</strong>. El mismo agente parece excelente o mediocre según qué preguntes.</p>` },
     { titulo: 'Armar y etiquetar el dataset: datos sintéticos, etiquetas binarias y un experto', html: `
-      <p><strong>En pocas palabras:</strong> un examen vale lo que valen sus preguntas. Si le pedís a una IA "inventá 100 preguntas", salen todas parecidas. Conviene combinar a propósito tipos de usuario, intenciones y dificultades. Y para corregir, mejor "bien o mal" que notas del 1 al 5, con una persona que sepa del tema como referencia.</p>
+      <p class="idea">un examen vale lo que valen sus preguntas. Si le pedís a una IA "inventá 100 preguntas", salen todas parecidas. Conviene combinar a propósito tipos de usuario, intenciones y dificultades. Y para corregir, mejor "bien o mal" que notas del 1 al 5, con una persona que sepa del tema como referencia.</p>
       <p>Un juez y unas métricas valen lo que vale el conjunto de casos que los respalda. Recomendaciones prácticas de la guía de evals de Hamel Husain, un consultor conocido en el tema:</p>
       <p><strong>Datos sintéticos por dimensiones, no "generá 100 preguntas".</strong> Los datos <em>sintéticos</em> son casos inventados por un modelo. Si le pedís preguntas de prueba genéricas, salen parecidas entre sí. Mejor:</p>
       <ol>
@@ -2585,7 +2585,7 @@ for perfil, intencion, dificultad in random.sample(tuplas, 15):
       <p><strong>Un experto como referencia.</strong> Al principio, una sola persona experta en el tema (un abogado para una app legal, un médico para una de salud) define qué es una buena respuesta. Sumá más personas que corrijan solo si hace falta, y medí cuánto coinciden entre ellas (por ejemplo, con el <em>kappa de Cohen</em>, una medida de acuerdo que descuenta lo que coincidirían por azar). No le encargues el análisis de errores central a alguien de afuera: quien no conoce el tema no ve los fallos que importan.</p>
       <p><strong>Cuidado con las métricas genéricas.</strong> Puntajes listos para usar, como "utilidad" (helpfulness) o "coherencia", o métricas que miden cuánto se parecen las palabras a una respuesta modelo (ROUGE, BERTScore), dan una falsa sensación de control. Usá modos de fallo binarios que salgan de tu propio análisis de errores.</p>` },
     { titulo: 'Evaluar agentes: tareas, transcripciones y resultados', html: `
-      <p><strong>En pocas palabras:</strong> para evaluar a alguien que hace un trámite, no importa tanto el camino que tomó como si al final el trámite quedó hecho. Con los agentes igual: armás tareas, las dejás hacer varias veces en un entorno limpio y revisás el resultado final. Y leés lo que hizo, porque a veces el que se equivoca es tu examen.</p>
+      <p class="idea">para evaluar a alguien que hace un trámite, no importa tanto el camino que tomó como si al final el trámite quedó hecho. Con los agentes igual: armás tareas, las dejás hacer varias veces en un entorno limpio y revisás el resultado final. Y leés lo que hizo, porque a veces el que se equivoca es tu examen.</p>
       <p>Evaluar un agente es más difícil que evaluar una respuesta: actúa en varios pasos, cambia cosas en un <em>entorno</em> (el sistema donde trabaja, como una base de datos) y no hace siempre lo mismo. La guía de Anthropic "Demystifying evals for AI agents" propone un vocabulario y un método.</p>
       <ul>
         <li><strong>Tarea:</strong> una prueba con entrada y criterio de éxito definidos, idealmente con una solución de referencia.</li>
@@ -2623,9 +2623,9 @@ def calificar(entorno, transcripcion):
         </li>
         <li><strong>Varios intentos:</strong> con 75% de éxito por intento, pass^3 es de apenas 42%. Elegí la métrica según si importa que salga bien alguna vez o siempre.</li>
       </ul>
-      <p>Ninguna capa atrapa todo: las evals automáticas se combinan con monitoreo en producción, feedback de usuarios, revisión de transcripciones y tests A/B.</p>` },
+      <p>Ningún control atrapa todo: las evals automáticas se combinan con monitoreo en producción, feedback de usuarios, revisión de transcripciones y tests A/B.</p>` },
     { titulo: 'Evaluar en producción: señales de usuarios, drift y tests A/B', html: `
-      <p><strong>En pocas palabras:</strong> tu examen tiene las preguntas que vos imaginaste, pero los usuarios preguntan otras, y además cambian con el tiempo. Por eso también hay que mirar lo que pasa con usuarios reales: si vuelven a preguntar lo mismo (mala señal), si piden hablar con una persona, si compran. Y para comparar dos versiones, mostrarle cada una a la mitad de los usuarios.</p>
+      <p class="idea">tu examen tiene las preguntas que vos imaginaste, pero los usuarios preguntan otras, y además cambian con el tiempo. Por eso también hay que mirar lo que pasa con usuarios reales: si vuelven a preguntar lo mismo (mala señal), si piden hablar con una persona, si compran. Y para comparar dos versiones, mostrarle cada una a la mitad de los usuarios.</p>
       <p>Tus evals offline miden lo que vos imaginaste. Los usuarios reales preguntan otras cosas, y lo que preguntan cambia con el tiempo; a ese corrimiento se le dice <em>drift</em> (deriva). La evaluación en producción, con usuarios reales, cierra ese hueco.</p>
       <p><strong>Señales que conviene registrar:</strong></p>
       <ul>
@@ -2660,7 +2660,7 @@ def calificar(entorno, transcripcion):
       </ul>
       <p><strong>Cerrá el ciclo:</strong> cada fallo que encuentres en producción pasa a ser un caso de tu dataset offline, para que no vuelva a pasar sin que lo detectes.</p>` },
     { titulo: 'LLM como juez a fondo: construirlo, calibrarlo y no creerle de más', html: `
-      <p><strong>En pocas palabras:</strong> usar una IA para corregir a otra IA es como contratar a un ayudante para corregir exámenes. Ahorra mucho trabajo, pero antes de confiar tenés que comprobar que corrige como vos. Y ojo con sus mañas: le gustan las respuestas largas y las que se parecen a las suyas.</p>
+      <p class="idea">usar una IA para corregir a otra IA es como contratar a un ayudante para corregir exámenes. Ahorra mucho trabajo, pero antes de confiar tenés que comprobar que corrige como vos. Y ojo con sus mañas: le gustan las respuestas largas y las que se parecen a las suyas.</p>
       <p>Muchas cualidades no se pueden chequear con código: si la respuesta es útil, si el tono es el correcto, si respondió lo que se preguntó. Para eso se usa un <strong>LLM como juez</strong>: otro modelo lee la entrada y la salida y decide si pasa. Sirve para corregir miles de casos y es barato, pero un juez sin validar es un número que parece objetivo y no lo es.</p>
       <h3>Sesgos documentados</h3>
       <p>Un <em>sesgo</em> es una tendencia a equivocarse siempre para el mismo lado. El trabajo que presentó MT-Bench y Chatbot Arena (Zheng y otros, 2023) encontró que los mejores jueces coinciden con las preferencias de las personas más del 80% de las veces, parecido a lo que coinciden dos personas entre sí. Pero también documentó sesgos:</p>
@@ -2766,7 +2766,7 @@ tasa de verdaderos negativos = VN / (VN + FP)   # detecta lo que está mal</code
   ],
   lecciones: [
     { titulo: '¿Cuándo hacer fine-tuning?', html: `
-      <p><strong>En pocas palabras:</strong> el <strong>fine-tuning</strong> (ajuste fino) es seguir entrenando un modelo ya hecho con tus propios ejemplos, para que se especialice. Es como mandar a un empleado a un curso: sirve, pero es caro y lleva tiempo. Antes conviene probar lo barato: explicarle mejor (prompting) o darle un manual a mano (RAG).</p>
+      <p class="idea">el <strong>fine-tuning</strong> (ajuste fino) es seguir entrenando un modelo ya hecho con tus propios ejemplos, para que se especialice. Es como mandar a un empleado a un curso: sirve, pero es caro y lleva tiempo. Antes conviene probar lo barato: explicarle mejor (prompting) o darle un manual a mano (RAG).</p>
       <p>Orden recomendado: primero prompting, después RAG o herramientas, y recién al final fine-tuning. El fine-tuning es más caro de mantener: hay que juntar datos, entrenar, evaluar y volver a publicar el modelo cada vez que cambia algo.</p>
       <p><strong>Buen uso:</strong></p>
       <ul>
@@ -2789,7 +2789,7 @@ tasa de verdaderos negativos = VN / (VN + FP)   # detecta lo que está mal</code
    tickets etiquetados por el paso 2</code></pre>
       <p>El fine-tuning se justificó recién en el paso 4, y contra una línea base medida: iguala la calidad del paso 2 a una fracción del costo. Fijate que es una tarea estrecha, repetida y estable: si las categorías cambiaran cada mes, el costo de reentrenar se comería el ahorro. Y el paso 4 es una destilación: el modelo grande hizo de maestro (lo vas a ver en la lección de destilación).</p>` },
     { titulo: 'LoRA, cuantización e inferencia local', html: `
-      <p><strong>En pocas palabras:</strong> en vez de reescribir un libro entero para corregirlo, le pegás unos post-its con las correcciones. Eso es LoRA: el modelo original no se toca y solo se entrenan unas piezas chiquitas que se le agregan. Y cuantizar es guardar los números con menos decimales, como redondear precios: ocupa mucho menos y casi no se nota.</p>
+      <p class="idea">en vez de reescribir un libro entero para corregirlo, le pegás unos post-its con las correcciones. Eso es LoRA: el modelo original no se toca y solo se entrenan unas piezas chiquitas que se le agregan. Y cuantizar es guardar los números con menos decimales, como redondear precios: ocupa mucho menos y casi no se nota.</p>
       <p><strong>LoRA</strong> (Low-Rank Adaptation, adaptación de bajo rango): en vez de cambiar todos los pesos, congelás el modelo y entrenás dos matrices chicas que se suman a algunas capas. Se les dice "de bajo rango" porque son muy finitas, como verás en el ejemplo. Entrenás menos del 1% de los parámetros, con mucha menos memoria, y lo que entrenaste (el <em>adaptador</em>) pesa unos pocos megas.</p>
       <p><strong>QLoRA:</strong> LoRA sobre un modelo base cuantizado a 4 bits. Permite afinar modelos grandes en una sola GPU.</p>
       <p><strong>Cuantización:</strong> guardar los pesos con menos <em>bits</em> (los ceros y unos con que la computadora guarda cada número): de 16 a 8, o a 4. Ocupa menos memoria y corre más rápido, a cambio de algo de calidad. Formatos comunes: GGUF (el de llama.cpp y Ollama), AWQ y GPTQ.</p>
@@ -2809,7 +2809,7 @@ salida:        W·x + B·(A·x)       ← se suma el "delta" aprendido</code></p
  4 bits (0,5 bytes) →  4 GB   + algo de overhead: entra en una laptop con buena GPU</code></pre>
       <p>Por eso QLoRA (base en 4 bits + adaptador LoRA) permite afinar en una sola GPU: los pesos grandes ocupan poco y lo único que se entrena son esas matrices chicas.</p>` },
     { titulo: 'Servir modelos: KV cache, batching continuo y PagedAttention', html: `
-      <p><strong>En pocas palabras:</strong> un modelo que atiende a muchos usuarios es como una cocina de restaurante. Para no repetir trabajo, guarda lo ya preparado (el KV cache), y eso ocupa lugar en la heladera. Para que la cocina nunca esté quieta, entra un pedido nuevo apenas sale uno (batching continuo). Esta lección explica esos trucos y cómo calcular cuánto lugar ocupan.</p>
+      <p class="idea">un modelo que atiende a muchos usuarios es como una cocina de restaurante. Para no repetir trabajo, guarda lo ya preparado (el KV cache), y eso ocupa lugar en la heladera. Para que la cocina nunca esté quieta, entra un pedido nuevo apenas sale uno (batching continuo). Esta lección explica esos trucos y cómo calcular cuánto lugar ocupan.</p>
       <p>Si vas a <em>servir</em> un modelo abierto (ponerlo a atender pedidos), entender qué consume memoria y tiempo te ahorra mucha GPU.</p>
       <p><strong>Dos fases:</strong></p>
       <ul>
@@ -2839,7 +2839,7 @@ Ejemplo, modelo tipo Llama 3 8B: 32 capas, 8 cabezas KV, dim 128, fp16 (2 bytes)
       </ul>
       <p>Más usuarios a la vez suben el throughput, pero cada uno espera más. Hay que elegir el punto según tu producto.</p>` },
     { titulo: 'Datos para fine-tuning: calidad, formato y las trampas', html: `
-      <p><strong>En pocas palabras:</strong> el modelo afinado aprende a imitar tus ejemplos, con sus virtudes y sus errores. Mil ejemplos prolijos y coherentes enseñan más que diez mil desordenados. Y hay que presentárselos en el formato exacto que el modelo conoce, como completar un formulario oficial y no uno inventado.</p>
+      <p class="idea">el modelo afinado aprende a imitar tus ejemplos, con sus virtudes y sus errores. Mil ejemplos prolijos y coherentes enseñan más que diez mil desordenados. Y hay que presentárselos en el formato exacto que el modelo conoce, como completar un formulario oficial y no uno inventado.</p>
       <p>En fine-tuning, el resultado depende más de los datos que de los hiperparámetros (las perillas del entrenamiento).</p>
       <p><strong>Calidad antes que cantidad.</strong> El paper LIMA (2023) afinó un modelo grande con solo unos 1.000 ejemplos muy cuidados y obtuvo resultados competitivos. Su hipótesis: el conocimiento viene del pre-training, y el ajuste enseña sobre todo el formato y el estilo de respuesta. Cien ejemplos consistentes valen más que diez mil contradictorios.</p>
       <p><strong>Cómo armar el dataset:</strong></p>
@@ -2866,7 +2866,7 @@ texto = tok.apply_chat_template(ejemplo, tokenize=False)   # el formato que el m
         <li><strong>No comparar contra la línea base:</strong> el fine-tuning se justifica solo si supera al modelo base con un buen prompt y few-shot, medido con las mismas evals.</li>
       </ul>` },
     { titulo: 'Destilación: un modelo chico que aprende de uno grande', html: `
-      <p><strong>En pocas palabras:</strong> un chef experto cocina miles de platos y un ayudante aprende copiándolo. Al final, el ayudante hace ese plato casi igual de bien, más rápido y cobrando menos. Pero solo ese plato, y copiando también los errores del chef.</p>
+      <p class="idea">un chef experto cocina miles de platos y un ayudante aprende copiándolo. Al final, el ayudante hace ese plato casi igual de bien, más rápido y cobrando menos. Pero solo ese plato, y copiando también los errores del chef.</p>
       <p>Muchas veces el modelo grande hace bien tu tarea, pero es caro y lento para la cantidad de pedidos que tenés. La <strong>destilación</strong> entrena un modelo chico (el alumno) para imitar al grande (el maestro) en esa tarea.</p>
       <ul>
         <li><strong>La idea original</strong> (Hinton y otros, 2015): el alumno aprende de las probabilidades del maestro, no solo de su respuesta final. Esas probabilidades "blandas" también le dicen qué alternativas eran casi correctas. Por ejemplo: "es un perro, pero se parecía un poco a un lobo, y nada a un auto".</li>
@@ -2892,7 +2892,7 @@ for texto in muestra_de_produccion(5000):
         <li><strong>Medí la decisión completa:</strong> si el alumno queda 2 puntos abajo pero cuesta 20 veces menos y responde en la mitad de tiempo, puede ser la mejor opción. O no: depende del costo de cada error.</li>
       </ul>` },
     { titulo: 'Ajuste con refuerzo: GRPO y recompensas verificables', html: `
-      <p><strong>En pocas palabras:</strong> a veces no tenés la respuesta perfecta escrita, pero sí sabés comprobar si una respuesta está bien, como un programa que pasa o no sus pruebas. Entonces dejás que el modelo pruebe varias veces, premiás los intentos que salieron mejor que el promedio y desalentás los peores. Cuidado: el modelo va a buscar la forma más fácil de ganar el premio, aunque sea haciendo trampa.</p>
+      <p class="idea">a veces no tenés la respuesta perfecta escrita, pero sí sabés comprobar si una respuesta está bien, como un programa que pasa o no sus pruebas. Entonces dejás que el modelo pruebe varias veces, premiás los intentos que salieron mejor que el promedio y desalentás los peores. Cuidado: el modelo va a buscar la forma más fácil de ganar el premio, aunque sea haciendo trampa.</p>
       <p>El fine-tuning supervisado le muestra al modelo la respuesta correcta. El ajuste con refuerzo hace otra cosa: el modelo prueba varias respuestas, una <strong>función de recompensa</strong> las puntúa y se refuerza lo que funcionó. Sirve cuando sabés <em>verificar</em> una respuesta aunque no tengas la respuesta ideal escrita: código que pasa tests, matemáticas con resultado exacto, JSON que cumple un esquema.</p>
       <p><strong>GRPO</strong> (Group Relative Policy Optimization), presentado en el paper de DeepSeekMath, es uno de los métodos más usados:</p>
       <ol>
@@ -2924,7 +2924,7 @@ trainer.train()</code></pre>
       </ul>
       <p><strong>Cuándo conviene:</strong> tareas con un verificador confiable y donde el modelo base ya acierta a veces. Si nunca acierta, todas las recompensas del grupo son iguales y no hay nada que reforzar: primero hace falta un ajuste supervisado o un modelo mejor.</p>` },
     { titulo: 'Ajuste por preferencias a fondo: de RLHF a DPO', html: `
-      <p><strong>En pocas palabras:</strong> es más fácil elegir cuál de dos fotos salió mejor que sacar la foto perfecta. El ajuste por preferencias aprovecha eso: le mostrás al modelo dos respuestas, le decís cuál es la buena, y aprende a parecerse más a la elegida y menos a la rechazada.</p>
+      <p class="idea">es más fácil elegir cuál de dos fotos salió mejor que sacar la foto perfecta. El ajuste por preferencias aprovecha eso: le mostrás al modelo dos respuestas, le decís cuál es la buena, y aprende a parecerse más a la elegida y menos a la rechazada.</p>
       <p>El SFT le enseña al modelo a <strong>imitar</strong> respuestas buenas. Pero muchas cualidades son más fáciles de <strong>comparar</strong> que de escribir: entre dos respuestas, cualquiera ve cuál es más clara, más honesta o mejor presentada, aunque no sepa escribir la ideal. El ajuste por preferencias aprovecha eso.</p>
       <h3>RLHF: el camino clásico</h3>
       <ol>
@@ -3048,7 +3048,7 @@ trainer.train()</code></pre>
   ],
   lecciones: [
     { titulo: 'Observabilidad y versionado', html: `
-      <p><strong>En pocas palabras:</strong> <em>producción</em> es cuando tu app ya la usan personas reales. Ahí, como la caja negra de un avión, tenés que anotar todo lo que pasa en cada pedido: qué entró, qué salió, cuánto tardó y cuánto costó. Si algo sale mal, sin ese registro no hay forma de saber por qué.</p>
+      <p class="idea"><em>producción</em> es cuando tu app ya la usan personas reales. Ahí, como la caja negra de un avión, tenés que anotar todo lo que pasa en cada pedido: qué entró, qué salió, cuánto tardó y cuánto costó. Si algo sale mal, sin ese registro no hay forma de saber por qué.</p>
       <p><strong>Observabilidad</strong> es poder ver desde afuera qué pasa adentro de tu sistema. En producción, si no lo registrás, no existió. Por cada llamada al modelo guardá:</p>
       <ul>
         <li>La entrada y la salida.</li>
@@ -3079,7 +3079,7 @@ trainer.train()</code></pre>
  "fin": "end_turn", "error": null, "entrada": "Mi pedido [EMAIL] no llegó"}</code></pre>
       <p>Con una semana de estos registros podés responder preguntas reales: "¿la versión soporte-v7 subió el costo frente a la v6?" (agrupás por <code>prompt_version</code>), "¿por qué algunos usuarios ven respuestas cortadas?" (filtrás <code>fin = max_tokens</code>) o "¿la caché está funcionando?" (mirás <code>tokens_cacheados</code>). Fijate que el email ya llega enmascarado: la privacidad se resuelve antes de guardar. En la lección de trazas vas a ver cómo extender esto a agentes con muchos pasos.</p>` },
     { titulo: 'Costo, latencia y fiabilidad', html: `
-      <p><strong>En pocas palabras:</strong> una app real tiene que ser rápida, barata y no caerse. Esta lección es la caja de herramientas para cada una de esas tres cosas. La regla de oro: cualquier ahorro se comprueba con tus evals, porque si baja la calidad no es ahorro.</p>
+      <p class="idea">una app real tiene que ser rápida, barata y no caerse. Esta lección es la caja de herramientas para cada una de esas tres cosas. La regla de oro: cualquier ahorro se comprueba con tus evals, porque si baja la calidad no es ahorro.</p>
       <ul>
         <li><strong>Latencia</strong> (que responda rápido):
           <ul>
@@ -3116,7 +3116,7 @@ con caché     150 M × 0,3 = 45  (manual)
             +  50 M × 3   = 150 (resto)  30 M × 15 = 450     645 USD</code></pre>
       <p>Solo cachear el manual baja el costo casi 40%, sin tocar la calidad. Fijate también que ahora la salida es la mayor parte del gasto: la próxima palanca es limitar <code>max_tokens</code> o pedir respuestas más cortas. Medir dónde está el costo antes de optimizar es la misma idea que mirar la traza antes de optimizar latencia.</p>` },
     { titulo: 'Cambiar de modelo o de prompt sin romper producción', html: `
-      <p><strong>En pocas palabras:</strong> cambiar el modelo de tu app es como cambiar el motor de un avión en pleno vuelo. Primero lo probás aparte, sin pasajeros. Después con unos pocos pasajeros. Y siempre con un botón para volver al motor anterior en segundos.</p>
+      <p class="idea">cambiar el modelo de tu app es como cambiar el motor de un avión en pleno vuelo. Primero lo probás aparte, sin pasajeros. Después con unos pocos pasajeros. Y siempre con un botón para volver al motor anterior en segundos.</p>
       <p>Tu app depende de algo que no controlás: los modelos tienen fecha de vencimiento. Anthropic, por ejemplo, define un ciclo de vida: activo, <em>legacy</em> (viejo pero disponible), <em>deprecated</em> (anunciado para retiro) y retirado. Avisa con al menos 60 días de anticipación antes de retirar un modelo público, y los pedidos a un modelo retirado fallan.</p>
       <p>También cambian las APIs: la versión 2026-10-21 de la API de Claude eliminó <code>temperature</code>, <code>top_p</code> y <code>top_k</code>, que ahora devuelven error 400. Código que nadie tocó puede romperse al actualizar la versión.</p>
       <p><strong>Prácticas:</strong></p>
@@ -3146,7 +3146,7 @@ nombre, cfg = variante("usuario-123")
 # registrá "nombre" en cada traza para comparar éxito, latencia y costo por variante</code></pre>
       <p>El mismo usuario siempre cae en la misma variante: así su experiencia es coherente y las métricas por variante no se mezclan.</p>` },
     { titulo: 'Consumo sin control: cuotas, límites y "Denial of Wallet"', html: `
-      <p><strong>En pocas palabras:</strong> cada pregunta al modelo cuesta plata. Es como dejar una tarjeta de crédito a disposición de cualquiera que entre a tu app: alguien con malas intenciones, o tu propio agente con un error, puede gastarte una fortuna en una noche. La solución son topes: por mensaje, por usuario, por día y uno general.</p>
+      <p class="idea">cada pregunta al modelo cuesta plata. Es como dejar una tarjeta de crédito a disposición de cualquiera que entre a tu app: alguien con malas intenciones, o tu propio agente con un error, puede gastarte una fortuna en una noche. La solución son topes: por mensaje, por usuario, por día y uno general.</p>
       <p>Cada llamada a un LLM cuesta dinero, así que un abuso o un error se traduce directo en una factura. <strong>OWASP</strong>, una organización sin fines de lucro que publica guías de seguridad, lo incluye en su Top 10 para aplicaciones LLM como <strong>consumo sin límites</strong>. Tiene tres riesgos principales:</p>
       <ul>
         <li><strong>Denial of Wallet</strong> ("dejarte sin billetera"): alguien provoca una cantidad enorme de operaciones pagas para dispararte los costos.</li>
@@ -3180,7 +3180,7 @@ def atender(usuario, mensaje):
     return resp.texto</code></pre>
       <p>Pensalo como cualquier otro recurso caro: nadie deja una base de datos sin límites de conexiones, y un LLM merece el mismo cuidado.</p>` },
     { titulo: 'Datos personales en producción: minimizar, enmascarar y retener poco', html: `
-      <p><strong>En pocas palabras:</strong> los datos personales de tus usuarios (nombres, mails, tarjetas) se meten por todos lados: en los mensajes, en los registros, en los ejemplos de prueba. La regla es como con los papeles confidenciales: usar solo los necesarios, tachar lo sensible antes de archivarlo y tirar lo que ya no hace falta.</p>
+      <p class="idea">los datos personales de tus usuarios (nombres, mails, tarjetas) se meten por todos lados: en los mensajes, en los registros, en los ejemplos de prueba. La regla es como con los papeles confidenciales: usar solo los necesarios, tachar lo sensible antes de archivarlo y tirar lo que ya no hace falta.</p>
       <p>En una app con LLMs, los datos personales aparecen en lugares que no siempre miramos: los mensajes de los usuarios, los documentos que trae el RAG, los logs y trazas, la caché y los conjuntos de datos de evals o de fine-tuning. OWASP incluye la divulgación de información sensible en su Top 10 para aplicaciones LLM, con casos como un usuario que ve datos de otro por una mala separación.</p>
       <p><strong>Principios prácticos:</strong></p>
       <ul>
@@ -3208,7 +3208,7 @@ def enmascarar(texto):
 log.info({"usuario": hash_id(usuario), "prompt": enmascarar(prompt), "tokens": uso})</code></pre>
       <p>Los patrones simples fallan con formatos raros y no detectan nombres ni direcciones; por eso se combinan con detectores más completos y con controles de acceso. Y como advierte OWASP, una instrucción del tipo "nunca reveles datos personales" en el prompt ayuda, pero se puede saltear: los datos sensibles se protegen <em>antes</em> de que lleguen al modelo o a los logs.</p>` },
     { titulo: 'Trazas: ver qué pasó dentro de cada pedido', html: `
-      <p><strong>En pocas palabras:</strong> una traza es el seguimiento de un envío, pero para cada pedido a tu app: "buscó en documentos (0,3 s), encontró 5; le preguntó al modelo (2 s), usó 1.800 tokens; terminó". Cuando algo sale mal, la traza te dice en qué paso fue.</p>
+      <p class="idea">una traza es el seguimiento de un envío, pero para cada pedido a tu app: "buscó en documentos (0,3 s), encontró 5; le preguntó al modelo (2 s), usó 1.800 tokens; terminó". Cuando algo sale mal, la traza te dice en qué paso fue.</p>
       <p>Cuando un usuario dice "me respondió cualquier cosa", necesitás ver qué pasó por dentro: qué trajo el RAG, qué le mandaste al modelo, qué herramienta llamó el agente y qué le devolvió. Para eso están las <strong>trazas</strong>: por cada pedido, un árbol de pasos, cada uno con su duración, sus datos y sus errores. A cada paso se le dice <em>span</em>, y un paso puede tener pasos adentro.</p>
       <p><strong>Qué registrar en cada llamada al modelo:</strong> modelo y versión del prompt; tokens de entrada, de salida y de caché; costo; latencia y tiempo hasta el primer token; <strong>motivo de fin</strong> (si es max_tokens, la respuesta se cortó); herramientas pedidas y sus argumentos; errores. Y en el pedido completo, ids de sesión y de usuario, enmascarados.</p>
       <p>El código usa <strong>OpenTelemetry</strong>, el estándar abierto para trazas. Cada <code>with tracer.start_as_current_span(...)</code> abre un paso, que se cierra solo al terminar el bloque. <code>set_attribute</code> le anota un dato.</p>
@@ -3238,7 +3238,7 @@ def responder(pregunta, usuario):
       </ul>
       <p><strong>Cuidados:</strong> las trazas tienen los mismos datos sensibles que los logs (enmascará antes de guardar), pueden ser enormes (muestreá si el volumen es alto) y nunca deben incluir claves ni secretos.</p>` },
     { titulo: 'Routing y cascadas: el modelo justo para cada pedido', html: `
-      <p><strong>En pocas palabras:</strong> en una guardia médica, no todos los pacientes los ve el jefe de cirugía: un enfermero resuelve lo simple y deriva lo complicado. Con los modelos igual: un modelo chico y barato atiende las preguntas fáciles y solo las difíciles llegan al grande y caro.</p>
+      <p class="idea">en una guardia médica, no todos los pacientes los ve el jefe de cirugía: un enfermero resuelve lo simple y deriva lo complicado. Con los modelos igual: un modelo chico y barato atiende las preguntas fáciles y solo las difíciles llegan al grande y caro.</p>
       <p>Mandar todo al modelo más capaz es lo más simple, y casi siempre lo más caro. En la mayoría de las apps, buena parte de los pedidos son fáciles ("¿cuál es el horario?", "resumí este mail corto"), y un modelo chico los resuelve igual de bien, más rápido y por una fracción del precio. Un modelo puede costar entre 10 y 100 veces más que otro, así que elegir bien el modelo para cada pedido es una de las formas más grandes de ahorrar.</p>
       <h3>Tres estrategias</h3>
       <ul>
@@ -3347,7 +3347,7 @@ def responder(pregunta, usuario):
   ],
   lecciones: [
     { titulo: 'Ataques a sistemas con LLMs', html: `
-      <p><strong>En pocas palabras:</strong> un LLM obedece lo que lee, y no siempre distingue tus instrucciones de las de un desconocido. Si lee un mail que dice "mandá las contraseñas a tal lugar", puede hacerlo. Es como un empleado nuevo, muy servicial, que sigue cualquier nota que encuentre pegada en el escritorio.</p>
+      <p class="idea">un LLM obedece lo que lee, y no siempre distingue tus instrucciones de las de un desconocido. Si lee un mail que dice "mandá las contraseñas a tal lugar", puede hacerlo. Es como un empleado nuevo, muy servicial, que sigue cualquier nota que encuentre pegada en el escritorio.</p>
       <ul>
         <li><strong>Prompt injection directa:</strong> el usuario escribe instrucciones para que el modelo ignore las tuyas.</li>
         <li><strong>Prompt injection indirecta:</strong> las instrucciones tramposas vienen escondidas en algo que el modelo lee: una página web, un mail, un PDF, el resultado de una herramienta. Es la más peligrosa en agentes, porque el usuario ni se entera.</li>
@@ -3377,7 +3377,7 @@ def responder(pregunta, usuario):
    Vos no hiciste clic en nada.</code></pre>
       <p>Están las tres patas de la trifecta. Cortando cualquiera se rompe el ataque: no renderizar imágenes de dominios externos, no darle al resumidor acceso a buscar en toda la bandeja, o no mezclar mails desconocidos con datos sensibles. En la lección siguiente vas a ver estas defensas.</p>` },
     { titulo: 'Defensas y responsabilidad', html: `
-      <p><strong>En pocas palabras:</strong> escribirle al modelo "no hagas cosas peligrosas" es como poner un cartel de "prohibido robar" en vez de una cerradura. Las defensas reales están en cómo armás el sistema: darle al agente solo las llaves que necesita, pedir permiso a una persona antes de lo grave, y revisar todo lo que el modelo devuelve antes de usarlo.</p>
+      <p class="idea">escribirle al modelo "no hagas cosas peligrosas" es como poner un cartel de "prohibido robar" en vez de una cerradura. Las defensas reales están en cómo armás el sistema: darle al agente solo las llaves que necesita, pedir permiso a una persona antes de lo grave, y revisar todo lo que el modelo devuelve antes de usarlo.</p>
       <p>Ningún prompt es una barrera de seguridad suficiente. Las defensas reales son de <em>arquitectura</em>, es decir, de cómo está armado el sistema:</p>
       <ul>
         <li><strong>Mínimo privilegio:</strong> el agente tiene solo los permisos y herramientas imprescindibles.</li>
@@ -3413,7 +3413,7 @@ db.execute("SELECT total FROM facturas WHERE cliente_id = %s AND mes = %s",
       </ul>
       <p><strong>Regulación:</strong> el AI Act de la Unión Europea clasifica los sistemas por nivel de riesgo y pone obligaciones según la categoría (lección 6). Conocé lo que aplica en tu país y en tu sector.</p>` },
     { titulo: 'Patrones de diseño que resisten prompt injection', html: `
-      <p><strong>En pocas palabras:</strong> en vez de intentar detectar cada truco (siempre aparece uno nuevo), armás el agente para que, aunque lo engañen, no pueda hacer daño. Es como un cajero que puede leer cualquier nota que le pasen, pero solo puede entregar plata con la firma del dueño de la cuenta: la nota tramposa no tiene cómo convertirse en un retiro.</p>
+      <p class="idea">en vez de intentar detectar cada truco (siempre aparece uno nuevo), armás el agente para que, aunque lo engañen, no pueda hacer daño. Es como un cajero que puede leer cualquier nota que le pasen, pero solo puede entregar plata con la firma del dueño de la cuenta: la nota tramposa no tiene cómo convertirse en un retiro.</p>
       <p>Detectar inyecciones con otro modelo o con filtros es una carrera que se pierde: alcanza con que un ataque pase una vez. Un paper de 2025, de investigadores de varias organizaciones, propone otro enfoque con un principio claro: <strong>una vez que el agente leyó contenido no confiable, ese contenido no debe poder disparar acciones con consecuencias</strong>. Para lograrlo proponen seis patrones:</p>
       <ol>
         <li><strong>Action-Selector</strong> (selector de acciones): el agente solo elige entre una lista fija de acciones ya definidas, como un menú, y no recibe el resultado de vuelta. El texto tramposo no tiene sobre qué actuar.</li>
@@ -3441,7 +3441,7 @@ def resumir_email(email_id, usuario):
 # con herramientas leyó esa frase, y el flujo no tiene un paso "reenviar".</code></pre>
       <p><strong>El costo:</strong> estos patrones le quitan flexibilidad al agente. Un asistente que puede leer cualquier cosa y hacer cualquier cosa es más útil y también más vulnerable. Elegí el patrón según el riesgo: un bot que solo responde preguntas puede ser más libre que uno que mueve dinero o datos privados.</p>` },
     { titulo: 'Cadena de suministro: modelos, dependencias y servidores MCP', html: `
-      <p><strong>En pocas palabras:</strong> un restaurante puede tener la cocina impecable y enfermar a la gente por un proveedor de carne en mal estado. Tu app también tiene "proveedores": los modelos que descargás, las librerías que instalás y los servidores MCP que conectás. Cualquiera de ellos puede traer algo malicioso escondido.</p>
+      <p class="idea">un restaurante puede tener la cocina impecable y enfermar a la gente por un proveedor de carne en mal estado. Tu app también tiene "proveedores": los modelos que descargás, las librerías que instalás y los servidores MCP que conectás. Cualquiera de ellos puede traer algo malicioso escondido.</p>
       <p>Tu sistema no es solo tu código. También son los modelos que descargás, los <em>paquetes</em> (librerías) que instalás y los servidores MCP que conectás: tu <em>cadena de suministro</em>. OWASP la incluye en su Top 10 para aplicaciones LLM.</p>
       <p><strong>1. Modelos descargados.</strong> El formato <em>pickle</em> (el de muchos archivos <code>.bin</code> o <code>.pt</code> de PyTorch) puede <strong>ejecutar cualquier código al abrirse</strong>, como un archivo adjunto con virus. Hugging Face lo explica en su documentación de seguridad: descargá modelos de orígenes confiables y preferí <strong>safetensors</strong>, un formato que guarda solo los números del modelo, sin código.</p>
       <pre><code># Riesgoso: un .pt de origen desconocido puede ejecutar código al cargarse
@@ -3468,7 +3468,7 @@ pesos = torch.load("modelo.pt", weights_only=True)</code></pre>
         <li>Verificá de dónde vienen tus conjuntos de datos: datos "envenenados" (alterados a propósito) en el entrenamiento son otra puerta de entrada.</li>
       </ul>` },
     { titulo: 'Red teaming en la práctica: atacá tu sistema antes que otros', html: `
-      <p><strong>En pocas palabras:</strong> <em>red teaming</em> es contratar a alguien para que intente entrar a tu casa, así descubrís las ventanas mal cerradas antes que un ladrón. Con tu app de IA, armás una lista de ataques, los probás, medís cuántos funcionan, arreglás y repetís. Cada ataque que funcionó queda como prueba permanente.</p>
+      <p class="idea"><em>red teaming</em> es contratar a alguien para que intente entrar a tu casa, así descubrís las ventanas mal cerradas antes que un ladrón. Con tu app de IA, armás una lista de ataques, los probás, medís cuántos funcionan, arreglás y repetís. Cada ataque que funcionó queda como prueba permanente.</p>
       <p>Saber que existen los ataques no alcanza: hay que probarlos contra <strong>tu</strong> sistema, con tus herramientas, tus documentos y tus defensas. Un proceso que funciona:</p>
       <ol>
         <li><strong>Modelo de amenazas</strong> (el mapa de los riesgos): quién atacaría, qué buscaría (datos de otros usuarios, ejecutar acciones, contenido dañino, gastar tu dinero) y por dónde entra (el chat, los documentos que procesás, los resultados de herramientas).</li>
@@ -3507,7 +3507,7 @@ def ataque_exitoso(cat, respuesta):
 tasas = tasa_por_categoria([(a["cat"], ataque_exitoso(a["cat"], sistema(a))) for a in ATAQUES])</code></pre>
       <p>Herramientas como garak (NVIDIA) o el módulo de red teaming de promptfoo generan y corren cientos de ataques automáticamente. Usalas para ampliar la cobertura, sin reemplazar los ataques pensados para tu caso concreto.</p>` },
     { titulo: 'Regulación en la práctica: el AI Act europeo para quien construye', html: `
-      <p><strong>En pocas palabras:</strong> la ley europea de IA trata a los sistemas como a los alimentos o los medicamentos: cuanto más daño pueden hacer, más controles piden. Un filtro de spam casi no tiene reglas. Un sistema que decide a quién contratar tiene muchas. Y algunos usos directamente están prohibidos.</p>
+      <p class="idea">la ley europea de IA trata a los sistemas como a los alimentos o los medicamentos: cuanto más daño pueden hacer, más controles piden. Un filtro de spam casi no tiene reglas. Un sistema que decide a quién contratar tiene muchas. Y algunos usos directamente están prohibidos.</p>
       <p>El AI Act de la Unión Europea es la regulación de IA más completa hasta ahora, y te alcanza aunque tu empresa esté fuera de Europa si tu sistema se usa en el mercado europeo. No es asesoramiento legal, pero conviene saber ubicar tu proyecto. Clasifica los sistemas por <strong>nivel de riesgo</strong>:</p>
       <ul>
         <li><strong>Riesgo inaceptable (prohibido):</strong> por ejemplo, la puntuación social que lleva a un trato perjudicial, explotar vulnerabilidades por edad o discapacidad, inferir emociones en el trabajo o la escuela (con excepciones médicas o de seguridad), o armar bases de reconocimiento facial con imágenes recolectadas indiscriminadamente.</li>
@@ -3532,7 +3532,7 @@ Transparencia: avisar a los candidatos que interviene una IA
 Fecha clave: obligaciones de alto riesgo (Anexo III) desde el 2 de diciembre de 2027</code></pre>
       <p>Muchas de estas obligaciones son buenas prácticas que ya viste en el curso: evals, registros, supervisión humana y red teaming. Construir así desde el principio hace el cumplimiento mucho más barato. Y revisá también la regulación de tu país y de tu sector.</p>` },
     { titulo: 'Agencia excesiva y filtración del system prompt', html: `
-      <p><strong>En pocas palabras:</strong> dos errores con el mismo origen: confiar en que el modelo se va a portar bien. El primero es darle más poder del que necesita, como darle las llaves de toda la empresa a alguien que solo tiene que abrir el depósito. El segundo es esconder secretos en sus instrucciones, como anotar la clave de la caja fuerte en el manual del empleado.</p>
+      <p class="idea">dos errores con el mismo origen: confiar en que el modelo se va a portar bien. El primero es darle más poder del que necesita, como darle las llaves de toda la empresa a alguien que solo tiene que abrir el depósito. El segundo es esconder secretos en sus instrucciones, como anotar la clave de la caja fuerte en el manual del empleado.</p>
       <p>Dos riesgos del OWASP Top 10 para LLMs (edición 2025) comparten la misma raíz: <strong>confiarle al modelo decisiones de seguridad</strong>. Son LLM06 (agencia excesiva: que el modelo pueda hacer demasiado) y LLM07 (filtración del system prompt).</p>
       <h3>Agencia excesiva: el modelo puede hacer más de lo que necesita</h3>
       <p>OWASP distingue tres causas:</p>
@@ -3654,7 +3654,7 @@ Fecha clave: obligaciones de alto riesgo (Anexo III) desde el 2 de diciembre de 
   ],
   lecciones: [
     { titulo: 'Cómo funciona un agente de voz: la cascada STT → LLM → TTS', html: `
-      <p><strong>En pocas palabras:</strong> un agente de voz es como un intérprete en una cadena de tres personas. La primera escucha y escribe lo que dijiste, la segunda lee y piensa la respuesta, y la tercera la lee en voz alta. Para que la charla se sienta natural, cada una tiene que pasarle a la siguiente lo que tiene apenas lo tiene, sin esperar a terminar.</p>
+      <p class="idea">un agente de voz es como un intérprete en una cadena de tres personas. La primera escucha y escribe lo que dijiste, la segunda lee y piensa la respuesta, y la tercera la lee en voz alta. Para que la charla se sienta natural, cada una tiene que pasarle a la siguiente lo que tiene apenas lo tiene, sin esperar a terminar.</p>
       <p>Un agente de voz es un agente como los que ya viste, pero con oídos y boca. La forma más común de armarlo es una <strong>cascada</strong> de tres modelos, uno detrás del otro:</p>
       <ul>
         <li><strong>STT</strong> (speech-to-text, "de voz a texto"): escucha y transcribe.</li>
@@ -3694,7 +3694,7 @@ WER = 2 / 6 ≈ 33%</code></pre>
       </table>
       <p>Esos números solo se logran con <strong>streaming</strong> en todas las etapas: el STT manda transcripciones parciales, el LLM devuelve tokens a medida que los genera y el TTS empieza a hablar con las primeras palabras, sin esperar la respuesta completa. Si cada etapa espera a que termine la anterior, la demora se suma y llega fácilmente a 2 o 3 segundos. Por eso, en voz, el tiempo hasta el primer token importa más que el tiempo total.</p>` },
     { titulo: 'Turnos, interrupciones y escribir para el oído', html: `
-      <p><strong>En pocas palabras:</strong> en una charla por teléfono, saber cuándo el otro terminó de hablar parece fácil, pero no lo es: a veces hace una pausa para pensar. El agente tiene que adivinarlo, callarse si lo interrumpen y hablar como se habla, no como se escribe: sin listas, sin asteriscos y repitiendo los datos importantes.</p>
+      <p class="idea">en una charla por teléfono, saber cuándo el otro terminó de hablar parece fácil, pero no lo es: a veces hace una pausa para pensar. El agente tiene que adivinarlo, callarse si lo interrumpen y hablar como se habla, no como se escribe: sin listas, sin asteriscos y repitiendo los datos importantes.</p>
       <p>En un chat, el usuario aprieta Enter. En una llamada nadie avisa que terminó de hablar: el agente lo tiene que adivinar.</p>
       <p><strong>VAD</strong> (voice activity detection, detección de voz): detecta si en el audio hay voz o silencio. Es rápido y corre local, pero no distingue una pausa para pensar del final de la frase.</p>
       <p><strong>Detección de fin de turno:</strong> decide cuándo responder. Hay tres formas, de la más simple a la más fina:</p>
@@ -3759,7 +3759,7 @@ WER = 2 / 6 ≈ 33%</code></pre>
   ],
   lecciones: [
     { titulo: 'La ruta de proyectos', html: `
-      <p><strong>En pocas palabras:</strong> se aprende haciendo. Esta es una escalera de cinco proyectos, del más simple al más completo, que juntan todo el curso. Lo que hace brillar un proyecto no es que sea grande, sino que muestre con números qué probaste, qué decidiste y en qué todavía falla.</p>
+      <p class="idea">se aprende haciendo. Esta es una escalera de cinco proyectos, del más simple al más completo, que juntan todo el curso. Lo que hace brillar un proyecto no es que sea grande, sino que muestre con números qué probaste, qué decidiste y en qué todavía falla.</p>
       <ol>
         <li><strong>Chatbot de terminal</strong> con historial, streaming, costo por turno y manejo de errores.</li>
         <li><strong>RAG sobre tus apuntes</strong> con citas, búsqueda híbrida y evals de retrieval (recall@k).</li>
@@ -3784,7 +3784,7 @@ Descarté fine-tuning: el error principal era de búsqueda (recall), no de redac
 Preguntas que combinan dos documentos: 6 de 8 fallan. Próximo paso: descomponer la consulta.</code></pre>
       <p>Fijate que cada fila cambia <strong>una sola cosa</strong>, que la decisión se justifica con números y que los fallos se muestran en vez de esconderse. Es lo mismo que practicaste en el módulo de evals, aplicado a contar tu trabajo.</p>` },
     { titulo: 'Diseñar un sistema de IA de punta a punta (y la entrevista de system design)', html: `
-      <p><strong>En pocas palabras:</strong> antes de construir una casa, el arquitecto pregunta para cuántas personas es, cuánta plata hay y qué no puede fallar. Después hace un plano simple y lo va mejorando. Diseñar un sistema de IA es igual, y en las entrevistas de trabajo te piden justamente eso, en voz alta y con números.</p>
+      <p class="idea">antes de construir una casa, el arquitecto pregunta para cuántas personas es, cuánta plata hay y qué no puede fallar. Después hace un plano simple y lo va mejorando. Diseñar un sistema de IA es igual, y en las entrevistas de trabajo te piden justamente eso, en voz alta y con números.</p>
       <p>En las entrevistas de <em>system design</em> (diseño de sistemas) para AI engineering ya no te piden solo los sistemas clásicos de servidores: te dan una consigna como "diseñá un chatbot RAG de soporte" o "un agente que procese reclamos de seguros controlando el costo de tokens" y tenés unos 60 minutos. El mismo método sirve para tus proyectos reales.</p>
       <ol>
         <li><strong>Aclarar requisitos antes de dibujar nada:</strong> quién lo usa, volumen (consultas por día, o QPS: consultas por segundo), latencia aceptable, presupuesto, qué es una respuesta "correcta" y qué pasa si se equivoca (riesgo).</li>
@@ -3802,7 +3802,7 @@ Total ≈ 1.350 USD/día ≈ 40.500 USD/mes</code></pre>
       <p>Con ese número sobre la mesa aparecen las palancas obvias: si 2.000 de esos 3.000 tokens son un system prompt fijo, el <strong>prompt caching</strong> los abarata mucho; si el 70% de las consultas son simples, el <strong>routing</strong> a un modelo chico baja el costo; si hay preguntas repetidas, una cache de respuestas. Y cada palanca se valida con evals.</p>
       <p><strong>Señales de nivel senior</strong> (de alguien con experiencia): preguntar antes de proponer, empezar simple, tratar costo y guardrails como restricciones de diseño (no como un agregado final), y decir explícitamente qué medirías y qué harías si la métrica sale mal.</p>` },
     { titulo: 'Cómo aprender más rápido que el resto', html: `
-      <p><strong>En pocas palabras:</strong> releer y subrayar da la sensación de que aprendiste, pero se olvida rápido. Lo que funciona es tratar de recordar sin mirar (como en un quiz), volver a repasar a los pocos días y construir cosas. Esta lección te muestra cómo organizar una semana así.</p>
+      <p class="idea">releer y subrayar da la sensación de que aprendiste, pero se olvida rápido. Lo que funciona es tratar de recordar sin mirar (como en un quiz), volver a repasar a los pocos días y construir cosas. Esta lección te muestra cómo organizar una semana así.</p>
       <ul>
         <li><strong>Construí más de lo que leés.</strong> Por cada hora de teoría, dos de práctica.</li>
         <li><strong>Técnica Feynman</strong> (por el físico Richard Feynman): explicá cada concepto con palabras simples, como en el cuadro "Explicalo con tus palabras" de cada módulo. Donde te trabás, hay algo que no entendiste.</li>
@@ -3828,7 +3828,7 @@ sábado     quiz del módulo de la semana pasada, sin releer (15 min)  ← espac
 domingo    descanso</code></pre>
       <p>Lo importante no son los horarios sino el patrón: <strong>primero intentás recordar, después mirás</strong>, y volvés a lo de días anteriores en vez de solo avanzar. La página "Qué estudiar hoy" de este sitio te arma esa lista sola.</p>` },
     { titulo: 'Programar con agentes de código (sin engañarte)', html: `
-      <p><strong>En pocas palabras:</strong> un agente de código es como un programador muy rápido que recién entra al equipo. Rinde mucho si le contás lo que no puede adivinar, le pedís algo concreto y le das una forma de comprobar si lo hizo bien. Si no, entrega algo que <em>parece</em> terminado. Y ojo: sentir que vas más rápido no es lo mismo que ir más rápido.</p>
+      <p class="idea">un agente de código es como un programador muy rápido que recién entra al equipo. Rinde mucho si le contás lo que no puede adivinar, le pedís algo concreto y le das una forma de comprobar si lo hizo bien. Si no, entrega algo que <em>parece</em> terminado. Y ojo: sentir que vas más rápido no es lo mismo que ir más rápido.</p>
       <p>Un AI engineer pasa buena parte del día trabajando con agentes de código como Claude Code. Antes del método, un dato para no confiar en la sensación. En un experimento controlado de METR (una organización que evalúa IA) (16 desarrolladores experimentados, 246 tareas en sus propios proyectos, herramientas de principios de 2025), con IA tardaron <strong>19% más</strong>, aunque después creían haber ido un 20% más rápido. Las herramientas mejoran rápido, pero la lección queda: <strong>medí, no supongas</strong>.</p>
       <p><strong>Lo que más rinde, según la guía oficial de Claude Code:</strong></p>
       <ul>
@@ -3848,7 +3848,7 @@ domingo    descanso</code></pre>
 - El progreso del alumno se guarda por texto de pregunta: no lo cambies</code></pre>
       <p>Este mismo sitio se construye así: <code>/mejorar</code> y <code>/evolucionar</code> le dan instrucciones al agente, y <code>validar.js</code> y <code>test-app.js</code> son los chequeos que corre antes de publicar, también en CI.</p>` },
     { titulo: 'Proyecto guiado: un asistente RAG evaluado en un fin de semana', html: `
-      <p><strong>En pocas palabras:</strong> vas a armar un asistente que responde preguntas sobre tus documentos, citando de dónde sacó cada dato. El primer día lo construís con un examen ya preparado. El segundo lo mejorás de a un paso, anotando la nota de cada versión en una tabla. Al final tenés algo real para mostrar.</p>
+      <p class="idea">vas a armar un asistente que responde preguntas sobre tus documentos, citando de dónde sacó cada dato. El primer día lo construís con un examen ya preparado. El segundo lo mejorás de a un paso, anotando la nota de cada versión en una tabla. Al final tenés algo real para mostrar.</p>
       <p>Este proyecto junta casi todo el curso en algo que podés mostrar. La regla de oro: <strong>cada versión se mide</strong> y se anota en una tabla. Así quedan organizadas las carpetas:</p>
       <pre><code>asistente-rag/
   datos/                    # documentos fuente (manuales, apuntes, políticas)
@@ -3880,7 +3880,7 @@ domingo    descanso</code></pre>
 | + reranker         |   0,93   |   0,87    |     0,97      |   0/5   |    1,60     |</code></pre>
       <p>Los números del ejemplo son ilustrativos; los tuyos van a ser otros. Lo que importa es que cualquiera que lea el README pueda ver qué probaste, qué funcionó, cuánto cuesta y dónde falla. Eso es lo que distingue a un AI engineer de alguien que armó un demo.</p>` },
     { titulo: 'Leer papers sin ahogarse: el método de las tres pasadas', html: `
-      <p><strong>En pocas palabras:</strong> un paper se lee como se elige un libro en una librería. Primero mirás la tapa y la contratapa (5 minutos) y decidís si te interesa. Si sí, lo leés con cuidado pero salteando lo más difícil. Y solo si es muy importante para vos, lo estudiás a fondo rehaciéndolo.</p>
+      <p class="idea">un paper se lee como se elige un libro en una librería. Primero mirás la tapa y la contratapa (5 minutos) y decidís si te interesa. Si sí, lo leés con cuidado pero salteando lo más difícil. Y solo si es muy importante para vos, lo estudiás a fondo rehaciéndolo.</p>
       <p>Un <em>paper</em> es un artículo de investigación. Salen decenas de papers de IA por día. No se trata de leerlos todos, sino de filtrar rápido y entender a fondo los pocos que importan. Un método clásico es el de las tres pasadas, de S. Keshav ("How to Read a Paper").</p>
       <ol>
         <li><strong>Primera pasada (5 a 10 minutos):</strong> título, resumen, introducción, títulos de secciones, conclusiones y figuras. Al terminar tenés que poder responder las <strong>cinco C</strong>: categoría (qué tipo de paper es), contexto (con qué trabajos se relaciona), correctitud (si los supuestos parecen válidos), contribuciones (qué aporta) y claridad (si está bien escrito). Con eso decidís si seguís.</li>
@@ -3903,7 +3903,7 @@ Dudas y supuestos:
 ¿Lo aplicaría? Dónde, y cómo lo mediría:</code></pre>
       <p><strong>Una rutina que se sostiene:</strong> un paper por semana con esta plantilla en tus apuntes, y un experimento chico por mes para reproducir algo. Es mucho más valioso que leer veinte resúmenes por semana sin quedarte con nada.</p>` },
     { titulo: 'Proyecto guiado 2: un agente con herramientas, seguro y evaluado', html: `
-      <p><strong>En pocas palabras:</strong> vas a armar un agente de atención al cliente que consulta pedidos y puede devolver plata. Como puede hacer daño, lleva límites: un tope de monto, la aprobación de una persona y pruebas de ataque. Igual que en el primer proyecto, cada versión se mide y se anota.</p>
+      <p class="idea">vas a armar un agente de atención al cliente que consulta pedidos y puede devolver plata. Como puede hacer daño, lleva límites: un tope de monto, la aprobación de una persona y pruebas de ataque. Igual que en el primer proyecto, cada versión se mide y se anota.</p>
       <p>El segundo proyecto junta los módulos de agentes, evals, seguridad y producción: un agente de soporte que consulta pedidos y puede pedir reembolsos. La regla es la misma que en el primero: <strong>cada versión se mide</strong>.</p>
       <pre><code>agente-soporte/
   herramientas/          # buscar_pedido, estado_envio, crear_reembolso

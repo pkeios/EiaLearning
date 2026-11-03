@@ -10,8 +10,8 @@ vm.runInContext(leer('contenido.js'), ctx);
 vm.runInContext(leer('glosario.js'), ctx);
 vm.runInContext(leer('vendor/qrcode.js') + ';this.qrcode = qrcode;', ctx);
 ctx.window.qrcode = ctx.qrcode;
-vm.runInContext(leer('app.js') + ';this.X = { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos, avance, clavePractica, registrarExamen, planDeHoy, apuntesMarkdown, esCorrecta, preguntasDeNivel, preguntaObjetivo, cambiarLetra, novedades, marcarConocidas, iniciarNovedades, todasLasLecciones, trozosParaVoz, vozLatina, sumarMinuto, serieMinutos, minutosSemana, textoLogro, empaquetar, desempaquetar, comprimir, descomprimir, compararIntentos, sumarIntento, rondaModulo, POR_RONDA, esPython };', ctx);
-const { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos, avance, clavePractica, registrarExamen, planDeHoy, apuntesMarkdown, esCorrecta, preguntasDeNivel, preguntaObjetivo, cambiarLetra, novedades, marcarConocidas, iniciarNovedades, todasLasLecciones, trozosParaVoz, vozLatina, sumarMinuto, serieMinutos, minutosSemana, textoLogro, empaquetar, desempaquetar, comprimir, descomprimir, compararIntentos, sumarIntento, rondaModulo, POR_RONDA, esPython } = ctx.X;
+vm.runInContext(leer('app.js') + ';this.X = { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos, avance, clavePractica, registrarExamen, planDeHoy, apuntesMarkdown, esCorrecta, preguntasDeNivel, preguntaObjetivo, cambiarLetra, novedades, marcarConocidas, iniciarNovedades, todasLasLecciones, trozosParaVoz, vozLatina, sumarMinuto, serieMinutos, minutosSemana, textoLogro, empaquetar, desempaquetar, comprimir, descomprimir, compararIntentos, sumarIntento, rondaModulo, POR_RONDA, esPython, reTermino };', ctx);
+const { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos, avance, clavePractica, registrarExamen, planDeHoy, apuntesMarkdown, esCorrecta, preguntasDeNivel, preguntaObjetivo, cambiarLetra, novedades, marcarConocidas, iniciarNovedades, todasLasLecciones, trozosParaVoz, vozLatina, sumarMinuto, serieMinutos, minutosSemana, textoLogro, empaquetar, desempaquetar, comprimir, descomprimir, compararIntentos, sumarIntento, rondaModulo, POR_RONDA, esPython, reTermino } = ctx.X;
 const plano = o => JSON.parse(JSON.stringify(o));
 
 // Inicio renderiza con progreso vacío
@@ -352,3 +352,13 @@ assert.equal(Object.keys(desempaquetar({ v: 1, l: { [TP[0].id]: [0, 999] }, f: {
   assert.ok(el.h.includes('no es válido'));
   console.log('test-app OK (enlace de prueba: ' + enlace.length + ' caracteres)');
 })().catch(e => { console.error(e); process.exit(1); });
+
+// Términos del glosario en las lecciones: palabra entera, sin mayúsculas, con plural y sin lo que va entre paréntesis
+assert(reTermino('Percentil (p95, p99)').test('Por eso se miden los percentiles'));
+assert(reTermino('Embedding').test('los Embeddings de cada texto'));
+assert(!reTermino('Token').test('tokenizador'));
+assert(!reTermino('RAG').test('un fragmento'));
+assert(reTermino('pass@k').test('mirá el pass@k del agente'));
+assert(!reTermino('Logs').test('log(1) = 0'));
+assert(reTermino('Matriz de confusión').exec('La matriz de confusión ordena')[0] === 'matriz de confusión');
+console.log('test-app OK: glosario en lecciones');

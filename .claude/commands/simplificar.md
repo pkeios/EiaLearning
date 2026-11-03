@@ -19,8 +19,9 @@ Leé la lección como si no supieras nada y anotá:
 - **Código sin traducir**: fragmentos donde no se dice en palabras qué hace cada parte.
 
 ## 3. Reescribir
-- Arrancá la lección con un párrafo **"En pocas palabras"**: 2 o 3 frases sin ningún término técnico, con una comparación de la vida cotidiana (cocina, fútbol, el colectivo, una biblioteca...).
-- Cada término técnico se define **la primera vez que aparece**, en la misma frase o en la siguiente: qué es + un ejemplo. Si está en `public/glosario.js`, usá la misma definición; si no está, agregalo al glosario (`{t, d, m}`).
+- Arrancá la lección con un `<p class="idea">` (la página lo muestra como recuadro con 💡; no le pongas título): 2 o 3 frases sin ningún término técnico, con una comparación de la vida cotidiana (cocina, fútbol, el colectivo, una biblioteca...). Variá las comparaciones entre lecciones.
+- **No des nada por sabido**: el alumno puede no saber programar ni haber visto matemática. Cada término técnico se define **la primera vez que aparece**, en la misma frase o en la siguiente: qué es + un ejemplo. Si una lección usa algo de otro módulo, recordalo en una frase.
+- Todo término técnico tiene que estar en `public/glosario.js` (`{t, d, m}`), con una definición para alguien que recién empieza: la página lo subraya en las lecciones y al tocarlo muestra esa definición. Si una palabra común se confunde con un término (por ejemplo "herramienta" en una comparación), cambiá la palabra en la lección.
 - Frases cortas: una idea por frase. Voz activa, vos, rioplatense.
 - Antes de cada bloque de código, una frase que diga qué va a pasar; después, qué hay que mirar en la salida. Si hace falta, comentarios en el código en castellano simple.
 - Si hay un paso que se salta, agregalo.
