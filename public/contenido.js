@@ -829,14 +829,33 @@ for i in [0, 1, 3]:
   ],
   lecciones: [
     { titulo: 'Cómo aprende una red neuronal', html: `
-      <p>Una capa calcula <code>y = activación(W·x + b)</code>. Apilando capas obtenés una red. La <strong>activación no lineal</strong> (ReLU, GELU) es clave: sin ella, cualquier cantidad de capas colapsa en una sola transformación lineal.</p>
+      <p><strong>En pocas palabras:</strong> una red neuronal es una cadena de pasos que transforman números: entra una foto o un texto (convertidos en números) y sale una respuesta. Aprende como alguien que tira al aro: tira, ve por cuánto le erró, corrige un poquito la puntería y vuelve a tirar, miles de veces.</p>
+      <p>Cada paso de la cadena es una <strong>capa</strong>, y calcula <code>y = activación(W·x + b)</code>:</p>
+      <ul>
+        <li><code>x</code> es el vector que entra.</li>
+        <li><code>W</code> es una matriz de <strong>pesos</strong>, los números que la red ajusta al aprender.</li>
+        <li><code>b</code> es un vector que se suma (el <em>sesgo</em>).</li>
+        <li>La <strong>activación</strong> es una función que "dobla" el resultado. Por ejemplo, ReLU deja los positivos igual y convierte los negativos en 0. GELU es una versión más suave.</li>
+      </ul>
+      <p>Apilando capas obtenés una red. La activación es clave porque es <em>no lineal</em>: sin ella, apilar muchas capas equivale a una sola multiplicación de matrices, y la red no podría aprender nada más complejo que una recta.</p>
+      <p>Entrenar es repetir cuatro pasos:</p>
       <ol>
-        <li><strong>Forward:</strong> pasás datos por la red y obtenés una predicción.</li>
-        <li><strong>Pérdida:</strong> medís el error (MSE para regresión, entropía cruzada para clasificación).</li>
-        <li><strong>Backpropagation:</strong> calculás el gradiente de la pérdida respecto a cada parámetro con la regla de la cadena.</li>
-        <li><strong>Optimizador:</strong> actualizás parámetros (SGD, Adam/AdamW) con un <em>learning rate</em>.</li>
+        <li><strong>Forward</strong> (hacia adelante): pasás datos por la red y obtenés una predicción.</li>
+        <li><strong>Pérdida:</strong> medís el error. Para predecir números se usa el <em>MSE</em> (el promedio de los errores al cuadrado); para clasificar, la entropía cruzada de Fundamentos.</li>
+        <li><strong>Backpropagation</strong> (propagación hacia atrás): calculás el gradiente, o sea, cuánto influyó cada peso en el error. Se hace de la última capa a la primera, con la <em>regla de la cadena</em>, que es la forma de calcular derivadas de funciones encadenadas. PyTorch la hace solo.</li>
+        <li><strong>Optimizador:</strong> el método que corrige los pesos usando el gradiente. Los más comunes son SGD y Adam/AdamW. El tamaño de cada corrección es el <em>learning rate</em>.</li>
       </ol>
-      <p>Un <strong>batch</strong> es un grupo de ejemplos procesados juntos; una <strong>epoch</strong> es una pasada completa por el dataset.</p>
+      <p>Dos palabras más:</p>
+      <ul>
+        <li><strong>Batch:</strong> un grupo de ejemplos que se procesan juntos.</li>
+        <li><strong>Epoch:</strong> una pasada completa por todos los datos.</li>
+      </ul>
+      <p>El código (en PyTorch) es esa receta:</p>
+      <ul>
+        <li><code>loader</code> va entregando los datos de a batches.</li>
+        <li><code>loss.backward()</code> calcula los gradientes.</li>
+        <li><code>optimizer.step()</code> corrige los pesos.</li>
+      </ul>
       <pre><code>for epoch in range(10):
     for x, y in loader:
         pred = model(x)
@@ -845,20 +864,48 @@ for i in [0, 1, 3]:
         loss.backward()         # backprop
         optimizer.step()        # actualizar pesos</code></pre>` },
     { titulo: 'Arquitecturas: MLP, CNN, RNN y el salto a Transformers', html: `
+      <p><strong>En pocas palabras:</strong> así como hay herramientas distintas para cortar madera o metal, hay formas distintas de armar una red según el tipo de dato: tablas, fotos o texto. La <em>arquitectura</em> es esa forma de armarla. Hoy casi todo usa la última de la lista, los Transformers.</p>
       <ul>
-        <li><strong>MLP:</strong> capas densas. Sirve para datos tabulares y como bloque dentro de modelos más grandes.</li>
-        <li><strong>CNN:</strong> filtros que se deslizan sobre la imagen y comparten pesos; capturan patrones locales (bordes, texturas). Dominaron visión por computadora.</li>
-        <li><strong>RNN/LSTM:</strong> procesan secuencias paso a paso con un estado oculto. Problemas: son difíciles de paralelizar y les cuesta recordar dependencias largas (gradientes que se desvanecen).</li>
-        <li><strong>Transformers (2017):</strong> la atención permite que cada token mire a todos los demás a la vez. Se paraleliza muy bien en GPU y escala con datos y cómputo: por eso son la base de los LLMs.</li>
+        <li><strong>MLP</strong> (perceptrón multicapa): capas <em>densas</em>, donde cada número de entrada se conecta con todos los de salida. Es lo que viste en la lección anterior. Sirve para datos tabulares y como pieza dentro de modelos más grandes.</li>
+        <li><strong>CNN</strong> (red convolucional): usa <em>filtros</em>, ventanitas chicas que recorren la imagen buscando un patrón, como una lupa que pasás por toda la foto. El mismo filtro se usa en todas partes (comparte pesos), así que si aprende a ver un borde, lo ve en cualquier lugar. Capturan patrones locales, como bordes y texturas, y dominaron la visión por computadora (el reconocimiento de imágenes).</li>
+        <li><strong>RNN/LSTM</strong> (redes recurrentes): leen una secuencia, como un texto, de a un paso por vez, y llevan un <em>estado oculto</em>: un resumen de lo leído hasta ahí. Tienen dos problemas:
+          <ul>
+            <li>Como van de a un paso, no se pueden repartir entre muchos procesadores a la vez (son difíciles de <em>paralelizar</em>).</li>
+            <li>Se olvidan de lo que leyeron hace mucho. Técnicamente, los gradientes "se desvanecen": se achican tanto al ir hacia atrás que las primeras palabras casi no aprenden.</li>
+          </ul>
+        </li>
+        <li><strong>Transformers (2017):</strong> con el mecanismo de atención, cada token mira a todos los demás al mismo tiempo, en vez de leer de a uno. Eso se reparte muy bien en una GPU y mejora a medida que les das más datos y más cómputo (<em>escala</em>). Por eso son la base de los LLMs.</li>
       </ul>
-      <p>Trucos que vas a ver en todos lados: <strong>normalización</strong> (LayerNorm), <strong>conexiones residuales</strong> (sumar la entrada a la salida para que el gradiente fluya), <strong>dropout</strong> (apagar neuronas al azar para regularizar).</p>` },
-    { titulo: 'Entrenar bien: AdamW, warmup, mixed precision y cómo leer las curvas', html: `
-      <p>Conocer la arquitectura es la mitad. La otra mitad es que el entrenamiento sea estable y saber diagnosticarlo cuando no lo es.</p>
+      <p>Trucos que vas a ver en todos lados:</p>
       <ul>
-        <li><strong>AdamW:</strong> Adam ajusta el paso de cada parámetro según promedios móviles del gradiente y de su cuadrado. AdamW separa el <em>weight decay</em> (regularización) de ese ajuste. Es el optimizador por defecto para Transformers.</li>
-        <li><strong>Warmup + decaimiento coseno:</strong> los primeros pasos suben el learning rate de a poco (al inicio, las estimaciones de Adam y los gradientes son inestables) y después lo bajan suavemente hasta el final.</li>
-        <li><strong>Gradient clipping:</strong> limitar la norma del gradiente (por ejemplo, a 1,0) evita que un batch raro haga explotar el entrenamiento.</li>
-        <li><strong>Mixed precision (bf16):</strong> calcular en 16 bits casi duplica la velocidad y ahorra memoria. bf16 tiene el mismo rango de exponente que fp32, así que rara vez desborda y no necesita el escalado de loss que pide fp16.</li>
+        <li><strong>Normalización</strong> (LayerNorm): reajusta los números de cada capa a una escala estable, para que no se vayan a valores enormes ni diminutos.</li>
+        <li><strong>Conexiones residuales:</strong> sumar la entrada de una capa a su salida, como un atajo. Así el gradiente llega bien hasta las primeras capas, aunque la red sea muy profunda.</li>
+        <li><strong>Dropout:</strong> durante el entrenamiento, "apagar" al azar algunas neuronas (algunos números de la capa). Es una forma de regularización: obliga a la red a no depender de una sola pieza.</li>
+      </ul>` },
+    { titulo: 'Entrenar bien: AdamW, warmup, mixed precision y cómo leer las curvas', html: `
+      <p><strong>En pocas palabras:</strong> entrenar una red es como hacer un asado: no alcanza con buena carne (la arquitectura), también hay que manejar el fuego. Fuego fuerte de entrada, y se quema; fuego flojo, y nunca se cocina. Esta lección son los trucos para manejar "el fuego" del entrenamiento y para darte cuenta, mirando un gráfico, cuando algo anda mal.</p>
+      <ul>
+        <li><strong>AdamW:</strong> el optimizador más usado para Transformers. Adam le da a cada peso su propio tamaño de paso, según cómo vino variando su gradiente en los últimos pasos (un promedio móvil): los pesos con gradientes inestables avanzan con más cuidado. AdamW le agrega el <em>weight decay</em>, una regularización que en cada paso achica un poquito todos los pesos.</li>
+        <li><strong>Warmup + decaimiento coseno:</strong> un plan para el learning rate (el tamaño del paso).
+          <ul>
+            <li><em>Warmup</em> (calentamiento): en los primeros pasos sube de a poco, porque al inicio todo es inestable.</li>
+            <li><em>Decaimiento coseno:</em> después baja suavemente, siguiendo la forma de una curva coseno, hasta casi 0 al final. Pasos chicos al final sirven para afinar.</li>
+          </ul>
+        </li>
+        <li><strong>Gradient clipping</strong> (recortar el gradiente): si el gradiente de un batch raro sale gigante, se lo achica hasta un máximo (por ejemplo, largo 1,0). Así un solo paso no "hace explotar" el entrenamiento.</li>
+        <li><strong>Mixed precision</strong> (precisión mixta): guardar los números con menos decimales, en 16 bits en lugar de 32, casi duplica la velocidad y ahorra memoria. Hay dos formatos de 16 bits:
+          <ul>
+            <li><strong>bf16:</strong> llega a números tan grandes como el formato normal de 32 bits (fp32), así que rara vez se desborda. Es el recomendado.</li>
+            <li><strong>fp16:</strong> se desborda con más facilidad y necesita un truco extra, el escalado de la loss.</li>
+          </ul>
+        </li>
+      </ul>
+      <p>El código junta todo:</p>
+      <ul>
+        <li><code>lr=3e-4</code> es 0,0003, un learning rate típico.</li>
+        <li><code>factor</code> arma el plan de warmup + coseno.</li>
+        <li><code>autocast</code> activa bf16.</li>
+        <li><code>clip_grad_norm_</code> recorta el gradiente.</li>
       </ul>
       <pre><code>import math, torch
 
@@ -875,17 +922,30 @@ for x, y in loader:
     torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
     opt.step()
     sched.step()</code></pre>
-      <p><strong>La receta de Karpathy para no perder días:</strong> verificá la loss inicial (un clasificador de 10 clases recién creado debería dar unos −ln(1/10) ≈ 2,3), y <strong>sobreajustá un solo batch chico</strong> hasta loss casi 0 antes de entrenar con todo. Si no puede memorizar 32 ejemplos, hay un bug.</p>
-      <p><strong>Cómo leer las curvas:</strong></p>
+      <p><strong>La receta de Karpathy</strong> (Andrej Karpathy, investigador conocido por sus clases de redes neuronales) <strong>para no perder días:</strong> verificá la loss inicial (un clasificador de 10 clases recién creado debería dar unos −ln(1/10) ≈ 2,3), y <strong>sobreajustá un solo batch chico</strong> hasta loss casi 0 antes de entrenar con todo. Si no puede memorizar 32 ejemplos, hay un bug.</p>
+      <p><strong>Cómo leer las curvas.</strong> Durante el entrenamiento se grafica la loss de train y la de validación a medida que pasan los pasos. La forma de esas dos líneas te dice qué pasa:</p>
       <ul>
         <li>Train baja y validación sube: overfitting. Más datos, regularización o early stopping.</li>
         <li>Las dos altas y planas: underfitting o learning rate muy bajo.</li>
-        <li>Picos o NaN de golpe: learning rate muy alto, falta clipping o warmup.</li>
-        <li>No se mueve nada: casi siempre un bug (parámetros congelados, etiquetas mal alineadas, falta zero_grad).</li>
+        <li>Picos o NaN de golpe: learning rate muy alto, o falta clipping o warmup. NaN ("not a number") es lo que aparece cuando una cuenta se rompe, por ejemplo al dividir por cero.</li>
+        <li>No se mueve nada: casi siempre un bug. Por ejemplo, pesos <em>congelados</em> (marcados para no cambiar), etiquetas que no corresponden a sus ejemplos, o un <code>zero_grad</code> que falta.</li>
       </ul>` },
     { titulo: 'Aprendizaje contrastivo: cómo se entrenan los embeddings (y CLIP)', html: `
-      <p>Los modelos de embeddings que usás en RAG no se entrenan para predecir el siguiente token, sino con <strong>aprendizaje contrastivo</strong>: acercar en el espacio vectorial lo que va junto y alejar lo que no.</p>
-      <p><strong>La idea:</strong> tomás un batch de N pares positivos, por ejemplo (consulta, documento que la responde). Calculás la similitud de cada consulta con <em>todos</em> los documentos del batch: eso da una matriz N×N. Los pares correctos están en la <strong>diagonal</strong>; el resto funcionan como negativos gratis. La loss es una entropía cruzada que, en cada fila, premia elegir la diagonal (se la conoce como InfoNCE).</p>
+      <p><strong>En pocas palabras:</strong> es el juego de unir con flechas. Le das al modelo una columna de preguntas y otra de respuestas mezcladas, y lo premiás cuando une cada pregunta con su respuesta y no con las otras. Después de millones de rondas, aprende a poner cerca las cosas que van juntas.</p>
+      <p>Los modelos de embeddings que vas a usar en RAG (buscar documentos para que un LLM responda con ellos, módulo de RAG) no se entrenan para predecir el siguiente token. Se entrenan con <strong>aprendizaje contrastivo</strong>: acercar los vectores de lo que va junto y alejar los de lo que no. Imaginá cada embedding como un punto en un mapa (el <em>espacio vectorial</em>): lo relacionado tiene que quedar cerca.</p>
+      <p><strong>La idea, paso a paso:</strong></p>
+      <ol>
+        <li>Tomás un batch de N <em>pares positivos</em>, cosas que van juntas, por ejemplo (consulta, documento que la responde).</li>
+        <li>Calculás la similitud de cada consulta con <em>todos</em> los documentos del batch. Eso da una tabla (matriz) de N×N.</li>
+        <li>Los pares correctos están en la <strong>diagonal</strong>: fila 1 con columna 1, fila 2 con columna 2. El resto de la tabla son <em>negativos</em> (pares que no van juntos) que conseguís gratis.</li>
+        <li>La loss es una entropía cruzada que, en cada fila, premia elegir la diagonal. Es como un examen de opción múltiple donde la respuesta correcta es siempre "la de su misma posición". Esta loss se conoce como InfoNCE.</li>
+      </ol>
+      <p>En el código:</p>
+      <ul>
+        <li><code>codificar</code> es el modelo que estás entrenando.</li>
+        <li><code>F.normalize</code> deja todos los vectores de largo 1, así el producto punto es la similitud coseno.</li>
+        <li><code>b.T</code> da vuelta la matriz (la <em>transpuesta</em>) para que el producto compare todas contra todas.</li>
+      </ul>
       <pre><code>import torch
 import torch.nn.functional as F
 
@@ -896,21 +956,32 @@ etiquetas = torch.arange(len(a))                 # el positivo de la fila i est�
 loss = F.cross_entropy(logits, etiquetas)</code></pre>
       <ul>
         <li><strong>Batch grande:</strong> cada ejemplo se compara contra más negativos, y la señal de entrenamiento es más informativa.</li>
-        <li><strong>Temperatura:</strong> dividir por un número chico vuelve más "picuda" la softmax y castiga más a los negativos que quedan cerca del positivo.</li>
+        <li><strong>Temperatura:</strong> el 0,05 por el que se dividen las similitudes. Dividir por un número chico agranda las diferencias, así que la softmax se vuelve más "picuda": casi toda la probabilidad va a la opción con más puntaje. Eso castiga más a los negativos que quedan cerca del positivo.</li>
         <li><strong>Negativos difíciles:</strong> pares que se parecen en la superficie pero significan otra cosa ("contrato de alquiler" contra "contrato de trabajo"). Son los que más le enseñan al modelo a distinguir.</li>
       </ul>
       <p><strong>CLIP</strong> (OpenAI, 2021) aplicó esta idea a imágenes y texto: entrenó un codificador de imágenes y uno de texto con unos 400 millones de pares imagen-descripción, con la loss en las dos direcciones. Así, imágenes y textos quedan en el mismo espacio y se puede <strong>clasificar sin entrenar</strong> (zero-shot): comparás el embedding de una imagen con los de textos como "una foto de un perro" o "una foto de un gato" y elegís el más parecido.</p>
-      <p>Por eso, cuando un modelo de embeddings genérico no distingue bien los conceptos de tu dominio, una opción es afinarlo con pares propios y negativos difíciles. Librerías como Sentence Transformers traen estas losses listas.</p>` },
+      <p>Por eso, cuando un modelo de embeddings genérico no distingue bien los conceptos de tu <em>dominio</em> (tu área: legal, médica, tu empresa), una opción es <em>afinarlo</em> (seguir entrenándolo) con pares propios y negativos difíciles. Librerías como Sentence Transformers traen estas losses listas.</p>` },
     { titulo: 'Entrenar modelos grandes: memoria, acumulación de gradientes y paralelismo', html: `
-      <p>Entrenar consume mucha más memoria que usar el modelo. Además de los pesos, hay que guardar los <strong>gradientes</strong>, los <strong>estados del optimizador</strong> y las <strong>activaciones</strong> de cada capa para el backward.</p>
-      <p><strong>Una cuenta que conviene saber de memoria.</strong> El paper de ZeRO la usa como punto de partida: con Adam en precisión mixta, cada parámetro ocupa unos <strong>16 bytes</strong>: 2 de pesos en 16 bits, 2 de gradientes y 12 del optimizador (una copia de los pesos en 32 bits más el momento y la varianza).</p>
+      <p><strong>En pocas palabras:</strong> un modelo grande no entra en la memoria de una placa de video, igual que una mudanza no entra en un auto. Las opciones son las mismas: hacer más viajes (acumulación de gradientes), llevar solo lo imprescindible (checkpointing, LoRA) o usar varios autos a la vez (varias GPUs). Esta lección te enseña a hacer la cuenta antes de cargar.</p>
+      <p>Entrenar consume mucha más memoria que usar el modelo. La memoria que importa es la de la GPU, que es limitada: 24, 80 GB. Además de los pesos, hay que guardar tres cosas más:</p>
+      <ul>
+        <li><strong>Gradientes:</strong> uno por peso.</li>
+        <li><strong>Estados del optimizador:</strong> los promedios que Adam lleva de cada peso.</li>
+        <li><strong>Activaciones:</strong> los resultados intermedios de cada capa, que hacen falta para calcular el backward (la backpropagation).</li>
+      </ul>
+      <p><strong>Una cuenta que conviene saber de memoria.</strong> Un <em>paper</em> es un artículo de investigación, y el de ZeRO (una técnica de Microsoft) usa esta cuenta como punto de partida. Un <em>byte</em> es la unidad de memoria (1 GB son mil millones de bytes). Con Adam en precisión mixta, cada parámetro (cada peso) ocupa unos <strong>16 bytes</strong>:</p>
+      <ul>
+        <li>2 bytes del peso en 16 bits.</li>
+        <li>2 bytes de su gradiente.</li>
+        <li>12 bytes del optimizador: una copia del peso en 32 bits y los dos promedios de Adam (el <em>momento</em> y la <em>varianza</em>).</li>
+      </ul>
       <pre><code>1.000 millones de parámetros × 16 bytes ≈ 16 GB   (los pesos solos en 16 bits: 2 GB)
 7.000 millones de parámetros × 16 bytes ≈ 112 GB  (más las activaciones)</code></pre>
       <p><strong>Técnicas para que entre en tu hardware:</strong></p>
       <ul>
-        <li><strong>Acumulación de gradientes:</strong> si querés un batch de 256 y solo entran 32, procesás 8 micro-batches y actualizás una vez. El resultado se parece al batch grande, a costa de más tiempo por paso.</li>
-        <li><strong>Activation checkpointing:</strong> guardás menos activaciones y las recalculás en el backward. Ahorra mucha memoria, sobre todo con secuencias largas, a cambio de más cómputo.</li>
-        <li><strong>LoRA y QLoRA:</strong> los pesos originales quedan congelados, así que solo hay gradientes y estados del optimizador para los adaptadores chicos. Por eso un 7B se puede afinar en una sola GPU.</li>
+        <li><strong>Acumulación de gradientes:</strong> si querés un batch de 256 y solo entran 32, procesás 8 tandas chicas (<em>micro-batches</em>), vas sumando sus gradientes y corregís los pesos una sola vez al final. El resultado se parece al de un batch grande, a costa de más tiempo por paso.</li>
+        <li><strong>Activation checkpointing:</strong> guardás solo algunas activaciones y las demás las volvés a calcular cuando hacen falta en el backward. Ahorra mucha memoria, sobre todo con textos largos, a cambio de más cuentas.</li>
+        <li><strong>LoRA y QLoRA</strong> (módulo de fine-tuning): los pesos originales quedan congelados y solo se entrenan unas piezas chicas que se agregan, los <em>adaptadores</em>. Entonces hay gradientes y estados del optimizador solo para esas piezas. Por eso un modelo "7B" (de 7.000 millones de parámetros) se puede afinar en una sola GPU.</li>
         <li><strong>Optimizadores de 8 bits:</strong> guardan los estados de Adam con menos precisión.</li>
       </ul>
       <pre><code>pasos_acum = 8                                   # batch efectivo = 8 × micro-batch
@@ -922,18 +993,26 @@ for i, (x, y) in enumerate(loader):
         opt.zero_grad()</code></pre>
       <p><strong>Cuando una GPU no alcanza:</strong></p>
       <ul>
-        <li><strong>Paralelismo de datos (DDP):</strong> cada GPU tiene el modelo completo, procesa datos distintos y promedian los gradientes. Acelera, pero no reduce la memoria por GPU.</li>
-        <li><strong>Sharding (ZeRO, FSDP):</strong> en lugar de que cada GPU tenga todo, se reparten pesos, gradientes y estados del optimizador. Así entran modelos que no cabrían en una sola.</li>
+        <li><strong>Paralelismo de datos (DDP):</strong> cada GPU tiene una copia del modelo completo y procesa datos distintos; después promedian los gradientes entre todas. Es como varios cocineros con la misma receta, cada uno con sus ingredientes. Acelera, pero no reduce la memoria que necesita cada GPU.</li>
+        <li><strong>Sharding (ZeRO, FSDP):</strong> <em>shard</em> quiere decir "pedazo". En lugar de que cada GPU tenga todo, se reparten los pesos, los gradientes y los estados del optimizador. Así entran modelos que no cabrían en una sola.</li>
         <li><strong>Paralelismo de tensores y de pipeline:</strong> se divide cada capa entre GPUs, o se ponen distintas capas en distintas GPUs, para los modelos más grandes.</li>
       </ul>
       <p>Hacer esta cuenta antes de entrenar te dice si entra, cuánto va a costar y qué técnica necesitás, sin descubrirlo con un error de memoria a mitad de camino.</p>` },
     { titulo: 'Transfer learning: no entrenes desde cero', html: `
-      <p>Casi nunca conviene entrenar un modelo desde cero. Un modelo preentrenado con millones de imágenes o miles de millones de palabras ya aprendió representaciones útiles: bordes y formas en visión, sintaxis y significado en texto. <strong>Transfer learning</strong> es reutilizar ese conocimiento y adaptarlo a tu tarea con pocos datos.</p>
+      <p><strong>En pocas palabras:</strong> si sabés andar en bicicleta, aprender a andar en moto te cuesta mucho menos que a alguien que nunca anduvo en nada. Con los modelos pasa igual: uno que ya aprendió a ver fotos en general aprende rápido a reconocer tus productos, con pocos ejemplos.</p>
+      <p>Casi nunca conviene entrenar un modelo desde cero. Un modelo <em>preentrenado</em>, que alguien ya entrenó con millones de imágenes o miles de millones de palabras, ya aprendió cosas útiles: bordes y formas en imágenes, gramática y significado en texto. <strong>Transfer learning</strong> (transferencia de aprendizaje) es reutilizar ese conocimiento y adaptarlo a tu tarea con pocos datos.</p>
       <p><strong>Dos formas, de menor a mayor costo:</strong></p>
       <ol>
-        <li><strong>Extractor de features:</strong> congelás todo el modelo y entrenás solo una capa final nueva (la "cabeza") para tus clases. Rápido, funciona con muy pocos datos y es difícil que haga overfitting.</li>
-        <li><strong>Ajuste fino completo o parcial:</strong> descongelás también algunas capas, o todas, con un learning rate <em>chico</em> (por ejemplo 10 veces menor que para la cabeza), para no destruir lo aprendido. Rinde más cuando tenés más datos o tu dominio es distinto.</li>
+        <li><strong>Extractor de features:</strong> <em>congelás</em> todo el modelo, o sea, sus pesos no cambian, y entrenás solo una capa final nueva para tus clases, llamada la "cabeza". Es rápido, funciona con muy pocos datos y es difícil que haga overfitting.</li>
+        <li><strong>Ajuste fino completo o parcial:</strong> además de la cabeza, descongelás algunas capas, o todas, y las entrenás con un learning rate <em>chico</em> (por ejemplo, 10 veces menor que el de la cabeza) para no destruir lo que ya sabían. Rinde más cuando tenés más datos o cuando tus imágenes o textos son muy distintos de los originales.</li>
       </ol>
+      <p>En el código:</p>
+      <ul>
+        <li><code>resnet18</code> es un modelo de imágenes ya entrenado.</li>
+        <li><code>requires_grad = False</code> lo congela.</li>
+        <li><code>modelo.fc</code> es su última capa, que se reemplaza por una nueva para 3 clases.</li>
+        <li><code>layer4</code> es su último bloque de capas, que en el paso 2 se descongela.</li>
+      </ul>
       <pre><code>import torch, torchvision
 
 modelo = torchvision.models.resnet18(weights="DEFAULT")   # preentrenado
@@ -956,7 +1035,7 @@ opt = torch.optim.AdamW([
         <li><strong>Separá validación antes de empezar</strong> y vigilá el overfitting: con pocos datos llega rápido.</li>
         <li><strong>Empezá por la opción más barata</strong> (extractor de features) y subí solo si las métricas lo justifican.</li>
       </ul>
-      <p>Es la misma idea que ya viste con LLMs: el fine-tuning y LoRA son transfer learning sobre un modelo de lenguaje, y los embeddings más un clasificador son la versión "extractor de features".</p>` },
+      <p>Es la misma idea que vas a ver con LLMs: el fine-tuning y LoRA son transfer learning sobre un modelo de lenguaje. Y los embeddings más un clasificador, que viste en Machine Learning clásico, son la versión "extractor de features".</p>` },
   ],
   practica: [
     'Seguí "Neural Networks: Zero to Hero" de Andrej Karpathy hasta micrograd: implementá backpropagation desde cero.',
