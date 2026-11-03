@@ -268,6 +268,7 @@ print(np.array([[1, 0, 2], [0, 1, 1]]) @ np.array([3, 4, 5]))    # [13  9]</code
   nivel: 'Básico',
   objetivos: [
     'Distinguir aprendizaje supervisado, no supervisado y por refuerzo',
+    'Entrenar y medir una regresión lineal (MAE) y una logística, y calcular precision y recall desde una matriz de confusión',
     'Detectar overfitting y usar bien train/validación/test',
     'Elegir la métrica correcta (accuracy, precision, recall, F1)',
     'Usar ensembles de árboles (random forest, gradient boosting) y pipelines sin data leakage',
@@ -279,11 +280,29 @@ print(np.array([[1, 0, 2], [0, 1, 1]]) @ np.array([3, 4, 5]))    # [13  9]</code
   lecciones: [
     { titulo: 'Qué es aprender a partir de datos', html: `
       <p>Machine Learning es encontrar una función que, a partir de ejemplos, generalice a datos nuevos.</p>
+      <p><strong>El vocabulario básico</strong>, con una planilla de departamentos:</p>
+      <table>
+        <tr><th>m²</th><th>ambientes</th><th>barrio</th><th>precio (USD)</th></tr>
+        <tr><td>45</td><td>2</td><td>Centro</td><td>80.000</td></tr>
+        <tr><td>90</td><td>4</td><td>Norte</td><td>150.000</td></tr>
+      </table>
+      <ul>
+        <li><strong>Features</strong> (características): las columnas que el modelo usa para predecir: m², ambientes y barrio.</li>
+        <li><strong>Etiqueta</strong> (o <em>target</em>): lo que querés predecir, el precio.</li>
+        <li><strong>Modelo:</strong> la función que va de las features a la etiqueta. <strong>Entrenar</strong> es ajustar sus números internos (los <em>parámetros</em>) para que se equivoque lo menos posible en los ejemplos.</li>
+      </ul>
+      <p><strong>Tres tipos de aprendizaje:</strong></p>
       <ul>
         <li><strong>Supervisado:</strong> tenés entradas y la respuesta correcta (etiqueta). Regresión (predecir un número) o clasificación (predecir una clase).</li>
         <li><strong>No supervisado:</strong> sin etiquetas. Clustering (k-means), reducción de dimensionalidad (PCA).</li>
         <li><strong>Refuerzo:</strong> un agente aprende por recompensas. Se usa, por ejemplo, para alinear LLMs (RLHF).</li>
       </ul>
+      <p><strong>Los dos modelos que vas a usar como punto de partida:</strong></p>
+      <ul>
+        <li><strong>Regresión lineal</strong> (predice un número): precio ≈ a × m² + b × ambientes + c. Entrenar es encontrar a, b y c. Se mide con el <strong>MAE</strong> (error absoluto medio: en promedio, por cuántos dólares le erra) o con el RMSE, que castiga más los errores grandes.</li>
+        <li><strong>Regresión logística</strong> (predice una clase, a pesar del nombre): hace una suma como la lineal y la convierte en una probabilidad entre 0 y 1, por ejemplo "72% de que sea spam". Es la versión de dos clases del softmax que viste en Fundamentos. Si la probabilidad supera un umbral, dice "sí". Sus coeficientes muestran qué feature empuja hacia cada lado, por eso es <strong>interpretable</strong>.</li>
+      </ul>
+      <p><strong>Hiperparámetros:</strong> las perillas que elegís vos antes de entrenar, como la profundidad de un árbol o la cantidad de árboles. Los parámetros los aprende el modelo; los hiperparámetros los elegís comparando en validación.</p>
       <p>Siempre separás los datos: <strong>train</strong> (aprender), <strong>validación</strong> (elegir hiperparámetros) y <strong>test</strong> (medir al final, una sola vez). Si mirás el test para tomar decisiones, tu número final miente.</p>
       <pre><code>from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
@@ -300,8 +319,34 @@ print(modelo.score(X_te, y_te))</code></pre>` },
         <li><strong>Recall</strong> = TP / (TP + FN): de lo positivo real, ¿cuánto encontré?</li>
         <li><strong>F1</strong>: media armónica de ambas.</li>
       </ul>
+      <p><strong>La matriz de confusión</strong> ordena los cuatro casos (TN = verdaderos negativos). Ejemplo: 100 mails, 10 son spam.</p>
+      <pre><code>                  el modelo dijo spam    el modelo dijo no spam
+es spam                 TP = 8                 FN = 2
+no es spam              FP = 4                 TN = 86
+
+precision = 8 / (8 + 4) ≈ 0,67    de lo que marcó como spam, el 67% lo era
+recall    = 8 / (8 + 2) = 0,80    encontró el 80% del spam
+F1        = 2 × 0,67 × 0,80 / (0,67 + 0,80) ≈ 0,73
+accuracy  = (8 + 86) / 100 = 0,94</code></pre>
       <p>Con clases desbalanceadas, la accuracy engaña: si el 99% de los casos son negativos, un modelo que siempre dice "negativo" tiene 99% de accuracy y no sirve para nada.</p>
       <p><strong>Data leakage:</strong> información que no tendrías en producción se cuela en el entrenamiento (por ejemplo, normalizar usando estadísticas del dataset completo antes de separar test). Da resultados irrealmente buenos.</p>
+      <p><strong>Validación cruzada (k-fold):</strong> con un solo corte entre train y validación, la nota depende de qué ejemplos te tocaron. En cambio, partís los datos en k partes (<em>folds</em>), entrenás k veces dejando una parte afuera cada vez y promediás. Además del promedio, ves cuánto varía entre folds.</p>
+      <pre><code>fold 1:  [VAL] [ tr] [ tr] [ tr] [ tr]
+fold 2:  [ tr] [VAL] [ tr] [ tr] [ tr]
+  ...
+fold 5:  [ tr] [ tr] [ tr] [ tr] [VAL]
+nota = promedio de los 5 (± el desvío)</code></pre>
+      <p><strong>Regularización:</strong> castigar al modelo por ser demasiado complejo para que no memorice el ruido. En scikit-learn, por ejemplo, el parámetro C de <code>LogisticRegression</code> (más chico, más regularización) o <code>max_depth</code> en un árbol.</p>
+      <p><strong>Probalo:</strong> un árbol cada vez más profundo. Mirá cómo el train sube hasta 100% mientras el test deja de mejorar y baja: eso es overfitting.</p>
+      <pre><code>from sklearn.datasets import load_breast_cancer
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+
+X, y = load_breast_cancer(return_X_y=True)
+X_tr, X_te, y_tr, y_te = train_test_split(X, y, test_size=0.3, random_state=0)
+for profundidad in [1, 2, 3, 5, 8, None]:                # None = sin límite
+    arbol = DecisionTreeClassifier(max_depth=profundidad, random_state=0).fit(X_tr, y_tr)
+    print("profundidad", profundidad, " train:", round(arbol.score(X_tr, y_tr), 3), " test:", round(arbol.score(X_te, y_te), 3))</code></pre>
       <p><strong>Cambio de distribución:</strong> un modelo solo sabe lo que vio. Si lo entrenaste con casas de una ciudad y lo usás en otra, con otros precios y zonas, va a fallar aunque el código esté perfecto. Necesitás datos de la nueva región (o un modelo por región).</p>
       <p><strong>El promedio esconde segmentos:</strong> un modelo de demanda con error bajo en promedio puede fallar justo en feriados y promociones, que son pocos días pero los más importantes. Medí el error por segmento y agregá features que los representen (por ejemplo, <code>es_feriado</code>). Sacar esos días del dataset mejora el número, no el modelo.</p>` },
     { titulo: 'Árboles, ensembles y pipelines: lo que gana en datos tabulares', html: `
@@ -364,6 +409,19 @@ def clasificar(texto):
         return clasificar_con_llm(texto)    # zona dudosa: el modelo grande decide
     return p &gt;= umbral</code></pre>
       <p><strong>El umbral es una decisión de negocio.</strong> Con 0,5 por defecto mezclás los errores sin pensar. Si un falso positivo cuesta mucho (marcar como fraude a un cliente bueno), subí el umbral para ganar precision. Si lo caro es dejar pasar un caso (no detectar un fraude), bajalo para ganar recall. La curva precision-recall te muestra el intercambio.</p>
+      <p><strong>Probalo con datos reales.</strong> En lugar de embeddings, el dataset de tumores de la primera lección. Bajar el umbral hace que casi no se escape ningún caso maligno, a cambio de más falsas alarmas. (Acá lo miramos en test para verlo rápido; en un proyecto real, el umbral se elige con validación.)</p>
+      <pre><code>from sklearn.datasets import load_breast_cancer
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import precision_score, recall_score
+
+X, y = load_breast_cancer(return_X_y=True)
+y = 1 - y                                        # 1 = maligno: el caso que no queremos dejar pasar
+X_tr, X_te, y_tr, y_te = train_test_split(X, y, test_size=0.3, random_state=0)
+prob = LogisticRegression(max_iter=5000).fit(X_tr, y_tr).predict_proba(X_te)[:, 1]
+for umbral in [0.9, 0.5, 0.2, 0.05]:
+    pred = prob &gt;= umbral
+    print("umbral", umbral, " precision:", round(precision_score(y_te, pred), 2), " recall:", round(recall_score(y_te, pred), 2))</code></pre>
       <p><strong>Calibración:</strong> que un modelo diga 0,8 no significa que acierte el 80% de esas veces. Si vas a usar las probabilidades para decidir o para mostrarlas, verificá la calibración con un gráfico de confiabilidad y, si hace falta, calibrá (por ejemplo, con <code>CalibratedClassifierCV</code>).</p>
       <p><strong>Cuándo sí un LLM:</strong> pocas consultas, categorías que cambian seguido, sin datos etiquetados, o tareas que requieren razonar o generar texto.</p>` },
     { titulo: 'Explorar texto a escala: embeddings, clustering y reducción de dimensionalidad', html: `
@@ -457,12 +515,28 @@ def similares(i, k=5):                              # por contenido: ítems pare
 
 perfil = E[items_que_le_gustaron].mean(axis=0)      # perfil del usuario
 recomendados = np.argsort(-(E @ perfil))[:10]       # (en producción, filtrá lo que ya vio)</code></pre>
+      <p><strong>Probalo en chiquito:</strong> un recomendador por contenido con seis películas, usando TF-IDF en lugar de un modelo de embeddings (agrupa por palabras compartidas, no por significado).</p>
+      <pre><code>from sklearn.feature_extraction.text import TfidfVectorizer
+import numpy as np
+
+items = ["película de terror con fantasmas", "comedia romántica en París", "terror y suspenso en una casa embrujada",
+         "documental sobre el océano", "comedia de amigos en la playa", "documental de animales del océano"]
+E = TfidfVectorizer().fit_transform(items).toarray()
+E = E / np.linalg.norm(E, axis=1, keepdims=True)       # normalizar: así el producto punto es el coseno
+
+def similar(i):
+    s = E @ E[i]
+    s[i] = -1                                          # no recomendar el mismo ítem
+    return items[np.argmax(s)]
+
+for i in [0, 1, 3]:
+    print(items[i], "| te puede gustar:", similar(i))</code></pre>
       <p><strong>Arquitectura en dos etapas:</strong> en catálogos grandes, primero una <em>recuperación</em> rápida trae unos cientos de candidatos (con embeddings y búsqueda de vecinos, como en RAG), y después un modelo de <em>ranking</em> más preciso ordena solo esos.</p>
       <p><strong>Problemas típicos:</strong></p>
       <ul>
         <li><strong>Arranque en frío:</strong> ítems o usuarios nuevos sin interacciones. El contenido y las preguntas iniciales ayudan.</li>
         <li><strong>Sesgo de popularidad:</strong> si siempre recomendás lo más popular, lo de nicho nunca se muestra y nunca junta datos. Hace falta algo de diversidad y exploración.</li>
-        <li><strong>Evaluación:</strong> offline, con precision@k, recall@k o NDCG sobre interacciones apartadas (separadas por tiempo, como viste en la lección de validación). Pero la prueba real es online, con un test A/B.</li>
+        <li><strong>Evaluación:</strong> offline, con <strong>precision@k</strong> (de los k recomendados, cuántos eligió el usuario), <strong>recall@k</strong> (de lo que eligió, cuánto estaba entre los k) o <strong>NDCG</strong> (como precision@k, pero premia que lo relevante esté más arriba en la lista), sobre interacciones apartadas (separadas por tiempo, como viste en la lección de validación). Pero la prueba real es online, con un test A/B.</li>
       </ul>` },
   ],
   practica: [
@@ -529,6 +603,11 @@ recomendados = np.argsort(-(E @ perfil))[:10]       # (en producción, filtrá l
     { q: 'Entrenaste un clasificador y en validación cruzada obtenés 0,81, 0,79, 0,52, 0,80 y 0,82 en los 5 folds. ¿Qué revisás?', opciones: ['Nada: el promedio es razonable', 'Subís el número de árboles', 'Cambiás de algoritmo', 'Qué tiene de raro el fold con 0,52: datos de otro período, clases distintas o un problema de calidad'], correcta: 3, explicacion: 'Un fold muy distinto indica que algo en esos datos no se parece al resto. Mirar solo el promedio tienta porque es un número cómodo, pero esconde justo el problema que necesitás encontrar.' },
     { q: 'Querés agrupar a tus clientes para campañas, pero no sabés cuántos grupos hay. ¿Cómo encarás k-means?', opciones: ['Probás varios k, mirás una métrica como silhouette y, sobre todo, si los grupos tienen sentido para el negocio', 'Usás siempre k = 3', 'Elegís el k con más grupos posible', 'K-means elige k solo'], correcta: 0, explicacion: 'K-means necesita que le digas k, y el mejor número también depende de para qué vas a usar los grupos. "Elige k solo" tienta, pero eso hacen otros métodos como HDBSCAN, no k-means.' },
     { q: 'Tu modelo de demanda tiene error bajo en promedio, pero se equivoca muchísimo justo en feriados y promociones. ¿Qué hacés?', opciones: ['Nada, el promedio es bueno', 'Agregás features que representen feriados y promociones, y medís el error por separado en esos días', 'Sacás esos días del dataset', 'Usás un modelo más simple'], correcta: 1, explicacion: 'Los días especiales suelen ser los que más importan para el negocio. Sacarlos del dataset tienta porque mejora el número, pero el modelo va a seguir fallando cuando lleguen.' },
+    { q: 'Tenés una planilla de departamentos con m², ambientes y barrio, y querés estimar el precio. ¿Qué tipo de problema es y con qué empezás?', opciones: ['Clasificación, con k-means', 'Regresión, con una regresión lineal como línea base, midiendo el MAE', 'Clustering, con HDBSCAN', 'Clasificación, con una regresión logística'], correcta: 1, explicacion: 'El precio es un número, así que es regresión. La regresión logística tienta por el nombre, pero predice clases ("sí o no"), no un número.' },
+    { q: 'De 200 transacciones, 20 son fraude. Tu modelo marca 25 como fraude, y 15 de esas lo son. ¿Cuánto valen precision y recall?', opciones: ['Precision 0,75 y recall 0,60', 'Precision 0,94 y recall 0,75', 'Precision 0,60 y recall 0,75', 'Las dos 0,60'], correcta: 2, explicacion: 'TP = 15, FP = 10 y FN = 5. Precision = 15 / 25 = 0,60 y recall = 15 / 20 = 0,75. La primera opción tienta porque tiene los mismos números, pero invertidos: precision mira lo que marcaste y recall lo que había.' },
+    { q: 'Tenés 300 ejemplos. Un corte train/validación te da 85% con una semilla y 74% con otra. ¿Qué hacés para medir mejor?', opciones: ['Te quedás con la semilla que da 85%', 'Usás el test para decidir', 'Medís en el mismo train', 'Validación cruzada de 5 folds, y reportás el promedio ± el desvío'], correcta: 3, explicacion: 'Con pocos datos, un solo corte depende de la suerte; promediar 5 folds da una nota más estable y muestra cuánto varía. Elegir la semilla del 85% tienta porque el número es más lindo, pero es engañarse.' },
+    { q: 'Tu regresión logística da 98% en train y 75% en validación, con coeficientes enormes. ¿Qué probás?', opciones: ['Más regularización (en scikit-learn, bajar C) y comparar en validación', 'Menos regularización (subir C)', 'Medir solo en train', 'Sacar el set de validación'], correcta: 0, explicacion: 'La diferencia entre train y validación es overfitting, y la regularización castiga la complejidad. Subir C tienta si recordás mal el sentido, pero C es la inversa: más grande, menos regularización.' },
+    { q: '¿Cuál de estos es un hiperparámetro, que elegís vos y no aprende el modelo?', opciones: ['Los coeficientes de la regresión', 'La profundidad máxima del árbol (max_depth)', 'Las predicciones', 'Las etiquetas del test'], correcta: 1, explicacion: 'max_depth lo fijás antes de entrenar y lo elegís comparando en validación. Los coeficientes tientan porque también son números del modelo, pero esos los aprende al entrenar: son parámetros.' },
   ],
 },
 {
