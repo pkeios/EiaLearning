@@ -17,38 +17,67 @@ window.TEMARIO = [
   ],
   lecciones: [
     { titulo: 'Python para IA: lo imprescindible', html: `
-      <p>Casi todo el ecosistema de IA vive en Python. No necesitás ser experto, pero sí fluido en:</p>
+      <p><strong>En pocas palabras:</strong> Python es el idioma en el que se escribe casi todo lo de IA. Igual que para cocinar alcanza con saber usar el cuchillo, la hornalla y la balanza, acá alcanza con unas pocas herramientas. Esta lección te dice cuáles.</p>
+      <p>Casi todas las herramientas de IA (librerías, ejemplos, tutoriales) están en Python. No necesitás ser experto, pero sí manejarte con:</p>
       <ul>
-        <li><strong>Estructuras:</strong> listas, diccionarios, comprensiones, funciones, clases, <code>async/await</code> (lo vas a usar con APIs).</li>
-        <li><strong>Entornos:</strong> un entorno virtual por proyecto (<code>python -m venv .venv</code> o <code>uv</code>) y dependencias fijadas.</li>
-        <li><strong>NumPy:</strong> arrays n-dimensionales y operaciones vectorizadas (corren en C, 10-100x más rápido que bucles).</li>
-        <li><strong>Pandas:</strong> tablas de datos; <strong>Jupyter:</strong> experimentar paso a paso.</li>
+        <li><strong>Lo básico del lenguaje:</strong> listas (<code>[1, 2, 3]</code>), diccionarios (<code>{"nombre": "Ana"}</code>, guardan pares nombre-valor), funciones y clases. También las <em>comprensiones</em>, una forma corta de armar una lista: <code>[x * 2 for x in numeros]</code> duplica cada número. Y <code>async/await</code>, que sirve para hacer muchas llamadas a internet a la vez (lo ves en la lección 4).</li>
+        <li><strong>Entornos virtuales:</strong> una carpeta aparte con las librerías de cada proyecto, para que no se mezclen entre proyectos. Se crea con <code>python -m venv .venv</code> (o con la herramienta <code>uv</code>). "Fijar las dependencias" quiere decir anotar la versión exacta de cada librería, así el proyecto funciona igual en otra computadora.</li>
+        <li><strong>NumPy:</strong> la librería para trabajar con muchos números juntos. Su pieza central es el <em>array</em>: una lista de números que puede tener varias dimensiones (una fila, una tabla, una pila de tablas). Sus operaciones son <em>vectorizadas</em>: en vez de recorrer los números de a uno con un bucle de Python, opera sobre todos a la vez con código ya compilado en C (un lenguaje mucho más rápido). Resultado: entre 10 y 100 veces más rápido.</li>
+        <li><strong>Pandas:</strong> para trabajar con tablas, como un Excel desde código. <strong>Jupyter:</strong> un cuaderno donde escribís código en bloques chicos y ves el resultado de cada uno al instante; ideal para probar.</li>
       </ul>
+      <p>Un primer ejemplo con NumPy. No te preocupes si todavía no sabés qué es una matriz: está explicado con cuentas a mano en <a href="#/m/fundamentos/6">Matemática desde cero</a>, la última lección del módulo. Por ahora quedate con la idea de que entra una lista de 3 números y sale una de 4.</p>
       <pre><code>import numpy as np
 x = np.array([1.0, 2.0, 3.0])
 W = np.random.randn(4, 3)   # matriz 4x3
 y = W @ x                   # producto matriz-vector -> shape (4,)
 print(y.shape)</code></pre>
-      <p>Esa última línea es, literalmente, lo que hace una capa de una red neuronal.</p>` },
+      <p>Qué mirar: <code>shape</code> es la <strong>forma</strong> del array, cuántos números tiene en cada dimensión. Imprime <code>(4,)</code>: una lista de 4 números. La línea <code>W @ x</code> es, literalmente, lo que hace una <em>capa</em> de una red neuronal (uno de los pasos en los que una IA transforma los números que recibe).</p>` },
     { titulo: 'Matemáticas mínimas (y por qué importan)', html: `
       <p><strong>¿Nunca viste vectores ni matrices?</strong> Empezá por <a href="#/m/fundamentos/6">Matemática desde cero</a>, la última lección de este módulo: son ejemplos resueltos a mano, solo con sumas y multiplicaciones. Después volvé acá.</p>
-      <p><strong>Vectores:</strong> una lista de números. Un texto, una imagen o un usuario se representan como vectores (embeddings).</p>
-      <p><strong>Producto punto:</strong> <code>a·b = Σ aᵢbᵢ</code>. Mide cuánto "apuntan en la misma dirección" dos vectores. Es el corazón de la atención en Transformers y de la búsqueda semántica. La <strong>similitud coseno</strong> es el producto punto normalizado: compara dirección e ignora magnitud.</p>
-      <p><strong>Matrices:</strong> transformaciones. Una matriz m×n convierte vectores de n dimensiones en vectores de m dimensiones.</p>
-      <p><strong>Derivadas y gradiente:</strong> el gradiente apunta hacia donde la función crece más rápido. Entrenar un modelo = moverse en la dirección <em>contraria</em> al gradiente de la pérdida (descenso de gradiente).</p>
-      <p><strong>Probabilidad:</strong> un LLM produce una distribución de probabilidad sobre el siguiente token. La función <strong>softmax</strong> convierte números arbitrarios (logits) en probabilidades positivas que suman 1.</p>
+      <p><strong>En pocas palabras:</strong> una IA no entiende palabras ni fotos; solo maneja listas de números. Estas cinco ideas explican qué hace con esas listas: compararlas, transformarlas, corregirse cuando se equivoca y elegir la respuesta más probable.</p>
+      <p><strong>1. Vectores:</strong> una lista de números que describe algo. Un texto, una imagen o un usuario se guardan como vectores. Cuando ese vector representa el significado de algo, se llama <strong>embedding</strong>: dos textos que dicen lo mismo con otras palabras tienen embeddings parecidos.</p>
+      <p><strong>2. Producto punto:</strong> <code>a·b = Σ aᵢbᵢ</code>, que en palabras es "multiplicá pareja por pareja y sumá todo". Mide cuánto "apuntan para el mismo lado" dos vectores, o sea, cuánto se parecen. Lo vas a ver en dos lugares clave:</p>
+      <ul>
+        <li>La <strong>búsqueda semántica</strong>: buscar por significado y no por palabras exactas. "Auto barato" encuentra "vehículo económico".</li>
+        <li>La <strong>atención</strong> de los <strong>Transformers</strong>, el tipo de red en el que se basan ChatGPT o Claude: es el mecanismo con el que cada palabra decide a qué otras palabras prestarles atención.</li>
+      </ul>
+      <p>La <strong>similitud coseno</strong> es el producto punto <em>normalizado</em>, es decir, dividido por el largo de los dos vectores. Así compara solo hacia dónde apuntan y no cuán largos son. Es como comparar dos recetas por sus proporciones y no por la cantidad de porciones.</p>
+      <p><strong>3. Matrices:</strong> una tabla de números que transforma un vector en otro. Una matriz de m filas y n columnas (m×n) recibe un vector de n números y devuelve uno de m.</p>
+      <p><strong>4. Derivadas y gradiente:</strong> primero, dos palabras que vas a ver siempre:</p>
+      <ul>
+        <li><strong>Modelo:</strong> el programa que aprende.</li>
+        <li><strong>Pérdida o loss:</strong> un número que mide cuánto se equivoca el modelo. Cuanto más baja, mejor.</li>
+      </ul>
+      <p>La <strong>derivada</strong> es la pendiente: dice si la pérdida sube o baja cuando cambiás un número del modelo. El <strong>gradiente</strong> es la lista de esas pendientes, una por cada número del modelo, y apunta hacia donde la pérdida crece más rápido. Entrenar un modelo es dar pasitos en la dirección <em>contraria</em>, para que la pérdida baje: eso se llama <strong>descenso de gradiente</strong>. Es como bajar una montaña con niebla, tanteando hacia dónde baja el piso.</p>
+      <p><strong>5. Probabilidad y softmax:</strong> un <strong>LLM</strong> (un modelo de lenguaje grande, como ChatGPT o Claude) escribe de a un pedacito de texto por vez. Ese pedacito se llama <strong>token</strong>: una palabra o parte de una palabra. Para elegir el próximo token, el modelo primero le da a cada token posible un puntaje, que puede ser cualquier número, incluso negativo. Esos puntajes se llaman <strong>logits</strong>. La función <strong>softmax</strong> los convierte en probabilidades: números positivos que suman 1 (el 100%).</p>
+      <p>En código, softmax son tres líneas. <code>np.exp</code> calcula la exponencial (e elevado a cada número), que deja todo positivo, y después se divide por la suma, para que el total dé 1.</p>
       <pre><code>def softmax(z):
     e = np.exp(z - z.max())   # restar el máximo evita overflow
-    return e / e.sum()</code></pre>` },
+    return e / e.sum()</code></pre>
+      <p>El <strong>overflow</strong> pasa cuando un número es tan grande que la computadora no lo puede guardar. Por ejemplo, e¹⁰⁰⁰ da infinito. Restar el máximo deja los números chicos y el resultado no cambia. La cuenta hecha a mano, con logits [2, 1, 0], está en la tabla de bolsillo de la lección siguiente.</p>` },
     { titulo: 'Entropía, entropía cruzada y perplexity: la matemática de la loss', html: `
-      <p>Cuando entrenás o evaluás un LLM vas a ver "loss", "cross-entropy" y "perplexity" en todos lados. Vienen de la teoría de la información y son más simples de lo que parecen.</p>
+      <p><strong>En pocas palabras:</strong> para entrenar una IA hace falta un número que diga "qué tan mal le fue". Acá ese número mide la <em>sorpresa</em>. Si el modelo estaba casi seguro de la respuesta correcta, la sorpresa es chica. Si le parecía casi imposible, la sorpresa es enorme y el castigo también. Es como un pronosticador del tiempo: si dijo "99% de sol" y llovió, queda mucho peor que si había dicho "50 y 50".</p>
+      <p>Cuando entrenás o evaluás un LLM vas a ver tres palabras en todos lados: "loss" (pérdida), "cross-entropy" (entropía cruzada) y "perplexity". Vienen de la <em>teoría de la información</em>, la rama de la matemática que mide cuánta información o sorpresa hay en algo. Son más simples de lo que parecen.</p>
+      <p><strong>Antes, el logaritmo.</strong> <code>log</code> es la cuenta inversa de elevar: pregunta "¿a qué número hay que elevar la base para llegar a este?". Para estas lecciones alcanza con tres cosas:</p>
       <ul>
-        <li><strong>Sorpresa de un evento:</strong> <code>−log p</code>. Algo con probabilidad 1 no sorprende (0); algo muy improbable sorprende mucho.</li>
-        <li><strong>Entropía</strong> <code>H(p) = −Σ p·log p</code>: la sorpresa promedio, o cuánta incertidumbre hay. Una moneda justa tiene 1 bit; una que sale cara el 99% de las veces, casi 0.</li>
-        <li><strong>Entropía cruzada</strong> <code>H(p, q) = −Σ p·log q</code>: cuánta sorpresa te llevás si la realidad sigue p pero vos predecís con q (tu modelo). Cuando la respuesta correcta es una sola (como el siguiente token), se reduce a <code>−log q(correcto)</code>. <strong>Esa es la loss</strong> de clasificación y de pre-training de un LLM.</li>
-        <li><strong>Divergencia KL</strong> <code>KL(p‖q) = H(p, q) − H(p)</code>: la sorpresa extra por usar q en vez de p. Siempre es ≥ 0 y no es simétrica. Aparece en RLHF y DPO (para que el modelo ajustado no se aleje demasiado del original) y en destilación.</li>
-        <li><strong>Perplexity</strong> = <code>exp(entropía cruzada media por token)</code>: el "número efectivo de opciones" entre las que duda el modelo. Perplexity 1 es predicción perfecta; perplexity 10 es como dudar entre 10 tokens equiprobables.</li>
+        <li>log(1) = 0.</li>
+        <li>El log de un número entre 0 y 1 es negativo; por eso se le pone un signo menos adelante, para que dé positivo.</li>
+        <li>Cuanto más cerca de 0 está el número, más grande es −log. Así, −log de 0,01 es mucho más que −log de 0,9.</li>
       </ul>
+      <p>No hace falta calcularlo a mano: abajo hay una tabla con los valores que vas a usar. Con logaritmo en base 2 el resultado se mide en <em>bits</em>; con logaritmo natural (ln, base e ≈ 2,72), en <em>nats</em>. Es la misma idea en otra unidad, como metros y pies.</p>
+      <ul>
+        <li><strong>Sorpresa de un evento:</strong> <code>−log p</code>, donde p es la probabilidad que le dabas. Algo con probabilidad 1 no sorprende (0); algo muy improbable sorprende mucho.</li>
+        <li><strong>Entropía</strong> <code>H(p) = −Σ p·log p</code>: la sorpresa promedio, o sea, cuánta incertidumbre hay (Σ quiere decir "sumá todos los casos"). Una moneda justa tiene 1 bit: no tenés idea de qué va a salir. Una que sale cara el 99% de las veces tiene casi 0: ya sabés qué va a salir.</li>
+        <li><strong>Entropía cruzada</strong> <code>H(p, q) = −Σ p·log q</code>: cuánta sorpresa te llevás si la realidad sigue p pero vos predecís con q (las probabilidades de tu modelo). Cuando la respuesta correcta es una sola, como el próximo token, la fórmula queda en <code>−log q(correcto)</code>: menos el log de la probabilidad que el modelo le dio a la respuesta correcta. <strong>Esa es la loss</strong> con la que se entrena un clasificador (un modelo que elige entre categorías) y con la que se hace el <em>pre-training</em> de un LLM, su primer entrenamiento, leyendo texto de internet.</li>
+        <li><strong>Divergencia KL</strong> <code>KL(p‖q) = H(p, q) − H(p)</code>: la sorpresa <em>extra</em> que te llevás por usar q en vez de la distribución verdadera p. Mide cuánto se diferencian dos distribuciones. Siempre es 0 o más, y no es simétrica: medir de p a q no da lo mismo que de q a p. Aparece en tres lugares:
+          <ul>
+            <li><strong>RLHF y DPO</strong> (módulo de LLMs): técnicas para ajustar un modelo con la opinión de personas. Ahí la KL evita que el modelo ajustado se aleje demasiado del original.</li>
+            <li><strong>Destilación:</strong> un modelo chico aprende a imitar a uno grande.</li>
+          </ul>
+        </li>
+        <li><strong>Perplexity</strong> = <code>exp(entropía cruzada media por token)</code>, o sea, e elevado a la loss promedio. Se lee como "entre cuántas opciones duda el modelo". Perplexity 1 es predicción perfecta. Perplexity 10 es como dudar entre 10 tokens <em>equiprobables</em>, igual de probables cada uno.</li>
+      </ul>
+      <p>El ejemplo en código. <code>p_modelo[0]</code> es la probabilidad del token correcto, y <code>.mean()</code> saca el promedio. Mirá que con un solo token poco probable (0,2) la loss promedio sube bastante.</p>
       <pre><code>import numpy as np
 
 # El modelo le da estas probabilidades a 3 tokens posibles; el correcto es el 0
@@ -59,7 +88,7 @@ loss = -np.log(p_modelo[0])                 # ≈ 0,357 nats
 p_correctos = np.array([0.7, 0.5, 0.9, 0.2])
 entropia_cruzada = -np.log(p_correctos).mean()   # ≈ 0,691
 perplexity = np.exp(entropia_cruzada)            # ≈ 2,0</code></pre>
-      <p><strong>Trampa común:</strong> la perplexity depende del tokenizador. Un modelo que corta el texto en más tokens, más chicos, tiene una perplexity por token distinta para el mismo texto. Para comparar modelos con tokenizadores diferentes hay que normalizar por carácter o por byte.</p>
+      <p><strong>Trampa común:</strong> la perplexity depende del <em>tokenizador</em>, la parte que corta el texto en tokens. Un modelo que corta el texto en más tokens, más chicos, tiene una perplexity por token distinta para el mismo texto. Para comparar modelos con tokenizadores diferentes hay que normalizar por carácter o por byte.</p>
       <p><strong>Tabla de bolsillo</strong> (no hace falta memorizarla: con estos valores resolvés las cuentas del quiz).</p>
       <table>
         <tr><th>Probabilidad del token correcto</th><td>1</td><td>0,9</td><td>0,5</td><td>0,25</td><td>0,1</td><td>0,01</td></tr>
@@ -67,18 +96,25 @@ perplexity = np.exp(entropia_cruzada)            # ≈ 2,0</code></pre>
       </table>
       <ul>
         <li><strong>Cuanto menos probable, más castiga:</strong> pasar de 0,9 a 0,01 multiplica la loss por casi 50.</li>
-        <li><strong>Adivinar al azar entre k clases</strong> da p = 1/k, o sea loss = ln(k). Con 10 clases, ≈ 2,3. Si tu loss de validación ronda ese número, el modelo no aprendió nada útil para esos datos.</li>
+        <li><strong>Adivinar al azar entre k clases</strong> da p = 1/k, o sea loss = ln(k). Con 10 clases, ≈ 2,3. Si tu loss de validación (la que se mide con datos que el modelo no vio al entrenar) ronda ese número, el modelo no aprendió nada útil para esos datos.</li>
         <li><strong>Para softmax a mano:</strong> e⁰ = 1, e¹ ≈ 2,72, e² ≈ 7,39. Con logits [2, 1, 0]: 7,39 / (7,39 + 2,72 + 1) ≈ 0,67.</li>
       </ul>` },
     { titulo: 'Python asíncrono: muchas llamadas a la API en paralelo', html: `
-      <p>Una llamada a un LLM pasa casi todo su tiempo <strong>esperando la red</strong>. Si hacés 100 llamadas de 2 segundos una detrás de otra, tardás 200 segundos. Si las superponés, con un máximo de 10 a la vez, tardás unos 20. Para eso está <code>asyncio</code>.</p>
+      <p><strong>En pocas palabras:</strong> si pedís 100 pizzas por teléfono, no esperás a que llegue una para pedir la siguiente: hacés todos los pedidos y esperás a que lleguen juntas. Programar "asíncrono" es eso: lanzar muchos pedidos y esperarlos todos a la vez, en lugar de uno por uno.</p>
+      <p>Para usar un LLM desde tu programa, le mandás un pedido por internet a la <strong>API</strong> del proveedor (Anthropic, OpenAI, etc.). La API es la "ventanilla" por la que los programas piden cosas a otro servicio. Cada pedido pasa casi todo su tiempo <strong>esperando la respuesta por la red</strong>. Si hacés 100 pedidos de 2 segundos uno detrás de otro, tardás 200 segundos. Si los superponés, con un máximo de 10 a la vez, tardás unos 20. Para eso está <code>asyncio</code>, que viene incluido en Python.</p>
       <ul>
-        <li><strong><code>async</code> / <code>await</code>:</strong> una función asíncrona puede "soltar" el control mientras espera, y Python avanza con otras.</li>
-        <li><strong><code>asyncio.gather</code>:</strong> lanza muchas tareas a la vez y junta los resultados en el mismo orden.</li>
-        <li><strong><code>asyncio.Semaphore</code>:</strong> limita cuántas corren al mismo tiempo, para no chocar con los rate limits del proveedor.</li>
-        <li><strong><code>return_exceptions=True</code>:</strong> hace que una llamada que falla no tire abajo las otras 499. Después reintentás solo las fallidas.</li>
-        <li><strong>Error 429 (demasiados pedidos):</strong> el proveedor te avisa que pasaste tu límite. No reintentes al instante: esperá 1 segundo, después 2, después 4 (<strong>backoff exponencial</strong>), así no volvés a chocar con el mismo límite.</li>
+        <li><strong><code>async</code> / <code>await</code>:</strong> <code>async def</code> crea una función que puede pausarse. <code>await</code> marca el punto donde espera: ahí "suelta" el control y Python avanza con otras tareas mientras tanto.</li>
+        <li><strong><code>asyncio.gather</code>:</strong> lanza muchas tareas a la vez y junta los resultados en el mismo orden en que las pediste.</li>
+        <li><strong><code>asyncio.Semaphore</code>:</strong> un "semáforo" que deja pasar como máximo N tareas al mismo tiempo. Sirve para no pasarte de los <strong>rate limits</strong>: el máximo de pedidos por minuto que te permite el proveedor.</li>
+        <li><strong><code>return_exceptions=True</code>:</strong> una <em>excepción</em> es un error que corta el programa. Con esta opción, si una llamada falla, su error queda guardado como un resultado más y no tira abajo las otras 499. Después reintentás solo las que fallaron.</li>
+        <li><strong>Error 429 (demasiados pedidos):</strong> es el aviso del proveedor de que te pasaste del límite. No reintentes al instante: esperá 1 segundo, después 2, después 4. Esa espera que se duplica en cada intento se llama <strong>backoff exponencial</strong>, y evita que vuelvas a chocar con el mismo límite.</li>
       </ul>
+      <p>El ejemplo clasifica muchos textos usando la API de Anthropic. Leelo de abajo para arriba:</p>
+      <ol>
+        <li><code>main</code> lanza todas las clasificaciones juntas con <code>gather</code>.</li>
+        <li>Cada <code>clasificar</code> espera su turno en el semáforo (<code>async with limite</code>) y le pregunta la categoría al modelo.</li>
+        <li>Al final, <code>fallidos</code> junta los textos cuyo resultado fue un error, para reintentarlos.</li>
+      </ol>
       <pre><code>import asyncio
 from anthropic import AsyncAnthropic
 
@@ -98,16 +134,30 @@ async def main(textos):
 
 resultados = asyncio.run(main(textos))
 fallidos = [t for t, r in zip(textos, resultados) if isinstance(r, Exception)]</code></pre>
-      <p><strong>Ojo: async no acelera todo.</strong> Sirve para superponer esperas de entrada y salida (red, disco). Un cálculo pesado de CPU, como multiplicar matrices grandes, no tiene esperas que superponer; ahí ayudan NumPy, la GPU o varios procesos.</p>
-      <p><strong>Streaming con generadores:</strong> para mostrar la respuesta mientras llega, un generador (<code>yield</code>, o <code>async for</code> en código asíncrono) entrega cada fragmento apenas está disponible, sin esperar al final.</p>
-      <p>Si tenés miles de tareas que no son urgentes, compará contra la API batch del proveedor: suele ser más barata que lanzarlas en paralelo.</p>` },
+      <p><strong>Ojo: async no acelera todo.</strong> Sirve para superponer <em>esperas</em> de entrada y salida, como esperar la red o el disco. Un cálculo pesado, como multiplicar matrices grandes, mantiene ocupada a la <strong>CPU</strong> (el procesador de la computadora) todo el tiempo y no tiene esperas que superponer. Ahí ayudan otras cosas: NumPy, la <strong>GPU</strong> (la placa de video, que hace miles de cuentas a la vez) o repartir el trabajo entre varios procesos.</p>
+      <p><strong>Streaming con generadores:</strong> streaming es mostrar la respuesta a medida que llega, como hace ChatGPT cuando escribe de a poco. Para eso se usa un <em>generador</em>: una función que, en vez de devolver todo junto al final, entrega cada pedacito apenas lo tiene (con <code>yield</code>, o con <code>async for</code> en código asíncrono).</p>
+      <p>Si tenés miles de tareas que no son urgentes, compará con la <strong>API batch</strong> del proveedor: le mandás todo junto, te lo devuelve horas más tarde y suele cobrarte la mitad.</p>` },
     { titulo: 'Probabilidad y estadística para decidir: Bayes, valor esperado y percentiles', html: `
-      <p>Cuatro ideas de probabilidad y estadística que aparecen todo el tiempo en AI engineering, y que evitan decisiones equivocadas.</p>
-      <p><strong>1. Teorema de Bayes: cuidado con los eventos raros.</strong> Tu detector de prompt injection encuentra el 95% de los ataques y da falsa alarma en el 5% de los mensajes normales. Solo el 1% de los mensajes son ataques. Si suena la alarma, ¿qué probabilidad hay de que sea un ataque de verdad?</p>
+      <p><strong>En pocas palabras:</strong> cuatro trampas de sentido común con los números. Una alarma que "acierta el 95%" puede equivocarse casi siempre. El promedio puede esconder a los usuarios enojados. Y con pocos ejemplos, una mejora puede ser pura suerte. Esta lección te enseña a no caer.</p>
+      <p>Cuatro ideas de probabilidad y estadística que aparecen todo el tiempo cuando armás productos con IA, y que evitan decisiones equivocadas.</p>
+      <p><strong>1. Teorema de Bayes: cuidado con los eventos raros.</strong> Primero, el caso. Un <strong>prompt injection</strong> es un ataque: alguien escribe un mensaje que intenta que la IA ignore sus instrucciones ("olvidá todo lo anterior y..."). Supongamos que tu detector de prompt injection encuentra el 95% de los ataques y da falsa alarma en el 5% de los mensajes normales. Solo el 1% de los mensajes son ataques. Si suena la alarma, ¿qué probabilidad hay de que sea un ataque de verdad?</p>
+      <p><strong>Sin fórmulas, con 10.000 mensajes:</strong></p>
+      <table>
+        <tr><th></th><th>Cuántos hay</th><th>Suena la alarma</th></tr>
+        <tr><td>Ataques (1%)</td><td>100</td><td>95 (el 95%)</td></tr>
+        <tr><td>Mensajes normales (99%)</td><td>9.900</td><td>495 (el 5%, falsas alarmas)</td></tr>
+        <tr><td><strong>Total de alarmas</strong></td><td></td><td><strong>590, de las cuales solo 95 son ataques: 95 / 590 ≈ 16%</strong></td></tr>
+      </table>
+      <p>La misma cuenta con la fórmula de Bayes. <code>P(A | B)</code> se lee "probabilidad de A sabiendo que pasó B":</p>
       <pre><code>P(ataque | alarma) = P(alarma | ataque) · P(ataque) / P(alarma)
                    = 0,95 · 0,01 / (0,95 · 0,01 + 0,05 · 0,99)
                    = 0,0095 / 0,059 ≈ 0,16</code></pre>
-      <p>Solo un 16%: la mayoría de las alarmas son falsas, porque los mensajes normales son muchísimos más. Por eso, con eventos raros, un detector "bueno" puede generar más ruido que señal. Mirá siempre la precision, no solo el recall.</p>
+      <p>Solo un 16%: la mayoría de las alarmas son falsas, porque los mensajes normales son muchísimos más. Por eso, con eventos raros, un detector "bueno" puede generar más ruido que señal. Dos medidas que vas a ver siempre:</p>
+      <ul>
+        <li><strong>Recall:</strong> de los ataques reales, cuántos detecta. Acá, 95%.</li>
+        <li><strong>Precision:</strong> de las veces que suena la alarma, cuántas tenía razón. Acá, 16%.</li>
+      </ul>
+      <p>Mirá siempre las dos, no solo el recall. Las vas a ver en detalle en Machine Learning clásico.</p>
       <p><strong>2. Valor esperado: costo promedio por consulta.</strong> Si el 70% de las consultas va a un modelo que cuesta 0,001 USD y el 30% a uno de 0,02 USD, el costo esperado es 0,7 · 0,001 + 0,3 · 0,02 = 0,0067 USD por consulta. Multiplicado por tu volumen, es tu presupuesto.</p>
       <p><strong>Cómo cobran los LLMs:</strong> por cantidad de tokens, con un precio por millón, y la salida suele costar varias veces más que la entrada (lo vas a ver en detalle en el módulo de APIs). La cuenta es siempre la misma:</p>
       <pre><code>costo = consultas × tokens_por_consulta ÷ 1.000.000 × precio_por_millón
@@ -115,23 +165,49 @@ fallidos = [t for t, r in zip(textos, resultados) if isinstance(r, Exception)]</
 # 50.000 consultas, 1.000 tokens de entrada a 3 USD/millón y 200 de salida a 15 USD/millón
 entrada = 50_000 * 1_000 / 1e6 * 3     # 150 USD
 salida  = 50_000 * 200   / 1e6 * 15    # 150 USD: pocos tokens, pero 5 veces más caros</code></pre>
-      <p><strong>3. Percentiles: el promedio esconde lo que molesta.</strong> Una latencia promedio de 800 ms puede ocultar que una de cada veinte respuestas tarda 8 segundos. Medí la mediana (p50), el p95 y el p99.</p>
+      <p><strong>3. Percentiles: el promedio esconde lo que molesta.</strong> La <strong>latencia</strong> es cuánto tarda en llegar una respuesta, y se mide en milisegundos (ms; 1000 ms = 1 segundo). Una latencia promedio de 800 ms puede ocultar que una de cada veinte respuestas tarda 8 segundos. Por eso se miden los <strong>percentiles</strong>. Ordenás todos los tiempos de menor a mayor:</p>
+      <ul>
+        <li><strong>p50</strong> (la <em>mediana</em>): el del medio. La mitad de las respuestas tarda menos que eso.</li>
+        <li><strong>p95:</strong> el 95% tarda menos que eso. Te muestra cómo le va al 5% más lento.</li>
+        <li><strong>p99:</strong> lo mismo con el 1% más lento.</li>
+      </ul>
+      <p>El código inventa 1000 tiempos con algunos muy lentos, como pasa en la realidad. Fijate en la salida que el p99 queda muy lejos del promedio.</p>
       <pre><code>import numpy as np
-latencias_ms = np.random.default_rng(0).lognormal(6.5, 0.6, 1000)   # 1000 latencias inventadas
+latencias_ms = np.random.default_rng(0).lognormal(6.5, 0.6, 1000)   # 1000 latencias inventadas, con algunas muy lentas
 lat = np.array(latencias_ms)
 print("promedio", lat.mean())
 print("p50, p95, p99", np.percentile(lat, [50, 95, 99]))</code></pre>
-      <p><strong>4. Tamaño de muestra: pocos casos, mucho ruido.</strong> Con 10 casos, cada uno mueve la nota 10 puntos. Un 90% con 10 casos y un 90% con 500 no significan lo mismo. Antes de celebrar una mejora, mirá cuántos casos la respaldan (en el módulo de evals vas a ver cómo calcular ese margen).</p>
+      <p><strong>4. Tamaño de muestra: pocos casos, mucho ruido.</strong> Con 10 casos, cada uno mueve la nota 10 puntos. Un 90% con 10 casos y un 90% con 500 no significan lo mismo. Antes de celebrar una mejora, mirá cuántos casos la respaldan. En el módulo de evals (evaluaciones: pruebas sistemáticas de qué tan bien responde tu IA) vas a ver cómo calcular ese margen.</p>
       <p><strong>Comparar dos versiones:</strong> si A acierta 82% y B 85% sobre 40 casos distintos cada una, esos 3 puntos pueden ser pura suerte. Corré las dos sobre <strong>los mismos casos</strong> (<strong>comparación pareada</strong>): así la diferencia viene de la versión y no de que a una le tocaron casos más fáciles. Si igual es chica, sumá casos.</p>` },
     { titulo: 'Formas y broadcasting: la fuente de bugs más común', html: `
-      <p>En NumPy y PyTorch, casi todos los errores raros vienen de la <strong>forma</strong> (shape) de los arrays. Y los peores no dan error: producen números equivocados en silencio.</p>
+      <p><strong>En pocas palabras:</strong> cuando operás con tablas de números, importa cuántas filas y columnas tiene cada una. Si sumás una columna con una fila, Python a veces no se queja: arma solo una tabla gigante con todas las combinaciones. El resultado sale mal y nadie te avisa. Esta lección te enseña a darte cuenta.</p>
+      <p>En NumPy y en <strong>PyTorch</strong> (la librería más usada para entrenar redes neuronales), casi todos los errores raros vienen de la <strong>forma</strong> (shape) de los arrays. La forma es cuántos números hay en cada dimensión:</p>
+      <ul>
+        <li><code>(3,)</code> es una lista de 3 números.</li>
+        <li><code>(4, 3)</code> es una tabla de 4 filas y 3 columnas.</li>
+        <li><code>(2, 4, 3)</code> son 2 tablas de 4×3 apiladas.</li>
+      </ul>
+      <p>En PyTorch, a los arrays se les dice <strong>tensores</strong>; es lo mismo. Y los peores errores de forma no dan error: producen números equivocados en silencio.</p>
       <p><strong>Convenciones y reglas básicas:</strong></p>
       <ul>
-        <li>En modelos de lenguaje, lo habitual es <code>(batch, secuencia, dimensión)</code>.</li>
-        <li>Multiplicación de matrices: <code>(…, n, k) @ (k, m)</code> da <code>(…, n, m)</code>. Por ejemplo, <code>(2, 3, 4) @ (4, 5)</code> da <code>(2, 3, 5)</code>: las dimensiones de adelante se mantienen.</li>
-        <li><strong>Broadcasting:</strong> para operar arrays de formas distintas, se comparan las dimensiones <em>desde la derecha</em>. Son compatibles si son iguales o si una vale 1, y las que faltan se tratan como 1. Así, <code>(32, 1, 8) + (5, 8)</code> da <code>(32, 5, 8)</code>.</li>
+        <li>En modelos de lenguaje, lo habitual es la forma <code>(batch, secuencia, dimensión)</code>:
+          <ul>
+            <li><strong>batch:</strong> cuántos textos procesás juntos (un <em>lote</em>).</li>
+            <li><strong>secuencia:</strong> cuántos tokens tiene cada texto.</li>
+            <li><strong>dimensión:</strong> cuántos números describen cada token.</li>
+          </ul>
+        </li>
+        <li>Multiplicación de matrices: <code>(…, n, k) @ (k, m)</code> da <code>(…, n, m)</code>. Los puntos suspensivos son "lo que haya adelante". La <code>k</code> tiene que coincidir y desaparece en el resultado. Por ejemplo, <code>(2, 3, 4) @ (4, 5)</code> da <code>(2, 3, 5)</code>: el 4 desaparece y el 2 de adelante se mantiene.</li>
+        <li><strong>Broadcasting:</strong> es lo que hace NumPy cuando operás arrays de formas distintas. "Estira" el más chico, repitiéndolo, hasta que tenga la forma del otro. Por ejemplo, <code>[1, 2, 3] + 10</code> da <code>[11, 12, 13]</code>: el 10 se repitió tres veces. Para saber si dos formas son compatibles:
+          <ol>
+            <li>Se comparan las dimensiones <em>desde la derecha</em>.</li>
+            <li>Son compatibles si son iguales o si una vale 1 (la que vale 1 se estira).</li>
+            <li>Las que faltan se tratan como 1.</li>
+          </ol>
+          Así, <code>(32, 1, 8) + (5, 8)</code> da <code>(32, 5, 8)</code>.</li>
       </ul>
-      <p><strong>El bug silencioso clásico:</strong> la salida del modelo tiene forma <code>(N, 1)</code> y las etiquetas, <code>(N,)</code>. Al restarlas, el broadcasting arma una matriz de <code>(N, N)</code> con todas las combinaciones. No hay error, la loss da un número, y el entrenamiento no aprende lo que creés.</p>
+      <p><strong>El bug silencioso clásico:</strong> la salida del modelo tiene forma <code>(N, 1)</code>, una columna, y las <em>etiquetas</em> (las respuestas correctas) tienen forma <code>(N,)</code>, una lista. Querías restar cada predicción con su respuesta, pero el broadcasting estira las dos y arma una tabla de <code>(N, N)</code> con todas las combinaciones posibles. No hay error, la loss da un número, y el entrenamiento no aprende lo que creés.</p>
+      <p>En el código, <code>squeeze(-1)</code> saca la última dimensión cuando vale 1, o sea que convierte la columna en lista. <code>assert</code> corta el programa con un error si la condición es falsa: es tu alarma.</p>
       <pre><code>import numpy as np
 pred = np.random.rand(100, 1)      # salida del modelo: (N, 1)
 y = np.random.rand(100)            # etiquetas: (N,)
@@ -150,11 +226,11 @@ X_centrada = X - X.mean(axis=1, keepdims=True)
       <ul>
         <li>Anotá en un comentario la forma esperada de cada tensor importante.</li>
         <li>Poné un <code>assert</code> de forma en los puntos clave: entrada del modelo, salida y loss.</li>
-        <li>Usá <code>keepdims=True</code> al reducir si después vas a operar con el original.</li>
+        <li>Usá <code>keepdims=True</code> al "reducir" (sacar un promedio o una suma de una dimensión) si después vas a operar con el original: conserva la dimensión con tamaño 1 en vez de borrarla. <code>axis=1</code> quiere decir "por fila"; <code>axis=0</code>, "por columna".</li>
         <li>Ante un resultado raro, imprimí las formas antes de sospechar del modelo.</li>
       </ul>` },
     { titulo: 'Matemática desde cero: vectores, matrices y pendientes con ejemplos a mano', html: `
-      <p>Si nunca viste vectores ni matrices, esta lección es para vos. Solo hace falta sumar y multiplicar.</p>
+      <p><strong>En pocas palabras:</strong> si nunca viste vectores ni matrices, esta lección es para vos. Solo hace falta sumar y multiplicar: cada idea viene con una cuenta resuelta a mano.</p>
       <p><strong>1. Un vector es una lista de números que describe algo.</strong> La ficha de Ana, [edad, altura], es [30, 1,65]. Cada número es una <em>dimensión</em>. Con dos dimensiones lo podés dibujar como una flecha:</p>
       <pre><code>  y
   ^
@@ -182,7 +258,7 @@ fila 1: 1×3 + 0×4 + 2×5 = 13
 fila 2: 0×3 + 1×4 + 1×5 = 9
 W @ x = [13, 9]      un número por fila: entra un vector de 3, sale uno de 2</code></pre>
       <p>Eso hace una capa de una red neuronal: transforma un vector en otro. "Una matriz m×n convierte vectores de n dimensiones en vectores de m" quiere decir justo eso.</p>
-      <p><strong>5. La derivada es la pendiente: te dice si la curva sube o baja.</strong> Imaginá que estás en una montaña con niebla y querés llegar al valle: mirás para dónde baja el piso y das un paso para ese lado. Con la loss f(x) = (x − 3)², la pendiente en cada punto es 2·(x − 3) (no hace falta saber derivar: las librerías la calculan solas).</p>
+      <p><strong>5. La derivada es la pendiente: te dice si la curva sube o baja.</strong> Imaginá que estás en una montaña con niebla y querés llegar al valle: mirás para dónde baja el piso y das un paso para ese lado. Acá la montaña es la <strong>loss</strong>, el número que mide cuánto se equivoca el modelo, y el valle es donde se equivoca lo menos posible. Con la loss f(x) = (x − 3)², la pendiente en cada punto es 2·(x − 3) (no hace falta saber derivar: las librerías la calculan solas).</p>
       <pre><code>x = 5    pendiente = 2·(5 − 3) = 4   positiva: hacia la derecha sube
 paso:    x nuevo = 5 − 0,1 × 4 = 4,6  (0,1 es el learning rate: el tamaño del paso)
 repetís: 4,6 → 4,28 → 4,02 → ... → 3, el valle</code></pre>
@@ -279,7 +355,8 @@ print(np.array([[1, 0, 2], [0, 1, 1]]) @ np.array([3, 4, 5]))    # [13  9]</code
   ],
   lecciones: [
     { titulo: 'Qué es aprender a partir de datos', html: `
-      <p>Machine Learning es encontrar una función que, a partir de ejemplos, generalice a datos nuevos.</p>
+      <p><strong>En pocas palabras:</strong> en vez de escribirle a la computadora las reglas ("si tiene más de 3 ambientes, vale más"), le mostrás muchos ejemplos con la respuesta y ella encuentra las reglas sola. Es como aprender a tasar casas mirando cientos de ventas, sin que nadie te dé una fórmula.</p>
+      <p>Machine Learning (aprendizaje automático) es encontrar, a partir de ejemplos, una regla que funcione también con casos que nunca vio. A eso se le dice <strong>generalizar</strong>: no sirve memorizar los ejemplos, hay que acertar con los nuevos.</p>
       <p><strong>El vocabulario básico</strong>, con una planilla de departamentos:</p>
       <table>
         <tr><th>m²</th><th>ambientes</th><th>barrio</th><th>precio (USD)</th></tr>
@@ -293,17 +370,40 @@ print(np.array([[1, 0, 2], [0, 1, 1]]) @ np.array([3, 4, 5]))    # [13  9]</code
       </ul>
       <p><strong>Tres tipos de aprendizaje:</strong></p>
       <ul>
-        <li><strong>Supervisado:</strong> tenés entradas y la respuesta correcta (etiqueta). Regresión (predecir un número) o clasificación (predecir una clase).</li>
-        <li><strong>No supervisado:</strong> sin etiquetas. Clustering (k-means), reducción de dimensionalidad (PCA).</li>
-        <li><strong>Refuerzo:</strong> un agente aprende por recompensas. Se usa, por ejemplo, para alinear LLMs (RLHF).</li>
+        <li><strong>Supervisado:</strong> tenés ejemplos con la respuesta correcta (la etiqueta), como un alumno con las respuestas del profe. Puede ser de dos tipos:
+          <ul>
+            <li><strong>Regresión:</strong> predecir un número, como el precio.</li>
+            <li><strong>Clasificación:</strong> predecir una <em>clase</em>, o sea, una categoría de una lista fija, como "spam / no spam".</li>
+          </ul>
+        </li>
+        <li><strong>No supervisado:</strong> ejemplos sin respuesta; el modelo busca orden por su cuenta. Por ejemplo:
+          <ul>
+            <li><strong>Clustering:</strong> armar grupos de cosas parecidas, como separar clientes en tipos. K-means es el método más conocido.</li>
+            <li><strong>Reducción de dimensionalidad:</strong> resumir muchas columnas en pocas, perdiendo lo menos posible. PCA es el método más conocido.</li>
+          </ul>
+          Los dos se ven en la lección 5.</li>
+        <li><strong>Refuerzo:</strong> un <em>agente</em> (un programa que toma decisiones) prueba cosas y aprende por premios y castigos, como entrenar a un perro. Se usa, por ejemplo, para que los LLMs respondan como prefieren las personas: eso es RLHF, aprendizaje por refuerzo con opiniones humanas.</li>
       </ul>
       <p><strong>Los dos modelos que vas a usar como punto de partida:</strong></p>
       <ul>
         <li><strong>Regresión lineal</strong> (predice un número): precio ≈ a × m² + b × ambientes + c. Entrenar es encontrar a, b y c. Se mide con el <strong>MAE</strong> (error absoluto medio: en promedio, por cuántos dólares le erra) o con el RMSE, que castiga más los errores grandes.</li>
-        <li><strong>Regresión logística</strong> (predice una clase, a pesar del nombre): hace una suma como la lineal y la convierte en una probabilidad entre 0 y 1, por ejemplo "72% de que sea spam". Es la versión de dos clases del softmax que viste en Fundamentos. Si la probabilidad supera un umbral, dice "sí". Sus coeficientes muestran qué feature empuja hacia cada lado, por eso es <strong>interpretable</strong>.</li>
+        <li><strong>Regresión logística</strong> (predice una clase, a pesar del nombre): hace una suma como la lineal y la convierte en una probabilidad entre 0 y 1, por ejemplo "72% de que sea spam". Es la versión de dos clases del softmax que viste en Fundamentos. Si la probabilidad supera un <em>umbral</em>, un valor de corte que elegís vos (por ejemplo 0,5), dice "sí". Sus <em>coeficientes</em> (los números a, b, c de la suma) muestran qué feature empuja hacia cada lado. Por eso es <strong>interpretable</strong>: podés explicar por qué decidió lo que decidió.</li>
       </ul>
       <p><strong>Hiperparámetros:</strong> las perillas que elegís vos antes de entrenar, como la profundidad de un árbol o la cantidad de árboles. Los parámetros los aprende el modelo; los hiperparámetros los elegís comparando en validación.</p>
-      <p>Siempre separás los datos: <strong>train</strong> (aprender), <strong>validación</strong> (elegir hiperparámetros) y <strong>test</strong> (medir al final, una sola vez). Si mirás el test para tomar decisiones, tu número final miente.</p>
+      <p>Siempre separás los datos en tres partes, como en el colegio:</p>
+      <ul>
+        <li><strong>Train</strong> (entrenamiento): los ejercicios para aprender.</li>
+        <li><strong>Validación:</strong> las pruebas de práctica, para elegir hiperparámetros.</li>
+        <li><strong>Test:</strong> el examen final, que se usa una sola vez al final.</li>
+      </ul>
+      <p>Si mirás el test para tomar decisiones, es como estudiar con el examen: tu nota final miente.</p>
+      <p>El ejemplo usa <strong>scikit-learn</strong> (<code>sklearn</code>), la librería estándar de Machine Learning en Python:</p>
+      <ul>
+        <li><code>X</code> son las features y <code>y</code> las etiquetas.</li>
+        <li><code>train_test_split</code> separa el 20% para test. <code>random_state=0</code> hace que el corte salga siempre igual.</li>
+        <li><code>.fit</code> entrena el modelo.</li>
+        <li><code>.score</code> devuelve el porcentaje de aciertos en test. Esperá algo cerca de 0,95, o sea, 95%.</li>
+      </ul>
       <pre><code>from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.datasets import load_breast_cancer
@@ -312,14 +412,30 @@ X_tr, X_te, y_tr, y_te = train_test_split(X, y, test_size=0.2, random_state=0)
 modelo = LogisticRegression(max_iter=5000).fit(X_tr, y_tr)
 print(modelo.score(X_te, y_te))</code></pre>` },
     { titulo: 'Overfitting, métricas y errores clásicos', html: `
-      <p><strong>Overfitting:</strong> el modelo memoriza el entrenamiento (train muy bien, test mal). <strong>Underfitting:</strong> es demasiado simple (mal en ambos). Remedios contra overfitting: más datos, regularización, modelos más simples, early stopping, validación cruzada.</p>
-      <p><strong>Métricas de clasificación</strong> (TP = verdaderos positivos, FP = falsos positivos, FN = falsos negativos):</p>
+      <p><strong>En pocas palabras:</strong> un alumno que memoriza las respuestas de la guía saca 10 en la guía y 2 en el examen. A un modelo le pasa lo mismo, y se llama overfitting. Esta lección te enseña a detectarlo y a medir bien los aciertos, porque "acierta el 99%" puede no querer decir nada.</p>
+      <p><strong>Overfitting</strong> (sobreajuste): el modelo memoriza el entrenamiento, con sus casualidades y su ruido. Le va muy bien en train y mal en test. <strong>Underfitting</strong> (subajuste): el modelo es demasiado simple para el problema y le va mal en los dos. Remedios contra el overfitting:</p>
       <ul>
-        <li><strong>Precision</strong> = TP / (TP + FP): de lo que marqué positivo, ¿cuánto era cierto?</li>
-        <li><strong>Recall</strong> = TP / (TP + FN): de lo positivo real, ¿cuánto encontré?</li>
-        <li><strong>F1</strong>: media armónica de ambas.</li>
+        <li>Más datos.</li>
+        <li>Modelos más simples.</li>
+        <li><strong>Regularización</strong> (explicada más abajo).</li>
+        <li><strong>Early stopping:</strong> cortar el entrenamiento cuando la nota de validación deja de mejorar.</li>
+        <li><strong>Validación cruzada</strong> (más abajo), que no evita el overfitting pero te ayuda a verlo.</li>
       </ul>
-      <p><strong>La matriz de confusión</strong> ordena los cuatro casos (TN = verdaderos negativos). Ejemplo: 100 mails, 10 son spam.</p>
+      <p><strong>Métricas de clasificación.</strong> "Positivo" es la clase que te interesa encontrar, por ejemplo spam. Cada predicción cae en uno de cuatro casos:</p>
+      <ul>
+        <li><strong>TP</strong> (verdadero positivo): dijo spam y era spam. Acierto.</li>
+        <li><strong>FP</strong> (falso positivo): dijo spam y no lo era. Falsa alarma.</li>
+        <li><strong>FN</strong> (falso negativo): dijo "no es spam" y sí lo era. Se le escapó.</li>
+        <li><strong>TN</strong> (verdadero negativo): dijo "no es spam" y no lo era. Acierto.</li>
+      </ul>
+      <p>Con esos cuatro casos se calculan las métricas:</p>
+      <ul>
+        <li><strong>Precision</strong> = TP / (TP + FP): de lo que marqué como positivo, ¿cuánto era cierto?</li>
+        <li><strong>Recall</strong> = TP / (TP + FN): de lo positivo real, ¿cuánto encontré?</li>
+        <li><strong>F1</strong>: un promedio especial de las dos (la <em>media armónica</em>, 2 × P × R / (P + R)) que da bajo si cualquiera de las dos es baja. Sirve para resumirlas en un solo número.</li>
+        <li><strong>Accuracy</strong> (exactitud): el porcentaje de aciertos sobre el total.</li>
+      </ul>
+      <p><strong>La matriz de confusión</strong> es una tabla que ordena los cuatro casos. Ejemplo: 100 mails, de los cuales 10 son spam.</p>
       <pre><code>                  el modelo dijo spam    el modelo dijo no spam
 es spam                 TP = 8                 FN = 2
 no es spam              FP = 4                 TN = 86
@@ -328,16 +444,27 @@ precision = 8 / (8 + 4) ≈ 0,67    de lo que marcó como spam, el 67% lo era
 recall    = 8 / (8 + 2) = 0,80    encontró el 80% del spam
 F1        = 2 × 0,67 × 0,80 / (0,67 + 0,80) ≈ 0,73
 accuracy  = (8 + 86) / 100 = 0,94</code></pre>
-      <p>Con clases desbalanceadas, la accuracy engaña: si el 99% de los casos son negativos, un modelo que siempre dice "negativo" tiene 99% de accuracy y no sirve para nada.</p>
-      <p><strong>Data leakage:</strong> información que no tendrías en producción se cuela en el entrenamiento (por ejemplo, normalizar usando estadísticas del dataset completo antes de separar test). Da resultados irrealmente buenos.</p>
-      <p><strong>Validación cruzada (k-fold):</strong> con un solo corte entre train y validación, la nota depende de qué ejemplos te tocaron. En cambio, partís los datos en k partes (<em>folds</em>), entrenás k veces dejando una parte afuera cada vez y promediás. Además del promedio, ves cuánto varía entre folds.</p>
+      <p>Con <strong>clases desbalanceadas</strong>, la accuracy engaña. Desbalanceadas quiere decir que una clase es mucho más común que la otra. Si el 99% de los casos son negativos, un modelo que siempre dice "negativo" tiene 99% de accuracy y no sirve para nada: su recall es 0.</p>
+      <p><strong>Data leakage</strong> (fuga de datos): se cuela en el entrenamiento información que no vas a tener en <em>producción</em>, es decir, cuando el modelo ya está funcionando con usuarios reales. Es como que se filtren las respuestas del examen: la nota sale irrealmente buena.</p>
+      <p>Un ejemplo de leakage es <em>normalizar</em> los datos (pasarlos a una escala común) usando el promedio de todo el <em>dataset</em> (el conjunto de datos) antes de separar el test. Ese promedio ya incluye información del test.</p>
+      <p><strong>Validación cruzada (k-fold):</strong> con un solo corte entre train y validación, la nota depende de qué ejemplos te tocaron, de la suerte. La solución:</p>
+      <ol>
+        <li>Partís los datos en k partes iguales, llamadas <em>folds</em>.</li>
+        <li>Entrenás k veces, dejando afuera una parte distinta cada vez para validar.</li>
+        <li>Promediás las k notas.</li>
+      </ol>
+      <p>Además del promedio, ves cuánto varía la nota entre folds (el <em>desvío</em>). Si varía mucho, la nota no es confiable.</p>
       <pre><code>fold 1:  [VAL] [ tr] [ tr] [ tr] [ tr]
 fold 2:  [ tr] [VAL] [ tr] [ tr] [ tr]
   ...
 fold 5:  [ tr] [ tr] [ tr] [ tr] [VAL]
 nota = promedio de los 5 (± el desvío)</code></pre>
-      <p><strong>Regularización:</strong> castigar al modelo por ser demasiado complejo para que no memorice el ruido. En scikit-learn, por ejemplo, el parámetro C de <code>LogisticRegression</code> (más chico, más regularización) o <code>max_depth</code> en un árbol.</p>
-      <p><strong>Probalo:</strong> un árbol cada vez más profundo. Mirá cómo el train sube hasta 100% mientras el test deja de mejorar y baja: eso es overfitting.</p>
+      <p><strong>Regularización:</strong> castigar al modelo por ser demasiado complicado, para que no memorice el ruido. En scikit-learn hay dos ejemplos:</p>
+      <ul>
+        <li>El hiperparámetro C de <code>LogisticRegression</code>: cuanto más chico, más regularización.</li>
+        <li><code>max_depth</code> en un árbol de decisión (lección siguiente), que limita cuántas preguntas seguidas puede hacer.</li>
+      </ul>
+      <p><strong>Probalo:</strong> un árbol cada vez más profundo, o sea, que puede hacer cada vez más preguntas. Mirá cómo el train sube hasta 100% mientras el test deja de mejorar y baja: eso es overfitting.</p>
       <pre><code>from sklearn.datasets import load_breast_cancer
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
@@ -348,16 +475,38 @@ for profundidad in [1, 2, 3, 5, 8, None]:                # None = sin límite
     arbol = DecisionTreeClassifier(max_depth=profundidad, random_state=0).fit(X_tr, y_tr)
     print("profundidad", profundidad, " train:", round(arbol.score(X_tr, y_tr), 3), " test:", round(arbol.score(X_te, y_te), 3))</code></pre>
       <p><strong>Cambio de distribución:</strong> un modelo solo sabe lo que vio. Si lo entrenaste con casas de una ciudad y lo usás en otra, con otros precios y zonas, va a fallar aunque el código esté perfecto. Necesitás datos de la nueva región (o un modelo por región).</p>
-      <p><strong>El promedio esconde segmentos:</strong> un modelo de demanda con error bajo en promedio puede fallar justo en feriados y promociones, que son pocos días pero los más importantes. Medí el error por segmento y agregá features que los representen (por ejemplo, <code>es_feriado</code>). Sacar esos días del dataset mejora el número, no el modelo.</p>` },
+      <p><strong>El promedio esconde segmentos:</strong> un <em>segmento</em> es un subgrupo de tus datos, como los feriados, un tipo de cliente o una región. Un modelo de demanda (que predice cuánto se va a vender) con error bajo en promedio puede fallar justo en feriados y promociones, que son pocos días pero los más importantes. Medí el error por segmento y agregá features que los representen (por ejemplo, <code>es_feriado</code>). Sacar esos días del dataset mejora el número, no el modelo.</p>` },
     { titulo: 'Árboles, ensembles y pipelines: lo que gana en datos tabulares', html: `
-      <p>Aunque los LLMs dominan el texto, en <strong>datos tabulares</strong> (planillas, bases de datos de clientes, transacciones) los modelos basados en árboles siguen siendo la primera opción: un estudio de 2022 mostró que superan a las redes neuronales en la mayoría de los benchmarks tabulares de tamaño medio.</p>
+      <p><strong>En pocas palabras:</strong> un árbol de decisión es el juego de las 20 preguntas: "¿gana más de 50.000? ¿tiene más de 40 años?", hasta llegar a una respuesta. Un solo árbol se equivoca bastante, pero muchos árboles que votan juntos aciertan mucho. Para datos en planillas, eso suele ganarle a todo lo demás.</p>
+      <p>Aunque los LLMs dominan el texto, en <strong>datos tabulares</strong> (planillas, bases de datos de clientes, transacciones) los modelos basados en árboles siguen siendo la primera opción. Un estudio de 2022 mostró que superan a las redes neuronales en la mayoría de los <em>benchmarks</em> (pruebas estándar para comparar modelos) tabulares de tamaño medio.</p>
       <ul>
-        <li><strong>Árbol de decisión:</strong> preguntas del tipo "¿ingresos &gt; 50.000?" encadenadas. Interpretable, pero un árbol profundo hace overfitting con facilidad.</li>
-        <li><strong>Random forest (bagging):</strong> muchos árboles, cada uno entrenado con una muestra aleatoria de filas y de columnas, y se promedian. Reduce la <em>varianza</em>: los errores individuales se compensan.</li>
-        <li><strong>Gradient boosting:</strong> árboles chicos entrenados <em>en secuencia</em>; cada uno aprende a corregir los errores (el gradiente de la pérdida) de los anteriores. Suele ser el más preciso. Implementaciones: XGBoost, LightGBM, CatBoost y <code>HistGradientBoostingClassifier</code> de scikit-learn, que además maneja valores faltantes de forma nativa.</li>
+        <li><strong>Árbol de decisión:</strong> preguntas encadenadas del tipo "¿ingresos &gt; 50.000?". Es interpretable, porque podés leer las preguntas. Pero un árbol profundo (con muchas preguntas) hace overfitting con facilidad: termina haciendo una pregunta a medida para cada ejemplo.</li>
+        <li><strong>Random forest</strong> (bosque aleatorio): muchos árboles, cada uno entrenado con una muestra al azar de filas y de columnas, y al final se promedian sus respuestas. A esta técnica se le dice <em>bagging</em>. Reduce la <em>varianza</em>, que es cuánto cambia el modelo si le cambiás un poco los datos: los errores de cada árbol se compensan entre sí, como cuando promediás la opinión de muchas personas.</li>
+        <li><strong>Gradient boosting:</strong> árboles chicos entrenados <em>en fila</em>, uno después del otro. Cada árbol nuevo aprende a corregir los errores que dejaron los anteriores, y para eso usa el gradiente de la pérdida (de ahí el nombre). Suele ser el más preciso. Hay varias versiones: XGBoost, LightGBM, CatBoost y <code>HistGradientBoostingClassifier</code> de scikit-learn. Esta última además acepta datos con celdas vacías sin que tengas que rellenarlas.</li>
       </ul>
-      <p>El boosting puede hacer overfitting si sumás demasiados árboles: usá <strong>early stopping</strong> sobre un conjunto de validación y un learning rate moderado.</p>
-      <p><strong>Pipelines:</strong> todo el preprocesamiento (escalar, codificar categorías, imputar) va dentro de un <code>Pipeline</code>. Así, en validación cruzada, cada transformación se ajusta solo con el train de cada fold y no hay leakage. Además, el mismo objeto se usa en producción, sin reescribir el preprocesamiento.</p>
+      <p>El boosting puede hacer overfitting si sumás demasiados árboles. Dos cuidados:</p>
+      <ul>
+        <li><strong>Early stopping:</strong> dejás de sumar árboles cuando la nota en validación deja de mejorar.</li>
+        <li>Un <strong>learning rate</strong> moderado: el tamaño del paso, o sea, cuánto corrige cada árbol nuevo.</li>
+      </ul>
+      <p><strong>Pipelines:</strong> antes de entrenar, los datos se preparan; eso se llama <em>preprocesamiento</em>. Incluye tres tareas típicas:</p>
+      <ul>
+        <li><strong>Escalar:</strong> llevar los números a una escala parecida, para que "ingresos" (miles) no tape a "edad" (decenas).</li>
+        <li><strong>Codificar categorías:</strong> convertir texto como "Rosario" en números.</li>
+        <li><strong>Imputar:</strong> rellenar celdas vacías.</li>
+      </ul>
+      <p>Un <code>Pipeline</code> es una cadena que junta esa preparación y el modelo en un solo objeto. Ventajas:</p>
+      <ul>
+        <li>En la validación cruzada, la preparación se calcula solo con el train de cada fold, así que no hay leakage.</li>
+        <li>El mismo objeto se usa en producción, sin reescribir la preparación.</li>
+      </ul>
+      <p>Qué hace el código:</p>
+      <ol>
+        <li>Inventa 400 clientes.</li>
+        <li><code>StandardScaler</code> escala edad e ingresos. <code>OneHotEncoder</code> convierte la ciudad en tres columnas de 0 y 1 ("¿es Rosario?", "¿es Córdoba?", "¿es Mendoza?").</li>
+        <li>Compara un modelo lineal con uno de boosting usando validación cruzada de 5 folds.</li>
+      </ol>
+      <p>En la salida mirá el F1 promedio y el ± (cuánto varía entre folds).</p>
       <pre><code>from sklearn.compose import make_column_transformer
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.pipeline import make_pipeline
@@ -382,16 +531,29 @@ boosting = make_pipeline(prep, HistGradientBoostingClassifier(early_stopping=Tru
 for nombre, modelo in [("lineal", lineal), ("boosting", boosting)]:
     f1 = cross_val_score(modelo, X, y, cv=5, scoring="f1")
     print(nombre, f1.mean().round(3), "±", f1.std().round(3))</code></pre>
-      <p>Regla práctica: empezá con un modelo lineal como línea base, después gradient boosting. Si el boosting no mejora claramente, el problema está en los datos o en las features, no en el algoritmo.</p>` },
+      <p>Regla práctica: empezá con un modelo lineal como <strong>línea base</strong> (el punto de comparación más simple), después probá gradient boosting. Si el boosting no mejora claramente, el problema está en los datos o en las features, no en el algoritmo.</p>` },
     { titulo: '¿LLM o modelo clásico? Embeddings, clasificadores y umbrales', html: `
-      <p>Un error caro de AI engineering es usar un LLM para todo. Si tenés que clasificar millones de textos en categorías fijas, un modelo clásico entrenado sobre <strong>embeddings</strong> suele ser cientos de veces más barato, responde en milisegundos, siempre da la misma salida y sus probabilidades se pueden calibrar.</p>
+      <p><strong>En pocas palabras:</strong> preguntarle a un LLM cada vez es como llamar a un experto caro para cada consulta. Si las consultas se repiten, conviene que el experto te enseñe con unos miles de ejemplos y armar un modelo chico y barato que haga lo mismo. Al experto lo llamás solo para los casos difíciles.</p>
+      <p>Un error caro es usar un LLM para todo. Supongamos que tenés que clasificar millones de textos en categorías fijas. Un modelo clásico entrenado sobre <strong>embeddings</strong> (los vectores que representan el significado de cada texto, que viste en Fundamentos) tiene cuatro ventajas:</p>
+      <ul>
+        <li>Suele ser cientos de veces más barato.</li>
+        <li>Responde en milisegundos.</li>
+        <li>Siempre da la misma respuesta para el mismo texto.</li>
+        <li>Sus probabilidades se pueden <em>calibrar</em> (más abajo se explica qué es).</li>
+      </ul>
       <p><strong>Patrón muy usado:</strong></p>
       <ol>
-        <li>Usá un LLM para <strong>etiquetar</strong> unos miles de ejemplos (y revisá a mano una muestra).</li>
+        <li>Usá un LLM para <strong>etiquetar</strong> unos miles de ejemplos, es decir, ponerle a cada uno su respuesta correcta. Revisá a mano una muestra, porque el LLM también se equivoca.</li>
         <li>Convertí cada texto en un embedding.</li>
         <li>Entrená una regresión logística (o gradient boosting) sobre esos vectores.</li>
-        <li>Mandá al LLM solo los casos dudosos, donde el clasificador tiene baja confianza.</li>
+        <li>Mandá al LLM solo los casos dudosos, donde el clasificador tiene poca confianza.</li>
       </ol>
+      <p>El código hace esos pasos:</p>
+      <ul>
+        <li><code>embed</code> es la función que convierte textos en vectores. Acá no está definida: en un proyecto real llama a un modelo de embeddings.</li>
+        <li><code>predict_proba</code> da la probabilidad de cada clase.</li>
+        <li><code>precision_recall_curve</code> calcula la precision y el recall para cada umbral posible. Con eso se elige el umbral más bajo que logra 95% de precision.</li>
+      </ul>
       <pre><code>from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import precision_recall_curve
 
@@ -408,7 +570,7 @@ def clasificar(texto):
     if 0.2 &lt; p &lt; umbral:
         return clasificar_con_llm(texto)    # zona dudosa: el modelo grande decide
     return p &gt;= umbral</code></pre>
-      <p><strong>El umbral es una decisión de negocio.</strong> Con 0,5 por defecto mezclás los errores sin pensar. Si un falso positivo cuesta mucho (marcar como fraude a un cliente bueno), subí el umbral para ganar precision. Si lo caro es dejar pasar un caso (no detectar un fraude), bajalo para ganar recall. La curva precision-recall te muestra el intercambio.</p>
+      <p><strong>El umbral es una decisión de negocio.</strong> El umbral es la probabilidad a partir de la cual el modelo dice "sí". Con 0,5 por costumbre mezclás los dos tipos de error sin pensar cuál te sale más caro. Si un falso positivo cuesta mucho (marcar como fraude a un cliente bueno), subí el umbral para ganar precision. Si lo caro es dejar pasar un caso (no detectar un fraude), bajalo para ganar recall. La curva precision-recall te muestra el intercambio.</p>
       <p><strong>Probalo con datos reales.</strong> En lugar de embeddings, el dataset de tumores de la primera lección. Bajar el umbral hace que casi no se escape ningún caso maligno, a cambio de más falsas alarmas. (Acá lo miramos en test para verlo rápido; en un proyecto real, el umbral se elige con validación.)</p>
       <pre><code>from sklearn.datasets import load_breast_cancer
 from sklearn.model_selection import train_test_split
@@ -422,18 +584,34 @@ prob = LogisticRegression(max_iter=5000).fit(X_tr, y_tr).predict_proba(X_te)[:, 
 for umbral in [0.9, 0.5, 0.2, 0.05]:
     pred = prob &gt;= umbral
     print("umbral", umbral, " precision:", round(precision_score(y_te, pred), 2), " recall:", round(recall_score(y_te, pred), 2))</code></pre>
-      <p><strong>Calibración:</strong> que un modelo diga 0,8 no significa que acierte el 80% de esas veces. Si vas a usar las probabilidades para decidir o para mostrarlas, verificá la calibración con un gráfico de confiabilidad y, si hace falta, calibrá (por ejemplo, con <code>CalibratedClassifierCV</code>).</p>
+      <p><strong>Calibración:</strong> un modelo está <em>calibrado</em> si sus probabilidades son honestas. Que diga 0,8 no garantiza que acierte el 80% de esas veces: puede ser un modelo "agrandado" que dice 0,8 y acierta el 60%. Si vas a usar las probabilidades para decidir o para mostrarlas:</p>
+      <ol>
+        <li>Verificá la calibración con un <em>gráfico de confiabilidad</em>: agrupás las predicciones por probabilidad y comparás lo que dijo el modelo con lo que pasó de verdad.</li>
+        <li>Si hace falta, calibrá, por ejemplo con <code>CalibratedClassifierCV</code>.</li>
+      </ol>
       <p><strong>Cuándo sí un LLM:</strong> pocas consultas, categorías que cambian seguido, sin datos etiquetados, o tareas que requieren razonar o generar texto.</p>` },
     { titulo: 'Explorar texto a escala: embeddings, clustering y reducción de dimensionalidad', html: `
-      <p>Tenés 50.000 consultas de usuarios, o 10.000 trazas donde tu sistema falló, y querés saber <strong>de qué se trata</strong> sin leerlas una por una ni tener categorías previas. Es aprendizaje no supervisado, y es una de las herramientas más útiles para el análisis de errores a escala.</p>
-      <p><strong>El pipeline:</strong></p>
+      <p><strong>En pocas palabras:</strong> tenés miles de mensajes y no podés leerlos todos. Le pedís a la computadora que los separe en pilas de mensajes parecidos, como ordenar ropa por color sin saber de antemano cuántos colores hay. Después leés unos pocos de cada pila y ya sabés de qué se trata cada una.</p>
+      <p>Tenés 50.000 consultas de usuarios, o 10.000 <em>trazas</em> (el registro de todo lo que hizo tu sistema en una conversación) donde algo falló. Querés saber <strong>de qué se tratan</strong> sin leerlas una por una y sin tener categorías armadas de antes. Eso es aprendizaje no supervisado, y es una de las herramientas más útiles para entender errores a gran escala.</p>
+      <p><strong>El proceso, paso a paso</strong> (a una cadena de pasos así también se le dice <em>pipeline</em>):</p>
       <ol>
-        <li><strong>Embeddings</strong> de cada texto.</li>
-        <li><strong>Reducir dimensiones</strong> (opcional): con PCA a unas 50 dimensiones para bajar ruido y costo, conservando la mayor parte de la varianza.</li>
-        <li><strong>Clustering:</strong> k-means si sabés cuántos grupos querés (asume grupos más o menos esféricos); HDBSCAN si no lo sabés: encuentra grupos por densidad y marca como ruido lo que no encaja en ninguno.</li>
-        <li><strong>Elegir k en k-means:</strong> k-means no lo elige solo. Probás varios valores (por ejemplo, de 2 a 10), mirás el <strong>silhouette</strong> (de −1 a 1: qué tan cerca está cada punto de su grupo comparado con el grupo vecino; más alto es mejor) y, sobre todo, si los grupos tienen sentido para lo que vas a hacer con ellos.</li>
-        <li><strong>Nombrar cada grupo:</strong> pasale a un LLM 15 ejemplos del cluster y pedile un nombre corto. BERTopic automatiza este flujo.</li>
+        <li><strong>Embeddings</strong> de cada texto: cada texto pasa a ser un vector, por ejemplo de 1024 números.</li>
+        <li><strong>Reducir dimensiones</strong> (opcional): resumir esos 1024 números en unos 50, con PCA. Así baja el ruido y las cuentas son más rápidas. PCA se queda con las direcciones donde los datos más varían (la mayor parte de la <em>varianza</em>), que es donde está la información.</li>
+        <li><strong>Clustering</strong> (agrupar). Dos métodos:
+          <ul>
+            <li><strong>K-means</strong>, si sabés cuántos grupos querés (ese número se llama k). Pone k centros y asigna cada punto al centro más cercano. Funciona mejor cuando los grupos son "bolitas" redondeadas.</li>
+            <li><strong>HDBSCAN</strong>, si no sabés cuántos grupos hay. Busca zonas donde los puntos están amontonados (<em>densidad</em>) y marca como ruido (-1) lo que no encaja en ningún grupo.</li>
+          </ul>
+        </li>
+        <li><strong>Elegir k en k-means:</strong> k-means no lo elige solo. Probás varios valores (por ejemplo, de 2 a 10) y mirás dos cosas:
+          <ul>
+            <li>El <strong>silhouette</strong>: un número de −1 a 1 que mide si cada punto está más cerca de su grupo que del grupo vecino. Más alto es mejor.</li>
+            <li>Sobre todo, si los grupos tienen sentido para lo que vas a hacer con ellos.</li>
+          </ul>
+        </li>
+        <li><strong>Nombrar cada grupo:</strong> pasale a un LLM 15 ejemplos del grupo (<em>cluster</em>) y pedile un nombre corto. La librería BERTopic hace todo este proceso automáticamente.</li>
       </ol>
+      <p>En el código, <code>embed</code> y <code>llm</code> son funciones que llaman a modelos reales, así que este fragmento no corre en el navegador. Más abajo hay una versión chica que sí.</p>
       <pre><code>from sklearn.decomposition import PCA
 from sklearn.cluster import HDBSCAN
 
@@ -445,7 +623,7 @@ for c in sorted(set(etiquetas) - {-1}):
     ejemplos = [q for q, e in zip(consultas, etiquetas) if e == c][:15]
     nombre = llm("Poné un nombre corto al tema común de estas consultas:\\n" + "\\n".join(ejemplos))
     print(c, nombre, (etiquetas == c).sum())</code></pre>
-      <p><strong>Probalo en chiquito.</strong> El mismo flujo con 12 consultas, para que veas los grupos aparecer. Como en el navegador no hay un modelo de embeddings, usamos <strong>TF-IDF</strong>, que convierte cada texto en un vector según qué palabras tiene. Agrupa por palabras compartidas, no por significado: "no puedo entrar" y "olvidé la contraseña" quedan juntas acá porque las dos dicen "cuenta", y un modelo de embeddings las juntaría aunque no compartieran ninguna palabra.</p>
+      <p><strong>Probalo en chiquito.</strong> El mismo flujo con 12 consultas, para que veas los grupos aparecer. Como en el navegador no hay un modelo de embeddings, usamos <strong>TF-IDF</strong>, que convierte cada texto en un vector según qué palabras tiene: un número por palabra, más alto si la palabra es rara en el resto de los textos. Agrupa por palabras compartidas, no por significado: "no puedo entrar" y "olvidé la contraseña" quedan juntas acá porque las dos dicen "cuenta", y un modelo de embeddings las juntaría aunque no compartieran ninguna palabra.</p>
       <pre><code>from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans
@@ -462,19 +640,21 @@ etiquetas = KMeans(n_clusters=3, n_init=10, random_state=0).fit_predict(X2)
 
 for c in range(3):
     print("Grupo", c, [q for q, e in zip(consultas, etiquetas) if e == c])</code></pre>
-      <p><strong>Para visualizar</strong>, UMAP (o t-SNE) proyecta a 2D conservando bien los vecindarios: los puntos parecidos quedan juntos. Cuidado: las distancias <em>entre</em> grupos lejanos en el gráfico no son confiables, así que no concluyas que dos grupos son "muy distintos" solo porque aparecen lejos.</p>
+      <p><strong>Para visualizar</strong>, UMAP (o t-SNE) convierte cada vector en un punto de un gráfico de 2 dimensiones, como hacer un mapa plano de algo que tiene muchas dimensiones. Conserva bien los vecindarios: los puntos parecidos quedan juntos. Cuidado: las distancias <em>entre</em> grupos lejanos en el gráfico no son confiables, así que no concluyas que dos grupos son "muy distintos" solo porque aparecen lejos.</p>
       <p><strong>Usos típicos en AI engineering:</strong></p>
       <ul>
         <li>Agrupar las trazas fallidas para encontrar los modos de fallo más frecuentes.</li>
-        <li>Descubrir intenciones de usuario para diseñar routing o evals.</li>
+        <li>Descubrir qué quieren hacer los usuarios, para decidir a qué modelo o flujo mandar cada tipo de consulta (<em>routing</em>) o para armar pruebas (<em>evals</em>).</li>
         <li>Detectar duplicados y casi duplicados en datasets antes de entrenar o evaluar.</li>
         <li>Ver qué temas consultan los usuarios que tu documentación no cubre.</li>
       </ul>
       <p>Revisá siempre algunos clusters a mano: el algoritmo agrupa por parecido, pero el nombre que le pone el LLM puede ser engañoso.</p>` },
     { titulo: 'Validación que no miente: datos temporales y agrupados', html: `
-      <p>La validación cruzada clásica mezcla los datos al azar. Eso supone que cada ejemplo es independiente, y en muchos problemas reales no lo es. Cuando no lo es, la nota sale inflada y el modelo decepciona en producción.</p>
-      <p><strong>1. Datos con tiempo.</strong> Si predecís demanda, fraude o abandono, en producción siempre predecís el <em>futuro</em> con datos del <em>pasado</em>. Mezclar al azar deja que el modelo "vea el futuro" al entrenar. La solución es validar respetando el orden: entrenar con lo anterior y evaluar con lo posterior. En scikit-learn, <code>TimeSeriesSplit</code>.</p>
+      <p><strong>En pocas palabras:</strong> si querés saber si alguien predice bien el clima, no le podés mostrar el diario de mañana. Y si querés saber si reconoce caras nuevas, no le podés tomar examen con fotos de las mismas personas con las que practicó. Esta lección es sobre no hacer trampa sin darte cuenta.</p>
+      <p>La validación cruzada clásica mezcla los datos al azar. Eso supone que cada ejemplo es <em>independiente</em>: que conocer uno no te da pistas sobre otro. En muchos problemas reales no es así. Cuando no lo es, la nota sale inflada y el modelo decepciona en producción, cuando ya lo usan personas reales.</p>
+      <p><strong>1. Datos con tiempo.</strong> Si predecís cuánto se va a vender (demanda), si una compra es una estafa (fraude) o si un cliente se va a dar de baja (abandono), en producción siempre predecís el <em>futuro</em> con datos del <em>pasado</em>. Mezclar al azar deja que el modelo "vea el futuro" al entrenar. La solución es validar respetando el orden: entrenar con lo anterior y evaluar con lo posterior. En scikit-learn, <code>TimeSeriesSplit</code>.</p>
       <p><strong>2. Datos agrupados.</strong> Si tenés varias filas del mismo cliente, paciente o documento, y algunas quedan en train y otras en test, el modelo puede reconocer al cliente en lugar de aprender el patrón. En producción vas a ver clientes nuevos. La solución es que cada grupo quede entero de un solo lado: <code>GroupKFold</code>.</p>
+      <p>El código usa datos inventados y valida de las dos formas. <code>cross_val_score</code> hace la validación cruzada y devuelve una nota por fold. Lo que cambia es el argumento <code>cv</code>, que dice cómo se cortan los datos.</p>
       <pre><code>from sklearn.model_selection import TimeSeriesSplit, GroupKFold, cross_val_score
 from sklearn.datasets import make_classification
 from sklearn.linear_model import LogisticRegression
@@ -494,16 +674,28 @@ print("por tiempo:", puntaje_tiempo.round(2), " por cliente:", puntaje_grupos.ro
       <p><strong>Señales de que tu validación está mintiendo:</strong></p>
       <ul>
         <li>El modelo da mucho mejor en validación que en producción.</li>
-        <li>Una feature resulta sospechosamente importante, como un id o una fecha de cierre que solo se conoce después.</li>
+        <li>Una feature resulta sospechosamente importante, como un id (el número que identifica a cada cliente) o una fecha de cierre que solo se conoce después.</li>
         <li>La nota cae fuerte al pasar de una partición al azar a una por tiempo o por grupo.</li>
       </ul>
-      <p><strong>Lo mismo vale para LLMs:</strong> si tu dataset de evals tiene varias preguntas sobre el mismo documento, no son independientes (lo viste en evals con los errores agrupados), y si afinás un modelo, separá train y test por documento o por cliente, no por fila.</p>` },
-    { titulo: 'Sistemas de recomendación: contenido, colaborativo y embeddings', html: `
-      <p>"Te puede interesar…" está en casi todos los productos digitales. Hay dos ideas base, que en la práctica se combinan:</p>
+      <p><strong>Lo mismo vale para LLMs:</strong></p>
       <ul>
-        <li><strong>Por contenido:</strong> recomendás ítems parecidos a los que le gustaron al usuario, comparando sus características. Hoy lo habitual es usar <strong>embeddings</strong> de la descripción, la imagen o el texto del ítem. Funciona con ítems nuevos, porque no necesita historial.</li>
-        <li><strong>Filtrado colaborativo:</strong> usás los patrones de interacción: si a usuarios parecidos a vos les gustó algo, probablemente te guste. La técnica clásica es la <em>factorización de matrices</em>: la tabla usuarios × ítems, casi vacía, se aproxima con un vector por usuario y otro por ítem, y su producto punto predice el interés.</li>
+        <li>Si tus pruebas (evals) tienen varias preguntas sobre el mismo documento, no son independientes. Lo vas a ver en el módulo de evals.</li>
+        <li>Si <em>afinás</em> un modelo (lo seguís entrenando con tus propios datos), separá train y test por documento o por cliente, no por fila.</li>
+      </ul>` },
+    { titulo: 'Sistemas de recomendación: contenido, colaborativo y embeddings', html: `
+      <p><strong>En pocas palabras:</strong> hay dos formas de recomendar. "Te gustó una de terror, acá tenés otra de terror" es recomendar por contenido. "A la gente que vio lo mismo que vos también le gustó esta" es el filtrado colaborativo. Netflix o Spotify mezclan las dos.</p>
+      <p>"Te puede interesar…" está en casi todos los productos digitales. A cada cosa que se puede recomendar (película, producto, canción) se le dice <strong>ítem</strong>. Hay dos ideas base, que en la práctica se combinan:</p>
+      <ul>
+        <li><strong>Por contenido:</strong> recomendás ítems parecidos a los que le gustaron al usuario, comparando sus características. Hoy lo habitual es usar <strong>embeddings</strong> de la descripción, la imagen o el texto del ítem. Funciona con ítems nuevos, porque no necesita que nadie los haya visto antes.</li>
+        <li><strong>Filtrado colaborativo:</strong> usás lo que hicieron los usuarios (qué vieron, qué compraron, qué puntuaron). Si a usuarios parecidos a vos les gustó algo, probablemente te guste.
+          <ul>
+            <li>La técnica clásica es la <em>factorización de matrices</em>. Imaginá una planilla gigante con usuarios en las filas y películas en las columnas, casi toda vacía, porque cada uno vio pocas películas.</li>
+            <li>El método aprende un vector por usuario (sus gustos) y uno por película (sus rasgos).</li>
+            <li>El producto punto entre los dos predice cuánto le va a gustar: así se rellenan las celdas vacías.</li>
+          </ul>
+        </li>
       </ul>
+      <p>En el código, <code>E @ E[i]</code> calcula de una sola vez el producto punto del ítem i con todos los demás. <code>argsort(-s)</code> ordena de mayor a menor parecido. <code>normalizar</code> y <code>embed</code> son funciones que no están definidas acá, por eso abajo va una versión que sí corre.</p>
       <pre><code>import numpy as np
 
 E = normalizar(embed(descripciones_items))          # (n_items, d), una fila por ítem
@@ -531,12 +723,23 @@ def similar(i):
 
 for i in [0, 1, 3]:
     print(items[i], "| te puede gustar:", similar(i))</code></pre>
-      <p><strong>Arquitectura en dos etapas:</strong> en catálogos grandes, primero una <em>recuperación</em> rápida trae unos cientos de candidatos (con embeddings y búsqueda de vecinos, como en RAG), y después un modelo de <em>ranking</em> más preciso ordena solo esos.</p>
+      <p><strong>Arquitectura en dos etapas:</strong> en catálogos grandes, con millones de ítems, no se puede analizar cada uno con cuidado. Se trabaja en dos pasos:</p>
+      <ol>
+        <li><strong>Recuperación:</strong> un filtro rápido trae unos cientos de candidatos, buscando los embeddings más cercanos. Es la misma idea que RAG, que vas a ver más adelante para buscar documentos.</li>
+        <li><strong>Ranking:</strong> un modelo más preciso, y más lento, ordena solo esos candidatos.</li>
+      </ol>
       <p><strong>Problemas típicos:</strong></p>
       <ul>
         <li><strong>Arranque en frío:</strong> ítems o usuarios nuevos sin interacciones. El contenido y las preguntas iniciales ayudan.</li>
         <li><strong>Sesgo de popularidad:</strong> si siempre recomendás lo más popular, lo de nicho nunca se muestra y nunca junta datos. Hace falta algo de diversidad y exploración.</li>
-        <li><strong>Evaluación:</strong> offline, con <strong>precision@k</strong> (de los k recomendados, cuántos eligió el usuario), <strong>recall@k</strong> (de lo que eligió, cuánto estaba entre los k) o <strong>NDCG</strong> (como precision@k, pero premia que lo relevante esté más arriba en la lista), sobre interacciones apartadas (separadas por tiempo, como viste en la lección de validación). Pero la prueba real es online, con un test A/B.</li>
+        <li><strong>Evaluación offline</strong> (con datos guardados, sin usuarios reales). Apartás las últimas interacciones de cada usuario, separadas por tiempo como en la lección de validación, y medís:
+          <ul>
+            <li><strong>precision@k:</strong> de los k ítems recomendados, cuántos eligió el usuario.</li>
+            <li><strong>recall@k:</strong> de lo que eligió, cuánto estaba entre los k.</li>
+            <li><strong>NDCG:</strong> como precision@k, pero premia que lo que le interesa al usuario esté más arriba en la lista.</li>
+          </ul>
+        </li>
+        <li><strong>Evaluación online</strong> (con usuarios reales): es la prueba de verdad. Se hace con un <strong>test A/B</strong>: a la mitad de los usuarios le mostrás el recomendador viejo y a la otra mitad el nuevo, y comparás qué grupo elige más.</li>
       </ul>` },
   ],
   practica: [
