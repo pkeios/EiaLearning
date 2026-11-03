@@ -2472,15 +2472,22 @@ else:
   ],
   lecciones: [
     { titulo: 'Por qué las evals son la habilidad número uno', html: `
-      <p>Sin evals, cada cambio de prompt, modelo o retrieval es una apuesta. Con evals, es un experimento. Es lo que más diferencia a un AI engineer profesional.</p>
-      <p><strong>Empezá por el análisis de errores:</strong> leé 50-100 trazas reales (entradas, salidas, pasos intermedios). Anotá qué falla y agrupalo en categorías. Las categorías más frecuentes son las que vale la pena medir.</p>
-      <p>Tipos de evaluación, de más barata a más cara:</p>
+      <p><strong>En pocas palabras:</strong> una <strong>eval</strong> (evaluación) es un examen para tu IA: un conjunto de casos de prueba y una forma de corregirlos. Sin examen, cada cambio es "me parece que anda mejor". Con examen, sabés si mejoró, empeoró o rompió algo. Y el primer paso no es inventar el examen: es leer en qué se equivoca de verdad.</p>
+      <p>Sin evals, cada cambio de prompt, de modelo o de búsqueda es una apuesta. Con evals, es un experimento. Es lo que más diferencia a un AI engineer profesional.</p>
+      <p><strong>Empezá por el análisis de errores:</strong></p>
+      <ol>
+        <li>Leé entre 50 y 100 <em>trazas</em> reales. Una traza es el registro completo de una conversación: la entrada, la salida y los pasos intermedios.</li>
+        <li>Anotá qué falló en cada una.</li>
+        <li>Agrupá los fallos en categorías.</li>
+      </ol>
+      <p>Las categorías más frecuentes son las que vale la pena medir.</p>
+      <p>Tipos de evaluación, de la más barata a la más cara:</p>
       <ul>
-        <li><strong>Por código:</strong> ¿es JSON válido?, ¿contiene el campo?, ¿coincide exactamente?, ¿pasa los tests? Rápidas, deterministas, ideales para CI.</li>
-        <li><strong>LLM-as-judge:</strong> un modelo evalúa con una rúbrica concreta (preferiblemente veredicto binario pasa/falla con justificación). Para criterios subjetivos: tono, fidelidad al contexto, utilidad.</li>
-        <li><strong>Humana:</strong> la referencia de verdad, cara. Se usa para crear etiquetas y calibrar jueces.</li>
+        <li><strong>Por código:</strong> un programa comprueba algo exacto. ¿Es un JSON válido? ¿Tiene el campo pedido? ¿Coincide con la respuesta esperada? ¿Pasa los tests? Son rápidas y deterministas (siempre dan lo mismo), ideales para la <em>CI</em>: las pruebas que se corren solas cada vez que alguien cambia el código.</li>
+        <li><strong>LLM como juez</strong> (LLM-as-judge): otro modelo corrige siguiendo una <em>rúbrica</em> concreta, una lista de criterios. Conviene que el veredicto sea <em>binario</em> (pasa o no pasa) y con una justificación. Se usa para criterios subjetivos: el tono, si es fiel al contexto, si es útil. Lección 7.</li>
+        <li><strong>Humana:</strong> una persona corrige. Es la referencia más confiable, pero cara. Se usa para crear las respuestas correctas de referencia (las <em>etiquetas</em>) y para <em>calibrar</em> a los jueces, o sea, comprobar que coinciden con las personas.</li>
       </ul>
-      <p><strong>Ejemplo de análisis de errores</strong> en un asistente de soporte (números ilustrativos): leés 80 trazas y anotás qué falló en cada una.</p>
+      <p><strong>Ejemplo de análisis de errores</strong> en un asistente de soporte (números inventados para ilustrar): leés 80 trazas y anotás qué falló en cada una.</p>
       <pre><code>categoría de fallo                         casos   cómo se mide después
 inventa una política que no existe            14    juez LLM: "¿cada afirmación está en el contexto?"
 no pide el número de pedido y adivina         9    código: ¿la respuesta contiene la pregunta?
@@ -2489,14 +2496,24 @@ tono demasiado formal                          2    (poco frecuente: por ahora n
 sin fallo                                     51</code></pre>
       <p>En una tarde pasaste de "anda más o menos" a saber que el problema principal es inventar políticas, que eso pide un juez LLM, y que dos fallos se miden con código gratis. Fijate que la lista no salió de una métrica genérica sino de tus trazas: es lo mismo que vas a hacer con agentes en la lección de evaluar agentes.</p>` },
     { titulo: 'Montar un pipeline de evals', html: `
+      <p><strong>En pocas palabras:</strong> armar un sistema de evals es como armar un examen que se toma solo cada vez que cambiás algo. Tiene preguntas fijas con sus respuestas correctas, una nota por cada tipo de error y una alarma que suena si la nota baja. Así, ningún cambio rompe algo sin que te enteres.</p>
       <ol>
-        <li><strong>Dataset dorado:</strong> 20-50 casos reales al principio (crecé a cientos), con la salida esperada o criterios. Incluí casos difíciles y casos que ya fallaron en producción.</li>
-        <li><strong>Métricas:</strong> una por modo de fallo importante.</li>
-        <li><strong>Ejecución automática:</strong> corré las evals en cada cambio (CI) y guardá resultados por versión de prompt/modelo.</li>
-        <li><strong>Regresiones:</strong> un cambio que mejora un caso no puede romper otros diez.</li>
+        <li><strong>Dataset dorado:</strong> tu conjunto de casos de prueba de referencia. Al principio, 20 a 50 casos reales, que con el tiempo crecen a cientos. Cada uno con la salida esperada o los criterios para corregirlo. Incluí casos difíciles y casos que ya fallaron con usuarios reales.</li>
+        <li><strong>Métricas:</strong> una por cada <em>modo de fallo</em> importante (cada tipo de error que encontraste en el análisis).</li>
+        <li><strong>Ejecución automática:</strong> corré las evals en cada cambio (en la CI) y guardá los resultados de cada versión del prompt o del modelo.</li>
+        <li><strong>Regresiones:</strong> una <em>regresión</em> es algo que andaba y se rompió. Un cambio que mejora un caso no puede romper otros diez.</li>
       </ol>
-      <p><strong>Sesgos del LLM-as-judge:</strong> prefiere respuestas largas, la primera opción en comparaciones, y a veces sus propias respuestas. Mitigaciones: rúbricas específicas, veredictos binarios, alternar el orden, y <em>medir el acuerdo del juez con etiquetas humanas</em> antes de confiar en él.</p>
-      <p><strong>Offline vs online:</strong> offline = dataset fijo antes de desplegar. Online = señales en producción (feedback del usuario, tasa de éxito de tareas, A/B tests).</p>
+      <p><strong>Sesgos del LLM como juez:</strong> prefiere las respuestas largas, la primera opción cuando compara dos, y a veces sus propias respuestas. Para compensarlo:</p>
+      <ul>
+        <li>Rúbricas específicas y veredictos de pasa o no pasa.</li>
+        <li>Alternar el orden de las opciones.</li>
+        <li><em>Medir cuánto coincide el juez con personas</em> antes de confiar en él.</li>
+      </ul>
+      <p><strong>Offline y online:</strong></p>
+      <ul>
+        <li><strong>Offline:</strong> con un conjunto fijo de casos, antes de publicar el cambio.</li>
+        <li><strong>Online:</strong> con señales de los usuarios reales, como su opinión, cuántas tareas se resuelven o tests A/B. Lección 6.</li>
+      </ul>
       <p><strong>Ejemplo mínimo de pipeline</strong> en Python, que corre en CI y falla si algo empeora:</p>
       <pre><code>casos = cargar("evals/soporte.jsonl")        # 40 casos: entrada + criterios
 resultados = []
@@ -2515,13 +2532,15 @@ for metrica in ["json_valido", "pide_pedido", "fiel"]:
     antes, ahora = tasa(base, metrica), tasa(resultados, metrica)
     print(f"{metrica}: {antes:.0%} → {ahora:.0%}")
     assert ahora &gt;= antes - 0.05, f"regresión en {metrica}"   # tolerancia por ruido</code></pre>
-      <p>Cada métrica corresponde a un modo de fallo del análisis de errores, los resultados quedan guardados por versión y la regresión frena el deploy. La tolerancia de 5 puntos existe porque con 40 casos hay ruido (lo ves a fondo en la lección de rigor estadístico).</p>` },
+      <p>Cada métrica corresponde a un modo de fallo del análisis de errores, los resultados quedan guardados por versión y, si hay una regresión, el <code>assert</code> frena el <em>deploy</em> (la publicación del cambio). La tolerancia de 5 puntos existe porque con 40 casos hay ruido (lo ves a fondo en la lección de rigor estadístico).</p>` },
     { titulo: 'Evals con rigor: error estándar, comparación pareada y pass@k', html: `
-      <p>"La versión nueva saca 84% y la vieja 80%" no dice nada sin un margen de error. Los modelos no son deterministas y tu dataset es una muestra, así que cada nota trae ruido.</p>
-      <p><strong>1. Reportá el error estándar.</strong> Para una tasa de aciertos p con n casos, <code>SEM = √(p·(1−p)/n)</code> y el intervalo de confianza del 95% es <code>p ± 1,96·SEM</code>. Con 50 casos y 80% de aciertos: SEM ≈ 0,057, o sea <strong>±11 puntos</strong> (de 69% a 91%). Con 500 casos baja a unos ±3,5. Si la mejora que buscás es de 4 puntos, 50 casos no alcanzan para verla.</p>
-      <p><strong>2. Compará de forma pareada.</strong> Las dos versiones responden los mismos casos, así que analizá la diferencia caso por caso. Eso elimina el ruido de que unos casos sean más difíciles que otros y achica el error. Si el intervalo de la diferencia incluye el 0, no hay mejora demostrada.</p>
-      <p><strong>3. Repetí cada caso.</strong> Ejecutá cada caso varias veces y promediá: baja la varianza por el azar del modelo. Si dos corridas idénticas dan 78% y 83%, ya sabés cuánto ruido tenés.</p>
-      <p><strong>4. Cuidado con los casos agrupados.</strong> Si tus 100 preguntas son 10 sobre cada uno de 10 documentos, no son independientes. El error real es mayor que el ingenuo: Anthropic encontró que en evals populares los errores agrupados eran más de 3 veces los ingenuos.</p>
+      <p><strong>En pocas palabras:</strong> si tirás una moneda 10 veces y salen 7 caras, no quiere decir que la moneda esté cargada: puede ser suerte. Con las evals pasa lo mismo. Una versión que saca 84% contra 80% puede no ser mejor, sino haber tenido suerte. Esta lección te enseña a calcular cuánto "margen de suerte" tiene tu nota.</p>
+      <p>"La versión nueva saca 84% y la vieja 80%" no dice nada sin un margen de error. Los modelos no responden siempre igual y tu conjunto de casos es solo una muestra, así que cada nota trae ruido.</p>
+      <p><strong>1. Reportá el error estándar</strong> (SEM), que mide cuánto podría moverse la nota por azar. Para una tasa de aciertos p con n casos, <code>SEM = √(p·(1−p)/n)</code> y el <em>intervalo de confianza del 95%</em> (el rango donde casi seguro está la nota real) es <code>p ± 1,96·SEM</code>. Con 50 casos y 80% de aciertos: SEM ≈ 0,057, o sea <strong>±11 puntos</strong> (de 69% a 91%). Con 500 casos baja a unos ±3,5. Si la mejora que buscás es de 4 puntos, 50 casos no alcanzan para verla.</p>
+      <p><strong>2. Compará de forma pareada</strong> (como viste en Fundamentos). Las dos versiones responden los mismos casos, así que analizá la diferencia caso por caso. Eso elimina el ruido de que a una le toquen casos más difíciles y achica el error. Si el intervalo de la diferencia incluye el 0, no hay mejora demostrada.</p>
+      <p><strong>3. Repetí cada caso.</strong> Ejecutá cada caso varias veces y promediá: así se achica la variación que viene del azar del modelo. Si dos corridas idénticas dan 78% y 83%, ya sabés cuánto ruido tenés.</p>
+      <p><strong>4. Cuidado con los casos agrupados.</strong> Si tus 100 preguntas son 10 sobre cada uno de 10 documentos, no son independientes: si el modelo entendió mal un documento, falla las 10 preguntas juntas. Entonces el error real es mayor que el calculado con la fórmula simple. Anthropic encontró que en evals populares era más de 3 veces mayor.</p>
+      <p>El código calcula las dos cosas. <code>ic95</code> da el intervalo de una versión a partir de una lista de 1 (acierto) y 0 (fallo). <code>diferencia_pareada</code> da el intervalo de la diferencia entre dos versiones.</p>
       <pre><code>import math
 
 def ic95(resultados):                 # lista de 0/1
@@ -2537,15 +2556,16 @@ def diferencia_pareada(a, b):         # mismos casos, mismo orden
       <p><strong>pass@k vs pass^k (agentes):</strong></p>
       <ul>
         <li><strong>pass@k:</strong> probabilidad de que <em>al menos uno</em> de k intentos salga bien. Sirve cuando podés verificar y elegir, como generar código y correr tests.</li>
-        <li><strong>pass^k</strong> (popularizada por τ-bench): probabilidad de que <em>los k</em> intentos salgan bien. Mide confiabilidad, que es lo que importa cuando un agente atiende usuarios reales.</li>
+        <li><strong>pass^k</strong> (popularizada por la prueba τ-bench): probabilidad de que <em>todos</em> los k intentos salgan bien. Mide confiabilidad, que es lo que importa cuando un agente atiende usuarios reales.</li>
       </ul>
       <p>Con 80% de éxito por intento (independientes): pass@3 = 1 − 0,2³ ≈ <strong>99%</strong>, pero pass^3 = 0,8³ ≈ <strong>51%</strong>. El mismo agente parece excelente o mediocre según qué preguntes.</p>` },
     { titulo: 'Armar y etiquetar el dataset: datos sintéticos, etiquetas binarias y un experto', html: `
-      <p>Un juez y unas métricas valen lo que vale el dataset que los respalda. Recomendaciones prácticas de la guía de evals de Hamel Husain:</p>
-      <p><strong>Datos sintéticos por dimensiones, no "generá 100 preguntas".</strong> Si le pedís al modelo preguntas de prueba genéricas, salen parecidas entre sí. Mejor:</p>
+      <p><strong>En pocas palabras:</strong> un examen vale lo que valen sus preguntas. Si le pedís a una IA "inventá 100 preguntas", salen todas parecidas. Conviene combinar a propósito tipos de usuario, intenciones y dificultades. Y para corregir, mejor "bien o mal" que notas del 1 al 5, con una persona que sepa del tema como referencia.</p>
+      <p>Un juez y unas métricas valen lo que vale el conjunto de casos que los respalda. Recomendaciones prácticas de la guía de evals de Hamel Husain, un consultor conocido en el tema:</p>
+      <p><strong>Datos sintéticos por dimensiones, no "generá 100 preguntas".</strong> Los datos <em>sintéticos</em> son casos inventados por un modelo. Si le pedís preguntas de prueba genéricas, salen parecidas entre sí. Mejor:</p>
       <ol>
-        <li>Definí <strong>dimensiones</strong> que cambian el comportamiento (perfil del usuario, intención, dificultad).</li>
-        <li>Escribí a mano unas 20 combinaciones (tuplas) y pedile al modelo que proponga más.</li>
+        <li>Definí <strong>dimensiones</strong>: aspectos que cambian cómo debería responder tu app, como el perfil del usuario, lo que quiere hacer o la dificultad.</li>
+        <li>Escribí a mano unas 20 combinaciones, por ejemplo (empresa, reclamo, ambigua). A cada combinación se le dice <em>tupla</em>. Después pedile al modelo que proponga más.</li>
         <li>Convertí cada tupla en una consulta realista, con una llamada aparte.</li>
       </ol>
       <pre><code>import itertools, random
@@ -2562,10 +2582,11 @@ for perfil, intencion, dificultad in random.sample(tuplas, 15):
       <p>Los datos sintéticos sirven para arrancar el análisis de errores antes de tener usuarios y para probar fallos raros. <strong>No sirven para estimar con qué frecuencia ocurre cada fallo en producción:</strong> eso solo lo dicen los datos reales.</p>
       <p><strong>Cuánto revisar:</strong> etiquetá vos al menos 30 trazas antes de dejar que un agente proponga fallos. Trabajá con unas 100 trazas variadas y seguí hasta que las nuevas dejen de mostrar modos de fallo distintos. Para entrenar o calibrar un juez, de 100 a 200 ejemplos etiquetados por modo de fallo.</p>
       <p><strong>Etiquetas binarias, no escalas de 1 a 5.</strong> La diferencia entre un 3 y un 4 es subjetiva, hace falta más muestra para comparar y los evaluadores tienden al valor del medio. Si querés medir progreso gradual, dividí el criterio en chequeos binarios ("incluye 4 de los 5 datos esperados").</p>
-      <p><strong>Un experto como referencia.</strong> Al principio, una sola persona experta en el dominio define qué es una buena respuesta. Sumá más etiquetadores solo si hace falta, y medí cuánto coinciden (por ejemplo, con el kappa de Cohen). No tercerices el análisis de errores central: quien no conoce el dominio no ve los fallos que importan.</p>
-      <p><strong>Cuidado con las métricas genéricas.</strong> Puntajes listos para usar como "helpfulness" o "coherencia", o métricas de similitud como ROUGE y BERTScore, dan una falsa sensación de control. Usá modos de fallo binarios que salgan de tu propio análisis de errores.</p>` },
+      <p><strong>Un experto como referencia.</strong> Al principio, una sola persona experta en el tema (un abogado para una app legal, un médico para una de salud) define qué es una buena respuesta. Sumá más personas que corrijan solo si hace falta, y medí cuánto coinciden entre ellas (por ejemplo, con el <em>kappa de Cohen</em>, una medida de acuerdo que descuenta lo que coincidirían por azar). No le encargues el análisis de errores central a alguien de afuera: quien no conoce el tema no ve los fallos que importan.</p>
+      <p><strong>Cuidado con las métricas genéricas.</strong> Puntajes listos para usar, como "utilidad" (helpfulness) o "coherencia", o métricas que miden cuánto se parecen las palabras a una respuesta modelo (ROUGE, BERTScore), dan una falsa sensación de control. Usá modos de fallo binarios que salgan de tu propio análisis de errores.</p>` },
     { titulo: 'Evaluar agentes: tareas, transcripciones y resultados', html: `
-      <p>Evaluar un agente es más difícil que evaluar una respuesta: actúa en varios pasos, cambia cosas en un entorno y no hace siempre lo mismo. La guía de Anthropic "Demystifying evals for AI agents" propone un vocabulario y un método.</p>
+      <p><strong>En pocas palabras:</strong> para evaluar a alguien que hace un trámite, no importa tanto el camino que tomó como si al final el trámite quedó hecho. Con los agentes igual: armás tareas, las dejás hacer varias veces en un entorno limpio y revisás el resultado final. Y leés lo que hizo, porque a veces el que se equivoca es tu examen.</p>
+      <p>Evaluar un agente es más difícil que evaluar una respuesta: actúa en varios pasos, cambia cosas en un <em>entorno</em> (el sistema donde trabaja, como una base de datos) y no hace siempre lo mismo. La guía de Anthropic "Demystifying evals for AI agents" propone un vocabulario y un método.</p>
       <ul>
         <li><strong>Tarea:</strong> una prueba con entrada y criterio de éxito definidos, idealmente con una solución de referencia.</li>
         <li><strong>Intento (trial):</strong> una ejecución de la tarea. Se hacen varios, porque el agente no es determinista.</li>
@@ -2573,6 +2594,7 @@ for perfil, intencion, dificultad in random.sample(tuplas, 15):
         <li><strong>Resultado:</strong> el estado final del entorno; por ejemplo, si la reserva existe de verdad en la base de datos.</li>
         <li><strong>Calificadores:</strong> en código (tests, chequeos de estado), con modelo (rúbricas) o humanos. Una tarea puede tener varios.</li>
       </ul>
+      <p>En el ejemplo, la tarea arranca siempre desde los mismos datos de prueba (los <em>fixtures</em>). La calificación revisa la base de datos al final: si la reserva existe, si es vegetariana y si no hizo reservas de más.</p>
       <pre><code>tarea = {
     "id": "reserva-001",
     "pedido": "Reservá una mesa para 4 el viernes a las 21 en un lugar vegetariano del centro.",
@@ -2589,41 +2611,59 @@ def calificar(entorno, transcripcion):
     }</code></pre>
       <p><strong>Recomendaciones clave:</strong></p>
       <ul>
-        <li><strong>Calificá el resultado, no el camino.</strong> Exigir un orden fijo de pasos castiga soluciones válidas. Usá crédito parcial en tareas de varias partes.</li>
+        <li><strong>Calificá el resultado, no el camino.</strong> Exigir un orden fijo de pasos castiga soluciones válidas. En tareas de varias partes, dá puntaje parcial.</li>
         <li><strong>Empezá chico:</strong> de 20 a 50 tareas salidas de fallos reales alcanzan al principio.</li>
-        <li><strong>Aislá cada intento:</strong> un entorno compartido produce fallos correlacionados o puntajes inflados.</li>
+        <li><strong>Aislá cada intento:</strong> si todos los intentos comparten el mismo entorno, lo que deja uno afecta al siguiente, y los fallos o aciertos se contagian.</li>
         <li><strong>Leé transcripciones.</strong> Es la forma de distinguir un error del agente de un error del calificador. En el ejemplo de la guía, un modelo pasó de 42% a 95% en un benchmark solo con arreglos en la calificación. Y si una tarea da 0% en muchos intentos, sospechá primero de la tarea.</li>
-        <li><strong>Capacidad y regresión:</strong> las evals de capacidad arrancan con tasas bajas y muestran progreso; cuando se saturan, pasan a ser evals de regresión que deberían estar cerca de 100%, y hacen falta tareas nuevas más difíciles.</li>
+        <li><strong>Capacidad y regresión:</strong> hay dos tipos de evals.
+          <ul>
+            <li><strong>De capacidad:</strong> miden lo que todavía no sabe hacer bien. Arrancan con notas bajas y muestran el progreso.</li>
+            <li><strong>De regresión:</strong> cuando una eval de capacidad ya llega casi al 100% (se <em>satura</em>), pasa a ser de regresión. Desde ahí sirve para avisar si algo que andaba se rompe, y hacen falta tareas nuevas más difíciles para seguir midiendo progreso.</li>
+          </ul>
+        </li>
         <li><strong>Varios intentos:</strong> con 75% de éxito por intento, pass^3 es de apenas 42%. Elegí la métrica según si importa que salga bien alguna vez o siempre.</li>
       </ul>
       <p>Ninguna capa atrapa todo: las evals automáticas se combinan con monitoreo en producción, feedback de usuarios, revisión de transcripciones y tests A/B.</p>` },
     { titulo: 'Evaluar en producción: señales de usuarios, drift y tests A/B', html: `
-      <p>Tus evals offline miden lo que vos imaginaste. Los usuarios reales preguntan otras cosas, y lo que preguntan cambia con el tiempo (<em>drift</em>). La evaluación en producción cierra ese hueco.</p>
+      <p><strong>En pocas palabras:</strong> tu examen tiene las preguntas que vos imaginaste, pero los usuarios preguntan otras, y además cambian con el tiempo. Por eso también hay que mirar lo que pasa con usuarios reales: si vuelven a preguntar lo mismo (mala señal), si piden hablar con una persona, si compran. Y para comparar dos versiones, mostrarle cada una a la mitad de los usuarios.</p>
+      <p>Tus evals offline miden lo que vos imaginaste. Los usuarios reales preguntan otras cosas, y lo que preguntan cambia con el tiempo; a ese corrimiento se le dice <em>drift</em> (deriva). La evaluación en producción, con usuarios reales, cierra ese hueco.</p>
       <p><strong>Señales que conviene registrar:</strong></p>
       <ul>
         <li><strong>Explícitas:</strong> pulgar arriba o abajo. Son pocas y sesgadas (se quejan más los molestos), pero valiosas.</li>
         <li><strong>Implícitas:</strong> el usuario reformula casi la misma pregunta enseguida, pide hablar con una persona, abandona la conversación, copia la respuesta o la edita mucho antes de usarla.</li>
         <li><strong>De negocio:</strong> ¿se resolvió el ticket sin un humano? ¿se completó la compra?</li>
-        <li><strong>De control:</strong> latencia, costo, errores y quejas, para que una "mejora" no rompa otra cosa.</li>
+        <li><strong>De control:</strong> tiempo de respuesta, costo, errores y quejas, para que una "mejora" no rompa otra cosa.</li>
       </ul>
+      <p>El código detecta una señal implícita: si la pregunta nueva es casi igual a la anterior (similitud de embeddings mayor a 0,85), el usuario probablemente no quedó conforme con la respuesta.</p>
       <pre><code>def registrar_turno(sesion, pregunta, respuesta):
     anterior = sesion.ultimo_turno
     if anterior and similitud(embed(pregunta), embed(anterior.pregunta)) &gt; 0.85:
         senal("reformulo", anterior.id)   # repitió casi lo mismo: probable mala respuesta
     sesion.ultimo_turno = Turno(pregunta, respuesta)</code></pre>
-      <p><strong>Monitoreo continuo:</strong> pasá un juez LLM sobre una muestra del tráfico, revisá a mano trazas con señales negativas y vigilá cambios en los temas (clustering), el idioma o el largo de las preguntas.</p>
-      <p><strong>Tests A/B bien hechos:</strong></p>
+      <p><strong>Monitoreo continuo:</strong></p>
       <ul>
-        <li><strong>Asignación estable por usuario</strong> (con un hash), y la métrica principal definida <em>antes</em> de empezar.</li>
-        <li><strong>Tamaño de muestra:</strong> para detectar que la tasa de éxito sube de 30% a 33%, con 80% de potencia y 5% de significancia, hacen falta unos 3.800 usuarios por variante. Las diferencias chicas necesitan mucho tráfico.</li>
-        <li><strong>No espiar:</strong> mirar el resultado cada hora y cortar apenas sale significativo multiplica los falsos positivos. Fijá el tamaño antes, o usá un método secuencial diseñado para eso.</li>
+        <li>Pasá un juez LLM sobre una muestra de las conversaciones (el <em>tráfico</em>).</li>
+        <li>Revisá a mano las trazas con señales negativas.</li>
+        <li>Vigilá cambios en los temas (agrupándolos con clustering, como en Machine Learning clásico), en el idioma o en el largo de las preguntas.</li>
+      </ul>
+      <p><strong>Tests A/B bien hechos.</strong> En un test A/B, una parte de los usuarios usa la versión A y otra la B, y comparás los resultados. Cuatro cuidados:</p>
+      <ul>
+        <li><strong>Cada usuario, siempre en la misma versión.</strong> Se logra con un <em>hash</em>, una cuenta que convierte el id del usuario en un número fijo. Y la métrica principal se define <em>antes</em> de empezar.</li>
+        <li><strong>Tamaño de muestra.</strong> Supongamos que querés detectar que la tasa de éxito sube de 30% a 33%. Lo estándar es pedir dos garantías:
+          <ul>
+            <li>80% de <em>potencia</em>: si la mejora es real, la detectás 8 de cada 10 veces.</li>
+            <li>5% de <em>significancia</em>: si no hay mejora, solo 1 de cada 20 veces creés que sí.</li>
+          </ul>
+          Con esas garantías, hacen falta unos 3.800 usuarios por versión. Las diferencias chicas necesitan mucha gente.</li>
+        <li><strong>No espiar:</strong> mirar el resultado cada hora y cortar apenas parece que ganó una versión multiplica los <em>falsos positivos</em> (creer que hay mejora cuando es suerte). Fijá el tamaño antes, o usá un método <em>secuencial</em>, diseñado para mirar varias veces sin hacer trampa.</li>
         <li><strong>Métricas de control:</strong> que la variante no empeore la latencia, el costo ni las quejas.</li>
       </ul>
       <p><strong>Cerrá el ciclo:</strong> cada fallo que encuentres en producción pasa a ser un caso de tu dataset offline, para que no vuelva a pasar sin que lo detectes.</p>` },
     { titulo: 'LLM como juez a fondo: construirlo, calibrarlo y no creerle de más', html: `
-      <p>Muchas cualidades no se pueden chequear con código: si la respuesta es útil, si el tono es el correcto, si respondió lo que se preguntó. Para eso se usa un <strong>LLM como juez</strong>: otro modelo lee la entrada y la salida y decide si pasa. Es escalable y barato, pero un juez sin validar es un número que parece objetivo y no lo es.</p>
+      <p><strong>En pocas palabras:</strong> usar una IA para corregir a otra IA es como contratar a un ayudante para corregir exámenes. Ahorra mucho trabajo, pero antes de confiar tenés que comprobar que corrige como vos. Y ojo con sus mañas: le gustan las respuestas largas y las que se parecen a las suyas.</p>
+      <p>Muchas cualidades no se pueden chequear con código: si la respuesta es útil, si el tono es el correcto, si respondió lo que se preguntó. Para eso se usa un <strong>LLM como juez</strong>: otro modelo lee la entrada y la salida y decide si pasa. Sirve para corregir miles de casos y es barato, pero un juez sin validar es un número que parece objetivo y no lo es.</p>
       <h3>Sesgos documentados</h3>
-      <p>El trabajo que presentó MT-Bench y Chatbot Arena (Zheng y otros, 2023) encontró que jueces fuertes alcanzan más de 80% de acuerdo con preferencias humanas, similar al acuerdo entre personas, pero también documentó sesgos:</p>
+      <p>Un <em>sesgo</em> es una tendencia a equivocarse siempre para el mismo lado. El trabajo que presentó MT-Bench y Chatbot Arena (Zheng y otros, 2023) encontró que los mejores jueces coinciden con las preferencias de las personas más del 80% de las veces, parecido a lo que coinciden dos personas entre sí. Pero también documentó sesgos:</p>
       <ul>
         <li><strong>De posición:</strong> al comparar dos respuestas, prefiere la que aparece en cierto lugar. Mitigación: evaluar en los dos órdenes y contar como empate si cambia el veredicto.</li>
         <li><strong>De verbosidad:</strong> premia la respuesta más larga aunque no sea mejor. Mitigación: criterios explícitos que penalicen relleno.</li>
@@ -2639,9 +2679,9 @@ def calificar(entorno, transcripcion):
         <li>Con casos <strong>separados</strong> (nunca los del prompt), medís cuánto coincide el juez con el experto.</li>
         <li>Iterás el prompt hasta que el acuerdo sea aceptable, y repetís la medición cuando cambia el modelo.</li>
       </ol>
-      <p><strong>Binario antes que escalas:</strong> nadie sabe qué separa un 3 de un 4 en una escala de 1 a 5, y esos puntajes suelen no correlacionar con lo que el experto juzga. Pasa/no pasa con crítica es accionable.</p>
+      <p><strong>Binario antes que escalas:</strong> nadie sabe qué separa un 3 de un 4 en una escala de 1 a 5, y esos puntajes suelen no coincidir con lo que piensa el experto. "Pasa o no pasa" con una crítica escrita te dice qué arreglar.</p>
       <h3>Medir el acuerdo sin engañarte</h3>
-      <p>El porcentaje de acuerdo crudo engaña cuando las fallas son raras: si el 95% de las respuestas pasa, un juez que aprueba todo tiene 95% de acuerdo y no detecta ninguna falla. Reportá por separado:</p>
+      <p>El porcentaje de acuerdo a secas engaña cuando las fallas son raras: si el 95% de las respuestas pasa, un juez que aprueba todo coincide 95% con el experto y no detecta ninguna falla. Es el mismo problema de la accuracy con clases desbalanceadas que viste en Machine Learning clásico. Armá la matriz de confusión del juez contra el experto y reportá dos tasas por separado:</p>
       <pre><code>                    experto: pasa   experto: falla
 juez: pasa               VP              FP   ← fallas que se escapan
 juez: falla              FN              VN
