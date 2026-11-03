@@ -3048,10 +3048,30 @@ trainer.train()</code></pre>
   ],
   lecciones: [
     { titulo: 'Observabilidad y versionado', html: `
-      <p>En producción, si no lo registrás, no existió. Por cada llamada guardá: entrada, salida, modelo, versión del prompt, tokens, costo, latencia (total y hasta el primer token) y errores. En agentes, la <strong>traza</strong> completa: cada paso y cada llamada a herramientas.</p>
-      <p>Herramientas típicas: OpenTelemetry, Langfuse, LangSmith, Arize Phoenix, o tu propia tabla en Postgres al principio.</p>
-      <p><strong>Versioná prompts y configuración</strong> como código: te permite reproducir un resultado, comparar versiones con tus evals y hacer rollback. Desplegá cambios detrás de feature flags o con A/B tests.</p>
-      <p><strong>Privacidad:</strong> los logs contienen datos de usuarios. Enmascará PII, definí retención y controlá quién accede.</p>
+      <p><strong>En pocas palabras:</strong> <em>producción</em> es cuando tu app ya la usan personas reales. Ahí, como la caja negra de un avión, tenés que anotar todo lo que pasa en cada pedido: qué entró, qué salió, cuánto tardó y cuánto costó. Si algo sale mal, sin ese registro no hay forma de saber por qué.</p>
+      <p><strong>Observabilidad</strong> es poder ver desde afuera qué pasa adentro de tu sistema. En producción, si no lo registrás, no existió. Por cada llamada al modelo guardá:</p>
+      <ul>
+        <li>La entrada y la salida.</li>
+        <li>El modelo y la versión del prompt.</li>
+        <li>Los tokens y el costo.</li>
+        <li>La latencia, total y hasta la primera palabra.</li>
+        <li>Los errores.</li>
+      </ul>
+      <p>En agentes, guardá la <strong>traza</strong> completa: cada paso y cada llamada a herramientas.</p>
+      <p>Herramientas típicas para guardar y mirar esos registros: OpenTelemetry, Langfuse, LangSmith, Arize Phoenix, o al principio tu propia tabla en una base de datos como Postgres.</p>
+      <p><strong>Guardá cada versión de los prompts y de la configuración</strong> como se hace con el código (en git). Eso te permite tres cosas:</p>
+      <ul>
+        <li>Reproducir un resultado.</li>
+        <li>Comparar versiones con tus evals.</li>
+        <li>Hacer <em>rollback</em>: volver a la versión anterior si algo se rompe.</li>
+      </ul>
+      <p>Publicá los cambios detrás de <em>feature flags</em> (interruptores para prender o apagar una función sin tocar el código) o con tests A/B.</p>
+      <p><strong>Privacidad:</strong> los registros (<em>logs</em>) tienen datos de usuarios. Tres cuidados:</p>
+      <ul>
+        <li>Tapá la <strong>PII</strong> (información personal: nombres, mails, teléfonos, documentos) antes de guardar.</li>
+        <li>Definí cuánto tiempo se guardan (la <em>retención</em>).</li>
+        <li>Controlá quién accede.</li>
+      </ul>
       <p><strong>Ejemplo concreto.</strong> Así se ve un registro útil de una sola llamada:</p>
       <pre><code>{"pedido": "a91f", "usuario": "u_2231", "modelo": "modelo-chico-v3",
  "prompt_version": "soporte-v7", "tokens_entrada": 1840, "tokens_salida": 212,
@@ -3059,12 +3079,34 @@ trainer.train()</code></pre>
  "fin": "end_turn", "error": null, "entrada": "Mi pedido [EMAIL] no llegó"}</code></pre>
       <p>Con una semana de estos registros podés responder preguntas reales: "¿la versión soporte-v7 subió el costo frente a la v6?" (agrupás por <code>prompt_version</code>), "¿por qué algunos usuarios ven respuestas cortadas?" (filtrás <code>fin = max_tokens</code>) o "¿la caché está funcionando?" (mirás <code>tokens_cacheados</code>). Fijate que el email ya llega enmascarado: la privacidad se resuelve antes de guardar. En la lección de trazas vas a ver cómo extender esto a agentes con muchos pasos.</p>` },
     { titulo: 'Costo, latencia y fiabilidad', html: `
+      <p><strong>En pocas palabras:</strong> una app real tiene que ser rápida, barata y no caerse. Esta lección es la caja de herramientas para cada una de esas tres cosas. La regla de oro: cualquier ahorro se comprueba con tus evals, porque si baja la calidad no es ahorro.</p>
       <ul>
-        <li><strong>Latencia:</strong> streaming, modelos más chicos para pasos simples, paralelizar llamadas independientes, cachear, prompts más cortos, limitar max_tokens.</li>
-        <li><strong>Costo:</strong> prompt caching, APIs batch para trabajos no urgentes, <em>routing</em> (consultas fáciles a un modelo barato, difíciles a uno potente), cache de respuestas para preguntas repetidas.</li>
-        <li><strong>Fiabilidad:</strong> timeouts, reintentos con backoff, proveedor o modelo de respaldo, validar salidas contra un esquema y reintentar si fallan.</li>
-        <li><strong>Guardrails:</strong> chequeos de entrada y salida (temas permitidos, PII, formato) antes de mostrar o ejecutar algo.</li>
-        <li><strong>Rate limits:</strong> conocé tus límites, encolá picos de tráfico y limitá por usuario para evitar abusos.</li>
+        <li><strong>Latencia</strong> (que responda rápido):
+          <ul>
+            <li>Streaming.</li>
+            <li>Modelos más chicos para los pasos simples.</li>
+            <li>Hacer a la vez las llamadas que no dependen entre sí.</li>
+            <li>Cachear.</li>
+            <li>Prompts más cortos y un max_tokens limitado.</li>
+          </ul>
+        </li>
+        <li><strong>Costo</strong> (que salga barato):
+          <ul>
+            <li>Prompt caching.</li>
+            <li>APIs batch para lo que no es urgente.</li>
+            <li><em>Routing</em>: las consultas fáciles a un modelo barato y las difíciles a uno potente (lección 7).</li>
+            <li>Guardar las respuestas de preguntas que se repiten.</li>
+          </ul>
+        </li>
+        <li><strong>Fiabilidad</strong> (que no se caiga):
+          <ul>
+            <li>Timeouts y reintentos con backoff.</li>
+            <li>Un proveedor o modelo de respaldo.</li>
+            <li>Validar las salidas contra un esquema y reintentar si fallan.</li>
+          </ul>
+        </li>
+        <li><strong>Guardrails</strong> (barandas): chequeos antes de mostrar o ejecutar algo, sobre lo que entra y lo que sale. Por ejemplo: si el tema está permitido, si hay datos personales o si el formato está bien.</li>
+        <li><strong>Rate limits:</strong> conocé los límites de tu proveedor. Poné los picos de pedidos en una <em>cola</em> (una fila de espera), y limitá cuánto puede usar cada usuario para evitar abusos.</li>
       </ul>
       <p>Toda optimización se valida con tus evals: un modelo más barato que baja la calidad no es ahorro.</p>
       <p><strong>Ejemplo con números</strong> (precios inventados para que la cuenta sea simple): tu asistente recibe 100.000 consultas por mes, cada una con 2.000 tokens de entrada (1.500 son un manual fijo) y 300 de salida. Supongamos entrada a 3 USD y salida a 15 USD por millón de tokens, y lectura de caché al 10% del precio de entrada (ignoramos el costo de escribir la caché, que es chico si el manual se reutiliza miles de veces).</p>
@@ -3074,17 +3116,19 @@ con caché     150 M × 0,3 = 45  (manual)
             +  50 M × 3   = 150 (resto)  30 M × 15 = 450     645 USD</code></pre>
       <p>Solo cachear el manual baja el costo casi 40%, sin tocar la calidad. Fijate también que ahora la salida es la mayor parte del gasto: la próxima palanca es limitar <code>max_tokens</code> o pedir respuestas más cortas. Medir dónde está el costo antes de optimizar es la misma idea que mirar la traza antes de optimizar latencia.</p>` },
     { titulo: 'Cambiar de modelo o de prompt sin romper producción', html: `
-      <p>Tu app depende de algo que no controlás: los modelos tienen fecha de vencimiento. Anthropic, por ejemplo, define un ciclo de vida (<em>active</em>, <em>legacy</em>, <em>deprecated</em>, <em>retired</em>), avisa con al menos 60 días de anticipación antes de retirar un modelo público, y las peticiones a un modelo retirado fallan.</p>
+      <p><strong>En pocas palabras:</strong> cambiar el modelo de tu app es como cambiar el motor de un avión en pleno vuelo. Primero lo probás aparte, sin pasajeros. Después con unos pocos pasajeros. Y siempre con un botón para volver al motor anterior en segundos.</p>
+      <p>Tu app depende de algo que no controlás: los modelos tienen fecha de vencimiento. Anthropic, por ejemplo, define un ciclo de vida: activo, <em>legacy</em> (viejo pero disponible), <em>deprecated</em> (anunciado para retiro) y retirado. Avisa con al menos 60 días de anticipación antes de retirar un modelo público, y los pedidos a un modelo retirado fallan.</p>
       <p>También cambian las APIs: la versión 2026-10-21 de la API de Claude eliminó <code>temperature</code>, <code>top_p</code> y <code>top_k</code>, que ahora devuelven error 400. Código que nadie tocó puede romperse al actualizar la versión.</p>
       <p><strong>Prácticas:</strong></p>
       <ul>
-        <li><strong>Modelo y versión de prompt en configuración</strong>, no escritos en el código. Cambiarlos es editar una config, no hacer un deploy.</li>
-        <li><strong>Evals antes de migrar:</strong> los prompts quedan ajustados al modelo para el que se escribieron. Un modelo más capaz puede empeorar algunos casos hasta que revisás el prompt. Compará con evals pareadas.</li>
-        <li><strong>Shadow:</strong> mandás una copia del tráfico real al modelo nuevo y comparás offline. Ningún usuario ve esas respuestas.</li>
-        <li><strong>Canary:</strong> el 1-5% de los usuarios recibe la versión nueva; si las métricas aguantan, subís el porcentaje.</li>
-        <li><strong>Rollback inmediato:</strong> volver atrás es cambiar la config, en segundos.</li>
-        <li><strong>Auditá el uso:</strong> sabé qué modelos usa cada servicio para que un retiro no te sorprenda.</li>
+        <li><strong>Modelo y versión de prompt en la configuración</strong>, no escritos en el código. Cambiarlos es editar un archivo de configuración, no publicar una versión nueva de la app (un <em>deploy</em>).</li>
+        <li><strong>Evals antes de migrar</strong> (pasar al modelo nuevo): los prompts quedan ajustados al modelo para el que se escribieron. Un modelo más capaz puede empeorar algunos casos hasta que revisás el prompt. Compará con evals pareadas.</li>
+        <li><strong>Shadow</strong> (sombra): mandás una copia de los pedidos reales al modelo nuevo y comparás después. Ningún usuario ve esas respuestas.</li>
+        <li><strong>Canary</strong> (canario, como los que llevaban los mineros para detectar gas): el 1 al 5% de los usuarios recibe la versión nueva. Si las métricas aguantan, subís el porcentaje.</li>
+        <li><strong>Rollback inmediato:</strong> volver atrás es cambiar la configuración, en segundos.</li>
+        <li><strong>Auditá el uso:</strong> sabé qué modelos usa cada parte de tu sistema, para que un retiro no te sorprenda.</li>
       </ul>
+      <p>El código reparte a los usuarios entre la versión estable y la canary. Convierte el id de cada usuario en un número del 0 al 99 con un <em>hash</em> (una cuenta que siempre da el mismo resultado para el mismo dato). Los que caen debajo de 5 van a la canary.</p>
       <pre><code>import hashlib
 
 CONFIG = {
@@ -3102,9 +3146,10 @@ nombre, cfg = variante("usuario-123")
 # registrá "nombre" en cada traza para comparar éxito, latencia y costo por variante</code></pre>
       <p>El mismo usuario siempre cae en la misma variante: así su experiencia es coherente y las métricas por variante no se mezclan.</p>` },
     { titulo: 'Consumo sin control: cuotas, límites y "Denial of Wallet"', html: `
-      <p>Cada llamada a un LLM cuesta dinero, así que un abuso o un bug se traduce directo en una factura. OWASP lo incluye en su Top 10 para aplicaciones LLM como <strong>consumo sin límites</strong>, con tres riesgos principales:</p>
+      <p><strong>En pocas palabras:</strong> cada pregunta al modelo cuesta plata. Es como dejar una tarjeta de crédito a disposición de cualquiera que entre a tu app: alguien con malas intenciones, o tu propio agente con un error, puede gastarte una fortuna en una noche. La solución son topes: por mensaje, por usuario, por día y uno general.</p>
+      <p>Cada llamada a un LLM cuesta dinero, así que un abuso o un error se traduce directo en una factura. <strong>OWASP</strong>, una organización sin fines de lucro que publica guías de seguridad, lo incluye en su Top 10 para aplicaciones LLM como <strong>consumo sin límites</strong>. Tiene tres riesgos principales:</p>
       <ul>
-        <li><strong>Denial of Wallet:</strong> alguien provoca un volumen enorme de operaciones pagas para dispararte los costos.</li>
+        <li><strong>Denial of Wallet</strong> ("dejarte sin billetera"): alguien provoca una cantidad enorme de operaciones pagas para dispararte los costos.</li>
         <li><strong>Inundación de entradas largas:</strong> muchos mensajes de tamaños variables y enormes que agotan recursos.</li>
         <li><strong>Extracción del modelo:</strong> millones de consultas armadas para juntar salidas y entrenar una copia de tu modelo.</li>
       </ul>
@@ -3116,9 +3161,10 @@ nombre, cfg = variante("usuario-123")
         <li><strong>Topes por tarea en agentes:</strong> máximo de pasos y de tokens.</li>
         <li><strong>Timeouts</strong> y colas con límite, para que nadie acapare los recursos.</li>
         <li><strong>Monitoreo y alertas de gasto anómalo</strong>, más un <strong>tope duro</strong> configurado en el panel del proveedor, por si todo lo demás falla.</li>
-        <li><strong>No expongas</strong> datos internos como logprobs si no hace falta: facilitan la extracción.</li>
-        <li><strong>Degradación elegante:</strong> bajo carga, mejor un modelo más chico o una respuesta parcial que caerse.</li>
+        <li><strong>No muestres</strong> datos internos si no hace falta, como los <em>logprobs</em> (las probabilidades que el modelo le dio a cada token): facilitan copiar tu modelo.</li>
+        <li><strong>Degradación elegante:</strong> con mucha demanda, mejor responder con un modelo más chico o una respuesta parcial que dejar de funcionar.</li>
       </ul>
+      <p>El código aplica tres de esas defensas: límite de tamaño del mensaje, cuota diaria por usuario y una alerta si el gasto de la última hora duplica el promedio.</p>
       <pre><code>LIMITE_ENTRADA = 20_000      # caracteres por mensaje
 CUOTA_DIARIA = 200_000       # tokens por usuario por día
 
@@ -3134,16 +3180,18 @@ def atender(usuario, mensaje):
     return resp.texto</code></pre>
       <p>Pensalo como cualquier otro recurso caro: nadie deja una base de datos sin límites de conexiones, y un LLM merece el mismo cuidado.</p>` },
     { titulo: 'Datos personales en producción: minimizar, enmascarar y retener poco', html: `
-      <p>En una app con LLMs, los datos personales aparecen en lugares que no siempre miramos: los mensajes de los usuarios, los documentos que recupera el RAG, los logs y trazas, la caché y los datasets de evals o de fine-tuning. OWASP incluye la divulgación de información sensible en su Top 10 para aplicaciones LLM, con casos como un usuario que ve datos de otro por una mala separación.</p>
+      <p><strong>En pocas palabras:</strong> los datos personales de tus usuarios (nombres, mails, tarjetas) se meten por todos lados: en los mensajes, en los registros, en los ejemplos de prueba. La regla es como con los papeles confidenciales: usar solo los necesarios, tachar lo sensible antes de archivarlo y tirar lo que ya no hace falta.</p>
+      <p>En una app con LLMs, los datos personales aparecen en lugares que no siempre miramos: los mensajes de los usuarios, los documentos que trae el RAG, los logs y trazas, la caché y los conjuntos de datos de evals o de fine-tuning. OWASP incluye la divulgación de información sensible en su Top 10 para aplicaciones LLM, con casos como un usuario que ve datos de otro por una mala separación.</p>
       <p><strong>Principios prácticos:</strong></p>
       <ul>
         <li><strong>Minimizar:</strong> mandale al modelo solo lo que la tarea necesita. Para extraer una fecha de turno no hace falta la historia clínica completa.</li>
-        <li><strong>Enmascarar antes de loguear</strong> (y, si se puede, antes de enviar): emails, teléfonos, documentos, tarjetas. Las librerías como Microsoft Presidio combinan patrones con modelos de reconocimiento de entidades.</li>
+        <li><strong>Enmascarar</strong> (reemplazar por una etiqueta, como [EMAIL]) <strong>antes de guardar en los logs</strong>, y si se puede, antes de mandarlo al modelo: emails, teléfonos, documentos, tarjetas. Librerías como Microsoft Presidio combinan patrones de texto con modelos que reconocen nombres, lugares y otros datos.</li>
         <li><strong>Separar por usuario:</strong> el retrieval filtra por permisos y la caché nunca se comparte entre usuarios con datos distintos.</li>
         <li><strong>Retener poco:</strong> definí cuánto tiempo guardás trazas y datasets, quién accede y cómo se borra.</li>
         <li><strong>Nada de secretos en el prompt:</strong> una credencial en el system prompt puede filtrarse con prompt injection. Las credenciales viven en tu código y en tus herramientas, nunca en el texto que lee el modelo.</li>
-        <li><strong>Transparencia:</strong> avisá qué se guarda y para qué, y ofrecé una forma de no participar. Revisá también la política de retención y de uso de datos de tu proveedor.</li>
+        <li><strong>Transparencia:</strong> avisá qué se guarda y para qué, y ofrecé una forma de no participar. Revisá también cuánto tiempo guarda los datos tu proveedor y para qué los usa.</li>
       </ul>
+      <p>El código enmascara con <em>expresiones regulares</em> (<code>re</code>): patrones que describen la forma de un texto, como "letras, una arroba, letras, un punto". Cada coincidencia se reemplaza por su etiqueta.</p>
       <pre><code>import re
 
 PATRONES = {
@@ -3160,8 +3208,10 @@ def enmascarar(texto):
 log.info({"usuario": hash_id(usuario), "prompt": enmascarar(prompt), "tokens": uso})</code></pre>
       <p>Los patrones simples fallan con formatos raros y no detectan nombres ni direcciones; por eso se combinan con detectores más completos y con controles de acceso. Y como advierte OWASP, una instrucción del tipo "nunca reveles datos personales" en el prompt ayuda, pero se puede saltear: los datos sensibles se protegen <em>antes</em> de que lleguen al modelo o a los logs.</p>` },
     { titulo: 'Trazas: ver qué pasó dentro de cada pedido', html: `
-      <p>Cuando un usuario dice "me respondió cualquier cosa", necesitás ver qué pasó por dentro: qué recuperó el RAG, qué le mandaste al modelo, qué herramienta llamó el agente y qué le devolvió. Para eso están las <strong>trazas</strong>: un árbol de pasos (<em>spans</em>) por cada pedido, con duración, datos y errores de cada paso.</p>
+      <p><strong>En pocas palabras:</strong> una traza es el seguimiento de un envío, pero para cada pedido a tu app: "buscó en documentos (0,3 s), encontró 5; le preguntó al modelo (2 s), usó 1.800 tokens; terminó". Cuando algo sale mal, la traza te dice en qué paso fue.</p>
+      <p>Cuando un usuario dice "me respondió cualquier cosa", necesitás ver qué pasó por dentro: qué trajo el RAG, qué le mandaste al modelo, qué herramienta llamó el agente y qué le devolvió. Para eso están las <strong>trazas</strong>: por cada pedido, un árbol de pasos, cada uno con su duración, sus datos y sus errores. A cada paso se le dice <em>span</em>, y un paso puede tener pasos adentro.</p>
       <p><strong>Qué registrar en cada llamada al modelo:</strong> modelo y versión del prompt; tokens de entrada, de salida y de caché; costo; latencia y tiempo hasta el primer token; <strong>motivo de fin</strong> (si es max_tokens, la respuesta se cortó); herramientas pedidas y sus argumentos; errores. Y en el pedido completo, ids de sesión y de usuario, enmascarados.</p>
+      <p>El código usa <strong>OpenTelemetry</strong>, el estándar abierto para trazas. Cada <code>with tracer.start_as_current_span(...)</code> abre un paso, que se cierra solo al terminar el bloque. <code>set_attribute</code> le anota un dato.</p>
       <pre><code>from opentelemetry import trace
 tracer = trace.get_tracer("asistente")
 
@@ -3188,12 +3238,13 @@ def responder(pregunta, usuario):
       </ul>
       <p><strong>Cuidados:</strong> las trazas tienen los mismos datos sensibles que los logs (enmascará antes de guardar), pueden ser enormes (muestreá si el volumen es alto) y nunca deben incluir claves ni secretos.</p>` },
     { titulo: 'Routing y cascadas: el modelo justo para cada pedido', html: `
-      <p>Mandar todo al modelo más capaz es lo más simple, y casi siempre lo más caro. En la mayoría de las apps, buena parte de los pedidos son fáciles ("¿cuál es el horario?", "resumí este mail corto") y un modelo chico los resuelve igual de bien, más rápido y por una fracción del precio. Los precios entre modelos pueden diferir en uno o dos órdenes de magnitud, así que elegir bien el modelo por pedido es una de las palancas de costo más grandes.</p>
+      <p><strong>En pocas palabras:</strong> en una guardia médica, no todos los pacientes los ve el jefe de cirugía: un enfermero resuelve lo simple y deriva lo complicado. Con los modelos igual: un modelo chico y barato atiende las preguntas fáciles y solo las difíciles llegan al grande y caro.</p>
+      <p>Mandar todo al modelo más capaz es lo más simple, y casi siempre lo más caro. En la mayoría de las apps, buena parte de los pedidos son fáciles ("¿cuál es el horario?", "resumí este mail corto"), y un modelo chico los resuelve igual de bien, más rápido y por una fracción del precio. Un modelo puede costar entre 10 y 100 veces más que otro, así que elegir bien el modelo para cada pedido es una de las formas más grandes de ahorrar.</p>
       <h3>Tres estrategias</h3>
       <ul>
         <li><strong>Routing por reglas:</strong> el tipo de tarea decide el modelo. Clasificar o extraer, al modelo chico; redactar un informe o razonar sobre código, al grande. Simple y predecible.</li>
-        <li><strong>Router aprendido:</strong> un clasificador (un modelo chico, o uno entrenado con tus datos) estima si el pedido es difícil y lo manda a donde corresponde. RouteLLM (2024) entrenó routers con datos de preferencias humanas y reportó reducciones de costo de más de 2 veces sin perder calidad en varios benchmarks.</li>
-        <li><strong>Cascada:</strong> primero responde el modelo barato; un verificador decide si la respuesta alcanza y, si no, se escala al modelo grande. FrugalGPT (2023) mostró que una cascada bien aprendida puede igualar al modelo más caro con una fracción del costo.</li>
+        <li><strong>Router aprendido:</strong> un clasificador (un modelo chico, o uno entrenado con tus datos) estima si el pedido es difícil y lo manda a donde corresponde. RouteLLM (2024) entrenó routers con datos de preferencias de personas y logró costar menos de la mitad sin perder calidad en varias pruebas estándar.</li>
+        <li><strong>Cascada:</strong> primero responde el modelo barato. Un <em>verificador</em> (un chequeo) decide si esa respuesta alcanza y, si no, se pasa (se <em>escala</em>) al modelo grande. FrugalGPT (2023) mostró que una cascada bien aprendida puede igualar al modelo más caro con una fracción del costo.</li>
       </ul>
       <h3>El verificador es la clave de la cascada</h3>
       <p>Una cascada solo ahorra si sabés cuándo la respuesta barata es buena. Opciones, de más a menos confiable: <strong>chequeos deterministas</strong> (el JSON valida, el código compila y pasa tests, la cita existe en el documento), un <strong>modelo juez</strong> con una rúbrica corta, o la señal del propio modelo ("respondé NO_SE si no tenés la información"). Pedirle al modelo chico que se autoevalúe con un número de confianza suele estar mal calibrado: medilo antes de confiar.</p>
@@ -3209,7 +3260,7 @@ def responder(pregunta, usuario):
       <h3>Las cuentas y las trampas</h3>
       <ul>
         <li><strong>El escalado cuesta doble:</strong> cuando la cascada escala, pagaste el modelo chico <em>y</em> el grande, y sumaste latencia. Si escalás el 70% de los pedidos, probablemente te convenga ir directo al grande para esa categoría.</li>
-        <li><strong>Calibrá con evals, no con intuición:</strong> armá un set de pedidos reales etiquetados, medí calidad y costo de cada configuración (todo al grande, todo al chico, router, cascada) y elegí el umbral en la curva costo-calidad.</li>
+        <li><strong>Calibrá con evals, no con intuición:</strong> armá un conjunto de pedidos reales con su respuesta correcta y medí calidad y costo de cada opción: todo al grande, todo al chico, router o cascada. Después elegí el punto que te conviene entre gastar menos y responder mejor.</li>
         <li><strong>Vigilá la deriva:</strong> si cambian los usuarios o los modelos, la proporción de escalados cambia. Monitoreá la tasa de escalado y la calidad por ruta, y re-evaluá cuando actualices un modelo.</li>
         <li><strong>El caché de prompts cambia la cuenta:</strong> si el modelo grande trabaja con un prefijo largo cacheado, puede salir más barato de lo que parece. Compará con precios reales de tu tráfico.</li>
       </ul>
