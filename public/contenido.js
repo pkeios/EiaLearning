@@ -1605,7 +1605,9 @@ tests. Si un test parece incorrecto, avisame en lugar de esquivarlo.
   ],
   lecciones: [
     { titulo: 'Anatomía de una llamada', html: `
-      <p>Las APIs de chat son <strong>stateless</strong>: el modelo no recuerda nada entre llamadas. Para una conversación, reenviás el historial completo cada vez.</p>
+      <p><strong>En pocas palabras:</strong> usar un LLM desde tu programa es como mandar un pedido a un restaurante por una app. Mandás un mensaje con lo que querés y tu "credencial" (la API key), y te vuelve la respuesta con la cuenta (cuántos tokens usaste). El restaurante no se acuerda de vos: en cada pedido tenés que repetir toda la conversación anterior.</p>
+      <p>Una <strong>API</strong> es la puerta por la que un programa le pide cosas a otro servicio. Las APIs de chat son <strong>stateless</strong> (sin estado): el modelo no recuerda nada entre una llamada y la siguiente. Para mantener una conversación, reenviás el historial completo cada vez.</p>
+      <p>Para usarla necesitás una <strong>API key</strong>: una contraseña larga que identifica tu cuenta, y con la que el proveedor sabe a quién cobrarle. El código usa el <em>SDK</em> de Anthropic, una librería que arma los pedidos por vos. La clave se lee de una <em>variable de entorno</em>, un dato guardado en la configuración de la computadora y no escrito en el código.</p>
       <pre><code>import anthropic
 client = anthropic.Anthropic()  # lee ANTHROPIC_API_KEY del entorno
 
@@ -1620,31 +1622,60 @@ resp = client.messages.create(
 print(resp.content[0].text)
 print(resp.usage)  # tokens de entrada y salida = lo que pagás</code></pre>
       <ul>
-        <li><strong>messages:</strong> alternancia de roles <code>user</code> / <code>assistant</code>.</li>
-        <li><strong>system:</strong> instrucciones de rol y reglas.</li>
-        <li><strong>max_tokens:</strong> límite de la salida (si se corta, la respuesta queda incompleta).</li>
-        <li><strong>usage:</strong> tokens consumidos; el costo se calcula con ellos.</li>
+        <li><strong>messages:</strong> la conversación, con mensajes que alternan entre <code>user</code> (la persona) y <code>assistant</code> (el modelo).</li>
+        <li><strong>system:</strong> el system prompt, con el rol y las reglas.</li>
+        <li><strong>max_tokens:</strong> el máximo de tokens que puede tener la respuesta. Si se alcanza, la respuesta se corta a la mitad.</li>
+        <li><strong>usage:</strong> cuántos tokens se usaron de entrada y de salida. El costo se calcula con ellos.</li>
       </ul>
-      <p>Nunca pongas la API key en el frontend ni en el repositorio: usá variables de entorno y un backend.</p>` },
-    { titulo: 'Lo que separa un demo de una app real', html: `
+      <p><strong>Seguridad de la clave:</strong> quien tenga tu API key puede gastar a tu nombre. Por eso nunca la pongas en dos lugares:</p>
       <ul>
-        <li><strong>Streaming:</strong> mostrás tokens a medida que llegan. No acelera la respuesta total, pero la latencia percibida baja muchísimo.</li>
-        <li><strong>Salidas estructuradas:</strong> pedí JSON con esquema (o usá la función de salidas estructuradas / tool use) y <em>validá</em> siempre del lado de tu código.</li>
-        <li><strong>Errores y reintentos:</strong> 429 (rate limit) y 5xx/sobrecarga se reintentan con <em>backoff exponencial</em> con jitter. Errores 400 no: hay que arreglar la petición.</li>
-        <li><strong>Costo:</strong> tokens de entrada + tokens de salida (la salida suele ser más cara por token). Elegí el modelo más chico que cumpla tus evals.</li>
-        <li><strong>Prompt caching:</strong> si reutilizás un prefijo largo (system prompt, documentos), cachearlo reduce costo y latencia.</li>
-        <li><strong>Batch:</strong> para trabajos masivos no urgentes, las APIs de lotes son más baratas.</li>
-        <li><strong>Timeouts y fallbacks:</strong> qué pasa si el proveedor no responde. Tu app tiene que degradar con elegancia.</li>
+        <li>En el <em>frontend</em>, la parte de la app que corre en el navegador del usuario, donde cualquiera la puede ver.</li>
+        <li>En el <em>repositorio</em>, la carpeta de código que se sube a GitHub.</li>
+      </ul>
+      <p>Guardala en una variable de entorno y hacé las llamadas desde un <em>backend</em>: la parte de la app que corre en tu servidor, donde nadie más la ve.</p>` },
+    { titulo: 'Lo que separa un demo de una app real', html: `
+      <p><strong>En pocas palabras:</strong> un <em>demo</em> (una prueba para mostrar) funciona cuando todo sale bien. Una app real tiene que seguir funcionando cuando algo sale mal: cuando el proveedor tarda, falla, cobra de más o devuelve algo raro. Esta lección es la lista de lo que hay que prever, y las siguientes lo explican en detalle.</p>
+      <ul>
+        <li><strong>Streaming:</strong> mostrás los tokens a medida que llegan, como ChatGPT escribiendo de a poco. La respuesta completa no llega antes, pero la espera <em>percibida</em> baja muchísimo, porque el usuario ve algo en menos de un segundo.</li>
+        <li><strong>Salidas estructuradas:</strong> pedí JSON con un esquema (o usá la función de salidas estructuradas o <em>tool use</em>, el uso de herramientas, que también devuelve JSON) y <em>validá</em> siempre en tu código que esté bien.</li>
+        <li><strong>Errores y reintentos:</strong> cada respuesta trae un <em>código de estado</em>, un número que dice cómo salió el pedido.
+          <ul>
+            <li><strong>Se reintentan:</strong> el 429 (te pasaste del límite de pedidos) y los 5xx (500 a 599, errores o sobrecarga del proveedor), con <em>backoff exponencial</em> (esperar 1, 2, 4 segundos) y <em>jitter</em> (un poco de espera al azar).</li>
+            <li><strong>No se reintenta:</strong> el 400 quiere decir que tu pedido está mal armado, así que hay que arreglarlo.</li>
+          </ul>
+        </li>
+        <li><strong>Costo:</strong> pagás los tokens de entrada más los de salida, y la salida suele ser más cara por token. Elegí el modelo más chico que pase tus evals.</li>
+        <li><strong>Prompt caching:</strong> si siempre mandás el mismo comienzo largo (un system prompt, un manual), el proveedor lo puede guardar en una <em>caché</em> (una memoria temporal) y cobrártelo mucho más barato las próximas veces. Lección 6.</li>
+        <li><strong>Batch</strong> (lotes): para trabajos masivos que no son urgentes, mandás todo junto y pagás la mitad. Lección 5.</li>
+        <li><strong>Timeouts y fallbacks:</strong>
+          <ul>
+            <li>Un <em>timeout</em> es el tiempo máximo que esperás una respuesta antes de darla por perdida.</li>
+            <li>Un <em>fallback</em> es el plan B, por ejemplo otro modelo u otro proveedor.</li>
+          </ul>
+          Tu app tiene que fallar con elegancia: mostrar un mensaje claro en vez de quedarse colgada.</li>
       </ul>` },
     { titulo: 'Código robusto: salidas estructuradas, validación y reintentos', html: `
+      <p><strong>En pocas palabras:</strong> pedirle datos a un LLM es como pedirle a alguien que complete un formulario. Aunque use el formulario correcto, puede poner un total negativo o un 31 de febrero. Y si el correo se pierde, hay que reenviar, pero sin pagar dos veces la misma factura. Esta lección enseña a revisar lo que vuelve y a reintentar con cuidado.</p>
       <p>Un demo llama al modelo y confía en lo que vuelve. Una app real asume que <strong>todo puede fallar</strong>: la red, el proveedor, el formato y el contenido.</p>
-      <p><strong>Salidas estructuradas nativas:</strong> varias APIs pueden restringir la generación a un JSON Schema (en Claude, con <code>output_config.format</code> de tipo <code>json_schema</code>). Así el JSON siempre se puede parsear. Pero el esquema garantiza la <em>forma</em>, no que los valores tengan sentido: un total negativo o una fecha 2026-02-31 pasan igual. Por eso validás las reglas de negocio en tu código.</p>
+      <p><strong>Salidas estructuradas nativas:</strong> varias APIs pueden obligar al modelo a responder con un JSON que cumpla un <em>JSON Schema</em> (la descripción de qué campos lleva y de qué tipo). En Claude se hace con <code>output_config.format</code> de tipo <code>json_schema</code>. Así el JSON siempre se puede <em>parsear</em>, o sea, leer como datos sin error. Pero el esquema garantiza la <em>forma</em>, no que los valores tengan sentido: un total negativo o una fecha 2026-02-31 pasan igual. Por eso validás las <em>reglas de negocio</em> (las reglas de tu caso: "el total es positivo") en tu código.</p>
       <p><strong>Qué reintentar y qué no:</strong></p>
       <ul>
-        <li><strong>Sí:</strong> 429 (rate limit), 500/503/529 (errores o sobrecarga del proveedor), timeouts. Con <em>backoff exponencial y jitter</em>: el jitter evita que miles de clientes que fallaron juntos reintenten todos en el mismo instante.</li>
-        <li><strong>No:</strong> 400, 401, 403. Reintentar una petición mal armada o sin permisos da el mismo error; hay que registrarlo y corregirlo.</li>
-        <li><strong>Cuidado con los efectos:</strong> si una herramienta cobra, envía o borra, un reintento tras un timeout puede ejecutarla dos veces. Usá claves de idempotencia o verificá el estado antes de repetir.</li>
+        <li><strong>Sí:</strong>
+          <ul>
+            <li>429: te pasaste del límite de pedidos.</li>
+            <li>500, 503 y 529: errores o sobrecarga del proveedor.</li>
+            <li>Timeouts: la respuesta tardó demasiado.</li>
+          </ul>
+          Se reintentan con <em>backoff exponencial y jitter</em>. El jitter es sumar una espera al azar: si miles de clientes fallaron juntos, así no reintentan todos en el mismo segundo y vuelven a saturar al proveedor.</li>
+        <li><strong>No:</strong> 400 (pedido mal armado), 401 (clave inválida) y 403 (sin permiso). Reintentar da el mismo error; hay que <em>registrarlo</em> (anotarlo en el log, el diario de lo que pasa en tu app) y corregirlo.</li>
+        <li><strong>Cuidado con los efectos:</strong> si una acción cobra, envía o borra, reintentarla después de un timeout puede ejecutarla dos veces, porque quizás la primera sí llegó. Usá una <em>clave de idempotencia</em>: un código único por operación con el que el sistema reconoce "esto ya lo hice" y no lo repite. O verificá antes si ya se hizo.</li>
       </ul>
+      <p>El código tiene tres partes:</p>
+      <ol>
+        <li><code>Factura</code> define con <strong>Pydantic</strong> (una librería para validar datos) qué campos tiene que tener y que el total sea positivo.</li>
+        <li><code>llamar_con_reintentos</code> reintenta con esperas crecientes y, si todo falla, usa un modelo de respaldo.</li>
+        <li><code>extraer</code> valida el JSON y, si está mal, le devuelve el error al modelo para que lo corrija.</li>
+      </ol>
       <pre><code>import random, time
 from pydantic import BaseModel, ValidationError, field_validator
 
@@ -1679,8 +1710,9 @@ def extraer(texto, intentos=3):
     raise ValueError("no se pudo extraer la factura")</code></pre>
       <p>Fijate en los topes: intentos máximos de validación, de reintentos y un tiempo máximo de espera. Un bucle de reintentos sin límite es una forma rápida de gastar presupuesto y empeorar una caída del proveedor.</p>` },
     { titulo: 'Más allá del texto: imágenes y PDFs en la API', html: `
+      <p><strong>En pocas palabras:</strong> también le podés mandar fotos y PDFs al modelo. Cada foto se cobra según su tamaño, como una fotocopia por hoja: más grande, más cara. Conviene mandar solo la parte que importa, derecha y legible.</p>
       <p>Muchas tareas reales llegan como imagen o PDF: recibos, capturas de pantalla, formularios escaneados, informes con gráficos. Los modelos actuales los entienden, pero tienen costo y límites propios.</p>
-      <p><strong>Cuánto cuesta una imagen.</strong> En la API de Claude, la imagen se procesa en bloques de 28×28 píxeles y cada bloque es un token visual: <code>tokens = ⌈ancho/28⌉ × ⌈alto/28⌉</code>. Una imagen de 1000×1000 son unos 1.296 tokens. Las imágenes más grandes que el máximo del modelo se reducen antes de procesarse: 1.568 px de lado largo en los modelos estándar y 2.576 px en los de alta resolución.</p>
+      <p><strong>Cuánto cuesta una imagen.</strong> En la API de Claude, la imagen se procesa en bloques de 28×28 píxeles y cada bloque es un token visual (como los parches que viste en LLMs). La fórmula es <code>tokens = ⌈ancho/28⌉ × ⌈alto/28⌉</code>, donde ⌈ ⌉ quiere decir "redondear para arriba". Una imagen de 1000×1000 son unos 1.296 tokens. Las imágenes más grandes que el máximo del modelo se reducen antes de procesarse: 1.568 px de lado largo en los modelos estándar y 2.576 px en los de alta resolución.</p>
       <pre><code>import math
 
 def tokens_imagen(ancho, alto):
@@ -1692,23 +1724,35 @@ tokens_imagen(200, 200)     # 64
 # 1.000 imágenes de 1000×1000 a 1 USD por millón de tokens ≈ 1,30 USD</code></pre>
       <p><strong>Cómo prepararlas:</strong></p>
       <ul>
-        <li><strong>Imagen primero, pregunta después</strong>, igual que con los documentos largos.</li>
+        <li><strong>Imagen primero, pregunta después</strong>, igual que con los documentos largos en Prompting.</li>
         <li><strong>Recortá la región útil.</strong> Si solo te importa el total de un recibo, mandar solo esa zona baja el costo y suele mejorar la precisión.</li>
         <li><strong>Resolución suficiente</strong> para que el texto siga legible. Si es demasiado baja, el modelo adivina; si es demasiado alta, se reduce igual y pagás por nada.</li>
         <li><strong>Enderezá y limpiá:</strong> las imágenes rotadas, borrosas o de menos de 200 px generan más errores.</li>
       </ul>
-      <p><strong>Limitaciones documentadas:</strong> contar muchos objetos chicos es aproximado; las coordenadas y la ubicación de elementos son aproximadas y hay que verificarlas; no puede determinar si una imagen fue generada por IA; y no identifica personas por su cara.</p>
+      <p><strong>Limitaciones documentadas:</strong></p>
+      <ul>
+        <li>Contar muchos objetos chicos es aproximado.</li>
+        <li>Decir dónde está cada cosa en la imagen (sus coordenadas) también es aproximado, y hay que verificarlo.</li>
+        <li>No puede saber si una imagen fue generada por IA.</li>
+        <li>No identifica personas por su cara.</li>
+      </ul>
       <p><strong>PDFs:</strong> la API puede recibir PDFs directamente y analizar el texto junto con el contenido visual de las páginas (tablas, gráficos). Si el PDF es solo texto y el volumen es alto, extraer el texto antes puede salir más barato. Medí las dos opciones con tus evals.</p>` },
     { titulo: 'Procesamiento por lotes: la mitad del precio para lo que no es urgente', html: `
-      <p>Clasificar dos millones de tickets históricos, correr una eval grande o enriquecer un catálogo no necesitan respuesta inmediata. Para eso existen las APIs de lotes. En la de Claude (Message Batches API):</p>
+      <p><strong>En pocas palabras:</strong> es como mandar la ropa al lavadero en vez de lavarla en el momento. La dejás toda junta, te la devuelven más tarde (en general en menos de una hora, como mucho al día siguiente) y cobra la mitad. Sirve para todo lo que no tiene a nadie esperando.</p>
+      <p>Clasificar dos millones de tickets viejos, correr una eval grande o completar las descripciones de un catálogo no necesitan respuesta inmediata. Para eso existen las APIs de lotes (<em>batch</em>). En la de Claude (Message Batches API):</p>
       <ul>
         <li>Cuesta <strong>50% menos</strong> que las llamadas estándar.</li>
         <li>Cada lote admite hasta 100.000 pedidos o 256 MB, lo que se alcance primero.</li>
         <li>La mayoría termina en menos de una hora; los resultados están disponibles cuando terminan todos los pedidos o a las 24 horas, lo que pase primero.</li>
         <li>Los resultados quedan disponibles 29 días.</li>
-        <li><strong>Los resultados pueden volver en cualquier orden.</strong> Cada pedido lleva un <code>custom_id</code> para emparejarlo con su resultado.</li>
-        <li>Se puede combinar con prompt caching. Como los pedidos se procesan en paralelo y sin orden fijo, los aciertos de caché no están garantizados; la documentación sugiere la caché de 1 hora para mejorar las chances.</li>
+        <li><strong>Los resultados pueden volver en cualquier orden.</strong> Cada pedido lleva un <code>custom_id</code>, una etiqueta que le ponés vos (como el número de ticket del lavadero), para saber qué resultado corresponde a qué pedido.</li>
+        <li>Se puede combinar con prompt caching (lección siguiente). Como los pedidos se procesan a la vez y sin orden fijo, no está garantizado que se aproveche la caché; la documentación sugiere la caché de 1 hora para mejorar las chances.</li>
       </ul>
+      <p>El código hace dos cosas en dos momentos:</p>
+      <ol>
+        <li>Crea el lote con un pedido por ticket.</li>
+        <li>Más tarde, si el estado es <code>"ended"</code> (terminado), recorre los resultados: guarda los exitosos y anota para reintentar los que fallaron.</li>
+      </ol>
       <pre><code>import anthropic
 client = anthropic.Anthropic()
 
@@ -1726,18 +1770,20 @@ if client.messages.batches.retrieve(lote.id).processing_status == "ended":
             guardar(r.custom_id, r.result.message.content[0].text)   # emparejar por custom_id
         else:
             reintentar_despues(r.custom_id)</code></pre>
-      <p><strong>Cuándo sí:</strong> trabajos masivos sin apuro: clasificar o resumir datos históricos, generar datos sintéticos, correr evals grandes cada noche.</p>
+      <p><strong>Cuándo sí:</strong> trabajos masivos sin apuro: clasificar o resumir datos viejos, generar datos <em>sintéticos</em> (ejemplos inventados por el modelo para entrenar o probar), correr evals grandes cada noche.</p>
       <p><strong>Cuándo no:</strong> cualquier cosa con un usuario esperando, como un chat o una búsqueda en vivo. Ahí van las llamadas normales, con streaming.</p>
       <p>Diseñá el flujo para que sea asíncrono de verdad: guardá el id del lote, revisá el estado cada tanto (o con una tarea programada), procesá los resultados cuando estén y reintentá solo los que fallaron.</p>` },
     { titulo: 'Prompt caching en detalle: cómo aprovecharlo de verdad', html: `
-      <p>Ya viste que el prompt caching abarata los prefijos repetidos. Para que funcione en serio hay que entender cómo decide qué se reutiliza. Así funciona en la API de Claude:</p>
+      <p><strong>En pocas palabras:</strong> si todos los días le leés el mismo manual de 30 páginas al modelo antes de cada pregunta, pagás 30 páginas cada vez. Con la caché, el proveedor "se acuerda" del manual por unos minutos y te cobra solo una décima parte cuando lo repetís. La trampa: tiene que ser <em>exactamente</em> igual, letra por letra, desde el principio.</p>
+      <p>Ya viste que el prompt caching abarata los <em>prefijos</em> repetidos (el comienzo del pedido que es siempre igual). Para que funcione en serio hay que entender cómo decide qué se reutiliza. Así funciona en la API de Claude:</p>
       <ul>
-        <li><strong>Prefijo idéntico:</strong> se cachea el prompt en este orden: herramientas, system y mensajes, hasta el bloque marcado con <code>cache_control</code>. Para que haya acierto, todo ese prefijo tiene que ser idéntico. Se pueden marcar hasta 4 puntos, o usar el modo automático.</li>
+        <li><strong>Prefijo idéntico:</strong> el pedido se lee en este orden: herramientas, system y mensajes. Se guarda en la caché todo lo que hay hasta el bloque que marcás con <code>cache_control</code>. Para que haya <em>acierto</em> (que se reutilice), todo ese comienzo tiene que ser idéntico. Se pueden marcar hasta 4 puntos, o usar el modo automático.</li>
         <li><strong>Duración:</strong> 5 minutos por defecto, y se renueva gratis cada vez que se usa. Hay una opción de 1 hora, más cara de escribir.</li>
         <li><strong>Precio:</strong> escribir en la caché cuesta 1,25 veces la entrada normal (2 veces con la caché de 1 hora); leer de la caché cuesta 0,1 veces por defecto, y algunos modelos recientes cobran todavía menos.</li>
         <li><strong>Mínimo:</strong> según el modelo, el prefijo tiene que tener entre 512 y 4.096 tokens. Si es más corto, se procesa sin caché, y sin ningún error que te avise.</li>
-        <li><strong>Qué la invalida:</strong> cambiar una herramienta invalida todo lo que viene después (system y mensajes); cambiar el system invalida el system y los mensajes.</li>
+        <li><strong>Qué la invalida</strong> (hace que no sirva y haya que volver a guardarla): cambiar una herramienta invalida todo lo que viene después (system y mensajes); cambiar el system invalida el system y los mensajes.</li>
       </ul>
+      <p>En el código, el manual va primero y marcado para la caché, y la pregunta (que cambia) va al final. Las tres cifras que se imprimen son los tokens escritos en la caché, los leídos de la caché y los cobrados a precio normal.</p>
       <pre><code>resp = client.messages.create(
     model="claude-sonnet-5-5", max_tokens=1024,
     system=[{"type": "text", "text": MANUAL_LARGO,               # lo fijo, primero
@@ -1747,7 +1793,7 @@ if client.messages.batches.retrieve(lote.id).processing_status == "ended":
 u = resp.usage
 print(u.cache_creation_input_tokens, u.cache_read_input_tokens, u.input_tokens)
 # si los dos primeros son 0 en todas las llamadas, no estás cacheando nada</code></pre>
-      <p><strong>Cuánto ahorra:</strong> con un system prompt de 10.000 tokens y 1.000 consultas por hora seguidas, sin caché procesás 10 millones de tokens de entrada a precio completo. Con caché, una escritura (10.000 × 1,25) y casi todo el resto como lectura (unos 10 millones × 0,1): alrededor de 1 millón de tokens a precio completo, cerca de un 90% menos. Además, baja el tiempo hasta el primer token.</p>
+      <p><strong>Cuánto ahorra:</strong> con un system prompt de 10.000 tokens y 1.000 consultas por hora seguidas, sin caché procesás 10 millones de tokens de entrada a precio completo. Con caché, una escritura (10.000 × 1,25) y casi todo el resto como lectura (unos 10 millones × 0,1): alrededor de 1 millón de tokens a precio completo, cerca de un 90% menos. Además, la respuesta empieza a llegar antes, porque el modelo no tiene que releer el manual.</p>
       <p><strong>Errores típicos:</strong></p>
       <ul>
         <li>Poner la fecha, la hora o el id del usuario al <em>principio</em> del system prompt: cambia el prefijo en cada llamada y la caché nunca acierta. Lo variable va al final.</li>
@@ -1755,22 +1801,33 @@ print(u.cache_creation_input_tokens, u.cache_read_input_tokens, u.input_tokens)
         <li>Usar la caché de 5 minutos con consultas cada 20 minutos: expira antes de reutilizarse. Ahí conviene la de 1 hora.</li>
       </ul>` },
     { titulo: 'Streaming en detalle: eventos, herramientas y errores a mitad de camino', html: `
-      <p>Con <code>stream: true</code>, la API manda la respuesta por partes con <em>server-sent events</em> (SSE). Para mostrar texto alcanza con el helper del SDK, pero una app real necesita entender qué llega y en qué orden. Según la documentación de Claude:</p>
+      <p><strong>En pocas palabras:</strong> con streaming, la respuesta no llega en un solo paquete sino en muchos mensajitos seguidos: "empieza", "acá va texto", "más texto", "terminó". Tu programa tiene que saber leer cada tipo de mensajito y estar listo para un "se cortó" a mitad de camino.</p>
+      <p>Con <code>stream: true</code>, la API manda la respuesta por partes, con un formato estándar llamado <em>server-sent events</em> (SSE, "eventos enviados por el servidor"). Cada parte es un <em>evento</em>, un mensajito con un tipo y unos datos. Para mostrar texto alcanza con la función ya armada del SDK, pero una app real necesita entender qué llega y en qué orden. Según la documentación de Claude:</p>
       <ol>
         <li><code>message_start</code>: un mensaje con el contenido todavía vacío.</li>
         <li>Por cada bloque de contenido: <code>content_block_start</code>, uno o más <code>content_block_delta</code> y <code>content_block_stop</code>.</li>
         <li>Uno o más <code>message_delta</code>, con el <code>stop_reason</code> y el uso de tokens (acumulado).</li>
         <li><code>message_stop</code>. En el medio pueden llegar eventos <code>ping</code>, que se ignoran.</li>
       </ol>
-      <p><strong>Tipos de delta:</strong> <code>text_delta</code> trae texto, que mostrás a medida que llega. <code>input_json_delta</code> trae los argumentos de una herramienta como <em>JSON parcial</em>: lo acumulás y lo parseás recién en <code>content_block_stop</code>, porque antes no es JSON válido.</p>
-      <p><strong>Errores a mitad del stream:</strong> la API puede mandar un evento de error en medio de la respuesta, por ejemplo <code>overloaded_error</code> en momentos de alta demanda. Tu app no puede asumir que lo que empezó termina bien: mostrá lo recibido marcado como incompleto y ofrecé reintentar con backoff.</p>
+      <p>Un <em>bloque de contenido</em> es una parte de la respuesta: un texto, o un pedido de usar una herramienta. <code>stop_reason</code> dice por qué terminó: porque completó la respuesta, porque llegó a max_tokens o porque quiere usar una herramienta.</p>
+      <p><strong>Tipos de delta</strong> (un <em>delta</em> es "el pedacito nuevo"):</p>
+      <ul>
+        <li><code>text_delta</code> trae texto, que mostrás a medida que llega.</li>
+        <li><code>input_json_delta</code> trae los datos para una herramienta como <em>JSON parcial</em>, un JSON cortado a la mitad. Lo vas juntando y lo leés recién en <code>content_block_stop</code>, porque antes no es un JSON completo.</li>
+      </ul>
+      <p><strong>Errores a mitad del stream:</strong> la API puede mandar un evento de error en medio de la respuesta, por ejemplo <code>overloaded_error</code> (proveedor sobrecargado) en momentos de mucha demanda. Tu app no puede asumir que lo que empezó termina bien: mostrá lo recibido marcado como incompleto y ofrecé reintentar con backoff.</p>
       <pre><code>with client.messages.stream(model="claude-sonnet-5-5", max_tokens=1024,
                             messages=[{"role": "user", "content": pregunta}]) as stream:
     for texto in stream.text_stream:
         enviar_al_navegador(texto)          # por ejemplo, como evento SSE desde tu backend
     final = stream.get_final_message()       # mensaje completo, con stop_reason y usage
 registrar(final.stop_reason, final.usage)</code></pre>
-      <p><strong>Arquitectura web:</strong> el navegador nunca llama a la API con tu clave. Tu backend abre el stream con la API y reenvía los fragmentos al navegador (con SSE o WebSockets), y ahí también podés aplicar límites, registrar trazas y cortar si el usuario cancela.</p>
+      <p><strong>Arquitectura web:</strong> el navegador nunca llama a la API con tu clave (lección 1). El camino es:</p>
+      <ol>
+        <li>Tu backend abre el stream con la API.</li>
+        <li>Le va reenviando los pedacitos al navegador, con SSE o con <em>WebSockets</em>, una conexión que queda abierta para mandar datos en los dos sentidos.</li>
+      </ol>
+      <p>En el backend también podés aplicar límites, guardar <em>trazas</em> (el registro de cada conversación) y cortar si el usuario cancela.</p>
       <p><strong>Detalles que conviene registrar:</strong> el <code>stop_reason</code> final (si es <code>max_tokens</code>, la respuesta se cortó) y el uso de tokens del mensaje final, para tus métricas de costo.</p>` },
   ],
   practica: [
