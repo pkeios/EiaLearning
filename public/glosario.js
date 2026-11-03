@@ -104,4 +104,8 @@ window.GLOSARIO = [
   { t: 'TTFT', d: 'Time to first token: tiempo hasta que llega el primer token de la respuesta.', m: 'produccion' },
   { t: 'ViT (Vision Transformer)', d: 'Transformer para imágenes que corta la imagen en parches y los procesa como si fueran tokens.', m: 'llms' },
   { t: 'Ventana de contexto', d: 'Máximo de tokens, entre entrada y salida, que el modelo puede procesar a la vez.', m: 'llms' },
+  { t: 'WER (word error rate)', d: 'Proporción de palabras mal transcriptas por un sistema de voz a texto: (sustituciones + borrados + inserciones) dividido por las palabras de la referencia.', m: 'voz' },
+  { t: 'VAD (voice activity detection)', d: 'Detector de si en el audio hay voz o silencio. Es rápido, pero no distingue una pausa para pensar del final de una frase.', m: 'voz' },
+  { t: 'Barge-in', d: 'Cuando el usuario interrumpe a un agente de voz mientras habla; el agente tiene que cortar el audio, frenar la respuesta y escuchar.', m: 'voz' },
+  { t: 'Speech-to-speech', d: 'Modelo que recibe audio y devuelve audio sin pasar por texto intermedio; responde rápido y natural, pero da menos control que la cascada STT, LLM y TTS.', m: 'voz' },
 ];

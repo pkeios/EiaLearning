@@ -2820,6 +2820,90 @@ Fecha clave: obligaciones de alto riesgo (Anexo III) desde el 2 de diciembre de 
   ],
 },
 {
+  id: 'voz',
+  icono: '🎙️',
+  titulo: 'Agentes de voz: escuchar, pensar y hablar',
+  nivel: 'Avanzado',
+  objetivos: [
+    'Explicar la cascada STT → LLM → TTS y elegir entre ella y un modelo speech-to-speech',
+    'Calcular el WER de una transcripción y medirlo con audios reales',
+    'Repartir el presupuesto de latencia de un turno y bajarlo con streaming',
+    'Diseñar la detección de fin de turno y el manejo de interrupciones',
+    'Escribir respuestas pensadas para escucharse, no para leerse',
+  ],
+  lecciones: [
+    { titulo: 'Cómo funciona un agente de voz: la cascada STT → LLM → TTS', html: `
+      <p>Un agente de voz es un agente como los que ya viste, pero con oídos y boca. La forma más común de armarlo es una <strong>cascada</strong> de tres modelos:</p>
+      <pre><code>🎤 audio del usuario
+   │
+   ▼  STT (speech-to-text): transcribe el audio a texto
+"quiero pagar mi factura"
+   │
+   ▼  LLM: decide qué responder (y puede llamar herramientas)
+"Claro, ¿me decís tu número de cliente?"
+   │
+   ▼  TTS (text-to-speech): convierte el texto en voz
+🔊 audio para el usuario</code></pre>
+      <p><strong>La alternativa: speech-to-speech.</strong> Un solo modelo recibe audio y devuelve audio. Suele responder más rápido y con una entonación más natural, pero perdés control: no ves la transcripción de cada etapa, no podés cambiar una pieza por otra y depurar cuesta más. La cascada es más fácil de medir y ajustar, y por eso es el punto de partida habitual.</p>
+      <p><strong>Medir el STT: WER (word error rate).</strong> Es la proporción de palabras mal transcriptas: (sustituciones + borrados + inserciones) ÷ palabras de la referencia.</p>
+      <pre><code>referencia:   quiero pagar mi factura de luz         (6 palabras)
+transcripción: quiero pagar la factura de la luz
+               "mi" → "la" = 1 sustitución, "la" de más = 1 inserción
+WER = 2 / 6 ≈ 33%</code></pre>
+      <p>Whisper, el modelo de OpenAI, se entrenó con 680.000 horas de audio de internet y es robusto en muchos idiomas. Pero, como pasa con los LLMs, rinde peor en idiomas y acentos poco representados y con ruido de fondo. Por eso el WER de una demo en la oficina no predice el de llamadas reales: medilo con audios de tus usuarios, separado por segmento (ruido, acento, tipo de llamada), igual que medías el error por segmento en ML clásico.</p>
+      <p><strong>Latencia: lo que más se nota.</strong> Se mide desde que el usuario deja de hablar hasta que escucha la respuesta. Una guía de Twilio propone como punto de partida:</p>
+      <table>
+        <tr><th>Etapa</th><th>Objetivo</th><th>Máximo</th></tr>
+        <tr><td>STT</td><td>350 ms</td><td>500 ms</td></tr>
+        <tr><td>LLM, hasta el primer token</td><td>375 ms</td><td>750 ms</td></tr>
+        <tr><td>TTS, hasta el primer audio</td><td>100 ms</td><td>250 ms</td></tr>
+        <tr><td>Total, de boca a oído</td><td>≈ 1,1 s</td><td>1,4 s</td></tr>
+      </table>
+      <p>Esos números solo se logran con <strong>streaming</strong> en todas las etapas: el STT manda transcripciones parciales, el LLM devuelve tokens a medida que los genera y el TTS empieza a hablar con las primeras palabras, sin esperar la respuesta completa. Si cada etapa espera a que termine la anterior, la demora se suma y llega fácilmente a 2 o 3 segundos. Por eso, en voz, el tiempo hasta el primer token importa más que el tiempo total.</p>` },
+    { titulo: 'Turnos, interrupciones y escribir para el oído', html: `
+      <p>En un chat, el usuario aprieta Enter. En una llamada nadie avisa que terminó de hablar: el agente lo tiene que adivinar.</p>
+      <p><strong>VAD (voice activity detection):</strong> detecta si en el audio hay voz o silencio. Es rápido y corre local, pero no distingue una pausa para pensar del final de la frase.</p>
+      <p><strong>Detección de fin de turno:</strong> decide cuándo responder. Hay tres formas, de la más simple a la más fina:</p>
+      <ol>
+        <li><strong>Temporizador de silencio:</strong> si hay, por ejemplo, 500 ms sin voz, responde. Si lo bajás, el agente contesta más rápido pero corta a quien hace una pausa; si lo subís, se siente lento.</li>
+        <li><strong>Señal del STT:</strong> el proveedor estima si la frase terminó, con más contexto que el VAD.</li>
+        <li><strong>Modelo de fin de turno:</strong> un clasificador o LLM mira la transcripción (y a veces la entonación) y decide si la frase suena terminada. "Quiero pagar la factura de..." no está terminada, aunque haya silencio.</li>
+      </ol>
+      <p>Cortar al usuario es peor que tardar un poco más: ante la duda, conviene esperar. Es el mismo tradeoff de precision y recall que ya viste, aplicado a los turnos.</p>
+      <p><strong>Interrupciones (barge-in):</strong> si el usuario habla mientras el agente responde, el agente tiene que callarse y escuchar. Eso implica:</p>
+      <ul>
+        <li>Cortar el audio que está sonando.</li>
+        <li>Frenar el stream del LLM y cancelar las llamadas a herramientas pendientes.</li>
+        <li>Guardar en el historial solo la parte de la respuesta que el usuario llegó a escuchar. Si no, el modelo cree que dijo cosas que nadie oyó.</li>
+      </ul>
+      <p><strong>Escribir para el oído.</strong> Un TTS lee todo lo que recibe: el Markdown se convierte en ruido ("asterisco asterisco") y las tablas son imposibles de seguir. En el system prompt pedí:</p>
+      <ul>
+        <li>Frases cortas y una idea por respuesta; ofrecé seguir en vez de leer una lista de diez opciones.</li>
+        <li>Sin Markdown, listas, emojis ni URLs. Los números y fechas, escritos como se dicen.</li>
+        <li>Datos críticos confirmados en voz alta: "Tu número de cliente es cuatro, cinco, siete, dos. ¿Es correcto?". El STT se equivoca y el usuario no ve el texto.</li>
+      </ul>
+      <p>Y limpiá igual el texto antes del TTS (sacá asteriscos y numerales), porque el modelo a veces no sigue la instrucción.</p>
+      <p><strong>Cómo evaluar:</strong> el WER por segmento, la latencia de boca a oído en mediana y p95, cuántas veces el agente cortó al usuario y la tasa de tareas completadas en llamadas de prueba. Son las mismas evals que ya conocés, con métricas propias de la voz.</p>` },
+  ],
+  practica: [
+    'Grabá 20 frases (10 en un lugar silencioso y 10 con ruido de fondo), transcribilas con Whisper y calculá el WER contra el texto real con la librería jiwer. Compará el WER con y sin ruido y anotá qué palabras falla más.',
+    'Armá un agente de voz en cascada (STT, LLM y TTS) con streaming y medí en 20 turnos el tiempo desde que dejás de hablar hasta que empieza el audio: mediana y p95. Después desactivá el streaming del LLM y compará.',
+  ],
+  recursos: [
+    { t: 'Radford y otros — Robust Speech Recognition via Large-Scale Weak Supervision (Whisper)', url: 'https://arxiv.org/abs/2212.04356' },
+    { t: 'Twilio — A Guide to Core Latency in AI Voice Agents', url: 'https://www.twilio.com/en-us/blog/developers/best-practices/guide-core-latency-ai-voice-agents' },
+    { t: 'LiveKit — Voice agent architecture: STT, LLM y TTS', url: 'https://livekit.com/blog/voice-agent-architecture-stt-llm-tts-pipelines-explained' },
+  ],
+  quiz: [
+    { q: 'Tu agente de voz tarda 3 segundos en responder: espera la transcripción completa, después la respuesta completa del LLM y recién ahí sintetiza el audio. ¿Qué cambiás primero?', opciones: ['Usás un LLM más grande', 'Hacés streaming en las tres etapas, para que el TTS empiece a hablar con las primeras palabras del LLM', 'Subís el silencio de fin de turno a 2 segundos', 'Le pedís al usuario que hable más rápido'], correcta: 1, explicacion: 'Esperar cada etapa completa suma las demoras; con streaming se superponen. Un LLM más grande tienta porque "es mejor", pero suele tardar más hasta el primer token y empeora justo lo que se nota.' },
+    { q: 'La referencia es "quiero pagar mi factura" (4 palabras) y el STT transcribe "quiero pagar la factura". ¿Cuál es el WER?', opciones: ['0%, porque se entiende igual', '50%', '75%', '25%: una sustitución sobre 4 palabras'], correcta: 3, explicacion: 'WER = (sustituciones + borrados + inserciones) ÷ palabras de la referencia = 1 / 4. Decir 0% porque se entiende tienta, pero el WER cuenta palabras, no significado: "mi" y "la" son palabras distintas.' },
+    { q: 'Tu agente corta a los usuarios cuando hacen una pausa para pensar a mitad de frase. Usa solo un temporizador de 300 ms de silencio. ¿Qué probás?', opciones: ['Un modelo de fin de turno que mire si la frase suena terminada, o un umbral más largo, midiendo cuánto sube la latencia', 'Bajar el umbral a 100 ms', 'Sacar la detección de voz', 'Subir la temperatura del LLM'], correcta: 0, explicacion: 'El silencio solo no distingue una pausa del final de la frase. Bajar el umbral tienta porque hace al agente más rápido, pero lo hace cortar todavía más seguido.' },
+    { q: 'El usuario interrumpe al agente a mitad de una respuesta larga. ¿Qué tiene que pasar?', opciones: ['El agente termina la frase y después escucha', 'Se ignora lo que dijo el usuario hasta que termine el audio', 'Se corta el audio, se frena el LLM, se cancelan las herramientas pendientes y en el historial queda solo lo que el usuario llegó a escuchar', 'Se reinicia la conversación'], correcta: 2, explicacion: 'Sin manejo de interrupciones, el agente se siente rígido. Terminar la frase tienta por prolijidad, pero obliga al usuario a esperar; y si el historial guarda la respuesta entera, el modelo cree que dijo cosas que nadie oyó.' },
+    { q: 'Tu agente lee la respuesta del LLM y suena raro: dice "asterisco asterisco" y enumera tablas. ¿Qué cambiás?', opciones: ['Usás otra voz', 'Pedís en el system prompt frases cortas, sin Markdown ni listas, con números escritos como se dicen, y limpiás el texto antes del TTS', 'Subís la velocidad del TTS', 'Mandás la respuesta también por mail'], correcta: 1, explicacion: 'El TTS lee todo lo que recibe, así que hay que escribir para el oído. Cambiar la voz tienta porque el problema "suena", pero la voz nueva va a leer los mismos asteriscos.' },
+    { q: 'Tu STT anda muy bien en las pruebas de la oficina, pero en producción, con llamadas desde la calle y acentos regionales, los errores se disparan. ¿Qué hacés?', opciones: ['Nada: en las pruebas andaba', 'Cambiás el TTS', 'Subís la temperatura del LLM', 'Armás un set de evaluación con audios reales, medís el WER por segmento (ruido, acento) y con eso comparás proveedores o ajustes'], correcta: 3, explicacion: 'El STT rinde peor con ruido y con acentos poco representados, y la oficina no tiene ninguno de los dos. Quedarse con las pruebas tienta porque dieron bien, pero no se parecen a tus usuarios.' },
+  ],
+},
+{
   id: 'proyecto',
   icono: '🏆',
   titulo: 'Proyectos, portafolio y cómo seguir siendo el mejor',
