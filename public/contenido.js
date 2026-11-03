@@ -2766,16 +2766,21 @@ tasa de verdaderos negativos = VN / (VN + FP)   # detecta lo que está mal</code
   ],
   lecciones: [
     { titulo: '¿Cuándo hacer fine-tuning?', html: `
-      <p>Orden recomendado: <strong>prompting → RAG / herramientas → fine-tuning</strong>. El fine-tuning es más caro de mantener: datos, entrenamiento, evals, redespliegue cada vez que cambia algo.</p>
+      <p><strong>En pocas palabras:</strong> el <strong>fine-tuning</strong> (ajuste fino) es seguir entrenando un modelo ya hecho con tus propios ejemplos, para que se especialice. Es como mandar a un empleado a un curso: sirve, pero es caro y lleva tiempo. Antes conviene probar lo barato: explicarle mejor (prompting) o darle un manual a mano (RAG).</p>
+      <p>Orden recomendado: primero prompting, después RAG o herramientas, y recién al final fine-tuning. El fine-tuning es más caro de mantener: hay que juntar datos, entrenar, evaluar y volver a publicar el modelo cada vez que cambia algo.</p>
       <p><strong>Buen uso:</strong></p>
       <ul>
-        <li>Fijar un estilo, formato o comportamiento muy específico de forma consistente.</li>
-        <li>Una tarea estrecha y repetida donde un modelo chico afinado iguala a uno grande (menos costo y latencia).</li>
-        <li>Destilar: entrenar un modelo chico con salidas de uno grande.</li>
+        <li>Fijar un estilo, un formato o un comportamiento muy específico, para que salga siempre igual.</li>
+        <li>Una tarea acotada y repetida, donde un modelo chico afinado iguala a uno grande y sale más barato y más rápido.</li>
+        <li>Destilar: entrenar un modelo chico con las respuestas de uno grande (lección 5).</li>
       </ul>
-      <p><strong>Mal uso:</strong> agregar conocimiento que cambia seguido (para eso, RAG) o tapar un prompt mal hecho.</p>
-      <p><strong>Tipos:</strong> <em>SFT</em> (pares instrucción → respuesta ideal) y <em>ajuste por preferencias</em> como DPO (pares respuesta preferida / rechazada, sin entrenar un modelo de recompensa aparte).</p>
-      <p><strong>Ejemplo de decisión</strong> (números ilustrativos): tenés que clasificar 50.000 tickets por día en 12 categorías.</p>
+      <p><strong>Mal uso:</strong> agregarle información que cambia seguido (para eso está RAG) o tapar un prompt mal hecho.</p>
+      <p><strong>Tipos:</strong></p>
+      <ul>
+        <li><em>SFT</em> (fine-tuning supervisado): ejemplos de "instrucción y respuesta ideal".</li>
+        <li><em>Ajuste por preferencias</em>, como DPO: pares de "respuesta preferida y respuesta rechazada". Lección 7.</li>
+      </ul>
+      <p><strong>Ejemplo de decisión</strong> (números inventados para ilustrar): tenés que clasificar 50.000 tickets por día en 12 categorías. Se prueba de lo más barato a lo más caro, midiendo cada paso:</p>
       <pre><code>paso                                    exactitud   costo/día   ¿seguir?
 1. modelo grande, prompt simple            81%        40 USD     sí: falta calidad
 2. + 20 ejemplos few-shot bien elegidos    92%        55 USD     calidad OK, caro
@@ -2784,11 +2789,16 @@ tasa de verdaderos negativos = VN / (VN + FP)   # detecta lo que está mal</code
    tickets etiquetados por el paso 2</code></pre>
       <p>El fine-tuning se justificó recién en el paso 4, y contra una línea base medida: iguala la calidad del paso 2 a una fracción del costo. Fijate que es una tarea estrecha, repetida y estable: si las categorías cambiaran cada mes, el costo de reentrenar se comería el ahorro. Y el paso 4 es una destilación: el modelo grande hizo de maestro (lo vas a ver en la lección de destilación).</p>` },
     { titulo: 'LoRA, cuantización e inferencia local', html: `
-      <p><strong>LoRA:</strong> en vez de actualizar todos los pesos, congelás el modelo y entrenás matrices pequeñas de bajo rango que se suman a ciertas capas. Entrenás menos del 1% de parámetros, con mucha menos memoria, y el adaptador pesa megas.</p>
-      <p><strong>QLoRA:</strong> LoRA sobre un modelo base cuantizado a 4 bits: permite afinar modelos grandes en una sola GPU.</p>
-      <p><strong>Cuantización:</strong> representar los pesos con menos bits (16 → 8 → 4). Menos memoria y más velocidad, con alguna pérdida de calidad. Formatos comunes: GGUF (llama.cpp / Ollama), AWQ, GPTQ.</p>
-      <p><strong>Inferencia local y servidores:</strong> Ollama y llama.cpp para tu máquina; vLLM o TGI para servir con alto rendimiento en producción.</p>
-      <p>Regla para estimar memoria de los pesos: parámetros × bytes por parámetro. Un modelo de 8B en 16 bits ≈ 16 GB; en 4 bits ≈ 4-5 GB (más la memoria del contexto, la KV cache).</p>
+      <p><strong>En pocas palabras:</strong> en vez de reescribir un libro entero para corregirlo, le pegás unos post-its con las correcciones. Eso es LoRA: el modelo original no se toca y solo se entrenan unas piezas chiquitas que se le agregan. Y cuantizar es guardar los números con menos decimales, como redondear precios: ocupa mucho menos y casi no se nota.</p>
+      <p><strong>LoRA</strong> (Low-Rank Adaptation, adaptación de bajo rango): en vez de cambiar todos los pesos, congelás el modelo y entrenás dos matrices chicas que se suman a algunas capas. Se les dice "de bajo rango" porque son muy finitas, como verás en el ejemplo. Entrenás menos del 1% de los parámetros, con mucha menos memoria, y lo que entrenaste (el <em>adaptador</em>) pesa unos pocos megas.</p>
+      <p><strong>QLoRA:</strong> LoRA sobre un modelo base cuantizado a 4 bits. Permite afinar modelos grandes en una sola GPU.</p>
+      <p><strong>Cuantización:</strong> guardar los pesos con menos <em>bits</em> (los ceros y unos con que la computadora guarda cada número): de 16 a 8, o a 4. Ocupa menos memoria y corre más rápido, a cambio de algo de calidad. Formatos comunes: GGUF (el de llama.cpp y Ollama), AWQ y GPTQ.</p>
+      <p><strong>Correr modelos en tu máquina y en servidores:</strong></p>
+      <ul>
+        <li><strong>Ollama y llama.cpp:</strong> para correrlos en tu computadora.</li>
+        <li><strong>vLLM o TGI:</strong> para <em>servirlos</em> en producción, es decir, atender muchos pedidos de usuarios a la vez, rápido.</li>
+      </ul>
+      <p>Regla para estimar la memoria de los pesos: parámetros × bytes por parámetro. Un modelo de 8B (8.000 millones de parámetros) ocupa unos 16 GB en 16 bits, y unos 4 a 5 GB en 4 bits. A eso se suma la memoria del contexto, el KV cache (lección siguiente).</p>
       <p><strong>Ejemplo con números: por qué LoRA entrena tan poco.</strong> Una matriz de pesos de 4096 × 4096 tiene 16.777.216 parámetros. LoRA con rango 8 la deja congelada y entrena dos matrices chicas, A (4096 × 8) y B (8 × 4096):</p>
       <pre><code>W congelada:   4096 × 4096        = 16.777.216 parámetros
 LoRA (r = 8):  4096 × 8 + 8 × 4096 =     65.536 parámetros  (0,39%)
@@ -2799,9 +2809,14 @@ salida:        W·x + B·(A·x)       ← se suma el "delta" aprendido</code></p
  4 bits (0,5 bytes) →  4 GB   + algo de overhead: entra en una laptop con buena GPU</code></pre>
       <p>Por eso QLoRA (base en 4 bits + adaptador LoRA) permite afinar en una sola GPU: los pesos grandes ocupan poco y lo único que se entrena son esas matrices chicas.</p>` },
     { titulo: 'Servir modelos: KV cache, batching continuo y PagedAttention', html: `
-      <p>Si vas a servir un modelo abierto, entender qué consume memoria y tiempo te ahorra mucha GPU.</p>
-      <p><strong>Dos fases:</strong> el <em>prefill</em> procesa todo el prompt en paralelo (rápido por token, domina el tiempo hasta el primer token) y el <em>decode</em> genera token por token (cada paso depende del anterior, domina la duración total).</p>
-      <p><strong>KV cache:</strong> en cada paso de decode, el token nuevo necesita las keys y values de todos los anteriores. En lugar de recalcularlas, se guardan. Acelera muchísimo, pero ocupa memoria que crece con el largo del contexto y con la cantidad de usuarios simultáneos:</p>
+      <p><strong>En pocas palabras:</strong> un modelo que atiende a muchos usuarios es como una cocina de restaurante. Para no repetir trabajo, guarda lo ya preparado (el KV cache), y eso ocupa lugar en la heladera. Para que la cocina nunca esté quieta, entra un pedido nuevo apenas sale uno (batching continuo). Esta lección explica esos trucos y cómo calcular cuánto lugar ocupan.</p>
+      <p>Si vas a <em>servir</em> un modelo abierto (ponerlo a atender pedidos), entender qué consume memoria y tiempo te ahorra mucha GPU.</p>
+      <p><strong>Dos fases:</strong></p>
+      <ul>
+        <li><strong>Prefill</strong> (lectura): procesa todo tu prompt de una vez, en paralelo. Es rápido por token y define cuánto tarda en aparecer la primera palabra.</li>
+        <li><strong>Decode</strong> (escritura): genera la respuesta de a un token, porque cada uno depende del anterior. Define cuánto tarda la respuesta completa.</li>
+      </ul>
+      <p><strong>KV cache:</strong> en cada paso de escritura, el token nuevo necesita las keys y values (de la atención, módulo de LLMs) de todos los tokens anteriores. En lugar de recalcularlas cada vez, se guardan en memoria. Eso acelera muchísimo, pero esa memoria crece con el largo del texto y con la cantidad de usuarios simultáneos. La cuenta:</p>
       <pre><code>bytes por token = 2 (K y V) × capas × cabezas_kv × dim_cabeza × bytes_por_valor
 
 Ejemplo, modelo tipo Llama 3 8B: 32 capas, 8 cabezas KV, dim 128, fp16 (2 bytes)
@@ -2809,20 +2824,32 @@ Ejemplo, modelo tipo Llama 3 8B: 32 capas, 8 cabezas KV, dim 128, fp16 (2 bytes)
 × 8.192 tokens de contexto ≈ 1 GB por secuencia
 × 16 usuarios simultáneos ≈ 16 GB, ¡tanto como los pesos!</code></pre>
       <p>Por eso los modelos modernos usan <strong>GQA</strong> (grouped-query attention): varias cabezas de query comparten las mismas keys y values. En el ejemplo, 8 cabezas KV en lugar de 32 dividen el KV cache por 4.</p>
-      <p><strong>Batching continuo:</strong> con batching estático, el lote espera a que termine la respuesta más larga y las cortas quedan bloqueadas. Con batching continuo, las secuencias entran y salen del lote en cada paso: la GPU siempre está ocupada y el throughput sube mucho.</p>
-      <p><strong>PagedAttention (vLLM):</strong> reservar memoria contigua para el contexto máximo de cada pedido desperdicia la mayor parte. vLLM guarda el KV cache en bloques chicos, como las páginas de memoria de un sistema operativo, y así entran muchos más pedidos simultáneos en la misma GPU.</p>
-      <p><strong>Métricas que importan:</strong> tiempo hasta el primer token (TTFT), tokens por segundo por usuario, throughput total del servidor y costo por millón de tokens. Más usuarios simultáneos suben el throughput pero empeoran la latencia de cada uno: hay que elegir el punto según tu producto.</p>` },
+      <p><strong>Batching continuo:</strong> la GPU atiende varios pedidos juntos en un lote (<em>batch</em>).</p>
+      <ul>
+        <li>Con batching <em>estático</em>, el lote espera a que termine la respuesta más larga, y las cortas quedan trabadas.</li>
+        <li>Con batching <em>continuo</em>, los pedidos entran y salen del lote en cada paso: apenas uno termina, entra otro. La GPU siempre está ocupada y el <em>throughput</em> (cuántos tokens produce el servidor por segundo, sumando todos los usuarios) sube mucho.</li>
+      </ul>
+      <p><strong>PagedAttention (vLLM):</strong> reservarle a cada pedido, de entrada, un bloque de memoria para el texto más largo posible desperdicia la mayor parte, porque casi ningún pedido llega a ese largo. vLLM guarda el KV cache en bloquecitos que va asignando a medida que hacen falta, como las páginas de un cuaderno de hojas sueltas. Así entran muchos más pedidos a la vez en la misma GPU.</p>
+      <p><strong>Métricas que importan:</strong></p>
+      <ul>
+        <li><strong>TTFT</strong> (time to first token): el tiempo hasta la primera palabra.</li>
+        <li>Tokens por segundo para cada usuario.</li>
+        <li>Throughput total del servidor.</li>
+        <li>Costo por millón de tokens.</li>
+      </ul>
+      <p>Más usuarios a la vez suben el throughput, pero cada uno espera más. Hay que elegir el punto según tu producto.</p>` },
     { titulo: 'Datos para fine-tuning: calidad, formato y las trampas', html: `
-      <p>En fine-tuning, el resultado depende más de los datos que de los hiperparámetros.</p>
+      <p><strong>En pocas palabras:</strong> el modelo afinado aprende a imitar tus ejemplos, con sus virtudes y sus errores. Mil ejemplos prolijos y coherentes enseñan más que diez mil desordenados. Y hay que presentárselos en el formato exacto que el modelo conoce, como completar un formulario oficial y no uno inventado.</p>
+      <p>En fine-tuning, el resultado depende más de los datos que de los hiperparámetros (las perillas del entrenamiento).</p>
       <p><strong>Calidad antes que cantidad.</strong> El paper LIMA (2023) afinó un modelo grande con solo unos 1.000 ejemplos muy cuidados y obtuvo resultados competitivos. Su hipótesis: el conocimiento viene del pre-training, y el ajuste enseña sobre todo el formato y el estilo de respuesta. Cien ejemplos consistentes valen más que diez mil contradictorios.</p>
       <p><strong>Cómo armar el dataset:</strong></p>
       <ul>
         <li>Que sea <strong>consistente</strong>: el mismo estilo y criterio en todos los ejemplos.</li>
-        <li>Que cubra la <strong>distribución real</strong> de entradas, casos difíciles incluidos.</li>
+        <li>Que cubra los <strong>tipos de entradas reales</strong> en proporciones parecidas a las reales (su <em>distribución</em>), casos difíciles incluidos.</li>
         <li><strong>Separá el test al principio</strong> y verificá que no queden ejemplos duplicados o casi idénticos entre train y test.</li>
         <li>Sacá los datos personales. Si generás respuestas con un modelo más grande (destilación), revisá los términos de uso del proveedor.</li>
       </ul>
-      <p><strong>El formato exacto importa.</strong> Cada modelo de chat espera una plantilla con sus tokens especiales para separar roles. Si entrenás con un formato inventado, el modelo se degrada. Usá la plantilla del tokenizador para entrenar y para inferir:</p>
+      <p><strong>El formato exacto importa.</strong> Por dentro, cada modelo de chat recibe la conversación como un solo texto, con unos tokens especiales que marcan dónde empieza cada rol (sistema, usuario, asistente). Esa es su <em>plantilla</em> (chat template). Si entrenás con un formato inventado, el modelo empeora. Usá la plantilla que trae el tokenizador, tanto para entrenar como para usarlo. El código la aplica con <code>apply_chat_template</code> de la librería <strong>Transformers</strong> (de Hugging Face, el sitio donde se publican los modelos abiertos):</p>
       <pre><code>from transformers import AutoTokenizer
 
 tok = AutoTokenizer.from_pretrained("tu-modelo-base-instruct")
@@ -2835,16 +2862,17 @@ texto = tok.apply_chat_template(ejemplo, tokenize=False)   # el formato que el m
       <p>Librerías como TRL permiten además calcular la loss <strong>solo sobre las respuestas del asistente</strong>, para que el modelo aprenda a responder y no a repetir los prompts.</p>
       <p><strong>Las dos trampas más comunes:</strong></p>
       <ul>
-        <li><strong>Olvido catastrófico:</strong> al especializarse, el modelo puede perder capacidades generales que antes tenía. Evaluá también tareas generales, no solo la tuya; LoRA y mezclar algo de datos generales ayudan.</li>
+        <li><strong>Olvido catastrófico:</strong> al especializarse, el modelo puede perder capacidades generales que antes tenía, como alguien que de tanto estudiar una sola materia se olvida de las otras. Evaluá también tareas generales, no solo la tuya; LoRA y mezclar algo de datos generales ayudan.</li>
         <li><strong>No comparar contra la línea base:</strong> el fine-tuning se justifica solo si supera al modelo base con un buen prompt y few-shot, medido con las mismas evals.</li>
       </ul>` },
     { titulo: 'Destilación: un modelo chico que aprende de uno grande', html: `
-      <p>Muchas veces el modelo grande hace bien tu tarea, pero es caro y lento para tu volumen. La <strong>destilación</strong> entrena un modelo chico (el alumno) para imitar al grande (el maestro) en esa tarea.</p>
+      <p><strong>En pocas palabras:</strong> un chef experto cocina miles de platos y un ayudante aprende copiándolo. Al final, el ayudante hace ese plato casi igual de bien, más rápido y cobrando menos. Pero solo ese plato, y copiando también los errores del chef.</p>
+      <p>Muchas veces el modelo grande hace bien tu tarea, pero es caro y lento para la cantidad de pedidos que tenés. La <strong>destilación</strong> entrena un modelo chico (el alumno) para imitar al grande (el maestro) en esa tarea.</p>
       <ul>
-        <li><strong>La idea original</strong> (Hinton y otros, 2015): el alumno aprende de las probabilidades del maestro, no solo de la respuesta final. Esas probabilidades "blandas" dicen también qué alternativas eran casi correctas.</li>
-        <li><strong>Un caso clásico:</strong> DistilBERT es un 40% más chico y un 60% más rápido que BERT, y conserva cerca del 97% de su capacidad de comprensión del lenguaje.</li>
+        <li><strong>La idea original</strong> (Hinton y otros, 2015): el alumno aprende de las probabilidades del maestro, no solo de su respuesta final. Esas probabilidades "blandas" también le dicen qué alternativas eran casi correctas. Por ejemplo: "es un perro, pero se parecía un poco a un lobo, y nada a un auto".</li>
+        <li><strong>Un caso clásico:</strong> DistilBERT es un 40% más chico y un 60% más rápido que BERT (un modelo de lenguaje de Google de 2018, anterior a los LLMs de chat), y conserva cerca del 97% de su capacidad de comprensión del lenguaje.</li>
         <li><strong>Con LLMs vía API</strong> normalmente no tenés las probabilidades del maestro, así que se destila por sus <em>salidas</em>: el maestro responde miles de entradas reales y con esos pares afinás al alumno.</li>
-        <li><strong>Destilar el razonamiento:</strong> el método "Distilling step-by-step" usa también las explicaciones del modelo grande como señal de entrenamiento. Un T5 de 770 millones de parámetros superó a PaLM de 540.000 millones (con few-shot) en un benchmark, usando el 80% de los datos; el ajuste estándar del mismo T5 no lo logró ni con el 100%.</li>
+        <li><strong>Destilar el razonamiento:</strong> el método "Distilling step-by-step" le enseña al alumno también las explicaciones del modelo grande, no solo las respuestas. Un modelo T5 de 770 millones de parámetros superó a PaLM, de 540.000 millones (700 veces más grande, usado con few-shot), en una prueba estándar, usando el 80% de los datos; el ajuste estándar del mismo T5 no lo logró ni con el 100%.</li>
       </ul>
       <pre><code># 1) El maestro etiqueta entradas reales de tu tarea
 pares = []
@@ -2859,19 +2887,21 @@ for texto in muestra_de_produccion(5000):
       <p><strong>Cuidados:</strong></p>
       <ul>
         <li><strong>El alumno hereda los errores del maestro</strong>, y no lo va a superar en lo que el maestro hace mal. Filtrá y revisá una muestra.</li>
-        <li><strong>Funciona para tareas acotadas.</strong> El alumno imita al maestro en tu distribución de entradas, no en todo.</li>
+        <li><strong>Funciona para tareas acotadas.</strong> El alumno imita al maestro en el tipo de entradas con que lo entrenaste, no en todo.</li>
         <li><strong>Revisá los términos de uso</strong> del proveedor del maestro: algunos limitan usar sus salidas para entrenar otros modelos.</li>
         <li><strong>Medí la decisión completa:</strong> si el alumno queda 2 puntos abajo pero cuesta 20 veces menos y responde en la mitad de tiempo, puede ser la mejor opción. O no: depende del costo de cada error.</li>
       </ul>` },
     { titulo: 'Ajuste con refuerzo: GRPO y recompensas verificables', html: `
+      <p><strong>En pocas palabras:</strong> a veces no tenés la respuesta perfecta escrita, pero sí sabés comprobar si una respuesta está bien, como un programa que pasa o no sus pruebas. Entonces dejás que el modelo pruebe varias veces, premiás los intentos que salieron mejor que el promedio y desalentás los peores. Cuidado: el modelo va a buscar la forma más fácil de ganar el premio, aunque sea haciendo trampa.</p>
       <p>El fine-tuning supervisado le muestra al modelo la respuesta correcta. El ajuste con refuerzo hace otra cosa: el modelo prueba varias respuestas, una <strong>función de recompensa</strong> las puntúa y se refuerza lo que funcionó. Sirve cuando sabés <em>verificar</em> una respuesta aunque no tengas la respuesta ideal escrita: código que pasa tests, matemáticas con resultado exacto, JSON que cumple un esquema.</p>
       <p><strong>GRPO</strong> (Group Relative Policy Optimization), presentado en el paper de DeepSeekMath, es uno de los métodos más usados:</p>
       <ol>
         <li>Para cada prompt, el modelo genera un <strong>grupo</strong> de respuestas.</li>
         <li>Cada una recibe una recompensa.</li>
-        <li>La <strong>ventaja</strong> de cada respuesta se calcula respecto de su grupo: (recompensa − promedio del grupo) / desvío del grupo. Así no hace falta entrenar un modelo crítico aparte.</li>
-        <li>Se refuerzan las respuestas mejores que el promedio y se desalientan las peores. Opcionalmente, una penalización KL evita alejarse demasiado del modelo original (en TRL viene apagada por defecto).</li>
+        <li>Se calcula la <strong>ventaja</strong> de cada respuesta, o sea, cuánto mejor o peor le fue que a sus compañeras de grupo: (recompensa − promedio del grupo) / desvío del grupo. Así no hace falta entrenar aparte otro modelo que juzgue (un "crítico").</li>
+        <li>Se refuerzan las respuestas mejores que el promedio y se desalientan las peores. Opcionalmente, una penalización KL (de Fundamentos) evita que se aleje demasiado del modelo original. En TRL viene apagada por defecto.</li>
       </ol>
+      <p>En el código, con la librería <strong>TRL</strong> (de Hugging Face, para entrenar con preferencias y refuerzo), hay dos recompensas: 1 punto si el código pasa los tests y 0,2 si al menos es código válido. <code>completions</code> son las respuestas generadas.</p>
       <pre><code>from trl import GRPOTrainer
 
 def recompensa_tests(completions, tests, **kwargs):
@@ -2887,23 +2917,29 @@ trainer = GRPOTrainer(model="un-modelo-chico-instruct",
 trainer.train()</code></pre>
       <p><strong>El gran riesgo: hackeo de la recompensa.</strong> El modelo maximiza exactamente lo que medís, no lo que quisiste decir. Si la recompensa premia "pasa los tests", puede aprender a modificar los tests o a programar casos especiales para los ejemplos. Si premia el largo, va a escribir de más. Defensas:</p>
       <ul>
-        <li>Verificadores difíciles de engañar: tests ocultos, chequeos en un sandbox.</li>
+        <li>Verificadores difíciles de engañar: tests que el modelo no ve, o chequeos dentro de un <em>sandbox</em> (un entorno aislado donde no puede tocar nada de afuera).</li>
         <li>Varias recompensas combinadas (corrección, formato, largo razonable).</li>
         <li>Leer muestras de lo que el modelo genera durante el entrenamiento, no solo mirar la curva de recompensa.</li>
         <li>Evaluar en un conjunto aparte con criterios que la recompensa no ve.</li>
       </ul>
       <p><strong>Cuándo conviene:</strong> tareas con un verificador confiable y donde el modelo base ya acierta a veces. Si nunca acierta, todas las recompensas del grupo son iguales y no hay nada que reforzar: primero hace falta un ajuste supervisado o un modelo mejor.</p>` },
     { titulo: 'Ajuste por preferencias a fondo: de RLHF a DPO', html: `
-      <p>El SFT le enseña al modelo a <strong>imitar</strong> respuestas buenas. Pero muchas cualidades son más fáciles de <strong>comparar</strong> que de escribir: entre dos respuestas, cualquiera ve cuál es más clara, más honesta o mejor formateada, aunque no sepa escribir la ideal. El ajuste por preferencias aprovecha eso.</p>
+      <p><strong>En pocas palabras:</strong> es más fácil elegir cuál de dos fotos salió mejor que sacar la foto perfecta. El ajuste por preferencias aprovecha eso: le mostrás al modelo dos respuestas, le decís cuál es la buena, y aprende a parecerse más a la elegida y menos a la rechazada.</p>
+      <p>El SFT le enseña al modelo a <strong>imitar</strong> respuestas buenas. Pero muchas cualidades son más fáciles de <strong>comparar</strong> que de escribir: entre dos respuestas, cualquiera ve cuál es más clara, más honesta o mejor presentada, aunque no sepa escribir la ideal. El ajuste por preferencias aprovecha eso.</p>
       <h3>RLHF: el camino clásico</h3>
       <ol>
         <li>Se generan varias respuestas por prompt y personas marcan cuál prefieren.</li>
-        <li>Con esos pares se entrena un <strong>modelo de recompensa</strong> que puntúa respuestas.</li>
-        <li>Se ajusta el LLM con aprendizaje por refuerzo (típicamente PPO) para maximizar esa recompensa, con una penalización de divergencia KL que le impide alejarse demasiado del modelo original.</li>
+        <li>Con esas comparaciones se entrena un <strong>modelo de recompensa</strong>: un modelo aparte que aprende a ponerle puntaje a una respuesta como lo harían esas personas.</li>
+        <li>Se ajusta el LLM con aprendizaje por refuerzo (típicamente con un método llamado PPO) para sacar el puntaje más alto posible. Una penalización KL le impide alejarse demasiado del modelo original.</li>
       </ol>
-      <p>Funciona, pero son varios modelos en memoria, muestreo durante el entrenamiento y muchos hiperparámetros: el paper de DPO lo describe como un procedimiento complejo y a menudo inestable.</p>
-      <h3>DPO: la misma meta con una pérdida de clasificación</h3>
-      <p><strong>Direct Preference Optimization</strong> (Rafailov y otros, 2023) mostró que el objetivo de RLHF se puede resolver sin modelo de recompensa explícito ni RL: alcanza con una pérdida que, para cada trío (prompt, elegida, rechazada), <strong>agranda la distancia</strong> entre la probabilidad de la elegida y la de la rechazada, medidas en relación con un <strong>modelo de referencia</strong> congelado (normalmente el mismo modelo antes de DPO, ya con SFT). El modelo es, en palabras del paper, "secretamente un modelo de recompensa".</p>
+      <p>Funciona, pero es complicado: hay varios modelos en memoria a la vez, hay que generar respuestas durante el entrenamiento y hay muchas perillas. El paper de DPO lo describe como un procedimiento complejo y a menudo inestable.</p>
+      <h3>DPO: la misma meta, mucho más simple</h3>
+      <p><strong>Direct Preference Optimization</strong> (optimización directa de preferencias; Rafailov y otros, 2023) mostró que se puede llegar a lo mismo sin modelo de recompensa aparte y sin aprendizaje por refuerzo. Se entrena con tríos (prompt, respuesta elegida, respuesta rechazada):</p>
+      <ul>
+        <li>La loss sube la probabilidad de la elegida y baja la de la rechazada.</li>
+        <li>Esas probabilidades se miden en relación con un <strong>modelo de referencia</strong> congelado, normalmente el mismo modelo antes de DPO (ya con SFT), para no alejarse demasiado.</li>
+      </ul>
+      <p>En palabras del paper, el modelo es "secretamente un modelo de recompensa". El código muestra un trío de ejemplo y el entrenamiento con TRL.</p>
       <pre><code>{"prompt":   [{"role": "user", "content": "¿Cómo reinicio el router?"}],
  "chosen":   [{"role": "assistant", "content": "1. Desenchufalo 30 segundos. 2. ..."}],
  "rejected": [{"role": "assistant", "content": "Los routers son dispositivos de red que..."}]}
@@ -2915,12 +2951,12 @@ trainer.train()</code></pre>
       <h3>Las perillas que importan</h3>
       <ul>
         <li><strong>beta</strong> controla cuánto puede alejarse del modelo de referencia: más alto, más conservador. TRL usa 0,1 por defecto.</li>
-        <li><strong>Learning rate muy bajo:</strong> el valor por defecto de DPO en TRL es 1e-6, mucho menor que el de SFT; con LoRA se suele subir (alrededor de 1e-5) porque solo se entrenan parámetros nuevos.</li>
+        <li><strong>Learning rate muy bajo:</strong> el valor por defecto de DPO en TRL es 1e-6 (0,000001), mucho menor que el de SFT; con LoRA se suele subir (alrededor de 1e-5) porque solo se entrenan parámetros nuevos.</li>
         <li><strong>Empezá desde un modelo con SFT:</strong> DPO pule preferencias; no enseña una tarea desde cero.</li>
       </ul>
       <h3>Trampas frecuentes</h3>
       <ul>
-        <li><strong>Sesgo de longitud:</strong> si las elegidas suelen ser más largas, el modelo aprende "más largo es mejor" y se vuelve verborrágico. Revisá la longitud media de elegidas y rechazadas; variantes como la normalización por longitud (SimPO) apuntan a esto.</li>
+        <li><strong>Sesgo de longitud:</strong> si las elegidas suelen ser más largas, el modelo aprende "más largo es mejor" y se vuelve charlatán. Revisá la longitud media de elegidas y rechazadas; variantes como la normalización por longitud (SimPO) apuntan a esto.</li>
         <li><strong>Pares sin señal:</strong> si elegida y rechazada son casi iguales, o la etiqueta es dudosa, el modelo aprende ruido. Los mejores pares difieren justo en la cualidad que querés enseñar.</li>
         <li><strong>Mirar solo la pérdida:</strong> que suba <em>rewards/accuracies</em> (la proporción de pares donde la elegida gana) no garantiza mejores respuestas. Evaluá con tu eval de tareas reales antes y después, y vigilá regresiones en lo que ya funcionaba.</li>
       </ul>
