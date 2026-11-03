@@ -10,8 +10,8 @@ vm.runInContext(leer('contenido.js'), ctx);
 vm.runInContext(leer('glosario.js'), ctx);
 vm.runInContext(leer('vendor/qrcode.js') + ';this.qrcode = qrcode;', ctx);
 ctx.window.qrcode = ctx.qrcode;
-vm.runInContext(leer('app.js') + ';this.X = { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos, avance, clavePractica, registrarExamen, planDeHoy, apuntesMarkdown, esCorrecta, preguntasDeNivel, preguntaObjetivo, cambiarLetra, novedades, marcarConocidas, iniciarNovedades, todasLasLecciones, trozosParaVoz, vozLatina, sumarMinuto, serieMinutos, minutosSemana, textoLogro, empaquetar, desempaquetar, comprimir, descomprimir, compararIntentos, sumarIntento, rondaModulo, POR_RONDA };', ctx);
-const { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos, avance, clavePractica, registrarExamen, planDeHoy, apuntesMarkdown, esCorrecta, preguntasDeNivel, preguntaObjetivo, cambiarLetra, novedades, marcarConocidas, iniciarNovedades, todasLasLecciones, trozosParaVoz, vozLatina, sumarMinuto, serieMinutos, minutosSemana, textoLogro, empaquetar, desempaquetar, comprimir, descomprimir, compararIntentos, sumarIntento, rondaModulo, POR_RONDA } = ctx.X;
+vm.runInContext(leer('app.js') + ';this.X = { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos, avance, clavePractica, registrarExamen, planDeHoy, apuntesMarkdown, esCorrecta, preguntasDeNivel, preguntaObjetivo, cambiarLetra, novedades, marcarConocidas, iniciarNovedades, todasLasLecciones, trozosParaVoz, vozLatina, sumarMinuto, serieMinutos, minutosSemana, textoLogro, empaquetar, desempaquetar, comprimir, descomprimir, compararIntentos, sumarIntento, rondaModulo, POR_RONDA, esPython };', ctx);
+const { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos, avance, clavePractica, registrarExamen, planDeHoy, apuntesMarkdown, esCorrecta, preguntasDeNivel, preguntaObjetivo, cambiarLetra, novedades, marcarConocidas, iniciarNovedades, todasLasLecciones, trozosParaVoz, vozLatina, sumarMinuto, serieMinutos, minutosSemana, textoLogro, empaquetar, desempaquetar, comprimir, descomprimir, compararIntentos, sumarIntento, rondaModulo, POR_RONDA, esPython } = ctx.X;
 const plano = o => JSON.parse(JSON.stringify(o));
 
 // Inicio renderiza con progreso vacío
@@ -287,6 +287,12 @@ assert.deepStrictEqual(plano(compararIntentos([1, 2, 3], [3, 5])), { corregidas:
 assert.deepStrictEqual(plano(compararIntentos([], [])), { corregidas: 0, siguen: 0, nuevas: 0 });
 // Una fallada que no volvió a salir en la ronda no cuenta como corregida
 assert.deepStrictEqual(plano(compararIntentos([1, 2, 3], [3], [2, 3])), { corregidas: 1, siguen: 1, nuevas: 0 });
+// El laboratorio solo aparece en código Python, no en diagramas ni en comandos
+assert(esPython('import numpy as np\nprint(np.zeros(3))'));
+assert(esPython('x = 1\nprint(x)'));
+assert(!esPython('python -m venv .venv'));
+assert(!esPython('import torch\nprint(torch.zeros(2))'));
+assert(!esPython('  y\n  ^\n2 |   ↗  [3, 2]\nprint(1)'));
 // La ronda del módulo es corta y trae primero las falladas pendientes
 {
   const mod = ctx.window.TEMARIO.find(m => m.quiz.length > POR_RONDA);

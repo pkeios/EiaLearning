@@ -1194,7 +1194,7 @@ def llamar_con_reintentos(mensajes, max_intentos=5):
     return llamar_modelo(mensajes, modelo=MODELO_RESPALDO, timeout=30)  # fallback
 
 def extraer(texto, intentos=3):
-    mensajes = [{"role": "user", "content": "Extraé proveedor, total y moneda como JSON.\n&lt;factura&gt;" + texto + "&lt;/factura&gt;"}]
+    mensajes = [{"role": "user", "content": "Extraé proveedor, total y moneda como JSON.\\n&lt;factura&gt;" + texto + "&lt;/factura&gt;"}]
     for _ in range(intentos):
         salida = llamar_con_reintentos(mensajes)
         try:

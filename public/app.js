@@ -248,6 +248,62 @@ async function importar(archivo) {
   inicio();
 }
 
+// Laboratorio de Python con Pyodide (Python compilado para el navegador): se descarga recién al primer uso.
+const PYODIDE = 'https://cdn.jsdelivr.net/pyodide/v0.29.3/full/';
+// Librerías que no corren en el navegador (PyTorch y compañía) o que necesitan una clave de API: esos fragmentos no llevan laboratorio.
+const NO_NAVEGADOR = /\b(anthropic|openai|torch|transformers|trl|peft|dspy|opentelemetry|vllm|safetensors)\b/;
+const esPython = codigo => /^\s*(import |from \S+ import |def |class |print\(|async def )/m.test(codigo) && !/[→↗]/.test(codigo) && !NO_NAVEGADOR.test(codigo);
+let pyodide;
+function cargarPython() {
+  pyodide ??= new Promise((ok, mal) => {
+    const s = Object.assign(document.createElement('script'), { src: PYODIDE + 'pyodide.js' });
+    s.onload = () => loadPyodide({ indexURL: PYODIDE }).then(ok, mal);
+    s.onerror = () => { pyodide = null; mal(new Error('No se pudo descargar Python. Revisá tu conexión.')); };
+    document.head.append(s);
+  });
+  return pyodide;
+}
+function montarLab(pre) {
+  const boton = Object.assign(document.createElement('button'), { className: 'secundario boton-lab', textContent: '▶ Probar este código' });
+  pre.after(boton);
+  boton.onclick = () => {
+    boton.remove();
+    const lab = document.createElement('div');
+    lab.className = 'lab';
+    lab.innerHTML = `<label class="suave">🧪 Laboratorio: editá el código y corrélo. Corre en tu navegador; la primera vez tarda unos segundos en cargar Python.</label>
+      <textarea spellcheck="false" aria-label="Código Python"></textarea>
+      <div class="acciones-lab"><button>▶ Ejecutar</button><button class="secundario" data-reset>↺ Volver al original</button></div>
+      <pre class="salida" aria-live="polite" hidden></pre>`;
+    const area = lab.querySelector('textarea'), salida = lab.querySelector('.salida'), [correr, reset] = lab.querySelectorAll('button');
+    area.value = pre.textContent;
+    area.rows = Math.min(20, area.value.split('\n').length + 1);
+    reset.onclick = () => { area.value = pre.textContent; };
+    correr.onclick = async () => {
+      correr.disabled = true;
+      salida.hidden = false;
+      salida.textContent = '⏳ Cargando Python...';
+      let texto = '';
+      try {
+        const py = await cargarPython();
+        salida.textContent = '⏳ Ejecutando...';
+        py.setStdout({ batched: s => { texto += s + '\n'; } });
+        py.setStderr({ batched: s => { texto += s + '\n'; } });
+        await py.loadPackagesFromImports(area.value);
+        const r = await py.runPythonAsync(area.value);
+        if (r !== undefined) texto += String(r);
+        salida.textContent = texto || '✔ Terminó sin imprimir nada. Usá print() para ver resultados.';
+      } catch (e) {
+        // El último renglón del error de Python es el que explica qué pasó
+        const error = String(e.message || e).trim().split('\n').slice(-1)[0];
+        salida.textContent = texto + '✘ ' + error + (
+          /NameError/.test(error) ? '\n💡 Este fragmento es parte de un ejemplo más grande: usa algo que se define en otro lado. Definilo arriba (por ejemplo, con datos inventados) y volvé a ejecutar.'
+          : /ModuleNotFoundError/.test(error) ? '\n💡 Esa librería no está disponible en el navegador: probalo en tu computadora.' : '');
+      }
+      correr.disabled = false;
+    };
+    pre.after(lab);
+  };
+}
 function modulo(id, abrir = null) {
   const m = T.find(x => x.id === id);
   if (!m) return inicio();
@@ -257,10 +313,10 @@ function modulo(id, abrir = null) {
   if (m.lecciones.some(l => !p.conocidas[claveLeccion(m, l)])) { marcarConocidas(p, m.lecciones.map(l => ({ m, l }))); guardar(p); }
   app.innerHTML = `
     <a class="volver" href="#/">← Temario</a>
-    <header class="modulo-head">
+    <div class="modulo-head">
       <span class="icono grande">${icono(m)}</span>
       <div class="crece"><small>Módulo ${i} · ${badge(m)}</small><h1>${esc(m.titulo)}</h1>${barra(avance(m, p).pct)}</div>
-    </header>
+    </div>
     <section class="card"><h2>🎯 Objetivos</h2><ul class="checks">${m.objetivos.map(o => `<li>${esc(o)}</li>`).join('')}</ul></section>
     <h2>📖 Lecciones</h2>${m.lecciones.map((l, n) => `
       <details class="leccion ${leida(n) ? 'leida' : ''}" ${leida(n) && n !== abrir ? '' : 'open'}>
@@ -310,7 +366,10 @@ function modulo(id, abrir = null) {
     b.textContent = '⏹ Detener';
   });
   app.querySelectorAll('[data-leida]').forEach(b => b.onclick = () => {
-    const p = cargar(); p.leidas[m.id + ':' + b.dataset.leida] = true; estudiar(p); guardar(p); modulo(id);
+    const p = cargar(); p.leidas[m.id + ':' + b.dataset.leida] = true; estudiar(p); guardar(p);
+    const sig = Number(b.dataset.leida) + 1;
+    modulo(id, sig < m.lecciones.length ? sig : null);
+    if (sig >= m.lecciones.length) app.querySelector('.practica')?.scrollIntoView();
   });
   app.querySelector('#apunte').oninput = e => { const p = cargar(); p.apuntes[m.id] = e.target.value; guardar(p); };
   app.querySelectorAll('[data-practica]').forEach(c => c.onchange = () => {
@@ -319,6 +378,7 @@ function modulo(id, abrir = null) {
     guardar(p);
     modulo(id);
   });
+  app.querySelectorAll('.contenido pre').forEach(pre => { if (esPython(pre.textContent)) montarLab(pre); });
   const buscada = abrir != null && app.querySelectorAll('details.leccion')[abrir];
   if (buscada) {
     if (ultimaBusqueda) resaltarEn(buscada.querySelector('.contenido'), ultimaBusqueda);
