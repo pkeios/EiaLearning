@@ -2183,7 +2183,19 @@ respuesta = llm(f"Pregunta: {pregunta}\\nResultado: {filas}\\nRespondé en una f
   ],
   lecciones: [
     { titulo: 'Tool use: el bucle que da superpoderes', html: `
-      <p>Le describís al modelo herramientas (nombre, descripción, esquema JSON de parámetros). Cuando lo necesita, el modelo responde pidiendo usar una herramienta con ciertos argumentos. <strong>Tu código la ejecuta</strong> y le devuelve el resultado. Repetís hasta que el modelo da una respuesta final.</p>
+      <p><strong>En pocas palabras:</strong> el modelo no puede hacer nada por sí mismo, solo escribir. Pero le podés dar un "menú" de cosas que tu programa sabe hacer (consultar el clima, buscar un cliente). El modelo pide "usá buscar_cliente con el nombre Ana", tu programa lo hace y le cuenta el resultado. Así, de pedido en pedido, resuelve tareas reales.</p>
+      <p><strong>Tool use</strong> (uso de herramientas) funciona en ciclo:</p>
+      <ol>
+        <li>Le describís al modelo las herramientas disponibles: nombre, para qué sirve y qué datos recibe, en un esquema JSON. A esos datos se les dice <em>parámetros</em> o <em>argumentos</em>.</li>
+        <li>Cuando necesita una, el modelo responde pidiendo usarla con ciertos argumentos.</li>
+        <li><strong>Tu código la ejecuta</strong> y le devuelve el resultado.</li>
+        <li>Repetís hasta que el modelo da una respuesta final.</li>
+      </ol>
+      <p>Ese ciclo es el <strong>bucle del agente</strong>. En el código:</p>
+      <ul>
+        <li><code>stop_reason</code> dice por qué paró el modelo. Si es <code>"tool_use"</code>, está pidiendo una herramienta; si no, terminó.</li>
+        <li>El <code>range(10)</code> es un límite de vueltas, para que nunca quede girando para siempre.</li>
+      </ul>
       <pre><code>mensajes = [{"role": "user", "content": pregunta}]
 for paso in range(10):                      # límite de pasos: siempre
     resp = llamar_modelo(mensajes, tools=HERRAMIENTAS)
@@ -2194,20 +2206,41 @@ for paso in range(10):                      # límite de pasos: siempre
     mensajes.append({"role": "user", "content": resultados})</code></pre>
       <p>Diseñar buenas herramientas importa tanto como el prompt: nombres claros, descripciones que digan cuándo usarla, parámetros documentados, errores que expliquen cómo corregir y respuestas concisas (no devuelvas 10.000 líneas).</p>` },
     { titulo: 'Workflows, agentes y MCP', html: `
-      <p><strong>Workflow:</strong> el camino lo define tu código (paso 1 → paso 2). <strong>Agente:</strong> el modelo decide dinámicamente qué hacer y qué herramientas usar. Empezá por lo más simple: muchas tareas se resuelven con una sola llamada bien hecha o un workflow.</p>
-      <p>Patrones comunes (de "Building effective agents" de Anthropic):</p>
+      <p><strong>En pocas palabras:</strong> un <em>workflow</em> es una receta fija: siempre los mismos pasos, en el mismo orden. Un agente es un cocinero que decide qué hacer según lo que encuentra en la heladera. La receta es más predecible y barata; el cocinero, más flexible. Casi siempre conviene empezar por la receta.</p>
       <ul>
-        <li><strong>Prompt chaining:</strong> pasos secuenciales.</li>
-        <li><strong>Routing:</strong> clasificar la entrada y mandarla al flujo adecuado.</li>
-        <li><strong>Paralelización:</strong> subtareas en paralelo o varias votaciones.</li>
-        <li><strong>Orquestador-trabajadores:</strong> un modelo reparte subtareas a otros.</li>
-        <li><strong>Evaluador-optimizador:</strong> uno genera, otro critica, se itera.</li>
+        <li><strong>Workflow</strong> (flujo de trabajo): el camino lo define tu código, primero el paso 1 y después el paso 2.</li>
+        <li><strong>Agente:</strong> el modelo decide sobre la marcha qué hacer y qué herramientas usar.</li>
       </ul>
-      <p><strong>MCP (Model Context Protocol):</strong> estándar abierto para conectar aplicaciones de IA con herramientas y datos. Un <em>servidor MCP</em> expone tools, resources y prompts; cualquier cliente compatible (Claude Code, IDEs, apps) los puede usar sin integración a medida.</p>
-      <p><strong>Riesgos:</strong> bucles infinitos, costos que se disparan, acciones irreversibles. Salvaguardas: límite de pasos y presupuesto, confirmación humana para acciones destructivas, permisos mínimos, logs de cada paso.</p>` },
+      <p>Empezá por lo más simple: muchas tareas se resuelven con una sola llamada bien hecha o con un workflow.</p>
+      <p>Patrones comunes (del artículo "Building effective agents" de Anthropic):</p>
+      <ul>
+        <li><strong>Prompt chaining:</strong> pasos uno detrás del otro (lo viste en Prompting).</li>
+        <li><strong>Routing:</strong> clasificar lo que llega y mandarlo al flujo adecuado, como una recepcionista que deriva a cada área.</li>
+        <li><strong>Paralelización:</strong> hacer varias subtareas a la vez, o pedir la misma respuesta varias veces y quedarse con la más votada.</li>
+        <li><strong>Orquestador-trabajadores:</strong> un modelo "jefe" reparte subtareas a otros y junta los resultados.</li>
+        <li><strong>Evaluador-optimizador:</strong> uno genera, otro critica, y se repite hasta que quede bien.</li>
+      </ul>
+      <p><strong>MCP (Model Context Protocol):</strong> un estándar abierto para conectar aplicaciones de IA con herramientas y datos. Es como el USB: un mismo enchufe sirve para cualquier aparato.</p>
+      <ul>
+        <li>Un <em>servidor MCP</em> ofrece herramientas (tools), datos para leer (resources) y prompts ya armados.</li>
+        <li>Cualquier programa compatible (Claude Code, editores de código, apps) los puede usar sin programar una conexión especial para cada uno.</li>
+      </ul>
+      <p><strong>Riesgos:</strong> bucles infinitos, costos que se disparan y acciones que no se pueden deshacer. Salvaguardas:</p>
+      <ul>
+        <li>Límite de pasos y de presupuesto.</li>
+        <li>Confirmación de una persona antes de acciones destructivas.</li>
+        <li>Los permisos mínimos indispensables.</li>
+        <li>Un registro (<em>log</em>) de cada paso.</li>
+      </ul>` },
     { titulo: 'Sistemas multi-agente: cuándo valen lo que cuestan', html: `
-      <p>Anthropic publicó cómo construyó su sistema de investigación multi-agente: un agente principal (orquestador) planifica y lanza subagentes en paralelo, cada uno con su propia ventana de contexto, que buscan y devuelven resúmenes. En su evaluación interna superó en 90,2% a un solo agente con el modelo más potente.</p>
-      <p><strong>Por qué funciona:</strong> en su análisis, el uso de tokens solo explicó el 80% de la variación de rendimiento. Los sistemas multi-agente funcionan, sobre todo, porque permiten <strong>gastar suficientes tokens</strong> en paralelo y en ventanas separadas. La contracara: un agente usa unas 4 veces los tokens de un chat, y un sistema multi-agente unas 15 veces.</p>
+      <p><strong>En pocas palabras:</strong> para investigar un tema grande, un jefe de equipo reparte partes a varias personas que trabajan a la vez y le traen un resumen. Funciona muy bien cuando las partes son independientes. Pero sale caro, y si todos necesitan saber lo mismo, coordinarlos cuesta más de lo que ayuda.</p>
+      <p>Anthropic publicó cómo construyó su sistema de investigación <strong>multi-agente</strong> (varios agentes trabajando juntos):</p>
+      <ul>
+        <li>Un agente principal, el <em>orquestador</em>, planifica y lanza subagentes a la vez.</li>
+        <li>Cada subagente trabaja en su propia conversación (su ventana de contexto), busca y devuelve un resumen.</li>
+      </ul>
+      <p>En su evaluación interna, superó en un 90,2% a un solo agente con el modelo más potente.</p>
+      <p><strong>Por qué funciona:</strong> en su análisis, la cantidad de tokens usados explicaba por sí sola el 80% de las diferencias de rendimiento. Los sistemas multi-agente funcionan, sobre todo, porque permiten <strong>gastar suficientes tokens</strong> en paralelo y en ventanas separadas. La contracara: un agente usa unas 4 veces los tokens de un chat, y un sistema multi-agente unas 15 veces.</p>
       <p><strong>Cuándo sí:</strong> tareas amplias que se dividen en partes independientes (investigar varias fuentes, comparar muchas opciones) y cuyo valor justifica el costo.</p>
       <p><strong>Cuándo no:</strong> cuando todos los agentes necesitan el mismo contexto o hay muchas dependencias entre subtareas. La mayoría de las tareas de código entran acá: tienen menos partes realmente paralelizables.</p>
       <p><strong>Lecciones de prompting del orquestador:</strong></p>
@@ -2222,25 +2255,28 @@ No cubras: rendimiento ni benchmarks (los investiga el subagente 3).
 Fuentes: páginas oficiales de precios y documentación; evitá blogs comparativos.
 Herramientas: web_search y web_fetch, como máximo 10 llamadas.
 Formato: tabla con producto | plan gratuito | precio por millón de vectores | fuente (URL).</code></pre>
-      <p><strong>Evaluación:</strong> los agentes llegan al mismo resultado por caminos distintos, así que se juzga el <em>resultado</em> (exactitud, citas, completitud, calidad de fuentes) con una rúbrica, no una secuencia fija de pasos. Empezaron con unas 20 consultas reales y sumaron pruebas humanas, que detectaron problemas que la automatización no vio, como preferir granjas de contenido SEO a fuentes autorizadas.</p>` },
+      <p>Arriba, un ejemplo de encargo bien delegado a un subagente: objetivo, qué no cubrir, fuentes, herramientas y formato.</p>
+      <p><strong>Evaluación:</strong> los agentes llegan al mismo resultado por caminos distintos, así que se juzga el <em>resultado</em> (exactitud, citas, que esté completo, calidad de las fuentes) con una <em>rúbrica</em> (una lista de criterios con puntaje, como la de un profe), no una secuencia fija de pasos. Empezaron con unas 20 consultas reales y sumaron revisiones de personas. Estas detectaron problemas que las pruebas automáticas no vieron, como que el agente prefería páginas armadas para aparecer primero en Google (granjas de contenido SEO) antes que fuentes serias.</p>` },
     { titulo: 'Agentes que usan la computadora (computer use)', html: `
-      <p>Con <strong>computer use</strong>, el modelo maneja una computadora como una persona: pide capturas de pantalla, decide dónde hacer clic, qué escribir o qué tecla apretar, y tu aplicación ejecuta esas acciones en un entorno que vos controlás. Es el mismo bucle de tool use, con capturas como resultado.</p>
+      <p><strong>En pocas palabras:</strong> es como guiar a alguien por teléfono para que use una computadora: "¿qué ves en pantalla? Hacé clic en el botón azul". El modelo mira capturas de pantalla y dice dónde hacer clic o qué escribir, y tu programa lo ejecuta. Sirve cuando no hay otra forma, pero es lento, caro y hay que encerrarlo en una computadora aparte por seguridad.</p>
+      <p>Con <strong>computer use</strong> (uso de la computadora), el modelo maneja una computadora como una persona. Pide capturas de pantalla y decide dónde hacer clic, qué escribir o qué tecla apretar. Tu aplicación ejecuta esas acciones en un entorno que vos controlás. Es el mismo bucle de tool use, con capturas como resultado.</p>
       <p><strong>Cuándo usarlo:</strong> cuando no hay otra interfaz, como un sistema viejo sin API o una web sin integración. Si existe una API, usala: es más rápida, más barata y más confiable que interpretar píxeles.</p>
       <p><strong>Costos y fallas típicas</strong> (según la documentación de Claude):</p>
       <ul>
         <li>Cada captura suma entre 1.000 y 1.800 tokens de entrada, y el historial se reenvía en cada paso. En tareas largas hay que podar las capturas viejas o achicarlas.</li>
         <li>Los elementos chicos o ambiguos provocan clics errados. Ayudan el zoom, los atajos de teclado y las instrucciones paso a paso.</li>
         <li>El modelo a veces da por hecha una acción que no funcionó. Pedile que saque una captura después de cada paso y verifique el resultado.</li>
-        <li>Si una acción de un lote falla, no ejecutes las siguientes de ese lote: devolvé el error y dejá que replanifique.</li>
+        <li>El modelo puede pedir varias acciones juntas (un lote). Si una falla, no ejecutes las siguientes: devolvé el error y dejá que vuelva a planificar.</li>
       </ul>
-      <p><strong>Seguridad: el contenido de la pantalla es contenido no confiable.</strong> Una página o una imagen puede traer instrucciones que intenten tomar el control (prompt injection). Recomendaciones de la documentación:</p>
+      <p><strong>Seguridad: lo que aparece en pantalla no es confiable.</strong> Una página o una imagen puede traer escritas instrucciones que intenten tomar el control del agente (<em>prompt injection</em>, que vas a ver en el módulo de seguridad). Recomendaciones de la documentación:</p>
       <ul>
-        <li>Correlo en una <strong>máquina virtual o contenedor dedicado</strong>, con permisos mínimos.</li>
-        <li>Mantené las <strong>credenciales y datos sensibles</strong> fuera de su alcance.</li>
-        <li>Limitá internet a una <strong>lista de dominios permitidos</strong>.</li>
+        <li>Correlo en una <strong>máquina virtual o contenedor dedicado</strong>: una computadora "de mentira" que corre aislada adentro de otra, y que si se rompe no afecta nada más. Con los permisos mínimos.</li>
+        <li>Mantené las <strong>credenciales</strong> (contraseñas, claves) y los datos sensibles fuera de su alcance.</li>
+        <li>Limitá internet a una <strong>lista de sitios permitidos</strong>.</li>
         <li>Pedí <strong>confirmación humana</strong> para acciones con consecuencias: compras, aceptar términos o cookies.</li>
         <li>Contale los riesgos al usuario final y pedile su consentimiento.</li>
       </ul>
+      <p>El código es el bucle con esos cuidados: corta el lote si una acción falla, pide confirmación antes de lo importante (<code>es_consecuente</code>) y ejecuta todo en la máquina virtual.</p>
       <pre><code>for paso in range(MAX_PASOS):                      # límite de pasos, siempre
     resp = llamar_modelo(mensajes, herramientas=[COMPUTER_USE])
     acciones = [b for b in resp.content if b.type == "tool_use"]
@@ -2260,16 +2296,25 @@ Formato: tabla con producto | plan gratuito | precio por millón de vectores | f
     mensajes += [{"role": "assistant", "content": resp.content},
                  {"role": "user", "content": resultados}]</code></pre>` },
     { titulo: 'Diseñar herramientas que los agentes usen bien', html: `
+      <p><strong>En pocas palabras:</strong> el agente solo sabe de tus herramientas lo que dice su nombre y su descripción, como alguien que usa un aparato solo leyendo las etiquetas de los botones. Pocos botones claros, con nombres que se entienden y mensajes de error que dicen cómo arreglar el problema, hacen que el agente se equivoque mucho menos.</p>
       <p>Un agente es tan bueno como sus herramientas. La guía de ingeniería de Anthropic "Writing effective tools for agents" resume lo que funciona:</p>
       <ol>
-        <li><strong>Pocas herramientas, de alto impacto.</strong> No envuelvas cada endpoint de tu API. En lugar de <code>listar_usuarios</code>, <code>listar_eventos</code> y <code>crear_evento</code>, una sola <code>agendar_reunion</code> que busca disponibilidad y reserva. En lugar de <code>leer_logs</code>, <code>buscar_en_logs</code>, que devuelve solo las líneas relevantes.</li>
-        <li><strong>Nombres con espacio de nombres.</strong> Agrupá por servicio y recurso (<code>jira_buscar</code>, <code>asana_proyectos_buscar</code>) para que el agente elija bien. Probá qué convención le funciona mejor a tu modelo.</li>
-        <li><strong>Devolvé contexto con significado.</strong> Nombres en vez de UUIDs o tipos MIME. Ofrecé un parámetro de formato (conciso o detallado): en el ejemplo de la guía, la versión concisa usó cerca de un tercio de los tokens.</li>
-        <li><strong>Cuidá los tokens.</strong> Paginación, filtros y límites por defecto razonables. Si truncás, decile al agente cómo acotar la búsqueda.</li>
-        <li><strong>Errores que enseñan.</strong> No "Error 422", sino "Fecha inválida '31/02'. Usá AAAA-MM-DD, por ejemplo 2026-03-15".</li>
+        <li><strong>Pocas herramientas, de alto impacto.</strong> No conviertas en herramienta cada <em>endpoint</em> de tu API (cada operación que ofrece, como "listar usuarios"). En lugar de <code>listar_usuarios</code>, <code>listar_eventos</code> y <code>crear_evento</code>, una sola <code>agendar_reunion</code> que busca disponibilidad y reserva. En lugar de <code>leer_logs</code>, <code>buscar_en_logs</code>, que devuelve solo las líneas relevantes.</li>
+        <li><strong>Nombres con prefijo.</strong> Agrupá por servicio y por tipo de dato, con un prefijo común (un <em>espacio de nombres</em>) (<code>jira_buscar</code>, <code>asana_proyectos_buscar</code>) para que el agente elija bien. Probá qué convención le funciona mejor a tu modelo.</li>
+        <li><strong>Devolvé datos que se entiendan.</strong> Nombres en vez de códigos internos, como los UUID (identificadores tipo "a3f9-...") o los tipos MIME ("image/png"). Ofrecé un parámetro de formato (conciso o detallado): en el ejemplo de la guía, la versión concisa usó cerca de un tercio de los tokens.</li>
+        <li><strong>Cuidá los tokens.</strong> Devolvé los resultados por páginas (<em>paginación</em>), con filtros y con límites razonables por defecto. Si cortás un resultado largo, decile al agente cómo afinar la búsqueda.</li>
+        <li><strong>Errores que enseñan.</strong> No "Error 422" (un código que el agente no sabe interpretar), sino "Fecha inválida '31/02'. Usá AAAA-MM-DD, por ejemplo 2026-03-15".</li>
         <li><strong>Descripciones como para alguien que empieza en el equipo.</strong> Parámetros sin ambigüedad (<code>usuario_id</code>, no <code>usuario</code>). Un cambio chico en la descripción puede cambiar mucho el comportamiento.</li>
-        <li><strong>Evaluá en un bucle.</strong> Tareas realistas de varios pasos con resultado verificable; medí éxito, llamadas, errores y tokens; leé las transcripciones para ver dónde se confunde; y guardá un conjunto de prueba aparte para no sobreajustar.</li>
+        <li><strong>Evaluá y mejorá en ciclos:</strong>
+          <ul>
+            <li>Usá tareas realistas de varios pasos, con un resultado que se pueda comprobar.</li>
+            <li>Medí cuántas salen bien, cuántas llamadas hizo, los errores y los tokens.</li>
+            <li>Leé las conversaciones completas para ver dónde se confunde.</li>
+            <li>Guardá un conjunto de prueba aparte, para no mejorar solo para esos casos (sobreajuste).</li>
+          </ul>
+        </li>
       </ol>
+      <p>Así se ve una herramienta bien descrita. <code>enum</code> es la lista de valores permitidos y <code>default</code>, el valor que se usa si no se indica otro.</p>
       <pre><code>{
   "name": "tickets_buscar",
   "description": "Busca tickets de soporte por texto y estado. Usala antes de responder sobre un cliente. Devuelve como máximo 'limite' resultados; si hay más, la respuesta indica cómo pedir la página siguiente.",
@@ -2286,16 +2331,18 @@ Formato: tabla con producto | plan gratuito | precio por millón de vectores | f
 }</code></pre>
       <p>Pensalo así: el agente solo conoce tu herramienta por su nombre, su descripción y lo que devuelve. Todo lo que no esté ahí, no existe para él.</p>` },
     { titulo: 'Memoria de largo plazo para agentes', html: `
-      <p>La ventana de contexto es la memoria de trabajo del agente: se pierde al terminar la sesión o al compactar. Para que un agente recuerde entre sesiones (las preferencias de un cliente, el avance de un proyecto, lo que aprendió de un error) necesita <strong>memoria de largo plazo</strong> fuera del contexto. El paper MemGPT lo plantea como un sistema operativo: el contexto es la RAM y la memoria externa es el disco.</p>
-      <p><strong>La herramienta de memoria de Claude</strong> funciona así: el modelo pide operaciones sobre archivos dentro de <code>/memories</code> (ver, crear, reemplazar texto, insertar, borrar, renombrar) y <strong>tu aplicación las ejecuta</strong> sobre el almacenamiento que elijas. La memoria vive en tu sistema, no en el modelo. Al empezar una tarea, el agente revisa su memoria; mientras trabaja, anota lo que aprende.</p>
+      <p><strong>En pocas palabras:</strong> el agente es como alguien con amnesia que cada mañana se olvida de todo. La solución es la misma que en la película: un cuaderno de notas que lee al empezar el día y donde anota lo importante. Ese cuaderno lo guardás vos, y hay que cuidar que nadie le escriba instrucciones tramposas.</p>
+      <p>La ventana de contexto es la memoria de trabajo del agente: se pierde al terminar la sesión o al compactar. Para que un agente recuerde entre sesiones (las preferencias de un cliente, el avance de un proyecto, lo que aprendió de un error), necesita <strong>memoria de largo plazo</strong> fuera del contexto. El paper MemGPT lo compara con una computadora: el contexto es la memoria RAM (rápida pero que se borra al apagar) y la memoria externa es el disco (que queda guardado).</p>
+      <p><strong>La herramienta de memoria de Claude</strong> funciona así: el modelo pide operaciones sobre archivos dentro de una carpeta <code>/memories</code> (ver, crear, reemplazar texto, insertar, borrar, renombrar) y <strong>tu aplicación las ejecuta</strong> donde elijas guardarlas. La memoria vive en tu sistema, no en el modelo. Al empezar una tarea, el agente revisa su memoria; mientras trabaja, anota lo que aprende.</p>
       <p><strong>Qué conviene guardar:</strong> decisiones, preferencias, progreso y lecciones aprendidas, no el historial completo. Para trabajos de varias sesiones, la documentación sugiere un patrón: una sesión inicial arma un registro de progreso y una lista de tareas; cada sesión nueva los lee al empezar y los actualiza al terminar; y una tarea se marca completa solo después de verificarla de punta a punta.</p>
       <p><strong>Riesgos, y la responsabilidad es tuya porque tu código ejecuta todo:</strong></p>
       <ul>
-        <li><strong>Rutas maliciosas:</strong> un pedido como <code>/memories/../../secrets.env</code> puede escaparse del directorio. Validá cada ruta.</li>
+        <li><strong>Rutas tramposas:</strong> en una ruta de archivo, <code>..</code> quiere decir "la carpeta de arriba". Un pedido como <code>/memories/../../secrets.env</code> puede escaparse de la carpeta de memoria y leer tus claves. Validá cada ruta.</li>
         <li><strong>Mezcla de usuarios:</strong> la memoria de cada usuario va separada; si no, uno puede leer datos de otro.</li>
         <li><strong>Memoria envenenada:</strong> si el agente guarda contenido no confiable (una web, un email), ese texto puede volver como "instrucciones" en sesiones futuras. Es prompt injection diferida.</li>
         <li><strong>Datos sensibles y crecimiento:</strong> filtrá lo sensible antes de escribir, limitá el tamaño y borrá lo que no se usa hace tiempo.</li>
       </ul>
+      <p>El código valida las rutas: arma la ruta real dentro de la carpeta de cada usuario y comprueba que no se haya escapado de ella.</p>
       <pre><code>from pathlib import Path
 RAIZ = Path("/datos/memorias").resolve()
 
@@ -2310,9 +2357,10 @@ def ruta_segura(usuario_id, ruta_pedida):
     return real</code></pre>
       <p>La memoria se combina con la compactación: la compactación mantiene chico el contexto activo, y la memoria guarda lo que tiene que sobrevivir a ese resumen.</p>` },
     { titulo: 'El bucle del agente en producción: errores, efectos y aprobaciones', html: `
-      <p>El bucle de tool use de la primera lección funciona en una demo. En producción, las herramientas fallan, la red se corta, el modelo pide algo mal formado y algunas acciones no se pueden deshacer. La diferencia entre un agente de juguete y uno confiable está casi toda en <strong>tu código alrededor del modelo</strong>, no en el prompt.</p>
+      <p><strong>En pocas palabras:</strong> en una prueba todo sale bien. Con usuarios reales, las herramientas fallan, internet se corta y el agente a veces pide cosas mal. Esta lección es el "manual de emergencias": cómo avisarle al modelo de un error para que lo corrija, cómo no mandar dos veces el mismo mail y qué acciones necesitan que una persona diga "sí".</p>
+      <p>El bucle de tool use de la primera lección funciona en una demo. En producción (con usuarios reales), las herramientas fallan, la red se corta, el modelo pide algo mal formado y algunas acciones no se pueden deshacer. La diferencia entre un agente de juguete y uno confiable está casi toda en <strong>tu código alrededor del modelo</strong>, no en el prompt.</p>
       <h3>1. Los errores de herramientas vuelven al modelo, no rompen el bucle</h3>
-      <p>Si una herramienta falla, no tires una excepción que corte todo: devolvé un <code>tool_result</code> con <code>"is_error": true</code> y un mensaje que diga <strong>qué pasó y qué probar</strong> ("Límite de uso excedido, reintentá en 60 segundos", "Falta el parámetro fecha en formato AAAA-MM-DD"). Con eso el modelo puede corregir y reintentar; la documentación de Claude indica que, ante llamadas inválidas, el modelo reintenta 2 o 3 veces con correcciones antes de rendirse. Para eliminar de raíz los parámetros faltantes o de tipo incorrecto, activá <strong>strict tool use</strong> (<code>strict: true</code> en la definición), que garantiza que la entrada respete el esquema.</p>
+      <p>Si una herramienta falla, no tires una excepción (un error que corta el programa): devolvé un <code>tool_result</code> (el resultado de la herramienta) con <code>"is_error": true</code> y un mensaje que diga <strong>qué pasó y qué probar</strong> ("Límite de uso excedido, reintentá en 60 segundos", "Falta el parámetro fecha en formato AAAA-MM-DD"). Con eso el modelo puede corregir y reintentar; la documentación de Claude indica que, ante llamadas inválidas, el modelo reintenta 2 o 3 veces con correcciones antes de rendirse. Para eliminar de raíz los parámetros faltantes o de tipo incorrecto, activá <strong>strict tool use</strong> (<code>strict: true</code> en la definición), que garantiza que la entrada respete el esquema.</p>
       <h3>2. Reglas de formato que rompen agentes en silencio</h3>
       <ul>
         <li>Cada <code>tool_use</code> necesita su <code>tool_result</code> con el mismo <code>tool_use_id</code> en el mensaje siguiente, incluso si la herramienta falló o la cancelaste (en ese caso, un resultado con error que lo explique).</li>
@@ -2320,9 +2368,9 @@ def ruta_segura(usuario_id, ruta_pedida):
         <li>El contenido que traen las herramientas (páginas web, mails, archivos) es <strong>no confiable</strong>: dejalo dentro del <code>tool_result</code>, nunca lo copies al system prompt.</li>
       </ul>
       <h3>3. Efectos secundarios: reintentar puede duplicar</h3>
-      <p>Si <code>enviar_mail</code> da timeout, no sabés si el mail salió. Reintentar a ciegas puede mandarlo dos veces. Las herramientas con efectos deben ser <strong>idempotentes</strong>: tu código genera una clave única por acción y el servicio ignora repeticiones con la misma clave.</p>
+      <p>Si <code>enviar_mail</code> da timeout, no sabés si el mail salió. Reintentar a ciegas puede mandarlo dos veces. Las herramientas con efectos deben ser <strong>idempotentes</strong>, es decir, que hacerlas dos veces dé lo mismo que hacerlas una: tu código genera una clave única por acción y el servicio ignora las repeticiones con la misma clave.</p>
       <h3>4. Aprobaciones decididas por código</h3>
-      <p>Clasificá cada herramienta: <strong>lectura</strong> (corre sola), <strong>escritura reversible</strong> (corre y queda registrada) e <strong>irreversible</strong> (pagar, borrar, enviar: requiere confirmación humana). La regla vive en tu código, no en el prompt, porque una prompt injection puede convencer al modelo pero no a un <code>if</code>. Los SDKs de agentes traen esto como modos de permisos y reglas de permitir o denegar por herramienta.</p>
+      <p>Clasificá cada herramienta: <strong>lectura</strong> (corre sola), <strong>escritura reversible</strong> (corre y queda registrada) e <strong>irreversible</strong> (pagar, borrar, enviar: requiere confirmación humana). La regla vive en tu código, no en el prompt, porque un texto tramposo (prompt injection) puede convencer al modelo, pero no a un <code>if</code> de tu programa. Los SDKs de agentes traen esto como modos de permisos y reglas de permitir o denegar por herramienta.</p>
       <h3>5. Presupuestos y trazas</h3>
       <p>Poné límites de pasos, tokens y tiempo, y al llegar al límite cortá con un mensaje claro en vez de seguir gastando. Registrá cada paso (herramienta, argumentos, resultado, tokens, duración): sin trazas no podés depurar por qué el agente hizo algo raro.</p>
       <pre><code>IRREVERSIBLES = {"enviar_mail", "borrar_archivo", "cobrar"}
