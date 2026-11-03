@@ -1111,29 +1111,75 @@ opt = torch.optim.AdamW([
   ],
   lecciones: [
     { titulo: 'De texto a predicción: tokens, embeddings y atención', html: `
-      <p><strong>Tokenización:</strong> el texto se parte en tokens (trozos de palabra) con algoritmos como BPE. Un token no es una palabra: en inglés, 1 token ≈ 4 caracteres; en español suele haber más tokens por palabra.</p>
-      <p><strong>Embeddings:</strong> cada token se convierte en un vector. Se le suma (o se codifica en la atención) información de posición, porque la atención por sí sola no sabe el orden.</p>
-      <p><strong>Atención:</strong> cada token genera una query (Q), una key (K) y un value (V). Para cada token, se compara su Q con las K de los demás, se aplica softmax y se promedian los V:</p>
-      <pre><code>Atención(Q, K, V) = softmax(Q·Kᵀ / √d_k) · V</code></pre>
-      <p>Se divide por √d_k para que los productos punto no crezcan tanto que el softmax se sature. <strong>Multi-head</strong>: varias atenciones en paralelo, cada una aprende relaciones distintas (sintaxis, referencias, etc.).</p>
-      <p>Los LLMs actuales son mayormente <strong>decoder-only</strong>: con máscara causal (cada token solo ve los anteriores), entrenados para <strong>predecir el siguiente token</strong>. Generar texto es repetir esa predicción una y otra vez.</p>` },
-    { titulo: 'Cómo se entrena y se usa un LLM', html: `
+      <p><strong>En pocas palabras:</strong> un LLM es un autocompletar gigante. Corta tu texto en pedacitos, convierte cada pedacito en números y, mirando todo lo anterior, adivina cuál es el pedacito que viene. Después agrega ese y vuelve a adivinar, hasta terminar la respuesta.</p>
+      <p>El camino tiene tres etapas:</p>
+      <p><strong>1. Tokenización:</strong> el texto se parte en tokens (trozos de palabra) con algoritmos como BPE, que se explica en la última lección del módulo. Un token no es una palabra:</p>
+      <ul>
+        <li>En inglés, 1 token son unos 4 caracteres.</li>
+        <li>En español suele haber más tokens por palabra. Por ejemplo, "desafortunadamente" puede quedar en "des", "afort", "un", "adamente".</li>
+      </ul>
+      <p><strong>2. Embeddings:</strong> cada token se convierte en un vector, su embedding (lo viste en Fundamentos). Además, se agrega información de la <em>posición</em> del token en el texto, porque la atención, por sí sola, no sabe el orden de las palabras. Sin eso, "el perro mordió al hombre" y "el hombre mordió al perro" serían lo mismo.</p>
+      <p><strong>3. Atención:</strong> el mecanismo con el que cada token junta información de los demás. En "Ana le prestó el libro a Juan porque <em>él</em> lo necesitaba", la atención es lo que conecta "él" con "Juan". Funciona como una búsqueda: cada token genera tres vectores.</p>
+      <ul>
+        <li><strong>Query (Q)</strong>, la pregunta: "¿qué estoy buscando?".</li>
+        <li><strong>Key (K)</strong>, la etiqueta: "esto es lo que tengo".</li>
+        <li><strong>Value (V)</strong>, el contenido: "esto es lo que te doy si me elegís".</li>
+      </ul>
+      <p>Para cada token se hacen tres pasos:</p>
       <ol>
-        <li><strong>Pre-training:</strong> billones de tokens de texto, objetivo de siguiente token. Sale un modelo que "completa" texto.</li>
-        <li><strong>Fine-tuning supervisado (SFT):</strong> ejemplos de instrucción → buena respuesta. Sale un asistente.</li>
-        <li><strong>Alineación con preferencias:</strong> RLHF/RLAIF o DPO, para que sea útil, honesto y seguro.</li>
-        <li><strong>Razonamiento:</strong> modelos entrenados (a menudo con RL) para "pensar" antes de responder; mejoran en matemáticas, código y tareas de varios pasos a cambio de más tokens y latencia.</li>
+        <li>Se compara su Q con las K de todos los demás tokens (con producto punto).</li>
+        <li>Se pasa por softmax, para obtener cuánta atención le da a cada uno.</li>
+        <li>Se promedian los V con esos pesos.</li>
       </ol>
-      <p><strong>Ventana de contexto:</strong> máximo de tokens (entrada + salida) que el modelo procesa a la vez. Fuera de ahí, no existe para el modelo.</p>
+      <p>En fórmula (Kᵀ es K transpuesta, dada vuelta para poder multiplicar):</p>
+      <pre><code>Atención(Q, K, V) = softmax(Q·Kᵀ / √d_k) · V</code></pre>
+      <p>d_k es el largo de cada vector key. Se divide por √d_k (su raíz cuadrada) porque, con vectores largos, los productos punto dan números muy grandes. Con números grandes, softmax "se satura": le da casi el 100% a uno solo y el modelo deja de aprender bien.</p>
+      <p><strong>Multi-head</strong> (varias cabezas): se hacen varias atenciones en paralelo y cada una aprende a fijarse en algo distinto. Por ejemplo, una en la gramática y otra en a quién se refiere cada pronombre.</p>
+      <p>Los LLMs actuales son mayormente <strong>decoder-only</strong> (solo decodificador), entrenados para <strong>predecir el siguiente token</strong>. Usan una <em>máscara causal</em>: cada token solo puede mirar a los anteriores, nunca a los que vienen después, porque eso sería hacer trampa. Generar texto es repetir esa predicción una y otra vez.</p>` },
+    { titulo: 'Cómo se entrena y se usa un LLM', html: `
+      <p><strong>En pocas palabras:</strong> primero el modelo lee una biblioteca enorme y aprende a continuar textos. Después le enseñan con ejemplos a contestar como un asistente, y por último personas le dicen qué respuestas son mejores. Esta lección también cubre sus límites: cuánto puede leer de una vez, por qué a veces inventa y cómo compararlos.</p>
+      <p>Un LLM se entrena en etapas:</p>
+      <ol>
+        <li><strong>Pre-training</strong> (preentrenamiento): lee billones de tokens de texto (libros, webs, código) con un único objetivo, adivinar el siguiente token. Sale un modelo que "completa" texto, pero que todavía no sabe conversar.</li>
+        <li><strong>Fine-tuning supervisado (SFT):</strong> se lo sigue entrenando con miles de ejemplos de la forma "instrucción → buena respuesta", escritos por personas. Sale un asistente.</li>
+        <li><strong>Alineación con preferencias:</strong> se le muestran dos respuestas y se marca cuál es mejor, para que sea útil, honesto y seguro. Hay varias técnicas:
+          <ul>
+            <li><strong>RLHF:</strong> las preferencias las marcan personas.</li>
+            <li><strong>RLAIF:</strong> las marca otra IA.</li>
+            <li><strong>DPO:</strong> una forma más simple de aprender directo de esas comparaciones.</li>
+          </ul>
+        </li>
+        <li><strong>Razonamiento:</strong> se lo entrena, a menudo con RL (aprendizaje por refuerzo), para que "piense" antes de responder. Mejora en matemáticas, código y tareas de varios pasos, a cambio de más tokens y más latencia (más tiempo de espera).</li>
+      </ol>
+      <p><strong>Ventana de contexto:</strong> el máximo de tokens que el modelo puede procesar a la vez, contando lo que le mandás y lo que responde. Es su "memoria de trabajo": lo que queda afuera, para el modelo no existe.</p>
       <p><strong>Que entre no significa que lo use bien:</strong> con muchísimo contexto (por ejemplo, un manual de 180.000 tokens en cada llamada), el modelo usa peor la información, se dispersa u olvida instrucciones (se le dice <em>context rot</em>). Mandá solo las partes relevantes para cada pregunta: eso es lo que hace RAG, que vas a ver más adelante.</p>
-      <p><strong>Benchmarks:</strong> los proveedores publican puntajes en pruebas públicas (MMLU, SWE-bench...). Sirven de orientación, pero miden tareas genéricas y pueden estar <strong>contaminados</strong>: si las preguntas aparecieron en los datos de entrenamiento, el modelo las recuerda en lugar de razonarlas. Para elegir, compará los modelos con tus propios casos, mirando también costo y latencia.</p>
-      <p><strong>Muestreo:</strong> <em>temperatura</em> baja = más determinista; alta = más variado. <em>Top-p</em> limita la elección a los tokens que acumulan probabilidad p. Ojo: no todas las APIs los exponen. En la API de Claude, la versión 2026-10-21 eliminó <code>temperature</code>, <code>top_p</code> y <code>top_k</code> (devuelven error 400) y el comportamiento se guía con el prompt. Siguen existiendo en muchos otros proveedores y en modelos abiertos.</p>
-      <p><strong>Alucinaciones:</strong> el modelo genera texto plausible, no necesariamente verdadero. Se mitiga dando contexto (RAG), pidiendo citas, permitiendo "no sé" y evaluando.</p>
-      <p><strong>Leyes de escalado:</strong> el rendimiento mejora de forma predecible con más parámetros, datos y cómputo, y también con más cómputo en inferencia (pensar más).</p>` },
+      <p><strong>Benchmarks</strong> (pruebas estándar): los proveedores publican puntajes en pruebas públicas (MMLU, SWE-bench...). Sirven de orientación, pero miden tareas genéricas y pueden estar <strong>contaminados</strong>: si las preguntas aparecieron en los datos de entrenamiento, el modelo las recuerda en lugar de razonarlas. Para elegir, compará los modelos con tus propios casos, mirando también costo y latencia.</p>
+      <p><strong>Muestreo:</strong> es cómo se elige el próximo token entre los posibles. No siempre se elige el más probable; se "tira un dado" con las probabilidades. Dos perillas:</p>
+      <ul>
+        <li><em>Temperatura:</em> baja da respuestas más <em>deterministas</em> (casi siempre la misma); alta, más variadas y creativas.</li>
+        <li><em>Top-p:</em> sortea solo entre los tokens más probables que, sumados, llegan a la probabilidad p. Por ejemplo, con 0,9 descarta el 10% de opciones más raras.</li>
+      </ul>
+      <p> Ojo: no todas las APIs los exponen. En la API de Claude, la versión 2026-10-21 eliminó <code>temperature</code>, <code>top_p</code> y <code>top_k</code> (devuelven error 400) y el comportamiento se guía con el <em>prompt</em> (las instrucciones que le escribís). Siguen existiendo en muchos otros proveedores y en <em>modelos abiertos</em> (los que podés descargar y correr vos).</p>
+      <p><strong>Alucinaciones:</strong> el modelo genera texto que <em>suena</em> bien, no necesariamente verdadero. Por eso puede inventar con total seguridad una cita, un dato o una función que no existe. Se reduce con cuatro cosas:</p>
+      <ul>
+        <li>Darle los datos (RAG).</li>
+        <li>Pedirle que cite de dónde sacó cada cosa.</li>
+        <li>Permitirle decir "no sé".</li>
+        <li>Medirlo con pruebas (evals).</li>
+      </ul>
+      <p><strong>Leyes de escalado:</strong> el rendimiento mejora de forma predecible con más parámetros, más datos y más cómputo (más horas de GPU). También mejora con más cómputo en <em>inferencia</em>, que es el momento de usarlo y no de entrenarlo: dejarlo pensar más.</p>` },
     { titulo: 'Modelos de razonamiento: pensar antes de responder', html: `
-      <p>Los modelos de razonamiento generan una cadena de pensamiento larga antes de la respuesta final. Abren una segunda forma de escalar: además de entrenar modelos más grandes, se puede gastar más <strong>cómputo en inferencia</strong>, dejando que el modelo piense más tokens en las tareas difíciles.</p>
-      <p><strong>Cómo se entrenan:</strong> con aprendizaje por refuerzo sobre tareas de <em>recompensa verificable</em>: matemáticas con respuesta exacta, código que pasa tests. El modelo prueba, se verifica el resultado y se refuerza lo que funcionó. El paper de DeepSeek-R1 mostró que con RL emergen solos comportamientos como revisar el propio trabajo y probar otro camino cuando uno falla.</p>
-      <p><strong>Cuándo usarlos:</strong> matemáticas, código, planificación, análisis de varios pasos y decisiones con muchas restricciones. <strong>Cuándo no:</strong> clasificar, extraer o resumir textos cortos. Ahí multiplicás tokens, latencia y costo sin ganar calidad. Como siempre, decidilo con evals.</p>
+      <p><strong>En pocas palabras:</strong> es la diferencia entre contestar de memoria y agarrar un papel para hacer la cuenta. Estos modelos escriben primero un "borrador" de pensamiento y después responden. Aciertan más en problemas difíciles, pero tardan más y cuestan más, así que no conviene usarlos para todo.</p>
+      <p>Los modelos de razonamiento generan una <em>cadena de pensamiento</em> larga (el borrador) antes de la respuesta final. Abren una segunda forma de mejorar un modelo: además de entrenar modelos más grandes, se puede gastar más <strong>cómputo en inferencia</strong>, es decir, al momento de responder, dejando que el modelo piense más tokens en las tareas difíciles.</p>
+      <p><strong>Cómo se entrenan:</strong> con aprendizaje por refuerzo (premio cuando acierta) sobre tareas de <em>recompensa verificable</em>, donde una computadora puede comprobar sola si la respuesta está bien: matemáticas con resultado exacto, o código que pasa sus <em>tests</em> (pruebas automáticas). El ciclo es simple:</p>
+      <ol>
+        <li>El modelo prueba una respuesta.</li>
+        <li>Se verifica el resultado.</li>
+        <li>Se refuerza lo que funcionó.</li>
+      </ol>
+      <p>El paper de DeepSeek-R1 mostró que, con ese entrenamiento, aparecen solos comportamientos como revisar el propio trabajo y probar otro camino cuando uno falla.</p>
+      <p><strong>Cuándo usarlos:</strong> matemáticas, código, planificación, análisis de varios pasos y decisiones con muchas condiciones. <strong>Cuándo no:</strong> clasificar, extraer o resumir textos cortos. Ahí multiplicás tokens, espera y costo sin ganar calidad. Como siempre, decidilo con evals (pruebas con tus propios casos).</p>
+      <p>El código muestra <em>routing</em>: mandar cada tarea al modelo que le conviene. <code>llamar</code> y los modelos son nombres de ejemplo.</p>
       <pre><code>def responder(tarea):
     # routing por tipo de tarea; los umbrales salen de tus evals, no de la intuición
     if tarea.tipo in {"clasificar", "extraer", "resumir_corto"}:
@@ -1142,15 +1188,17 @@ opt = torch.optim.AdamW([
       <p><strong>Cómo escribirles:</strong> dales el objetivo, el contexto y los criterios de éxito, y dejá que ellos planifiquen. Dictarles cada paso suele rendir menos que una instrucción de alto nivel bien explicada. En la API se activa como "extended thinking" o similar, con un presupuesto de tokens de razonamiento que también se cobran.</p>
       <p><strong>Límite importante: el razonamiento visible no siempre es fiel.</strong> En un estudio de Anthropic, a los modelos se les daban pistas para responder. Claude 3.7 Sonnet mencionó en su razonamiento la pista que usó solo el 25% de las veces, y DeepSeek R1 el 39%. En pruebas donde podían hacer trampa con la recompensa, la aprovecharon más del 99% de las veces, pero lo admitieron en menos del 2% de los casos. Leer el razonamiento ayuda a depurar, pero no prueba qué hizo el modelo ni reemplaza los controles de seguridad.</p>` },
     { titulo: 'Por dentro de un LLM moderno: RoPE, SwiGLU, MoE y FlashAttention', html: `
-      <p>El Transformer de 2017 sigue siendo la base, pero los LLMs actuales le suman varias mejoras. Conocerlas te permite leer el <code>config.json</code> de un modelo abierto y entender qué estás corriendo.</p>
+      <p><strong>En pocas palabras:</strong> el motor original de 2017 sigue siendo el mismo, pero los autos de hoy le agregaron mejoras: mejor inyección, turbo, frenos ABS. Esta lección es el "manual del mecánico". No la necesitás para usar un LLM, pero sí para elegir un modelo abierto y saber cuánta memoria y velocidad te va a pedir.</p>
+      <p>El Transformer de 2017 sigue siendo la base, pero los LLMs actuales le suman varias mejoras. Conocerlas te permite leer el <code>config.json</code> de un modelo abierto (el archivo que describe cómo está armado) y entender qué estás corriendo. Cada mejora, con qué problema resuelve:</p>
       <ul>
-        <li><strong>Pre-norm y RMSNorm:</strong> la normalización se aplica <em>antes</em> de la atención y del MLP, no después, y el camino residual queda limpio. Entrena de forma más estable en redes profundas. RMSNorm es una versión más simple y barata de LayerNorm.</li>
-        <li><strong>RoPE (rotary position embedding):</strong> en lugar de sumar un vector de posición, rota las queries y keys según su posición. Así la atención depende de la <em>distancia relativa</em> entre tokens, y se presta a técnicas para extender el contexto.</li>
-        <li><strong>SwiGLU:</strong> un MLP con compuerta: una rama decide cuánto pasa de la otra. Mejora la calidad frente al MLP clásico con el mismo presupuesto.</li>
-        <li><strong>GQA:</strong> varias cabezas de query comparten keys y values para achicar el KV cache (lo viste en el módulo de fine-tuning y servicio).</li>
-        <li><strong>Mixture of Experts (MoE):</strong> cada capa tiene varios MLPs "expertos" y un router elige unos pocos por token. Mixtral 8x7B, por ejemplo, tiene 8 expertos por capa y usa 2 por token: tiene acceso a unos 47.000 millones de parámetros, pero activa unos 13.000 millones por token. Cómputo de modelo chico con capacidad de modelo grande, aunque <strong>la memoria tiene que alojar todos los expertos</strong>.</li>
-        <li><strong>FlashAttention:</strong> calcula la atención <em>exacta</em>, no una aproximación, pero reorganizada para minimizar las lecturas y escrituras en la memoria de la GPU. Resultado: más velocidad y mucha menos memoria con contextos largos.</li>
+        <li><strong>Pre-norm y RMSNorm:</strong> la normalización (reajustar los números a una escala estable, que viste en Deep Learning) se aplica <em>antes</em> de la atención y del MLP, no después. Así el atajo residual queda limpio y las redes muy profundas entrenan de forma más estable. RMSNorm es una versión más simple y barata de LayerNorm.</li>
+        <li><strong>RoPE</strong> (rotary position embedding): la forma de decirle al modelo en qué posición está cada token. En lugar de sumarle un vector de posición, "gira" las queries y keys un ángulo distinto según la posición. Así la atención depende de la <em>distancia</em> entre dos tokens (están a 3 de distancia) más que de su posición exacta. Eso facilita estirar el modelo a textos más largos.</li>
+        <li><strong>SwiGLU:</strong> un MLP con <em>compuerta</em>: tiene dos caminos, y uno decide cuánto deja pasar del otro, como una canilla. Da mejor calidad que el MLP clásico con el mismo costo.</li>
+        <li><strong>GQA</strong> (grouped-query attention): varias cabezas de atención comparten las mismas keys y values. Así ocupa menos el <em>KV cache</em>, la memoria donde el modelo guarda las keys y values de lo ya leído para no recalcularlas (lo vas a ver en el módulo de fine-tuning y servicio).</li>
+        <li><strong>Mixture of Experts (MoE)</strong>, mezcla de expertos: cada capa tiene varios MLPs "expertos", y un <em>router</em> (un repartidor) elige unos pocos para cada token, como derivar a cada paciente al especialista que corresponde. Mixtral 8x7B, por ejemplo, tiene 8 expertos por capa y usa 2 por token: tiene acceso a unos 47.000 millones de parámetros, pero activa unos 13.000 millones por token. Cómputo de modelo chico con capacidad de modelo grande, aunque <strong>la memoria tiene que alojar todos los expertos</strong>.</li>
+        <li><strong>FlashAttention:</strong> calcula la atención <em>exacta</em>, no una aproximación, pero ordena las cuentas para leer y escribir lo menos posible en la memoria de la GPU, que es lo lento. Es como cocinar con todo a mano en la mesada en vez de ir a la alacena por cada ingrediente. Resultado: más velocidad y mucha menos memoria con textos largos.</li>
       </ul>
+      <p>El código es un esquema (no corre) de cómo se arma un bloque, la pieza que se repite decenas de veces dentro del modelo. <code>x + ...</code> es la conexión residual.</p>
       <pre><code>def bloque(x):
     x = x + atencion(rms_norm(x), posiciones="RoPE", kv_compartidas="GQA")  # pre-norm + residual
     x = x + mlp(rms_norm(x))    # en MoE: el router elige 2 de 8 MLPs para cada token
@@ -1158,36 +1206,40 @@ opt = torch.optim.AdamW([
 
 def mlp_swiglu(x):
     return W_baja(silu(W_compuerta(x)) * W_sube(x))   # la compuerta regula lo que pasa</code></pre>
-      <p>Al elegir un modelo abierto, estos detalles importan en la práctica: un MoE grande puede ser rápido por token pero necesitar mucha más memoria que un modelo denso con el mismo cómputo, y el tipo de atención y de posición condicionan cuánto contexto podés usar con el hardware que tenés.</p>` },
+      <p>Al elegir un modelo abierto, estos detalles importan en la práctica: un MoE grande puede ser rápido por token pero necesitar mucha más memoria que un modelo <em>denso</em> (sin expertos, que usa todos sus pesos en cada token) con el mismo cómputo, y el tipo de atención y de posición condicionan cuánto contexto podés usar con el hardware que tenés.</p>` },
     { titulo: 'Modelos multimodales: cómo un LLM "ve" una imagen', html: `
-      <p>Un LLM procesa secuencias de tokens. Para que entienda una imagen, hay que convertirla en algo parecido a tokens. Así funciona la receta más común:</p>
+      <p><strong>En pocas palabras:</strong> el LLM solo sabe leer tokens. Para mostrarle una foto, la cortás como un rompecabezas en cuadraditos y "traducís" cada pieza a un token. El modelo lee esas piezas junto con tu texto, como si fueran palabras de otro idioma que aprendió a entender.</p>
+      <p>Un modelo <strong>multimodal</strong> entiende más de un tipo de dato: texto, imágenes, audio. Un LLM procesa secuencias de tokens, así que para que entienda una imagen hay que convertirla en algo parecido a tokens. Así funciona la receta más común:</p>
       <ol>
-        <li><strong>Parches (ViT):</strong> el Vision Transformer corta la imagen en cuadraditos, por ejemplo de 14×14 o 16×16 píxeles, convierte cada uno en un vector y los procesa con un Transformer como si fueran palabras. De ahí el título del paper: "una imagen vale 16×16 palabras".</li>
-        <li><strong>Codificador de visión:</strong> en muchos modelos es un codificador tipo CLIP, entrenado con aprendizaje contrastivo para que imágenes y textos queden en un espacio compartido.</li>
-        <li><strong>Proyección:</strong> una capa lleva esos vectores a la dimensión de los embeddings del LLM.</li>
-        <li><strong>Una sola secuencia:</strong> los "tokens visuales" se ubican junto a los tokens de texto, y el LLM los atiende como a cualquier otro token.</li>
+        <li><strong>Parches (ViT):</strong> el Vision Transformer corta la imagen en cuadraditos llamados <em>parches</em>, por ejemplo de 14×14 o 16×16 <em>píxeles</em> (los puntitos de color que forman la imagen). Convierte cada parche en un vector y los procesa con un Transformer como si fueran palabras. De ahí el título del paper: "una imagen vale 16×16 palabras".</li>
+        <li><strong>Codificador de visión:</strong> la parte del modelo que convierte la imagen en vectores. En muchos modelos es del tipo CLIP (el de la lección de aprendizaje contrastivo en Deep Learning), así que imágenes y textos parecidos quedan cerca.</li>
+        <li><strong>Proyección:</strong> una capa que cambia el largo de esos vectores para que coincida con el de los embeddings del LLM. Es el "adaptador de enchufe".</li>
+        <li><strong>Una sola secuencia:</strong> los "tokens visuales" se ubican junto a los tokens de texto, y el LLM les presta atención como a cualquier otro token.</li>
       </ol>
+      <p>El esquema en código (no corre: las funciones son nombres de ejemplo). Los comentarios muestran las formas: una imagen de 224×224 píxeles da 256 parches.</p>
       <pre><code>parches = cortar(imagen, lado=14)                  # 224×224 píxeles → 16×16 = 256 parches
 v = codificador_vision(parches)                    # (256, 1024)
 tokens_visuales = proyeccion(v)                    # (256, dimensión del LLM)
 secuencia = concatenar(tokens_visuales, embeber(texto))
 respuesta = llm.generar(secuencia)                 # atiende a imagen y texto juntos</code></pre>
-      <p><strong>Entrenamiento:</strong> primero se alinea la proyección con pares imagen-texto, y después se afina con instrucciones visuales ("¿qué hay en esta foto?", "¿qué dice este gráfico?"). LLaVA, por ejemplo, generó esos datos de instrucciones con GPT-4 de solo texto, a partir de descripciones de las imágenes.</p>
+      <p><strong>Entrenamiento:</strong> primero se entrena la proyección con pares imagen-descripción, para que "traduzca" bien. Después se afina el modelo con instrucciones visuales ("¿qué hay en esta foto?", "¿qué dice este gráfico?"). LLaVA, por ejemplo, generó esos datos de instrucciones con GPT-4 de solo texto, a partir de descripciones de las imágenes.</p>
       <p><strong>Lo que esto explica en la práctica:</strong></p>
       <ul>
-        <li><strong>Las imágenes cuestan tokens</strong> según su tamaño en parches (lo viste en el módulo de APIs).</li>
-        <li><strong>El texto chico se pierde:</strong> si la imagen se reduce a la resolución del codificador, una línea de texto puede quedar repartida en muy pocos parches. Recortar la zona ayuda más que mandar la imagen entera.</li>
+        <li><strong>Las imágenes cuestan tokens</strong> según cuántos parches ocupan: más grande, más cara (lo vas a ver en el módulo de APIs).</li>
+        <li><strong>El texto chico se pierde:</strong> el codificador trabaja con un tamaño fijo de imagen (su <em>resolución</em>). Si la imagen se achica para entrar, una línea de texto puede quedar repartida en muy pocos parches. Recortar la zona ayuda más que mandar la imagen entera.</li>
         <li><strong>Contar y ubicar es aproximado,</strong> y también hay alucinaciones visuales: el modelo puede describir algo que no está.</li>
         <li><strong>Audio y video siguen la misma idea:</strong> se codifican en tokens que comparten la secuencia con el texto.</li>
       </ul>` },
     { titulo: 'Tokenización por dentro: BPE y sus consecuencias', html: `
-      <p>Antes de entrar al modelo, el texto se parte en tokens. El algoritmo más usado es <strong>BPE</strong> (byte pair encoding), propuesto para traducción automática en 2015:</p>
+      <p><strong>En pocas palabras:</strong> el modelo no lee letras ni palabras enteras, lee pedazos. Los pedazos se arman pegando las letras que aparecen juntas muy seguido: "q" y "u" casi siempre van juntas, así que "qu" pasa a ser un solo pedazo. Esto explica algunas rarezas, como que a un LLM le cueste contar las letras de una palabra.</p>
+      <p>Antes de entrar al modelo, el texto se parte en tokens. El algoritmo más usado es <strong>BPE</strong> (byte pair encoding, "codificación por pares"), propuesto para traducción automática en 2015. Dos palabras antes: el <em>corpus</em> es todo el texto de ejemplo con el que se arma el tokenizador, y el <em>vocabulario</em> es la lista de todos los tokens posibles. El algoritmo:</p>
       <ol>
-        <li>Empezás con caracteres sueltos (o bytes).</li>
+        <li>Empezás con caracteres sueltos (o bytes, los códigos con que la computadora guarda cada caracter).</li>
         <li>Contás qué par de símbolos vecinos aparece más en el corpus.</li>
-        <li>Fusionás ese par en un símbolo nuevo y lo agregás al vocabulario.</li>
-        <li>Repetís hasta llegar al tamaño de vocabulario deseado.</li>
+        <li>Pegás ese par en un símbolo nuevo y lo agregás al vocabulario.</li>
+        <li>Repetís hasta llegar al tamaño de vocabulario que querés (los LLMs usan entre 30.000 y 200.000 tokens).</li>
       </ol>
+      <p>El código hace exactamente eso con cuatro palabras. <code>Counter</code> cuenta los pares y <code>most_common(1)</code> devuelve el más frecuente. Los comentarios de abajo muestran lo que imprime: "baj" y "bajo" se vuelven tokens porque se repiten.</p>
       <pre><code>from collections import Counter
 
 def bpe(palabras, fusiones):
@@ -1213,7 +1265,7 @@ bpe(["bajo", "bajar", "bajamos", "trabajo"], 3)
       <ul>
         <li><strong>Idiomas:</strong> lo que abunda en el corpus de entrenamiento queda en tokens largos. Un idioma menos representado necesita más tokens por palabra: cuesta más y entra menos en el contexto.</li>
         <li><strong>Letras y conteos:</strong> el modelo ve tokens, no letras. Por eso le cuesta contar cuántas "r" tiene una palabra o deletrear al revés.</li>
-        <li><strong>Números:</strong> se parten en trozos irregulares, una de las razones por las que la aritmética larga sin herramientas falla.</li>
+        <li><strong>Números:</strong> se parten en trozos irregulares ("12345" puede quedar en "123" y "45"). Es una de las razones por las que fallan las cuentas largas si el modelo no tiene una calculadora a mano.</li>
         <li><strong>Espacios y mayúsculas:</strong> " Hola", "hola" y "HOLA" pueden ser tokens distintos.</li>
         <li><strong>Cada modelo tiene su tokenizador:</strong> no compares cantidades de tokens entre modelos, y para estimar costos usá el contador del proveedor que vas a usar.</li>
       </ul>` },
