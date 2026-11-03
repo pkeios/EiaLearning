@@ -7,6 +7,13 @@ const guardar = p => localStorage.setItem('progreso', JSON.stringify(p));
 const mezclar = a => a.map(x => [Math.random(), x]).sort((x, y) => x[0] - y[0]).map(x => x[1]);
 // La clave de una pregunta es su texto: sobrevive a reordenar o insertar preguntas.
 const preguntasDe = m => m.quiz.map(q => ({ ...q, m: m.id }));
+// El quiz de un módulo toma una ronda corta: primero las falladas pendientes, después el resto al azar.
+// shortcut: no se registra qué preguntas ya salieron, así que el resto se elige al azar; si se repiten mucho, guardar las vistas.
+const POR_RONDA = 15;
+const rondaModulo = (m, p) => {
+  const qs = mezclar(preguntasDe(m));
+  return mezclar([...qs.filter(q => p.falladas[clave(q)]), ...qs.filter(q => !p.falladas[clave(q)])].slice(0, POR_RONDA));
+};
 const clave = q => q.m + '|' + q.q;
 const todas = () => T.flatMap(preguntasDe);
 // Repetición espaciada: tras fallar, la pregunta vuelve a los 1, 3, 7 y 14 días; cada acierto la empuja al siguiente intervalo.
@@ -270,7 +277,7 @@ function modulo(id, abrir = null) {
     <h2>🔗 Recursos</h2><div class="recursos">${m.recursos.map(r => `
       <a href="${esc(r.url)}" target="_blank" rel="noopener"><strong>${esc(r.t)}</strong><small>${esc(new URL(r.url).hostname.replace('www.', ''))} ↗</small></a>`).join('')}</div>
     <div class="cta">
-      <a class="boton" href="#/quiz/${m.id}">📝 Hacer el quiz (${m.quiz.length} preguntas)</a>
+      <a class="boton" href="#/quiz/${m.id}">📝 Hacer el quiz (${Math.min(POR_RONDA, m.quiz.length)} preguntas por ronda, de ${m.quiz.length})</a>
       <span class="suave">${p.notas[m.id] != null ? 'Mejor nota: ' + p.notas[m.id] + '%' : 'Necesitás ' + APROBADO + '% para aprobar'}</span>
       ${p.historial[m.id]?.length ? `<span class="suave">Últimos intentos: ${p.historial[m.id].map(x => `${x.d.slice(8)}/${x.d.slice(5, 7)} ${x.n}%`).join(' → ')}</span>` : ''}
     </div>
@@ -647,8 +654,9 @@ function sumarIntento(p, id, pct) {
   p.historial[id] = [...(p.historial[id] || []), { d: dia(), n: pct }].slice(-HISTORIAL);
 }
 // Diferencias entre dos intentos: listas de posiciones de preguntas falladas
-function compararIntentos(anterior, ahora) {
-  const antes = new Set(anterior), hoy = new Set(ahora);
+// Con preguntadas, solo cuentan las del intento anterior que volvieron a salir en esta ronda.
+function compararIntentos(anterior, ahora, preguntadas) {
+  const antes = new Set(preguntadas ? anterior.filter(i => preguntadas.includes(i)) : anterior), hoy = new Set(ahora);
   return {
     corregidas: [...antes].filter(i => !hoy.has(i)).length,
     siguen: [...hoy].filter(i => antes.has(i)).length,
@@ -720,12 +728,12 @@ function quiz(titulo, preguntas, alTerminar, vacio = 'No hay preguntas pendiente
     const mod = T.find(m => m.id === intento);
     if (mod) {
       const ahora = fallas.map(q => mod.quiz.findIndex(x => x.q === q.q)).filter(i => i >= 0);
-      const anterior = p.intentos[intento];
+      const anterior = p.intentos[intento], preguntadas = preguntas.map(q => mod.quiz.findIndex(x => x.q === q.q));
       if (anterior) {
-        const c = compararIntentos(anterior.f, ahora);
+        const c = compararIntentos(anterior.f, ahora, preguntadas);
         comparacion = `<p class="suave">Contra tu intento anterior (${anterior.d}): ✔ ${c.corregidas} que antes fallaste ahora están bien · ✘ ${c.siguen} seguís fallando · ⚠ ${c.nuevas} nuevas falladas</p>`;
       }
-      p.intentos[intento] = { d: dia(), f: ahora };
+      p.intentos[intento] = { d: dia(), f: [...(anterior?.f || []).filter(i => !preguntadas.includes(i)), ...ahora] };
       sumarIntento(p, intento, pct);
     }
     estudiar(p);
@@ -809,7 +817,7 @@ function render() {
   else if (ruta === 'novedades') novedadesPagina();
   else if (ruta === 'quiz' && T.some(m => m.id === id)) {
     const m = T.find(x => x.id === id);
-    quiz(`${icono(m)} Quiz: ${m.titulo}`, mezclar(preguntasDe(m)), (p, pct) => { p.notas[m.id] = Math.max(p.notas[m.id] ?? 0, pct); }, undefined,
+    quiz(`${icono(m)} Quiz: ${m.titulo}`, rondaModulo(m, cargar()), (p, pct) => { p.notas[m.id] = Math.max(p.notas[m.id] ?? 0, pct); }, undefined,
       { logro: `el módulo "${m.titulo}"`, intento: m.id });
   }
   else if (ruta === 'examen') quiz('🏁 Examen final: 25 preguntas al azar', mezclar(todas()).slice(0, 25), registrarExamen, undefined,

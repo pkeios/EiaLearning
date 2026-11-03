@@ -10,8 +10,8 @@ vm.runInContext(leer('contenido.js'), ctx);
 vm.runInContext(leer('glosario.js'), ctx);
 vm.runInContext(leer('vendor/qrcode.js') + ';this.qrcode = qrcode;', ctx);
 ctx.window.qrcode = ctx.qrcode;
-vm.runInContext(leer('app.js') + ';this.X = { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos, avance, clavePractica, registrarExamen, planDeHoy, apuntesMarkdown, esCorrecta, preguntasDeNivel, preguntaObjetivo, cambiarLetra, novedades, marcarConocidas, iniciarNovedades, todasLasLecciones, trozosParaVoz, vozLatina, sumarMinuto, serieMinutos, minutosSemana, textoLogro, empaquetar, desempaquetar, comprimir, descomprimir, compararIntentos, sumarIntento };', ctx);
-const { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos, avance, clavePractica, registrarExamen, planDeHoy, apuntesMarkdown, esCorrecta, preguntasDeNivel, preguntaObjetivo, cambiarLetra, novedades, marcarConocidas, iniciarNovedades, todasLasLecciones, trozosParaVoz, vozLatina, sumarMinuto, serieMinutos, minutosSemana, textoLogro, empaquetar, desempaquetar, comprimir, descomprimir, compararIntentos, sumarIntento } = ctx.X;
+vm.runInContext(leer('app.js') + ';this.X = { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos, avance, clavePractica, registrarExamen, planDeHoy, apuntesMarkdown, esCorrecta, preguntasDeNivel, preguntaObjetivo, cambiarLetra, novedades, marcarConocidas, iniciarNovedades, todasLasLecciones, trozosParaVoz, vozLatina, sumarMinuto, serieMinutos, minutosSemana, textoLogro, empaquetar, desempaquetar, comprimir, descomprimir, compararIntentos, sumarIntento, rondaModulo, POR_RONDA };', ctx);
+const { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos, avance, clavePractica, registrarExamen, planDeHoy, apuntesMarkdown, esCorrecta, preguntasDeNivel, preguntaObjetivo, cambiarLetra, novedades, marcarConocidas, iniciarNovedades, todasLasLecciones, trozosParaVoz, vozLatina, sumarMinuto, serieMinutos, minutosSemana, textoLogro, empaquetar, desempaquetar, comprimir, descomprimir, compararIntentos, sumarIntento, rondaModulo, POR_RONDA } = ctx.X;
 const plano = o => JSON.parse(JSON.stringify(o));
 
 // Inicio renderiza con progreso vacío
@@ -285,6 +285,18 @@ assert.deepStrictEqual(plano(limpiarProgreso({ historial: { rag: [{ d: '2026-11-
 // Comparar intentos: corregidas, las que siguen fallando y las nuevas
 assert.deepStrictEqual(plano(compararIntentos([1, 2, 3], [3, 5])), { corregidas: 2, siguen: 1, nuevas: 1 });
 assert.deepStrictEqual(plano(compararIntentos([], [])), { corregidas: 0, siguen: 0, nuevas: 0 });
+// Una fallada que no volvió a salir en la ronda no cuenta como corregida
+assert.deepStrictEqual(plano(compararIntentos([1, 2, 3], [3], [2, 3])), { corregidas: 1, siguen: 1, nuevas: 0 });
+// La ronda del módulo es corta y trae primero las falladas pendientes
+{
+  const mod = ctx.window.TEMARIO.find(m => m.quiz.length > POR_RONDA);
+  const pr = cargar(), falladas = mod.quiz.slice(-3).map(q => mod.id + '|' + q.q);
+  falladas.forEach(k => pr.falladas[k] = true);
+  const ronda = rondaModulo(mod, pr);
+  assert.equal(ronda.length, POR_RONDA);
+  falladas.forEach(k => assert(ronda.some(q => mod.id + '|' + q.q === k)));
+  assert.equal(new Set(ronda.map(q => q.q)).size, POR_RONDA);
+}
 assert.deepStrictEqual(plano(limpiarProgreso({ intentos: { rag: { d: '2026-11-01', f: [1, '2', -1, 'x'] }, malo: { d: 'ayer', f: [] } } }).intentos), { rag: { d: '2026-11-01', f: [1, 2] } });
 
 // Repaso vacío muestra un mensaje en lugar de un formulario
