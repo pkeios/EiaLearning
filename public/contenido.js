@@ -3654,7 +3654,13 @@ Fecha clave: obligaciones de alto riesgo (Anexo III) desde el 2 de diciembre de 
   ],
   lecciones: [
     { titulo: 'Cómo funciona un agente de voz: la cascada STT → LLM → TTS', html: `
-      <p>Un agente de voz es un agente como los que ya viste, pero con oídos y boca. La forma más común de armarlo es una <strong>cascada</strong> de tres modelos:</p>
+      <p><strong>En pocas palabras:</strong> un agente de voz es como un intérprete en una cadena de tres personas. La primera escucha y escribe lo que dijiste, la segunda lee y piensa la respuesta, y la tercera la lee en voz alta. Para que la charla se sienta natural, cada una tiene que pasarle a la siguiente lo que tiene apenas lo tiene, sin esperar a terminar.</p>
+      <p>Un agente de voz es un agente como los que ya viste, pero con oídos y boca. La forma más común de armarlo es una <strong>cascada</strong> de tres modelos, uno detrás del otro:</p>
+      <ul>
+        <li><strong>STT</strong> (speech-to-text, "de voz a texto"): escucha y transcribe.</li>
+        <li><strong>LLM:</strong> decide qué responder.</li>
+        <li><strong>TTS</strong> (text-to-speech, "de texto a voz"): lee la respuesta en voz alta.</li>
+      </ul>
       <pre><code>🎤 audio del usuario
    │
    ▼  STT (speech-to-text): transcribe el audio a texto
@@ -3666,13 +3672,19 @@ Fecha clave: obligaciones de alto riesgo (Anexo III) desde el 2 de diciembre de 
    ▼  TTS (text-to-speech): convierte el texto en voz
 🔊 audio para el usuario</code></pre>
       <p><strong>La alternativa: speech-to-speech.</strong> Un solo modelo recibe audio y devuelve audio. Suele responder más rápido y con una entonación más natural, pero perdés control: no ves la transcripción de cada etapa, no podés cambiar una pieza por otra y depurar cuesta más. La cascada es más fácil de medir y ajustar, y por eso es el punto de partida habitual.</p>
-      <p><strong>Medir el STT: WER (word error rate).</strong> Es la proporción de palabras mal transcriptas: (sustituciones + borrados + inserciones) ÷ palabras de la referencia.</p>
+      <p><strong>Medir el STT: WER</strong> (word error rate, tasa de error por palabra). Es la proporción de palabras mal transcriptas, comparando con lo que se dijo de verdad (la <em>referencia</em>). Se cuentan tres tipos de error:</p>
+      <ul>
+        <li><strong>Sustituciones:</strong> una palabra cambiada por otra.</li>
+        <li><strong>Borrados:</strong> palabras que faltan.</li>
+        <li><strong>Inserciones:</strong> palabras de más.</li>
+      </ul>
+      <p>La fórmula es (sustituciones + borrados + inserciones) ÷ palabras de la referencia.</p>
       <pre><code>referencia:   quiero pagar mi factura de luz         (6 palabras)
 transcripción: quiero pagar la factura de la luz
                "mi" → "la" = 1 sustitución, "la" de más = 1 inserción
 WER = 2 / 6 ≈ 33%</code></pre>
       <p>Whisper, el modelo de OpenAI, se entrenó con 680.000 horas de audio de internet y es robusto en muchos idiomas. Pero, como pasa con los LLMs, rinde peor en idiomas y acentos poco representados y con ruido de fondo. Por eso el WER de una demo en la oficina no predice el de llamadas reales: medilo con audios de tus usuarios, separado por segmento (ruido, acento, tipo de llamada), igual que medías el error por segmento en ML clásico.</p>
-      <p><strong>Latencia: lo que más se nota.</strong> Se mide desde que el usuario deja de hablar hasta que escucha la respuesta. Una guía de Twilio propone como punto de partida:</p>
+      <p><strong>Latencia: lo que más se nota.</strong> En una charla, un silencio de 3 segundos se siente eterno. Se mide desde que el usuario deja de hablar hasta que escucha la respuesta. Una guía de Twilio (una empresa de telefonía por internet) propone como punto de partida:</p>
       <table>
         <tr><th>Etapa</th><th>Objetivo</th><th>Máximo</th></tr>
         <tr><td>STT</td><td>350 ms</td><td>500 ms</td></tr>
@@ -3682,16 +3694,17 @@ WER = 2 / 6 ≈ 33%</code></pre>
       </table>
       <p>Esos números solo se logran con <strong>streaming</strong> en todas las etapas: el STT manda transcripciones parciales, el LLM devuelve tokens a medida que los genera y el TTS empieza a hablar con las primeras palabras, sin esperar la respuesta completa. Si cada etapa espera a que termine la anterior, la demora se suma y llega fácilmente a 2 o 3 segundos. Por eso, en voz, el tiempo hasta el primer token importa más que el tiempo total.</p>` },
     { titulo: 'Turnos, interrupciones y escribir para el oído', html: `
+      <p><strong>En pocas palabras:</strong> en una charla por teléfono, saber cuándo el otro terminó de hablar parece fácil, pero no lo es: a veces hace una pausa para pensar. El agente tiene que adivinarlo, callarse si lo interrumpen y hablar como se habla, no como se escribe: sin listas, sin asteriscos y repitiendo los datos importantes.</p>
       <p>En un chat, el usuario aprieta Enter. En una llamada nadie avisa que terminó de hablar: el agente lo tiene que adivinar.</p>
-      <p><strong>VAD (voice activity detection):</strong> detecta si en el audio hay voz o silencio. Es rápido y corre local, pero no distingue una pausa para pensar del final de la frase.</p>
+      <p><strong>VAD</strong> (voice activity detection, detección de voz): detecta si en el audio hay voz o silencio. Es rápido y corre local, pero no distingue una pausa para pensar del final de la frase.</p>
       <p><strong>Detección de fin de turno:</strong> decide cuándo responder. Hay tres formas, de la más simple a la más fina:</p>
       <ol>
         <li><strong>Temporizador de silencio:</strong> si hay, por ejemplo, 500 ms sin voz, responde. Si lo bajás, el agente contesta más rápido pero corta a quien hace una pausa; si lo subís, se siente lento.</li>
         <li><strong>Señal del STT:</strong> el proveedor estima si la frase terminó, con más contexto que el VAD.</li>
         <li><strong>Modelo de fin de turno:</strong> un clasificador o LLM mira la transcripción (y a veces la entonación) y decide si la frase suena terminada. "Quiero pagar la factura de..." no está terminada, aunque haya silencio.</li>
       </ol>
-      <p>Cortar al usuario es peor que tardar un poco más: ante la duda, conviene esperar. Es el mismo tradeoff de precision y recall que ya viste, aplicado a los turnos.</p>
-      <p><strong>Interrupciones (barge-in):</strong> si el usuario habla mientras el agente responde, el agente tiene que callarse y escuchar. Eso implica:</p>
+      <p>Cortar al usuario es peor que tardar un poco más: ante la duda, conviene esperar. Es el mismo equilibrio entre precision y recall de Machine Learning clásico, aplicado a los turnos: ganar en uno cuesta perder en el otro.</p>
+      <p><strong>Interrupciones</strong> (en inglés, <em>barge-in</em>): si el usuario habla mientras el agente responde, el agente tiene que callarse y escuchar. Eso implica:</p>
       <ul>
         <li>Cortar el audio que está sonando.</li>
         <li>Frenar el stream del LLM y cancelar las llamadas a herramientas pendientes.</li>
