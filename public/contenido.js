@@ -1912,29 +1912,60 @@ registrar(final.stop_reason, final.usage)</code></pre>
   ],
   lecciones: [
     { titulo: 'Embeddings y búsqueda semántica', html: `
-      <p>Un <strong>modelo de embeddings</strong> convierte texto en un vector denso (cientos o miles de dimensiones) donde textos de significado parecido quedan cerca. "¿Cómo reseteo mi clave?" y "olvidé mi contraseña" quedan próximos aunque no compartan palabras.</p>
-      <p><strong>Búsqueda semántica:</strong> embebés tus documentos una vez, embebés la consulta, y buscás los vectores más cercanos (similitud coseno). Para escalar, se usan índices de vecinos aproximados (HNSW) en bases vectoriales: pgvector, Qdrant, Chroma, FAISS, etc.</p>
+      <p><strong>En pocas palabras:</strong> un buscador común busca las palabras exactas que escribiste. Uno semántico busca por <em>significado</em>, como un bibliotecario que entiende qué querés decir aunque uses otras palabras. Para lograrlo, convierte cada texto en un punto de un mapa donde los textos que hablan de lo mismo quedan cerca.</p>
+      <p>Un <strong>modelo de embeddings</strong> convierte un texto en un vector (lo viste en Fundamentos): una lista de cientos o miles de números, donde textos de significado parecido quedan cerca. "¿Cómo reseteo mi clave?" y "olvidé mi contraseña" quedan próximos aunque no compartan palabras.</p>
+      <p><strong>Búsqueda semántica,</strong> en tres pasos:</p>
+      <ol>
+        <li>Convertís tus documentos en vectores una sola vez. Esto se dice <em>embeber</em> o <em>indexar</em>.</li>
+        <li>Cuando llega una consulta, la convertís en vector también.</li>
+        <li>Buscás los vectores de documentos más cercanos, con similitud coseno.</li>
+      </ol>
+      <p>Con millones de documentos, comparar contra todos es lento. Por eso se usan <em>índices de vecinos aproximados</em>, como HNSW: estructuras que encuentran los más cercanos muy rápido, a cambio de equivocarse un poquito (lección 4). Se guardan en <strong>bases de datos vectoriales</strong>, bases especializadas en guardar y buscar vectores: pgvector, Qdrant, Chroma, FAISS, etc.</p>
+      <p>El código es <em>pseudocódigo</em>: un esquema que muestra la idea, no un programa que corre. Un <em>chunk</em> es un pedazo de documento (lección 2).</p>
       <pre><code># pseudocódigo
 docs_vec = embed(chunks)            # una vez, al indexar
 q_vec = embed("¿cómo pido reembolso?")
 top = mas_cercanos(q_vec, docs_vec, k=5)</code></pre>
-      <p>La búsqueda léxica (BM25) sigue siendo excelente para nombres propios, códigos y términos exactos. Lo mejor suele ser combinarlas.</p>` },
+      <p>La <strong>búsqueda léxica</strong>, la de palabras exactas (su método más usado se llama BM25), sigue siendo excelente para nombres propios, códigos de producto y términos exactos. Una búsqueda por significado puede confundir "error 404" con "error 403"; una por palabras, no. Lo mejor suele ser combinarlas: eso se llama <strong>búsqueda híbrida</strong>.</p>` },
     { titulo: 'El pipeline RAG y cómo mejorarlo', html: `
-      <p><strong>RAG</strong> (Retrieval-Augmented Generation): antes de responder, recuperás documentos relevantes y se los pasás al modelo como contexto. Da conocimiento privado y actualizado sin reentrenar, y permite citar fuentes.</p>
+      <p><strong>En pocas palabras:</strong> es un examen a libro abierto. En vez de esperar que el modelo sepa todo de memoria, primero buscás en tus documentos las páginas que hablan del tema y se las das junto con la pregunta. Así responde con tu información, actualizada, y puede decir de qué página la sacó.</p>
+      <p><strong>RAG</strong> (Retrieval-Augmented Generation, "generación aumentada con búsqueda"): antes de responder, <em>recuperás</em> (buscás) documentos relevantes y se los pasás al modelo como contexto. Ventajas:</p>
+      <ul>
+        <li>El modelo usa información privada (la de tu empresa) y actualizada, sin tener que volver a entrenarlo.</li>
+        <li>Puede citar de dónde sacó cada dato.</li>
+      </ul>
+      <p>Los pasos:</p>
       <ol>
-        <li><strong>Ingestión:</strong> extraer texto limpio (PDF, HTML, etc.).</li>
-        <li><strong>Chunking:</strong> partir en trozos. Muy grandes: mezclan temas y gastan contexto. Muy chicos: pierden contexto. Respetá la estructura (secciones, párrafos) y usá algo de solapamiento.</li>
-        <li><strong>Indexado:</strong> embeddings + índice vectorial (y BM25 para búsqueda híbrida).</li>
-        <li><strong>Retrieval:</strong> top-k candidatos; un <strong>reranker</strong> (cross-encoder) reordena con más precisión.</li>
-        <li><strong>Generación:</strong> prompt con los chunks, instrucción de responder solo con esa información y citar; permitir "no lo sé".</li>
+        <li><strong>Ingestión:</strong> sacar el texto limpio de los archivos (PDF, páginas web, etc.).</li>
+        <li><strong>Chunking:</strong> partir el texto en pedazos, los <em>chunks</em>.
+          <ul>
+            <li>Muy grandes: mezclan temas y gastan contexto.</li>
+            <li>Muy chicos: quedan frases sueltas que no se entienden.</li>
+          </ul>
+          Respetá la estructura (secciones, párrafos) y que cada pedazo repita un poco del anterior (<em>solapamiento</em>), para no cortar una idea a la mitad. Lección 7.</li>
+        <li><strong>Indexado:</strong> calcular el embedding de cada chunk y guardarlo en un índice vectorial (y en BM25, para búsqueda híbrida).</li>
+        <li><strong>Retrieval</strong> (búsqueda): traer los k chunks más parecidos a la pregunta (el <em>top-k</em>). Después, un <strong>reranker</strong> los reordena con más precisión: un modelo más lento que lee la pregunta y cada chunk juntos (un <em>cross-encoder</em>), en vez de comparar vectores.</li>
+        <li><strong>Generación:</strong> un prompt con los chunks, la instrucción de responder solo con esa información y citar, y permiso para decir "no lo sé".</li>
       </ol>
-      <p><strong>Depuración:</strong> si la respuesta es mala, mirá primero si los chunks correctos fueron recuperados. Medí el retrieval por separado (recall@k) y la generación por separado (fidelidad al contexto, relevancia).</p>
-      <p>Mejoras avanzadas: agregar contexto del documento a cada chunk antes de embeberlo (contextual retrieval), reescribir la consulta, metadatos para filtrar, y RAG agéntico (el modelo decide qué buscar y cuándo).</p>` },
+      <p><strong>Depuración:</strong> si la respuesta es mala, mirá primero si se encontraron los chunks correctos. Medí cada parte por separado:</p>
+      <ul>
+        <li><strong>La búsqueda:</strong> con <em>recall@k</em>, si el chunk correcto está entre los k primeros.</li>
+        <li><strong>La respuesta:</strong> si es <em>fiel</em> a los chunks (no inventa) y si responde lo que se preguntó. Lección 6.</li>
+      </ul>
+      <p>Mejoras avanzadas:</p>
+      <ul>
+        <li><strong>Contextual retrieval:</strong> agregarle a cada chunk una línea sobre de qué documento y sección viene, antes de calcular su embedding.</li>
+        <li>Reescribir la consulta para que busque mejor.</li>
+        <li>Usar metadatos (fecha, producto) para filtrar.</li>
+        <li><strong>RAG agéntico:</strong> el modelo decide qué buscar y cuándo (lección siguiente).</li>
+      </ul>` },
     { titulo: '¿RAG, contexto largo o RAG agéntico?', html: `
-      <p>Con ventanas de contexto de cientos de miles de tokens, RAG ya no es automático. Hay tres opciones y cada una gana en un escenario distinto.</p>
-      <p><strong>1. Todo en el contexto.</strong> Si tu base de conocimiento es chica (Anthropic sugiere menos de unos 200.000 tokens, unas 500 páginas), podés meterla entera en el prompt y usar <strong>prompt caching</strong>, que según Anthropic reduce la latencia más de 2x y el costo hasta un 90% en las llamadas repetidas. No hay fallos de retrieval porque no hay retrieval. Contras: pagás ese contexto en cada consulta y, con mucho contexto, los modelos pueden usar peor la información, sobre todo la que queda en el medio (<em>lost in the middle</em>). Poné lo importante al principio o al final, y medí.</p>
-      <p><strong>2. RAG clásico</strong> (una búsqueda, top-k, generación). Gana cuando la base es grande, cambia seguido, necesitás citar fuentes o <strong>cada usuario puede ver documentos distintos</strong>. Los permisos se aplican como filtro en el retrieval, antes de que el texto llegue al modelo: una instrucción en el prompt no protege nada.</p>
-      <p><strong>3. RAG agéntico.</strong> La búsqueda es una herramienta y el modelo decide cuándo usarla, reformula la consulta y busca varias veces. Gana en preguntas de <em>varios saltos</em> ("¿qué clientes del plan Pro reportaron el bug que se arregló en la versión posterior al incidente de marzo?"), donde una sola búsqueda no alcanza. Contras: más llamadas, más latencia y más costo.</p>
+      <p><strong>En pocas palabras:</strong> si tus documentos son pocos, dáselos enteros al modelo y listo. Si son muchos, buscá primero las páginas útiles (RAG). Y si la pregunta necesita varias búsquedas encadenadas, dejá que el modelo busque solo, varias veces, como un investigador. Cada opción conviene en un caso distinto.</p>
+      <p>Hoy los modelos pueden leer cientos de miles de tokens de una vez, así que RAG ya no es automático. Hay tres opciones y cada una gana en un escenario distinto.</p>
+      <p><strong>1. Todo en el contexto.</strong> Si tu <em>base de conocimiento</em> (el conjunto de documentos) es chica, podés meterla entera en el prompt. Anthropic sugiere hacerlo por debajo de unos 200.000 tokens, unas 500 páginas. Combinado con <strong>prompt caching</strong> (módulo de APIs), según Anthropic la respuesta llega más del doble de rápido y cuesta hasta un 90% menos en las llamadas repetidas. No hay errores de búsqueda porque no hay búsqueda. Contras: pagás ese contexto en cada consulta y, con mucho contexto, los modelos pueden usar peor la información, sobre todo la que queda en el medio (<em>lost in the middle</em>). Poné lo importante al principio o al final, y medí.</p>
+      <p><strong>2. RAG clásico</strong> (una búsqueda, top-k, generación). Gana cuando la base es grande, cambia seguido, necesitás citar fuentes o <strong>cada usuario puede ver documentos distintos</strong>. Los permisos se aplican como filtro en la búsqueda, antes de que el texto llegue al modelo. Decirle en el prompt "no le muestres esto a tal usuario" no protege nada, porque el modelo puede desobedecer o ser engañado.</p>
+      <p><strong>3. RAG agéntico.</strong> La búsqueda es una herramienta y el modelo decide cuándo usarla: busca, lee lo que encontró, reformula la consulta y vuelve a buscar las veces que haga falta. Gana en preguntas de <em>varios saltos</em> ("¿qué clientes del plan Pro reportaron el bug que se arregló en la versión posterior al incidente de marzo?"), donde una sola búsqueda no alcanza. Contras: más llamadas, más espera y más costo.</p>
+      <p>El código muestra cómo se le describe la herramienta al modelo (nombre, para qué sirve y qué datos recibe). También muestra que el filtro de permisos lo pone tu código, con los grupos del usuario.</p>
       <pre><code>herramientas = [{
     "name": "buscar_docs",
     "description": "Busca en la documentación interna. Si el resultado no alcanza, "
@@ -1950,22 +1981,34 @@ def buscar_docs(consulta, usuario, producto=None):
     if producto:
         filtros["producto"] = producto
     return busqueda_hibrida(consulta, filtros=filtros, k=8)</code></pre>
-      <p><strong>Las mejoras de retrieval se suman.</strong> En el experimento de Contextual Retrieval de Anthropic, la tasa de fallo del top-20 bajó 35% con embeddings contextuales, 49% al sumar BM25 contextual y 67% al agregar reranking. Lo importante es el método: cada técnica se agrega y se mide contra una métrica como tasa de fallo o recall@k.</p>
+      <p><strong>Las mejoras de búsqueda se suman.</strong> En el experimento de Contextual Retrieval de Anthropic, medían cuántas veces el chunk correcto <em>no</em> aparecía entre los 20 primeros (la tasa de fallo). Esa tasa bajó:</p>
+      <ul>
+        <li>35% con embeddings contextuales.</li>
+        <li>49% al sumar BM25 contextual.</li>
+        <li>67% al agregar reranking.</li>
+      </ul>
+      <p>Lo importante es el método: cada técnica se agrega de a una y se mide contra una métrica, como la tasa de fallo o el recall@k.</p>
       <p><strong>Regla práctica:</strong> empezá por lo más simple que funcione con tus datos (contexto completo si entra), pasá a RAG clásico cuando el tamaño, el costo o los permisos lo exijan, y a RAG agéntico solo para las preguntas que lo necesiten.</p>` },
     { titulo: 'Embeddings e índices vectoriales en la práctica', html: `
-      <p>Dos decisiones técnicas sostienen cualquier RAG: qué modelo de embeddings usás y cómo indexás los vectores.</p>
+      <p><strong>En pocas palabras:</strong> dos decisiones sostienen cualquier RAG. Primero, qué modelo convierte los textos en vectores: elegilo probándolo con tus propias preguntas. Segundo, cómo guardás los vectores para buscarlos rápido. Una búsqueda perfecta revisa todo y es lenta; una aproximada es rapidísima, pero a veces se le escapa algo, y hay que medir cuánto.</p>
       <p><strong>Elegir el modelo de embeddings:</strong></p>
       <ul>
-        <li>El leaderboard <strong>MTEB</strong> sirve para preseleccionar, pero mide tareas genéricas. Decidí con <strong>recall@k sobre tus propias consultas</strong>, y si tus documentos están en español, probá modelos multilingües.</li>
-        <li><strong>Las dimensiones cuestan:</strong> 10 millones de vectores de 1.536 dimensiones en float32 son 10M × 1.536 × 4 bytes ≈ 61 GB, solo de vectores.</li>
+        <li>El <em>leaderboard</em> (ranking público) <strong>MTEB</strong> sirve para armar una lista corta, pero mide tareas genéricas. Decidí con <strong>recall@k sobre tus propias consultas</strong>, y si tus documentos están en español, probá modelos multilingües.</li>
+        <li><strong>Las dimensiones cuestan memoria.</strong> <em>float32</em> es el formato normal para guardar un número con decimales, y ocupa 4 bytes. Entonces, 10 millones de vectores de 1.536 dimensiones en float32 son 10M × 1.536 × 4 bytes ≈ 61 GB, solo de vectores.</li>
         <li><strong>Mismo modelo para indexar y consultar.</strong> Vectores de modelos distintos no son comparables: si cambiás de modelo, hay que reindexar todo.</li>
         <li>Si los vectores están <strong>normalizados</strong> (largo 1), el producto punto es igual a la similitud coseno, que es más barato de calcular.</li>
       </ul>
-      <p><strong>Búsqueda exacta o aproximada.</strong> La búsqueda exacta compara la consulta con todos los vectores: recall perfecto, pero se vuelve lenta al crecer. Los índices de vecinos aproximados (ANN) cambian un poco de recall por mucha velocidad. En pgvector:</p>
+      <p><strong>Búsqueda exacta o aproximada.</strong> La búsqueda exacta compara la consulta con todos los vectores: nunca se le escapa nada (recall perfecto), pero se vuelve lenta cuando hay millones. Los índices de vecinos aproximados (ANN) pierden un poquito de recall a cambio de mucha velocidad. <strong>pgvector</strong> es una extensión que agrega vectores a PostgreSQL, una base de datos muy usada, y ofrece dos índices:</p>
       <ul>
-        <li><strong>HNSW:</strong> un grafo de varias capas. Mejor equilibrio entre velocidad y recall, pero tarda más en construirse y usa más memoria. El parámetro <code>hnsw.ef_search</code> (40 por defecto) sube el recall a cambio de latencia.</li>
-        <li><strong>IVFFlat:</strong> agrupa los vectores en listas y busca solo en las más cercanas. Se construye más rápido y usa menos memoria, pero su equilibrio es peor, y conviene crearlo cuando la tabla ya tiene datos.</li>
+        <li><strong>HNSW:</strong> un <em>grafo</em> (una red de puntos conectados con sus vecinos) de varias capas. La búsqueda salta de vecino en vecino acercándose a la consulta, como preguntar direcciones de cuadra en cuadra. Es el que mejor equilibra velocidad y recall, pero tarda más en construirse y usa más memoria. El parámetro <code>hnsw.ef_search</code> (40 por defecto) dice cuántos candidatos revisa: más alto, más recall y más lento.</li>
+        <li><strong>IVFFlat:</strong> agrupa los vectores en listas, como cajones por tema, y busca solo en los cajones más cercanos a la consulta. Se construye más rápido y usa menos memoria, pero su equilibrio es peor, y conviene crearlo cuando la tabla ya tiene datos.</li>
       </ul>
+      <p>El código está en <strong>SQL</strong>, el lenguaje para consultar bases de datos. Hace tres cosas:</p>
+      <ol>
+        <li>Crea una tabla de chunks con una columna de vectores de 1024 números.</li>
+        <li>Crea el índice HNSW.</li>
+        <li>Busca los 5 chunks más cercanos de un cliente. <code>$1</code> y <code>$2</code> son los datos que se completan al ejecutar: el vector de la consulta y el número de cliente.</li>
+      </ol>
       <pre><code>CREATE EXTENSION vector;
 CREATE TABLE chunks (id bigserial PRIMARY KEY, cliente_id int, texto text, embedding vector(1024));
 CREATE INDEX ON chunks USING hnsw (embedding vector_cosine_ops);
@@ -1979,8 +2022,16 @@ LIMIT 5;</code></pre>
       <p><strong>Cuidado con los filtros:</strong> si el índice aproximado trae k candidatos y después el filtro descarta varios (por ejemplo, documentos de otro cliente), podés terminar con menos resultados de los que pediste. Pedí más candidatos, ajustá el índice o usá una solución con filtrado integrado, y medilo.</p>
       <p><strong>Medí siempre contra la búsqueda exacta:</strong> agregar un índice aproximado puede cambiar los resultados. Calculá el recall@k del índice tomando como referencia la búsqueda exacta y elegí el punto de recall y latencia que tu producto necesita.</p>` },
     { titulo: 'Más allá de los chunks: text-to-SQL y GraphRAG', html: `
+      <p><strong>En pocas palabras:</strong> buscar párrafos sirve para preguntas como "¿cuál es la política de devoluciones?". Pero "¿cuánto vendimos en marzo?" se responde haciendo una cuenta en una planilla, no leyendo. Y "¿de qué hablan estos 5.000 informes?" necesita un resumen de todo, no 5 párrafos sueltos. Esta lección muestra una técnica para cada caso.</p>
       <p>Hay preguntas que la búsqueda de chunks no puede responder, por más buena que sea.</p>
-      <p><strong>1. Datos estructurados: text-to-SQL.</strong> "¿Cuánto vendimos por región en marzo?" no está escrito en ningún documento: está en una base de datos. El patrón: le das al modelo el esquema, él escribe la consulta SQL, <strong>tu código la ejecuta</strong> y el modelo redacta la respuesta con el resultado.</p>
+      <p><strong>1. Datos estructurados: text-to-SQL.</strong> Datos <em>estructurados</em> son los que están en tablas, con filas y columnas. "¿Cuánto vendimos por región en marzo?" no está escrito en ningún documento: está en una base de datos. Text-to-SQL ("de texto a SQL") sigue este patrón:</p>
+      <ol>
+        <li>Le das al modelo el <em>esquema</em>, la descripción de las tablas y sus columnas.</li>
+        <li>El modelo escribe la consulta en SQL.</li>
+        <li><strong>Tu código la ejecuta.</strong></li>
+        <li>El modelo redacta la respuesta con el resultado.</li>
+      </ol>
+      <p>En el código, <code>es_un_solo_select</code> comprueba que la consulta solo lea (un SELECT) y no borre ni modifique nada.</p>
       <pre><code>ESQUEMA = """
 ventas(id, fecha DATE, region TEXT -- 'norte' | 'sur' | 'centro', monto_usd NUMERIC)
 """
@@ -1989,16 +2040,24 @@ if not es_un_solo_select(sql):                   # la validación va en código,
     raise ValueError("consulta no permitida")
 filas = db_solo_lectura.execute(sql, timeout=5).fetchmany(200)
 respuesta = llm(f"Pregunta: {pregunta}\\nResultado: {filas}\\nRespondé en una frase, con los números.")</code></pre>
-      <p><strong>Seguridad, no negociable:</strong> el SQL lo escribió un modelo que puede equivocarse o ser manipulado. Usuario de base de datos de <strong>solo lectura</strong>, acceso solo a vistas permitidas, filtros por los permisos del usuario, timeout y límite de filas.</p>
-      <p><strong>Calidad:</strong> los esquemas reales son difíciles (el benchmark BIRD se armó con bases grandes y sucias justamente por eso). Ayuda mucho dar descripciones de cada columna, valores de ejemplo y algunos pares pregunta → SQL. Para evaluar, compará los <em>resultados</em> de ejecutar la consulta contra los esperados, no el texto del SQL: hay muchas consultas correctas distintas.</p>
+      <p><strong>Seguridad, no negociable:</strong> el SQL lo escribió un modelo que puede equivocarse o ser manipulado. Cinco cuidados:</p>
+      <ul>
+        <li>Un usuario de base de datos de <strong>solo lectura</strong>, que no puede borrar ni cambiar nada.</li>
+        <li>Acceso solo a <em>vistas</em> permitidas (tablas recortadas con lo que se puede mostrar).</li>
+        <li>Filtros según los permisos de cada usuario.</li>
+        <li>Un tiempo máximo (timeout).</li>
+        <li>Un límite de filas.</li>
+      </ul>
+      <p><strong>Calidad:</strong> los esquemas reales son difíciles: nombres de columnas raros, datos desprolijos. La prueba estándar BIRD se armó con bases grandes y sucias justamente por eso. Ayuda mucho dar descripciones de cada columna, valores de ejemplo y algunos pares pregunta → SQL. Para evaluar, compará los <em>resultados</em> de ejecutar la consulta contra los esperados, no el texto del SQL: hay muchas consultas correctas distintas.</p>
       <p><strong>2. Preguntas globales: GraphRAG.</strong> "¿Cuáles son los temas principales de estos 5.000 informes?" no se responde con los 5 chunks más parecidos: ningún chunk tiene esa respuesta. GraphRAG (Microsoft, 2024) propone:</p>
       <ol>
-        <li>Un LLM extrae entidades y relaciones de los documentos y arma un grafo de conocimiento.</li>
-        <li>Agrupa entidades relacionadas en comunidades y genera de antemano un resumen de cada una.</li>
-        <li>Para responder, produce una respuesta parcial con cada resumen y después las sintetiza.</li>
+        <li>Un LLM lee los documentos y saca las <em>entidades</em> (personas, empresas, productos, lugares) y las relaciones entre ellas ("Ana trabaja en Acme"). Con eso arma un <em>grafo de conocimiento</em>: un mapa de puntos conectados, como una red de contactos.</li>
+        <li>Agrupa las entidades muy conectadas entre sí en <em>comunidades</em> y escribe de antemano un resumen de cada una.</li>
+        <li>Para responder, saca una respuesta parcial de cada resumen y después las junta en una sola.</li>
       </ol>
-      <p>En preguntas de síntesis sobre corpus de alrededor de un millón de tokens, mejoró bastante lo completo y diverso de las respuestas frente a un RAG clásico. El costo: indexar es mucho más caro, porque el LLM procesa todo el corpus. Conviene cuando las preguntas globales son frecuentes; para preguntas puntuales, el RAG clásico sigue siendo mejor opción.</p>` },
+      <p>En preguntas de síntesis sobre un <em>corpus</em> (conjunto de documentos) de alrededor de un millón de tokens, mejoró bastante lo completo y diverso de las respuestas frente a un RAG clásico. El costo: indexar es mucho más caro, porque el LLM procesa todo el corpus. Conviene cuando las preguntas globales son frecuentes; para preguntas puntuales, el RAG clásico sigue siendo mejor opción.</p>` },
     { titulo: 'Evaluar un RAG de punta a punta', html: `
+      <p><strong>En pocas palabras:</strong> cuando un auto anda mal, el mecánico revisa por partes: motor, frenos, luces. Con un RAG igual: hay que saber si falló la búsqueda (no encontró la página correcta), la respuesta (la encontró pero contestó mal) o si la información directamente no estaba. Cada falla se arregla distinto.</p>
       <p>"Las respuestas están bien" no es una métrica. Un RAG tiene partes que fallan de formas distintas, y conviene medirlas por separado:</p>
       <ul>
         <li><strong>Retrieval:</strong> ¿trajo lo necesario? <em>Recall@k</em> (si el fragmento correcto está entre los k primeros) y <em>precisión del contexto</em> (cuánto de lo recuperado es relevante, porque el resto es ruido que también paga tokens).</li>
@@ -2007,6 +2066,12 @@ respuesta = llm(f"Pregunta: {pregunta}\\nResultado: {filas}\\nRespondé en una f
         <li><strong>Exactitud:</strong> cuando tenés una respuesta de referencia, ¿coincide?</li>
         <li><strong>Abstención correcta:</strong> cuando la respuesta no está en tus documentos, ¿dice "no figura" en lugar de inventar?</li>
       </ul>
+      <p>El código mide la fidelidad usando un LLM como <em>juez</em> (otro modelo que evalúa la respuesta):</p>
+      <ol>
+        <li>Separa la respuesta en afirmaciones sueltas.</li>
+        <li>Le pregunta al juez, una por una, si sale del contexto.</li>
+        <li>Calcula qué porcentaje está respaldado.</li>
+      </ol>
       <pre><code>def fidelidad(respuesta, contexto):
     afirmaciones = llm("Listá las afirmaciones de esta respuesta, una por línea:\\n" + respuesta).splitlines()
     respaldadas = [juez("¿Esta afirmación se deduce del contexto? Respondé sí o no.", a, contexto)
@@ -2018,18 +2083,20 @@ respuesta = llm(f"Pregunta: {pregunta}\\nResultado: {filas}\\nRespondé en una f
         <li>No recuperó lo correcto: problema de <strong>retrieval</strong> (chunking, embeddings, búsqueda híbrida, reranker).</li>
         <li>La respuesta no estaba en ningún documento: problema de <strong>cobertura</strong>, que se arregla agregando datos, no tocando el modelo.</li>
       </ul>
-      <p><strong>Sin respuestas de referencia:</strong> frameworks como RAGAS proponen métricas que no necesitan etiquetas humanas, como la fidelidad calculada con un juez. Sirven para monitorear tráfico real de producción, pero son jueces LLM: calibralos contra etiquetas humanas antes de confiar en ellos.</p>` },
+      <p><strong>Sin respuestas de referencia:</strong> librerías como RAGAS proponen métricas que no necesitan que una persona marque la respuesta correcta, como la fidelidad calculada con un juez. Sirven para vigilar las conversaciones reales de los usuarios. Pero el juez también es un LLM y se equivoca: antes de confiar en él, compará sus notas con las de personas en algunos casos (eso es <em>calibrarlo</em>; lo vas a ver en el módulo de evals).</p>` },
     { titulo: 'Chunking a fondo: estrategias y cómo elegir', html: `
-      <p>Cómo partís los documentos define qué puede encontrar la búsqueda. Un buen criterio, según la guía de Pinecone: <strong>cada chunk debería tener sentido para una persona sin el texto de alrededor</strong>.</p>
+      <p><strong>En pocas palabras:</strong> si cortás un libro en fichas para buscar después, ¿dónde cortás? Si cortás en cualquier lado, una ficha dice "esto se aplica desde el lunes" y no sabés qué es "esto". Si las fichas son enormes, cada una habla de diez cosas. Esta lección enseña a cortar bien y a comprobarlo.</p>
+      <p>Cómo partís los documentos en chunks define qué puede encontrar la búsqueda. Un buen criterio, según la guía de Pinecone (una empresa de bases vectoriales): <strong>cada chunk debería tener sentido para una persona sin el texto de alrededor</strong>.</p>
       <p><strong>Estrategias, de la más simple a la más elaborada:</strong></p>
       <ul>
         <li><strong>Tamaño fijo</strong> en tokens, con algo de solapamiento. Simple y, para muchos casos, suficiente como punto de partida.</li>
         <li><strong>División recursiva:</strong> intenta cortar primero por párrafos, después por líneas, después por espacios, hasta quedar cerca del tamaño buscado. No parte oraciones a la mitad.</li>
         <li><strong>Por estructura:</strong> usa los títulos de Markdown o HTML, las secciones de un PDF, los bloques de código. Ideal para documentación y manuales.</li>
         <li><strong>Semántica:</strong> agrupa oraciones vecinas y corta donde los embeddings muestran un cambio de tema.</li>
-        <li><strong>Con contexto agregado:</strong> un LLM escribe una línea que ubica cada chunk dentro del documento y se embebe junto con él (el contextual retrieval que ya viste).</li>
-        <li><strong>Expansión al recuperar:</strong> buscás con chunks chicos y precisos, pero al modelo le pasás también los vecinos, el párrafo o la sección completa (a veces llamado padre-hijo).</li>
+        <li><strong>Con contexto agregado:</strong> un LLM escribe una línea que ubica cada chunk dentro del documento y se embebe junto con él (el contextual retrieval de la lección 2).</li>
+        <li><strong>Expansión al recuperar:</strong> buscás con chunks chicos y precisos, pero al modelo le pasás también los vecinos, el párrafo o la sección completa. A veces se lo llama "padre-hijo": el chunk chico es el hijo y la sección completa, el padre.</li>
       </ul>
+      <p>El código corta por secciones y le pega el título a cada pedazo, para que se entienda solo. <code>yield</code> va entregando cada chunk de a uno.</p>
       <pre><code>def chunks_por_seccion(markdown, max_tokens=400):
     secciones = dividir_por_titulos(markdown)          # cada "## Título" con su texto
     for titulo, texto in secciones:
