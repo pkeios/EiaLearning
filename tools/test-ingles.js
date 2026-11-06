@@ -152,7 +152,7 @@ U.forEach((u, i) => {
   assert(t.ideas.length && t.tablas.length && t.vocab.length && t.preguntas.length, 'unidad ' + (i + 1) + ': teoría incompleta');
   assert(!t.ideas.some(s => /botón/i.test(s.t)), 'unidad ' + (i + 1) + ': una tarjeta habla de un botón de la pantalla');
 });
-assert(/@media print/.test(fs.readFileSync(dir + 'estilos.css', 'utf8')), 'faltan los estilos de impresión');
+assert(/@media print[\s\S]*size: A4 landscape/.test(fs.readFileSync(dir + 'estilos.css', 'utf8')), 'la teoría se imprime en A4 horizontal');
 assert(h.includes("#/imprimir/todo") && h.includes('#/imprimir/verbos') && h.includes('#/imprimir/${i}'));
 assert(!fs.readFileSync(dir + 'index.html', 'utf8').includes('imprimir'), 'imprimir es solo del curso de inglés');
 

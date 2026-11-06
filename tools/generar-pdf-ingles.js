@@ -22,6 +22,7 @@ const srv = http.createServer((q, r) => {
     path: path.join(RAIZ, 'chicos', 'ingles-teoria.pdf'),
     format: 'A4',
     preferCSSPageSize: true,
+    printBackground: true,
     displayHeaderFooter: true,
     headerTemplate: '<span></span>',
     footerTemplate: '<div style="font-size:9px;width:100%;text-align:center;color:#555">Inglés básico · página <span class="pageNumber"></span> de <span class="totalPages"></span></div>',
