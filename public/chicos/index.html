@@ -9,7 +9,7 @@
 <body>
 <header><h1><a href="#/">🎒 Para chicos</a></h1></header>
 <main id="app"></main>
-<footer>Para adultos: cursos para chicos y chicas de 10 a 13 años. El progreso se guarda solo en este navegador.<br><a href="../">Curso completo de AI Engineering</a></footer>
+<footer>Para adultos: cursos para chicos y chicas de 10 a 13 años. El progreso se guarda solo en este navegador.<br><a href="../">Todos los cursos</a></footer>
 <script>
 // Pasos: idea (emoji + frase corta), elegir (una correcta) y clasificar (cada ítem en su grupo).
 // Cada misión tiene 3 ejercicios: una estrella por cada uno resuelto al primer intento.
@@ -72,7 +72,7 @@ const MISIONES = [
 const app = document.getElementById('app');
 const cargar = () => { try { return JSON.parse(localStorage.getItem('chicos')) || {}; } catch { return {}; } };
 const guardar = p => localStorage.setItem('chicos', JSON.stringify(p));
-const SIGUIENTE = '<p>🚀 <strong>¿Querés más?</strong> Con alguien que te acompañe, podés mirar el primer módulo del <a href="../#/m/fundamentos">curso completo</a>.</p>';
+const SIGUIENTE = '<p>🚀 <strong>¿Querés más?</strong> Con alguien que te acompañe, podés mirar el primer módulo del <a href="../curso.html#/m/fundamentos">curso completo</a>.</p>';
 
 // Voz: español latino si el dispositivo tiene una
 function leer(texto) {
@@ -95,7 +95,6 @@ function inicio() {
   app.innerHTML = `<a class="volver" href="#/">← Elegir curso</a>
     <h2 class="seccion">🤖 Inteligencia artificial</h2>
     <p class="estrellas">⭐ <strong>${total}</strong> de ${MISIONES.length * 3} estrellas</p>
-    <p style="text-align:center"><a class="volver" href="#/ia/imprimir">🖨️ Teoría para imprimir</a></p>
     ${Object.keys(p).length === MISIONES.length ? SIGUIENTE : ''}
     <div class="misiones">${MISIONES.map((m, i) => `<button class="mision" style="--c:${m.color}" data-i="${i}">
       <span class="emoji">${m.emoji}</span><strong>${i + 1}. ${m.titulo}</strong><small>${p[i] != null ? '⭐'.repeat(p[i]) + '☆'.repeat(3 - p[i]) : '▶️ Jugar'}</small></button>`).join('')}</div>
@@ -517,7 +516,8 @@ function entrada() {
   try { ingles = JSON.parse(localStorage.getItem('chicos-ingles'))?.u || {}; } catch {}
   const hechas = Object.keys(ingles).length;
   document.documentElement.style.setProperty('--color', '#7b5cff');
-  app.innerHTML = `<h2 class="seccion">¿Qué querés aprender hoy?</h2>
+  app.innerHTML = `<a class="volver" href="../">← Todos los cursos</a>
+    <h2 class="seccion">¿Qué querés aprender hoy?</h2>
     <div class="misiones">
       <a class="mision curso-grande" style="--c:#7b5cff;color:inherit;text-decoration:none" href="#/ia"><span class="emoji">🤖</span><strong>Inteligencia artificial</strong><small>${MISIONES.length} misiones y taller<br>${ia ? '⭐ ' + ia + ' de ' + MISIONES.length * 3 : 'De 10 a 13 años'}</small></a>
       <a class="mision curso-grande" style="--c:#ff7a59;color:inherit;text-decoration:none" href="ingles.html"><span class="emoji">🗣️</span><strong>Inglés básico</strong><small>10 unidades, para 13 años<br>${hechas ? '✅ ' + hechas + ' de 10 unidades' : 'Presente, ahora y pasado'}</small></a>
@@ -525,22 +525,10 @@ function entrada() {
   scrollTo(0, 0);
 }
 
-// Teoría para llevar en papel: las ideas de cada misión y la pregunta para explicar con tus palabras.
-function imprimirIA() {
-  app.innerHTML = `<div class="no-imprimir"><a class="volver" href="#/ia">← Misiones</a>
-      <p style="text-align:center"><button class="boton" id="imprimir">🖨️ Imprimir</button></p></div>
-    ${MISIONES.map((m, i) => `<section class="hoja"><h2>${m.emoji} ${i + 1}. ${m.titulo}</h2>
-      <ul>${m.pasos.filter(s => s.idea).map(s => `<li>${s.t}</li>`).join('')}</ul>
-      <h3>💭 Para explicar con tus palabras</h3><p>${m.reflexion}</p></section>`).join('')}`;
-  app.querySelector('#imprimir').onclick = () => print();
-  scrollTo(0, 0);
-}
-
 function rutear() {
   window.speechSynthesis?.cancel();
   clearInterval(corriendo);
   if (location.hash === '' || location.hash === '#/') return entrada();
-  if (location.hash === '#/ia/imprimir') return imprimirIA();
   if (location.hash.startsWith('#/taller/')) return taller(location.hash.slice(9));
   const i = Number(location.hash.slice(2));
   if (location.hash.length > 2 && MISIONES[i]) mision(i); else inicio();

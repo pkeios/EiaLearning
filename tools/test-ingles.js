@@ -144,11 +144,18 @@ U.forEach((u, i) => {
 });
 assert(/@media print/.test(fs.readFileSync(dir + 'estilos.css', 'utf8')), 'faltan los estilos de impresión');
 assert(h.includes("#/imprimir/todo") && h.includes('#/imprimir/verbos') && h.includes('#/imprimir/${i}'));
-assert(fs.readFileSync(dir + 'index.html', 'utf8').includes('#/ia/imprimir'));
+assert(!fs.readFileSync(dir + 'index.html', 'utf8').includes('imprimir'), 'imprimir es solo del curso de inglés');
 
 // La entrada de chicos deja elegir curso.
 const entrada = fs.readFileSync(dir + 'index.html', 'utf8');
 assert(entrada.includes('href="ingles.html"'));
 assert(entrada.includes('#/ia') && entrada.includes('Elegir curso'));
 assert(entrada.includes('href="estilos.css"') && h.includes('href="estilos.css"'));
+// El home lleva a los tres cursos, y los enlaces viejos del curso principal siguen funcionando.
+const home = fs.readFileSync(dir + '../index.html', 'utf8');
+['href="curso.html"', 'href="chicos/#/ia"', 'href="chicos/ingles.html"'].forEach(l => assert(home.includes(l), 'el home no tiene: ' + l));
+assert(home.includes("location.replace('curso.html' + location.hash)"), 'los enlaces viejos tienen que redirigir');
+const curso = fs.readFileSync(dir + '../curso.html', 'utf8');
+assert(curso.includes('src="app.js"') && curso.includes('href="./"'), 'el curso principal tiene que tener su app y el link al home');
+assert(fs.readFileSync(dir + '../sw.js', 'utf8').includes("'curso.html'"), 'curso.html tiene que estar disponible sin conexión');
 console.log(`test-ingles OK (${U.length} unidades, ${claves.size} ejercicios con repaso, ${bases.length} verbos irregulares)`);

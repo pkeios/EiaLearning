@@ -926,7 +926,7 @@ function render() {
   else inicio();
 }
 
-// El tema se aplica en index.html antes de pintar, para evitar un parpadeo; acá solo el botón.
+// El tema se aplica en curso.html antes de pintar, para evitar un parpadeo; acá solo el botón.
 const botonTema = document.getElementById('tema');
 const iconoTema = () => { botonTema.textContent = document.documentElement.dataset.tema === 'claro' ? '🌙' : '☀️'; };
 botonTema.onclick = () => {
@@ -937,7 +937,7 @@ botonTema.onclick = () => {
 };
 iconoTema();
 
-// Tamaño de letra: escala del 80% al 150%, se recuerda y se aplica en index.html antes de pintar.
+// Tamaño de letra: escala del 80% al 150%, se recuerda y se aplica en curso.html antes de pintar.
 function cambiarLetra(delta) {
   const actual = Number(localStorage.getItem('letra')) || 1;
   const nueva = Math.round(Math.min(1.5, Math.max(0.8, actual + delta)) * 10) / 10;

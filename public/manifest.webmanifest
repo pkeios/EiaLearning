@@ -3,7 +3,7 @@
   "short_name": "AI Engineering",
   "description": "Curso de autoaprendizaje de AI Engineering con quizzes, repaso y tarjetas.",
   "lang": "es",
-  "start_url": "./",
+  "start_url": "curso.html",
   "scope": "./",
   "display": "standalone",
   "background_color": "#0b1020",

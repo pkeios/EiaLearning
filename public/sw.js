@@ -1,7 +1,7 @@
 // Service worker: permite estudiar sin conexión.
 // Responde desde la caché si puede y, en paralelo, baja la versión nueva: la próxima visita ya ve el contenido actualizado.
-const CACHE = 'curso-v1';
-const ARCHIVOS = ['./', 'index.html', 'styles.css', 'app.js', 'contenido.js', 'glosario.js', 'vendor/qrcode.js', 'manifest.webmanifest', 'icono-192.png', 'icono-512.png'];
+const CACHE = 'curso-v2';
+const ARCHIVOS = ['./', 'index.html', 'curso.html', 'styles.css', 'app.js', 'contenido.js', 'glosario.js', 'vendor/qrcode.js', 'manifest.webmanifest', 'icono-192.png', 'icono-512.png'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(ARCHIVOS)));
