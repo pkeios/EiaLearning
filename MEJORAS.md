@@ -193,3 +193,4 @@ Lo completa el comando `/mejorar`. Una línea por ejecución.
 - 2026-11-06 · app · home en la dirección principal con los tres cursos; el curso de AI Engineering pasa a curso.html (mismo progreso, los enlaces viejos redirigen); la impresión de teoría queda solo en el curso de inglés
 - 2026-11-06 · chicos-ingles · penalización: una sola oportunidad al elegir y clasificar, los errores vuelven al final hasta resolverlos, 70% al primer intento para aprobar (si no, 0 estrellas y se repite), y la unidad siguiente se abre al aprobar la anterior
 - 2026-11-06 · chicos-ingles · PDF de toda la teoría para descargar (21 páginas); se regenera con tools/generar-pdf-ingles.js y test-ingles avisa si quedó desactualizado
+- 2026-11-06 · chicos-ingles · teoría impresa en dos columnas y letra de 12 pt: cada unidad entra en una hoja (el PDF pasó de 21 a 11 páginas)

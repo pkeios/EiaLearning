@@ -197,16 +197,16 @@ function ayudaVerbos() {
 const hojaUnidad = (u, i) => {
   const t = teoriaDe(u), fila = c => `<td>${esc(c)}</td>`;
   return `<section class="hoja"><h2>${u.emoji} Unidad ${i + 1}: ${esc(u.titulo)}</h2>
-    <p><strong>🎯 Al terminar vas a poder:</strong></p><ul>${u.objetivos.map(o => `<li>${esc(o)}</li>`).join('')}</ul>
+    <div class="columnas"><div class="bloque"><p><strong>🎯 Al terminar vas a poder:</strong></p><ul>${u.objetivos.map(o => `<li>${esc(o)}</li>`).join('')}</ul></div>
     <h3>💡 Ideas</h3><ul>${t.ideas.map(s => `<li>${fmt(s.t)}${s.ej ? ` <span class="frases" lang="en">${s.ej.map(esc).join(' · ')}</span>` : ''}</li>`).join('')}</ul>
-    ${t.tablas.map(s => `<div class="bloque"><h3>📐 ${fmt(s.tabla)}</h3><table class="regla"><thead><tr>${s.cols.map(c => `<th>${esc(c)}</th>`).join('')}</tr></thead><tbody>${s.filas.map(f => `<tr>${f.map(fila).join('')}</tr>`).join('')}</tbody></table>${s.nota ? `<p>💡 ${fmt(s.nota)}</p>` : ''}</div>`).join('')}
+    ${t.tablas.map(s => `<div class="bloque ${s.cols.length > 3 ? 'todo-ancho' : ''}"><h3>📐 ${fmt(s.tabla)}</h3><table class="regla"><thead><tr>${s.cols.map(c => `<th>${esc(c)}</th>`).join('')}</tr></thead><tbody>${s.filas.map(f => `<tr>${f.map(fila).join('')}</tr>`).join('')}</tbody></table>${s.nota ? `<p>💡 ${fmt(s.nota)}</p>` : ''}</div>`).join('')}
     ${t.vocab.map(s => `<div class="bloque"><h3>📖 ${fmt(s.vocab)}</h3><table class="regla"><tbody>${s.items.map(([, en, es]) => `<tr><td lang="en"><strong>${esc(en)}</strong></td><td>${esc(es)}</td></tr>`).join('')}</tbody></table></div>`).join('')}
     <div class="bloque"><h3>🗣️ Respondé en voz alta, sin mirar</h3><ul>${t.preguntas.map(s => `<li><span lang="en">${esc(s.personal)}</span> <em>(${esc(s.es)})</em></li>`).join('')}</ul></div>
-    <div class="bloque"><h3>💭 Explicalo con tus palabras</h3><p>${esc(u.reflexion)}</p></div></section>`;
+    <div class="bloque"><h3>💭 Explicalo con tus palabras</h3><p>${esc(u.reflexion)}</p></div></div></section>`;
 };
 const hojaVerbos = () => `<section class="hoja"><h2>📘 Verbos irregulares</h2>
   <p>Para repasar: tapá con una hoja la columna del pasado, decilo y destapá.</p>
-  ${GRUPOS_VERBOS.map(g => `<div class="bloque"><h3>${esc(g.titulo)}</h3><p>💡 ${esc(g.truco)}</p><table class="regla"><thead><tr><th>Presente</th><th>Pasado</th><th>Significa</th></tr></thead><tbody>${g.verbos.map(([a, b, c]) => `<tr><td lang="en">${esc(a)}</td><td lang="en"><strong>${esc(b)}</strong></td><td>${esc(c)}</td></tr>`).join('')}</tbody></table></div>`).join('')}</section>`;
+  <div class="columnas">${GRUPOS_VERBOS.map(g => `<div class="bloque"><h3>${esc(g.titulo)}</h3><p>💡 ${esc(g.truco)}</p><table class="regla"><thead><tr><th>Presente</th><th>Pasado</th><th>Significa</th></tr></thead><tbody>${g.verbos.map(([a, b, c]) => `<tr><td lang="en">${esc(a)}</td><td lang="en"><strong>${esc(b)}</strong></td><td>${esc(c)}</td></tr>`).join('')}</tbody></table></div>`).join('')}</div></section>`;
 // que: número de unidad, 'verbos' o 'todo'. Las unidades con irregulares suman la tabla, para tenerla a mano en papel.
 function imprimir(que) {
   document.documentElement.style.setProperty('--color', '#ff7a59');

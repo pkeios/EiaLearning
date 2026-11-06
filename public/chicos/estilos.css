@@ -83,12 +83,21 @@ textarea { font-size: 1rem; }
 .hoja .regla td { border-bottom: 1px solid #999; padding: .2rem .4rem; }
 .hoja .frases { color: #333; font-style: italic; }
 @media print {
-  @page { margin: 1.5cm; }
-  body { background: #fff; color: #000; font-size: 11pt; }
+  @page { margin: 1.1cm 1.2cm 1.3cm; }
+  body { background: #fff; color: #000; font-size: 12pt; line-height: 1.25; }
   header, footer, .no-imprimir { display: none !important; }
   main { max-width: none; padding: 0; }
-  .hoja { padding: 0; margin: 0; border-radius: 0; font-size: 11pt; }
+  .hoja { padding: 0; margin: 0; border-radius: 0; font-size: 12pt; line-height: 1.25; }
   .hoja + .hoja { break-before: page; }
-  .hoja .regla, .hoja .bloque { break-inside: avoid; }
+  /* Dos columnas: entra casi el doble en la misma hoja, sin achicar la letra de más */
+  .hoja .columnas { columns: 2; column-gap: .8cm; }
+  .hoja .todo-ancho { column-span: all; }
+  .hoja h2 { font-size: 16pt; margin-bottom: .15cm; }
+  .hoja h3 { font-size: 12.5pt; margin: .2cm 0 .05cm; }
+  .hoja p { margin: .05cm 0; }
+  .hoja ul { margin: 0 0 .1cm; padding-left: .45cm; }
+  .hoja .regla { margin: .05cm 0; font-size: 11.5pt; }
+  .hoja .regla th, .hoja .regla td { padding: .03cm .1cm; }
+  .hoja .regla, .hoja .bloque, .hoja li { break-inside: avoid; }
   .hoja h2, .hoja h3 { break-after: avoid; }
 }
