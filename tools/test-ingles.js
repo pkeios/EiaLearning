@@ -156,6 +156,10 @@ assert(/@media print/.test(fs.readFileSync(dir + 'estilos.css', 'utf8')), 'falta
 assert(h.includes("#/imprimir/todo") && h.includes('#/imprimir/verbos') && h.includes('#/imprimir/${i}'));
 assert(!fs.readFileSync(dir + 'index.html', 'utf8').includes('imprimir'), 'imprimir es solo del curso de inglés');
 
+// El PDF para descargar existe y corresponde a la teoría actual.
+assert(h.includes('href="ingles-teoria.pdf"') && fs.existsSync(dir + 'ingles-teoria.pdf'), 'falta el PDF para descargar');
+assert.equal(fs.readFileSync(dir + 'ingles-teoria.huella', 'utf8').trim(), require('./huella-ingles.js').huellaTeoria(), 'la teoría cambió: regenerá el PDF con node tools/generar-pdf-ingles.js');
+
 // La entrada de chicos deja elegir curso.
 const entrada = fs.readFileSync(dir + 'index.html', 'utf8');
 assert(entrada.includes('href="ingles.html"'));
