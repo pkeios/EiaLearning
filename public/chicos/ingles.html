@@ -21,8 +21,11 @@ const normalizar = t => String(t).toLowerCase().replace(/[’`´]/g, "'")
   .replace(/[.,!?¿¡:;]/g, '').replace(/\s+/g, ' ').trim();
 const esCorrecta = (s, respuesta) => (s.r || [s.dictado]).concat(s.dictado || []).some(r => normalizar(r) === normalizar(respuesta));
 const claveEj = s => (s.q ? s.q + ' | ' + s.o[s.c] : s.escribir) || (s.ordenar ? 'ordenar: ' + s.r[0] : null);
-// Estrellas de una unidad según los ejercicios resueltos al primer intento.
-const estrellasDe = (bien, total) => { const x = total ? bien / total : 0; return x >= 0.9 ? 3 : x >= 0.7 ? 2 : 1; };
+// Una unidad se aprueba con 70% de ejercicios resueltos al primer intento. Si no llega: 0 estrellas y hay que repetirla.
+const APROBAR = 0.7;
+const estrellasDe = (bien, total) => { const x = total ? bien / total : 0; return x >= 0.9 ? 3 : x >= 0.8 ? 2 : x >= APROBAR ? 1 : 0; };
+// Cada unidad se abre al aprobar la anterior. Para quien ya venía avanzando, lo aprobado se conserva.
+const desbloqueada = (p, i) => i === 0 || p.u[i - 1] > 0;
 const dia = (mas = 0) => { const d = new Date(); d.setDate(d.getDate() + mas); return d.toLocaleDateString('sv'); };
 // Repaso espaciado: los ejercicios vuelven a 1, 3, 7 y 14 días. Si se falla, vuelve a empezar.
 const INTERVALOS = [1, 3, 7, 14];
@@ -87,26 +90,31 @@ function montarEjercicio(s, cont, fin) {
   if (s.q) {
     cont.innerHTML = `<p class="texto">${fmt(s.q)}</p><div class="opciones">${mezclar(s.o.map((o, j) => [o, j])).map(([o, j]) => `<button class="opcion" data-j="${j}">${esc(o)}</button>`).join('')}</div><p class="aviso" aria-live="polite"></p>`;
     cont.querySelectorAll('[data-j]').forEach(b => b.onclick = () => {
+      cont.querySelectorAll('[data-j]').forEach(x => { x.disabled = true; });
       if (Number(b.dataset.j) === s.c) {
         b.classList.add('bien');
-        cont.querySelectorAll('[data-j]').forEach(x => { x.disabled = true; });
         resuelto('🎉 ¡Bien! ' + s.e);
       } else {
-        primero = false;
-        b.classList.add('mal'); b.disabled = true;
-        aviso('🤔 Casi. Pista: ' + s.p, 'mal');
+        // Una sola oportunidad: se muestra la correcta y cuenta como error.
+        b.classList.add('mal');
+        cont.querySelector(`[data-j="${s.c}"]`).classList.add('bien');
+        aviso(`❌ No era esa. La correcta es: ${s.o[s.c]}. ${s.e}`, 'mal');
+        fin(false);
       }
     });
   } else if (s.clasificar) {
     let faltan = s.items.length;
     cont.innerHTML = `<p class="texto">${fmt(s.clasificar)}</p><div class="chips">${s.items.map(([t], k) => `<div class="chip" data-k="${k}"><span lang="en">${esc(t)}</span>${s.grupos.map((g, j) => `<button data-g="${j}">${esc(g)}</button>`).join('')}</div>`).join('')}</div><p class="aviso" aria-live="polite"></p>`;
     cont.querySelectorAll('.chip').forEach(chip => chip.querySelectorAll('button').forEach(b => b.onclick = () => {
-      const bien = Number(b.dataset.g) === s.items[chip.dataset.k][1];
-      chip.classList.remove('mal'); void chip.offsetWidth;
+      const correcto = s.items[chip.dataset.k][1], bien = Number(b.dataset.g) === correcto;
       chip.classList.add(bien ? 'bien' : 'mal');
-      if (!bien) { primero = false; aviso('🤔 Ese no va ahí. ¡Probá otro!', 'mal'); return; }
       chip.querySelectorAll('button').forEach(x => { x.disabled = true; });
-      if (--faltan) aviso('✅ ¡Bien!', 'bien'); else resuelto('🎉 ' + s.e);
+      // Una sola oportunidad por ítem: si falla, se marca el grupo correcto y el ejercicio cuenta como error.
+      if (!bien) { primero = false; chip.querySelector(`[data-g="${correcto}"]`).style.outline = '3px solid var(--bien)'; }
+      if (--faltan) return aviso(bien ? '✅ ¡Bien!' : `❌ Ese va en: ${s.grupos[correcto]}`, bien ? 'bien' : 'mal');
+      if (primero) return resuelto('🎉 ' + s.e);
+      aviso('❌ Hubo errores. ' + s.e, 'mal');
+      fin(false);
     }));
   } else if (s.ordenar) {
     const palabras = fichas(s.r[0]);
@@ -132,12 +140,13 @@ function montarEjercicio(s, cont, fin) {
       aviso('🤔 Casi. Pista: ' + s.p, 'mal');
     };
   } else {
-    // escribir y dictado
+    // escribir y dictado. Saltear el dictado solo se ofrece si el dispositivo no tiene voz en inglés: no es un atajo.
+    const sinVoz = !window.speechSynthesis || !speechSynthesis.getVoices().some(v => /^en/i.test(v.lang));
     cont.innerHTML = `${s.dictado ? `<p class="etiqueta">Dictado</p><p class="texto">Escuchá y escribí lo que oís.</p>
         <div class="fila"><button class="boton" id="oir-dictado">🔊 Escuchar</button><button class="opcion" id="oir-lento">🐢 Lento</button></div>`
         : `<p class="texto">${fmt(s.escribir)}</p>`}
       <input type="text" id="resp" lang="en" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Tu respuesta">
-      <div class="fila"><button class="boton" id="comprobar">Comprobar</button>${s.dictado ? '<button class="chico" id="sin-audio" style="font-size:.95rem">🙉 No puedo escuchar</button>' : ''}</div>
+      <div class="fila"><button class="boton" id="comprobar">Comprobar</button>${s.dictado && sinVoz ? '<button class="chico" id="sin-audio" style="font-size:.95rem">🙉 No puedo escuchar</button>' : ''}</div>
       <p class="aviso" aria-live="polite"></p>`;
     const inp = cont.querySelector('#resp');
     const cerrar = () => { inp.disabled = true; cont.querySelector('.fila:last-of-type')?.remove(); };
@@ -145,7 +154,8 @@ function montarEjercicio(s, cont, fin) {
       cont.querySelector('#oir-dictado').onclick = () => hablar(s.dictado);
       cont.querySelector('#oir-lento').onclick = () => hablar(s.dictado, .6);
       // Sin audio el dictado no se puede hacer: se muestra la frase y no cuenta en contra.
-      cont.querySelector('#sin-audio').onclick = () => { cerrar(); aviso(`La frase era: ${s.dictado}`, ''); fin(null); };
+      const sinAudio = cont.querySelector('#sin-audio');
+      if (sinAudio) sinAudio.onclick = () => { cerrar(); aviso(`La frase era: ${s.dictado}`, ''); fin(null); };
     }
     const comprobar = () => {
       if (!inp.value.trim()) return inp.focus();
@@ -215,13 +225,12 @@ function imprimir(que) {
 function inicio() {
   const p = cargar(), hechas = Object.keys(p.u).length, repasar = paraRepasar(p).length;
   const total = Object.values(p.u).reduce((a, b) => a + b, 0);
-  const sig = UNIDADES.findIndex((_, i) => p.u[i] == null);
   document.documentElement.style.setProperty('--color', '#ff7a59');
   app.innerHTML = `<a class="volver" href="../">← Todos los cursos</a>
     <p class="estrellas">⭐ <strong>${total}</strong> de ${UNIDADES.length * 3} estrellas · ✅ ${hechas} de ${UNIDADES.length} unidades</p>
     ${repasar ? `<p style="text-align:center"><a class="boton" href="#/repaso">🔁 Repaso de hoy: ${repasar} ${repasar === 1 ? 'ejercicio' : 'ejercicios'}</a></p><p class="seguro" style="text-align:center">Recordar lo de días pasados es lo que hace que no te olvides. Empezá por acá.</p>` : ''}
     <div class="misiones">${UNIDADES.map((u, i) => `<a class="mision" style="--c:${u.color};color:inherit;text-decoration:none" href="#/u/${i}">
-      <span class="emoji">${u.emoji}</span><strong>${i + 1}. ${esc(u.titulo)}</strong><small>${p.u[i] != null ? '⭐'.repeat(p.u[i]) + '☆'.repeat(3 - p.u[i]) : p.enCurso[i] ? '⏸️ Seguir' : i === sig ? '▶️ Empezar' : '⏳ Más adelante'}</small></a>`).join('')}</div>
+      <span class="emoji">${u.emoji}</span><strong>${i + 1}. ${esc(u.titulo)}</strong><small>${p.u[i] != null ? '⭐'.repeat(p.u[i]) + '☆'.repeat(3 - p.u[i]) : p.enCurso[i] ? '⏸️ Seguir' : desbloqueada(p, i) ? '▶️ Empezar' : '🔒 Aprobá la anterior'}</small></a>`).join('')}</div>
     <h2 class="seccion">🧰 Tus herramientas</h2>
     <div class="misiones">
       <a class="mision" style="--c:#c2572b;color:inherit;text-decoration:none" href="#/verbos"><span class="emoji">📘</span><strong>Verbos irregulares</strong><small>Tabla y práctica</small></a>
@@ -235,11 +244,18 @@ function inicio() {
 function unidad(i) {
   const u = UNIDADES[i], guardado = cargar().enCurso[i];
   document.documentElement.style.setProperty('--color', u.color);
-  let paso = guardado?.paso ?? -1, bien = guardado?.bien ?? 0, total = guardado?.total ?? 0;
-  const anotar = () => { const p = cargar(); p.enCurso[i] = { paso, bien, total }; guardar(p); };
+  if (!desbloqueada(cargar(), i)) {
+    app.innerHTML = `<a class="volver" href="#/">← Unidades</a><section class="tarjeta"><div class="grande">🔒</div><p class="texto">Primero aprobá la unidad ${i}.</p><p>Cada unidad usa lo que aprendiste en la anterior.</p><div class="acciones"><span></span><a class="boton" href="#/u/${i - 1}">Ir a la unidad ${i} →</a></div></section>`;
+    scrollTo(0, 0);
+    return;
+  }
+  // pendientes: los ejercicios fallados, que vuelven al final hasta resolverlos bien.
+  let paso = guardado?.paso ?? -1, bien = guardado?.bien ?? 0, total = guardado?.total ?? 0, pendientes = guardado?.pendientes ?? [];
+  const anotar = () => { const p = cargar(); p.enCurso[i] = { paso, bien, total, pendientes }; guardar(p); };
   const pantalla = cuerpo => {
     app.innerHTML = `<a class="volver" href="#/">← Unidades</a>
       <div class="barra">${u.pasos.map((_, k) => `<span class="${k <= paso ? 'hecho' : ''}"></span>`).join('')}</div>
+      <p class="seguro" style="text-align:center">✅ ${bien} · ❌ ${total - bien} · para aprobar: ${APROBAR * 100}% al primer intento</p>
       <section class="tarjeta">${cuerpo}<p id="aviso-paso" class="aviso"></p><div class="acciones"><span></span><button class="boton" id="seguir">Seguir →</button></div></section>`;
     if (u.ayudaVerbos) app.querySelector('.barra').after(ayudaVerbos());
     activarOir(app);
@@ -250,7 +266,7 @@ function unidad(i) {
   const mostrar = () => {
     window.speechSynthesis?.cancel();
     if (paso === -1) return portada();
-    if (paso >= u.pasos.length) return final();
+    if (paso >= u.pasos.length) return pendientes.length ? correccion() : final();
     const s = u.pasos[paso];
     if (s.idea) return pantalla(`<div class="grande">${s.idea}</div><p class="texto">${fmt(s.t)}</p>${s.ej ? `<div class="ejemplos">${s.ej.map(x => botonOir(x)).join('')}</div>` : ''}`);
     if (s.tabla) return pantalla(`<p class="texto">${fmt(s.tabla)}</p><div class="ancho"><table class="regla"><thead><tr>${s.cols.map(c => `<th>${esc(c)}</th>`).join('')}</tr></thead><tbody>${s.filas.map(f => `<tr>${f.map(c => `<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>${s.nota ? `<p class="glosa">💡 ${fmt(s.nota)}</p>` : ''}`);
@@ -263,6 +279,7 @@ function unidad(i) {
     app.innerHTML = `<a class="volver" href="#/">← Unidades</a>
       <section class="tarjeta"><div class="grande">${u.emoji}</div><p class="etiqueta">Unidad ${i + 1} de ${UNIDADES.length}</p><p class="texto">${esc(u.titulo)}</p>
       <p><strong>🎯 Al terminar vas a poder:</strong></p><ul class="objetivos">${u.objetivos.map(o => `<li>${esc(o)}</li>`).join('')}</ul>
+      <p class="seguro">✅ Para aprobar necesitás ${APROBAR * 100}% al primer intento. Lo que falles vuelve al final, hasta que te salga bien.</p>
       <div class="acciones"><a class="volver" href="#/imprimir/${i}">🖨️ Imprimir la teoría</a><button class="boton" id="seguir">Empezar →</button></div></section>`;
     app.querySelector('#seguir').onclick = () => { paso = 0; anotar(); mostrar(); };
     scrollTo(0, 0);
@@ -272,10 +289,22 @@ function unidad(i) {
     seguir.disabled = true;
     montarEjercicio(s, app.querySelector('#ejercicio'), primero => {
       if (primero !== null) {
-        total++; if (primero) bien++;
+        total++; if (primero) bien++; else pendientes.push(paso);
         const k = claveEj(s);
         if (k) { const p = cargar(); agendarPrimera(p, k, primero); guardar(p); }
       }
+      seguir.disabled = false;
+      seguir.focus();
+    });
+  };
+  // Corregir los errores: no suma puntos, pero sin resolverlos bien no se termina la unidad.
+  const correccion = () => {
+    const k = pendientes[0];
+    const seguir = pantalla(`<p class="etiqueta">🔧 Corregí tus errores: ${pendientes.length === 1 ? 'queda 1' : 'quedan ' + pendientes.length}</p><div id="ejercicio"></div>`);
+    seguir.disabled = true;
+    montarEjercicio(u.pasos[k], app.querySelector('#ejercicio'), primero => {
+      pendientes.shift();
+      if (primero === false) pendientes.push(k);
       seguir.disabled = false;
       seguir.focus();
     });
@@ -299,10 +328,20 @@ function unidad(i) {
     };
   };
   const final = () => {
-    const estrellas = estrellasDe(bien, total), p = cargar();
-    p.u[i] = Math.max(p.u[i] || 0, estrellas);
+    const estrellas = estrellasDe(bien, total), p = cargar(), yaAprobada = p.u[i] > 0;
+    if (estrellas) p.u[i] = Math.max(p.u[i] || 0, estrellas);
     delete p.enCurso[i];
     guardar(p);
+    if (!estrellas) {
+      app.innerHTML = `<section class="tarjeta"><div class="grande">💪</div><p class="texto">Todavía no aprobaste la unidad ${i + 1}.</p>
+        <p>Al primer intento: <strong>${bien} de ${total}</strong> (${Math.round(bien / total * 100)}%). Necesitás ${APROBAR * 100}%.</p>
+        <p>Ya corregiste tus errores, así que la próxima vez te va a resultar más fácil.</p>
+        ${yaAprobada ? '<p class="seguro">Tu aprobación anterior se mantiene.</p>' : '<p class="seguro">La unidad siguiente se abre cuando apruebes esta.</p>'}
+        <div class="acciones"><a class="volver" href="#/">← Unidades</a><button class="boton" id="repetir">🔁 Volver a hacerla</button></div></section>`;
+      app.querySelector('#repetir').onclick = () => unidad(i);
+      scrollTo(0, 0);
+      return;
+    }
     app.innerHTML = `<section class="tarjeta"><div class="fiesta">🎉🎊🎉</div><p class="texto">¡Unidad ${i + 1} terminada!</p>
       <div class="grande">${'⭐'.repeat(estrellas) + '☆'.repeat(3 - estrellas)}</div>
       <p>Al primer intento: <strong>${bien} de ${total}</strong> ejercicios.</p>
