@@ -25,7 +25,7 @@ const srv = http.createServer((q, r) => {
     printBackground: true,
     displayHeaderFooter: true,
     headerTemplate: '<span></span>',
-    footerTemplate: '<div style="font-size:9px;width:100%;text-align:center;color:#555">Inglés básico · página <span class="pageNumber"></span> de <span class="totalPages"></span></div>',
+    footerTemplate: '<div style="font-size:9px;width:100%;text-align:center;color:#555">Inglés con el PIPI · página <span class="pageNumber"></span> de <span class="totalPages"></span></div>',
   });
   await nav.close();
   srv.close();

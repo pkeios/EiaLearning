@@ -8,7 +8,7 @@ const js = h.split('<script>')[1].split('</script>')[0];
 new Function(datos + js.replace(/rutear\(\);\s*$/, '')); // sintaxis
 
 const logica = js.split('const app =')[0];
-const X = new Function(datos + logica + ';return { UNIDADES, GRUPOS_VERBOS, VERBOS, normalizar, esCorrecta, claveEj, estrellasDe, agendarPrimera, registrarRepaso, dia, repasables, paraRepasar, fichas, filtrarVerbos, ejercicioVerbo, INTERVALOS, teoriaDe, APROBAR, desbloqueada };')();
+const X = new Function(datos + logica + ';return { UNIDADES, GRUPOS_VERBOS, VERBOS, normalizar, esCorrecta, claveEj, estrellasDe, agendarPrimera, registrarRepaso, dia, repasables, paraRepasar, fichas, filtrarVerbos, ejercicioVerbo, INTERVALOS, teoriaDe, APROBAR };')();
 const { UNIDADES: U, normalizar, esCorrecta, claveEj } = X;
 
 // Las palabras visibles de una frase, sin el marcado de negrita.
@@ -102,11 +102,8 @@ assert.equal(X.estrellasDe(7, 10), 1);
 assert.equal(X.estrellasDe(6, 10), 0, 'menos de 70% no aprueba');
 assert.equal(X.estrellasDe(0, 10), 0);
 assert.equal(X.estrellasDe(0, 0), 0);
-// Penalización: la unidad siguiente se abre solo al aprobar, y lo ya aprobado se conserva.
-assert(X.desbloqueada({ u: {} }, 0));
-assert(!X.desbloqueada({ u: {} }, 1));
-assert(X.desbloqueada({ u: { 0: 1 } }, 1));
-assert(!X.desbloqueada({ u: { 0: 1 } }, 2));
+// Se puede entrar a cualquier unidad en cualquier orden: la penalización está en la nota, no en un bloqueo.
+assert(!h.includes('desbloqueada') && !h.includes('🔒'), 'las unidades no se bloquean');
 // Sin reintentos para acertar tocando todo: al elegir o clasificar mal, el ejercicio termina como error.
 assert(h.includes("aviso(`❌ No era esa.") && !h.includes('Ese no va ahí'), 'elegir y clasificar tienen una sola oportunidad');
 

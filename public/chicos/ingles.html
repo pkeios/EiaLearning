@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Inglés básico para chicos</title>
+<title>Inglés con el PIPI</title>
 <link rel="stylesheet" href="estilos.css">
 </head>
 <body>
-<header><h1><a href="#/">🗣️ Inglés básico</a></h1></header>
+<header><h1><a href="#/">🗣️ Inglés con el PIPI</a></h1></header>
 <main id="app"></main>
 <footer>Para adultos: 10 unidades de unos 20 minutos, para chicos de 13 años. Presente simple, presente continuo y pasado simple. El progreso y las respuestas se guardan solo en este navegador.<br><a href="../">Todos los cursos</a></footer>
 <script src="ingles-unidades.js"></script>
@@ -24,8 +24,6 @@ const claveEj = s => (s.q ? s.q + ' | ' + s.o[s.c] : s.escribir) || (s.ordenar ?
 // Una unidad se aprueba con 70% de ejercicios resueltos al primer intento. Si no llega: 0 estrellas y hay que repetirla.
 const APROBAR = 0.7;
 const estrellasDe = (bien, total) => { const x = total ? bien / total : 0; return x >= 0.9 ? 3 : x >= 0.8 ? 2 : x >= APROBAR ? 1 : 0; };
-// Cada unidad se abre al aprobar la anterior. Para quien ya venía avanzando, lo aprobado se conserva.
-const desbloqueada = (p, i) => i === 0 || p.u[i - 1] > 0;
 const dia = (mas = 0) => { const d = new Date(); d.setDate(d.getDate() + mas); return d.toLocaleDateString('sv'); };
 // Repaso espaciado: los ejercicios vuelven a 1, 3, 7 y 14 días. Si se falla, vuelve a empezar.
 const INTERVALOS = [1, 3, 7, 14];
@@ -222,7 +220,7 @@ function imprimir(que) {
     : hojaUnidad(una, i) + (una.ayudaVerbos ? hojaVerbos() : '');
   const volver = que === 'verbos' ? '#/verbos' : que === 'todo' ? '#/' : '#/u/' + i;
   app.innerHTML = `<div class="no-imprimir"><a class="volver" href="${volver}">← Volver</a>
-      <p style="text-align:center">${que === 'todo' ? '<a class="boton" href="ingles-teoria.pdf" download="Ingles-basico-teoria.pdf">⬇️ Descargar PDF</a> ' : ''}<button class="${que === 'todo' ? 'opcion' : 'boton'}" id="imprimir">🖨️ Imprimir</button></p>
+      <p style="text-align:center">${que === 'todo' ? '<a class="boton" href="ingles-teoria.pdf" download="Ingles-con-el-PIPI-teoria.pdf">⬇️ Descargar PDF</a> ' : ''}<button class="${que === 'todo' ? 'opcion' : 'boton'}" id="imprimir">🖨️ Imprimir</button></p>
       <p class="seguro" style="text-align:center">Consejo: repasá tapando las respuestas. Tratar de recordar rinde mucho más que releer.</p></div>${hojas}`;
   app.querySelector('#imprimir').onclick = () => print();
   scrollTo(0, 0);
@@ -236,7 +234,7 @@ function inicio() {
     <p class="estrellas">⭐ <strong>${total}</strong> de ${UNIDADES.length * 3} estrellas · ✅ ${hechas} de ${UNIDADES.length} unidades</p>
     ${repasar ? `<p style="text-align:center"><a class="boton" href="#/repaso">🔁 Repaso de hoy: ${repasar} ${repasar === 1 ? 'ejercicio' : 'ejercicios'}</a></p><p class="seguro" style="text-align:center">Recordar lo de días pasados es lo que hace que no te olvides. Empezá por acá.</p>` : ''}
     <div class="misiones">${UNIDADES.map((u, i) => `<a class="mision" style="--c:${u.color};color:inherit;text-decoration:none" href="#/u/${i}">
-      <span class="emoji">${u.emoji}</span><strong>${i + 1}. ${esc(u.titulo)}</strong><small>${p.u[i] != null ? '⭐'.repeat(p.u[i]) + '☆'.repeat(3 - p.u[i]) : p.enCurso[i] ? '⏸️ Seguir' : desbloqueada(p, i) ? '▶️ Empezar' : '🔒 Aprobá la anterior'}</small></a>`).join('')}</div>
+      <span class="emoji">${u.emoji}</span><strong>${i + 1}. ${esc(u.titulo)}</strong><small>${p.u[i] != null ? '⭐'.repeat(p.u[i]) + '☆'.repeat(3 - p.u[i]) : p.enCurso[i] ? '⏸️ Seguir' : '▶️ Empezar'}</small></a>`).join('')}</div>
     <h2 class="seccion">🧰 Tus herramientas</h2>
     <div class="misiones">
       <a class="mision" style="--c:#c2572b;color:inherit;text-decoration:none" href="#/verbos"><span class="emoji">📘</span><strong>Verbos irregulares</strong><small>Tabla y práctica</small></a>
@@ -250,11 +248,6 @@ function inicio() {
 function unidad(i) {
   const u = UNIDADES[i], guardado = cargar().enCurso[i];
   document.documentElement.style.setProperty('--color', u.color);
-  if (!desbloqueada(cargar(), i)) {
-    app.innerHTML = `<a class="volver" href="#/">← Unidades</a><section class="tarjeta"><div class="grande">🔒</div><p class="texto">Primero aprobá la unidad ${i}.</p><p>Cada unidad usa lo que aprendiste en la anterior.</p><div class="acciones"><span></span><a class="boton" href="#/u/${i - 1}">Ir a la unidad ${i} →</a></div></section>`;
-    scrollTo(0, 0);
-    return;
-  }
   // pendientes: los ejercicios fallados, que vuelven al final hasta resolverlos bien.
   let paso = guardado?.paso ?? -1, bien = guardado?.bien ?? 0, total = guardado?.total ?? 0, pendientes = guardado?.pendientes ?? [];
   const anotar = () => { const p = cargar(); p.enCurso[i] = { paso, bien, total, pendientes }; guardar(p); };
@@ -342,7 +335,7 @@ function unidad(i) {
       app.innerHTML = `<section class="tarjeta"><div class="grande">💪</div><p class="texto">Todavía no aprobaste la unidad ${i + 1}.</p>
         <p>Al primer intento: <strong>${bien} de ${total}</strong> (${Math.round(bien / total * 100)}%). Necesitás ${APROBAR * 100}%.</p>
         <p>Ya corregiste tus errores, así que la próxima vez te va a resultar más fácil.</p>
-        ${yaAprobada ? '<p class="seguro">Tu aprobación anterior se mantiene.</p>' : '<p class="seguro">La unidad siguiente se abre cuando apruebes esta.</p>'}
+        ${yaAprobada ? '<p class="seguro">Tu aprobación anterior se mantiene.</p>' : ''}
         <div class="acciones"><a class="volver" href="#/">← Unidades</a><button class="boton" id="repetir">🔁 Volver a hacerla</button></div></section>`;
       app.querySelector('#repetir').onclick = () => unidad(i);
       scrollTo(0, 0);
