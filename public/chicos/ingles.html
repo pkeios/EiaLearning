@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inglés básico para chicos</title>
+<link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+<header><h1><a href="#/">🗣️ Inglés básico</a></h1></header>
+<main id="app"></main>
+<footer>Para adultos: 10 unidades de unos 20 minutos, para chicos de 13 años. Presente simple, presente continuo y pasado simple. El progreso y las respuestas se guardan solo en este navegador.<br><a href="./">Elegir otro curso</a></footer>
+<script src="ingles-unidades.js"></script>
+<script>
+// ---------- Lógica sin pantalla (la prueba tools/test-ingles.js) ----------
+// Compara respuestas sin que importen mayúsculas, puntos ni formas cortas: "I don't" vale igual que "I do not".
+const normalizar = t => String(t).toLowerCase().replace(/[’`´]/g, "'")
+  .replace(/\bcan't\b/g, 'cannot').replace(/\bwon't\b/g, 'will not').replace(/n't\b/g, ' not')
+  .replace(/\bi'm\b/g, 'i am').replace(/\b(you|we|they)'re\b/g, '$1 are')
+  .replace(/\b(he|she|it|what|where|who|how|that|there)'s\b/g, '$1 is')
+  .replace(/[.,!?¿¡:;]/g, '').replace(/\s+/g, ' ').trim();
+const esCorrecta = (s, respuesta) => (s.r || [s.dictado]).concat(s.dictado || []).some(r => normalizar(r) === normalizar(respuesta));
+const claveEj = s => (s.q ? s.q + ' | ' + s.o[s.c] : s.escribir) || (s.ordenar ? 'ordenar: ' + s.r[0] : null);
+// Estrellas de una unidad según los ejercicios resueltos al primer intento.
+const estrellasDe = (bien, total) => { const x = total ? bien / total : 0; return x >= 0.9 ? 3 : x >= 0.7 ? 2 : 1; };
+const dia = (mas = 0) => { const d = new Date(); d.setDate(d.getDate() + mas); return d.toLocaleDateString('sv'); };
+// Repaso espaciado: los ejercicios vuelven a 1, 3, 7 y 14 días. Si se falla, vuelve a empezar.
+const INTERVALOS = [1, 3, 7, 14];
+function agendarPrimera(p, k, ok) { if (!p.repaso[k] || !ok) p.repaso[k] = { n: 0, d: dia(INTERVALOS[0]) }; }
+function registrarRepaso(p, k, ok) {
+  if (!ok) { p.repaso[k] = { n: 0, d: dia(INTERVALOS[0]) }; return; }
+  const n = (p.repaso[k]?.n ?? 0) + 1;
+  if (n >= INTERVALOS.length) delete p.repaso[k];
+  else p.repaso[k] = { n, d: dia(INTERVALOS[n]) };
+}
+const VERBOS = GRUPOS_VERBOS.flatMap(g => g.verbos.map(([base, pasado, es]) => ({ base, pasado, es, grupo: g.titulo, truco: g.truco })));
+const ejercicioVerbo = v => ({ verbo: v.base, escribir: `Pasado de "${v.base}" (${v.es}):`, r: v.pasado.split(' / '), p: `Grupo: ${v.grupo}. ${v.truco}`, e: `${v.base} → ${v.pasado}. Es del grupo "${v.grupo}".` });
+const claveVerbo = v => 'verbo: ' + v.base;
+// Todos los ejercicios que se pueden repasar, por clave.
+const repasables = () => {
+  const mapa = {};
+  UNIDADES.forEach((u, i) => u.pasos.forEach(s => { const k = claveEj(s); if (k) mapa[k] = { s, u, i }; }));
+  VERBOS.forEach(v => { mapa[claveVerbo(v)] = { s: ejercicioVerbo(v) }; });
+  return mapa;
+};
+const paraRepasar = p => { const m = repasables(); return Object.keys(p.repaso).filter(k => m[k] && p.repaso[k].d <= dia()); };
+function mezclar(lista, azar = Math.random) {
+  const a = [...lista];
+  for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(azar() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  return a;
+}
+// Fichas para ordenar: sin puntuación y sin la mayúscula inicial, para que no delate cuál va primero.
+const fichas = frase => frase.replace(/[.,?!]/g, '').split(' ').map((w, i) => (i === 0 && !/^(I|I'm)$/.test(w) ? w[0].toLowerCase() + w.slice(1) : w));
+// La teoría de una unidad, para el papel: lo que se explica, sin los ejercicios ni lo que solo tiene sentido en pantalla.
+const teoriaDe = u => ({
+  ideas: u.pasos.filter(s => s.idea && !s.pantalla),
+  tablas: u.pasos.filter(s => s.tabla),
+  vocab: u.pasos.filter(s => s.vocab),
+  preguntas: u.pasos.filter(s => s.personal),
+});
+const filtrarVerbos = q => { const n = normalizar(q); return VERBOS.filter(v => !n || normalizar(v.base + ' ' + v.pasado + ' ' + v.es).includes(n)); };
+
+const app = document.getElementById('app');
+const cargar = () => { let p = {}; try { p = JSON.parse(localStorage.getItem('chicos-ingles')) || {}; } catch {} return { u: {}, repaso: {}, diario: {}, enCurso: {}, ...p }; };
+const guardar = p => localStorage.setItem('chicos-ingles', JSON.stringify(p));
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const fmt = s => esc(s).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+
+// Voz en inglés. El tono de cada frase se escucha en su botón 🔊.
+function hablar(texto, velocidad = .9) {
+  if (!window.speechSynthesis) return;
+  speechSynthesis.cancel();
+  const voces = speechSynthesis.getVoices().filter(v => /^en/i.test(v.lang));
+  const voz = voces.find(v => /^en[-_](US|GB)/i.test(v.lang)) || voces[0];
+  speechSynthesis.speak(Object.assign(new SpeechSynthesisUtterance(texto.replace(/\p{Extended_Pictographic}/gu, '').replace(/\*\*/g, '')), { lang: 'en-US', voice: voz || null, rate: velocidad }));
+}
+const botonOir = (texto, nota = '') => `<button class="ejemplo" data-oir="${esc(texto)}" aria-label="Escuchar: ${esc(texto)}"><span>${esc(texto)}${nota ? ` <small>${esc(nota)}</small>` : ''}</span><span aria-hidden="true">🔊</span></button>`;
+const activarOir = raiz => raiz.querySelectorAll('[data-oir]').forEach(b => { b.onclick = () => hablar(b.dataset.oir); });
+
+// ---------- Ejercicios: fin(primerIntento) se llama una vez, cuando queda resuelto ----------
+function montarEjercicio(s, cont, fin) {
+  let primero = true, fallos = 0;
+  const aviso = (txt, cl) => { const a = cont.querySelector('.aviso'); a.className = 'aviso ' + cl; a.textContent = txt; };
+  const resuelto = txt => { aviso(txt, 'bien'); fin(primero); };
+  // Si escribiendo se equivoca dos veces, se le muestra la respuesta: nadie se queda trabado.
+  const revelar = () => { aviso(`La respuesta es: ${s.r ? s.r[0] : s.dictado}. ${s.e}`, 'mal'); fin(false); };
+  if (s.q) {
+    cont.innerHTML = `<p class="texto">${fmt(s.q)}</p><div class="opciones">${mezclar(s.o.map((o, j) => [o, j])).map(([o, j]) => `<button class="opcion" data-j="${j}">${esc(o)}</button>`).join('')}</div><p class="aviso" aria-live="polite"></p>`;
+    cont.querySelectorAll('[data-j]').forEach(b => b.onclick = () => {
+      if (Number(b.dataset.j) === s.c) {
+        b.classList.add('bien');
+        cont.querySelectorAll('[data-j]').forEach(x => { x.disabled = true; });
+        resuelto('🎉 ¡Bien! ' + s.e);
+      } else {
+        primero = false;
+        b.classList.add('mal'); b.disabled = true;
+        aviso('🤔 Casi. Pista: ' + s.p, 'mal');
+      }
+    });
+  } else if (s.clasificar) {
+    let faltan = s.items.length;
+    cont.innerHTML = `<p class="texto">${fmt(s.clasificar)}</p><div class="chips">${s.items.map(([t], k) => `<div class="chip" data-k="${k}"><span lang="en">${esc(t)}</span>${s.grupos.map((g, j) => `<button data-g="${j}">${esc(g)}</button>`).join('')}</div>`).join('')}</div><p class="aviso" aria-live="polite"></p>`;
+    cont.querySelectorAll('.chip').forEach(chip => chip.querySelectorAll('button').forEach(b => b.onclick = () => {
+      const bien = Number(b.dataset.g) === s.items[chip.dataset.k][1];
+      chip.classList.remove('mal'); void chip.offsetWidth;
+      chip.classList.add(bien ? 'bien' : 'mal');
+      if (!bien) { primero = false; aviso('🤔 Ese no va ahí. ¡Probá otro!', 'mal'); return; }
+      chip.querySelectorAll('button').forEach(x => { x.disabled = true; });
+      if (--faltan) aviso('✅ ¡Bien!', 'bien'); else resuelto('🎉 ' + s.e);
+    }));
+  } else if (s.ordenar) {
+    const palabras = fichas(s.r[0]);
+    let orden = mezclar(palabras.map((_, i) => i));
+    if (orden.every((x, i) => x === i)) orden = [...orden].reverse();
+    let armada = [];
+    cont.innerHTML = `<p class="etiqueta">Armá la frase en inglés</p><p class="texto">${fmt(s.ordenar)}</p><div class="armada" aria-label="Tu frase"></div><div class="bolsa" aria-label="Palabras"></div>
+      <div class="fila"><button class="opcion" id="limpiar">🗑️ Borrar</button><button class="boton" id="comprobar">Comprobar</button></div><p class="aviso" aria-live="polite"></p>`;
+    const pintar = () => {
+      cont.querySelector('.armada').innerHTML = armada.map(i => `<button class="palabra" data-a="${i}" lang="en">${esc(palabras[i])}</button>`).join('');
+      cont.querySelector('.bolsa').innerHTML = orden.filter(i => !armada.includes(i)).map(i => `<button class="palabra" data-b="${i}" lang="en">${esc(palabras[i])}</button>`).join('');
+      cont.querySelectorAll('[data-b]').forEach(b => b.onclick = () => { armada.push(Number(b.dataset.b)); pintar(); });
+      cont.querySelectorAll('[data-a]').forEach(b => b.onclick = () => { armada = armada.filter(x => x !== Number(b.dataset.a)); pintar(); });
+    };
+    pintar();
+    cont.querySelector('#limpiar').onclick = () => { armada = []; pintar(); };
+    cont.querySelector('#comprobar').onclick = () => {
+      if (armada.length < palabras.length) return aviso('🧩 Usá todas las palabras.', 'mal');
+      const cerrar = () => { cont.querySelector('.fila').remove(); cont.querySelectorAll('.palabra').forEach(x => { x.disabled = true; }); cont.querySelector('.aviso').insertAdjacentHTML('afterend', `<div class="ejemplos">${botonOir(s.r[0])}</div>`); activarOir(cont); };
+      if (esCorrecta(s, armada.map(i => palabras[i]).join(' '))) { cerrar(); return resuelto('🎉 ¡Bien! ' + s.e); }
+      primero = false;
+      if (++fallos >= 2) { cerrar(); return revelar(); }
+      aviso('🤔 Casi. Pista: ' + s.p, 'mal');
+    };
+  } else {
+    // escribir y dictado
+    cont.innerHTML = `${s.dictado ? `<p class="etiqueta">Dictado</p><p class="texto">Escuchá y escribí lo que oís.</p>
+        <div class="fila"><button class="boton" id="oir-dictado">🔊 Escuchar</button><button class="opcion" id="oir-lento">🐢 Lento</button></div>`
+        : `<p class="texto">${fmt(s.escribir)}</p>`}
+      <input type="text" id="resp" lang="en" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Tu respuesta">
+      <div class="fila"><button class="boton" id="comprobar">Comprobar</button>${s.dictado ? '<button class="chico" id="sin-audio" style="font-size:.95rem">🙉 No puedo escuchar</button>' : ''}</div>
+      <p class="aviso" aria-live="polite"></p>`;
+    const inp = cont.querySelector('#resp');
+    const cerrar = () => { inp.disabled = true; cont.querySelector('.fila:last-of-type')?.remove(); };
+    if (s.dictado) {
+      cont.querySelector('#oir-dictado').onclick = () => hablar(s.dictado);
+      cont.querySelector('#oir-lento').onclick = () => hablar(s.dictado, .6);
+      // Sin audio el dictado no se puede hacer: se muestra la frase y no cuenta en contra.
+      cont.querySelector('#sin-audio').onclick = () => { cerrar(); aviso(`La frase era: ${s.dictado}`, ''); fin(null); };
+    }
+    const comprobar = () => {
+      if (!inp.value.trim()) return inp.focus();
+      if (esCorrecta(s, inp.value)) { cerrar(); return resuelto('🎉 ¡Bien! ' + s.e); }
+      primero = false;
+      const n = normalizar(inp.value), trampa = Object.entries(s.m || {}).find(([k]) => normalizar(k) === n);
+      if (++fallos >= 2) { cerrar(); return revelar(); }
+      aviso('🤔 ' + (trampa ? trampa[1] : 'Casi. Pista: ' + (s.p || 'Volvé a escuchar con 🐢 y fijate en cada palabra.')), 'mal');
+      inp.focus();
+    };
+    cont.querySelector('#comprobar').onclick = comprobar;
+    inp.onkeydown = e => { if (e.key === 'Enter') comprobar(); };
+  }
+}
+
+// ---------- Pantallas ----------
+function tablaVerbos(lista) {
+  return `<div class="ancho"><table class="regla"><thead><tr><th>Presente</th><th>Pasado</th><th>Significa</th><th></th></tr></thead><tbody>${lista.map(v => `<tr><td lang="en">${esc(v.base)}</td><td lang="en"><strong>${esc(v.pasado)}</strong></td><td>${esc(v.es)}</td><td><button class="chico" style="font-size:1.1rem" data-oir="${esc(v.base + '. ' + v.pasado.replace(' / ', '. '))}" aria-label="Escuchar ${esc(v.base)} y ${esc(v.pasado)}">🔊</button></td></tr>`).join('')}</tbody></table></div>`;
+}
+// Ayuda de verbos irregulares: se abre sin salir del ejercicio. Se busca en inglés o en español.
+function ayudaVerbos() {
+  const caja = document.createElement('details');
+  caja.className = 'ayuda';
+  caja.innerHTML = `<summary>📘 Verbos irregulares</summary>
+    <p class="seguro">Primero intentá recordarlo. Si no sale, buscalo acá en inglés o en español.</p>
+    <input type="text" id="buscar-verbo" placeholder="Ej: go, went, comer" aria-label="Buscar un verbo" autocomplete="off"><div id="lista-verbos"></div>`;
+  const pintar = () => {
+    const q = caja.querySelector('#buscar-verbo').value;
+    const lista = filtrarVerbos(q);
+    caja.querySelector('#lista-verbos').innerHTML = lista.length ? tablaVerbos(lista) : '<p class="seguro">No está en la lista. Quizás es regular: probá con -ed.</p>';
+    activarOir(caja);
+  };
+  caja.querySelector('#buscar-verbo').oninput = pintar;
+  pintar();
+  return caja;
+}
+
+// ---------- Teoría para imprimir ----------
+const hojaUnidad = (u, i) => {
+  const t = teoriaDe(u), fila = c => `<td>${esc(c)}</td>`;
+  return `<section class="hoja"><h2>${u.emoji} Unidad ${i + 1}: ${esc(u.titulo)}</h2>
+    <p><strong>🎯 Al terminar vas a poder:</strong></p><ul>${u.objetivos.map(o => `<li>${esc(o)}</li>`).join('')}</ul>
+    <h3>💡 Ideas</h3><ul>${t.ideas.map(s => `<li>${fmt(s.t)}${s.ej ? ` <span class="frases" lang="en">${s.ej.map(esc).join(' · ')}</span>` : ''}</li>`).join('')}</ul>
+    ${t.tablas.map(s => `<div class="bloque"><h3>📐 ${fmt(s.tabla)}</h3><table class="regla"><thead><tr>${s.cols.map(c => `<th>${esc(c)}</th>`).join('')}</tr></thead><tbody>${s.filas.map(f => `<tr>${f.map(fila).join('')}</tr>`).join('')}</tbody></table>${s.nota ? `<p>💡 ${fmt(s.nota)}</p>` : ''}</div>`).join('')}
+    ${t.vocab.map(s => `<div class="bloque"><h3>📖 ${fmt(s.vocab)}</h3><table class="regla"><tbody>${s.items.map(([, en, es]) => `<tr><td lang="en"><strong>${esc(en)}</strong></td><td>${esc(es)}</td></tr>`).join('')}</tbody></table></div>`).join('')}
+    <div class="bloque"><h3>🗣️ Respondé en voz alta, sin mirar</h3><ul>${t.preguntas.map(s => `<li><span lang="en">${esc(s.personal)}</span> <em>(${esc(s.es)})</em></li>`).join('')}</ul></div>
+    <div class="bloque"><h3>💭 Explicalo con tus palabras</h3><p>${esc(u.reflexion)}</p></div></section>`;
+};
+const hojaVerbos = () => `<section class="hoja"><h2>📘 Verbos irregulares</h2>
+  <p>Para repasar: tapá con una hoja la columna del pasado, decilo y destapá.</p>
+  ${GRUPOS_VERBOS.map(g => `<div class="bloque"><h3>${esc(g.titulo)}</h3><p>💡 ${esc(g.truco)}</p><table class="regla"><thead><tr><th>Presente</th><th>Pasado</th><th>Significa</th></tr></thead><tbody>${g.verbos.map(([a, b, c]) => `<tr><td lang="en">${esc(a)}</td><td lang="en"><strong>${esc(b)}</strong></td><td>${esc(c)}</td></tr>`).join('')}</tbody></table></div>`).join('')}</section>`;
+// que: número de unidad, 'verbos' o 'todo'. Las unidades con irregulares suman la tabla, para tenerla a mano en papel.
+function imprimir(que) {
+  document.documentElement.style.setProperty('--color', '#ff7a59');
+  const i = Number(que), una = UNIDADES[i];
+  const hojas = que === 'verbos' ? hojaVerbos()
+    : que === 'todo' ? UNIDADES.map(hojaUnidad).join('') + hojaVerbos()
+    : hojaUnidad(una, i) + (una.ayudaVerbos ? hojaVerbos() : '');
+  const volver = que === 'verbos' ? '#/verbos' : que === 'todo' ? '#/' : '#/u/' + i;
+  app.innerHTML = `<div class="no-imprimir"><a class="volver" href="${volver}">← Volver</a>
+      <p style="text-align:center"><button class="boton" id="imprimir">🖨️ Imprimir</button></p>
+      <p class="seguro" style="text-align:center">Consejo: repasá tapando las respuestas. Tratar de recordar rinde mucho más que releer.</p></div>${hojas}`;
+  app.querySelector('#imprimir').onclick = () => print();
+  scrollTo(0, 0);
+}
+
+function inicio() {
+  const p = cargar(), hechas = Object.keys(p.u).length, repasar = paraRepasar(p).length;
+  const total = Object.values(p.u).reduce((a, b) => a + b, 0);
+  const sig = UNIDADES.findIndex((_, i) => p.u[i] == null);
+  document.documentElement.style.setProperty('--color', '#ff7a59');
+  app.innerHTML = `<a class="volver" href="./">← Elegir curso</a>
+    <p class="estrellas">⭐ <strong>${total}</strong> de ${UNIDADES.length * 3} estrellas · ✅ ${hechas} de ${UNIDADES.length} unidades</p>
+    ${repasar ? `<p style="text-align:center"><a class="boton" href="#/repaso">🔁 Repaso de hoy: ${repasar} ${repasar === 1 ? 'ejercicio' : 'ejercicios'}</a></p><p class="seguro" style="text-align:center">Recordar lo de días pasados es lo que hace que no te olvides. Empezá por acá.</p>` : ''}
+    <div class="misiones">${UNIDADES.map((u, i) => `<a class="mision" style="--c:${u.color};color:inherit;text-decoration:none" href="#/u/${i}">
+      <span class="emoji">${u.emoji}</span><strong>${i + 1}. ${esc(u.titulo)}</strong><small>${p.u[i] != null ? '⭐'.repeat(p.u[i]) + '☆'.repeat(3 - p.u[i]) : p.enCurso[i] ? '⏸️ Seguir' : i === sig ? '▶️ Empezar' : '⏳ Más adelante'}</small></a>`).join('')}</div>
+    <h2 class="seccion">🧰 Tus herramientas</h2>
+    <div class="misiones">
+      <a class="mision" style="--c:#c2572b;color:inherit;text-decoration:none" href="#/verbos"><span class="emoji">📘</span><strong>Verbos irregulares</strong><small>Tabla y práctica</small></a>
+      <a class="mision" style="--c:#1f9dd6;color:inherit;text-decoration:none" href="#/palabras"><span class="emoji">📖</span><strong>Vocabulario</strong><small>Todas las palabras</small></a>
+      <a class="mision" style="--c:#1f9d55;color:inherit;text-decoration:none" href="#/perfil"><span class="emoji">📓</span><strong>My profile</strong><small>${Object.keys(p.diario).length} respuestas tuyas</small></a>
+      <a class="mision" style="--c:#6a4c93;color:inherit;text-decoration:none" href="#/imprimir/todo"><span class="emoji">🖨️</span><strong>Imprimir la teoría</strong><small>Todo el curso en papel</small></a>
+    </div>`;
+  scrollTo(0, 0);
+}
+
+function unidad(i) {
+  const u = UNIDADES[i], guardado = cargar().enCurso[i];
+  document.documentElement.style.setProperty('--color', u.color);
+  let paso = guardado?.paso ?? -1, bien = guardado?.bien ?? 0, total = guardado?.total ?? 0;
+  const anotar = () => { const p = cargar(); p.enCurso[i] = { paso, bien, total }; guardar(p); };
+  const pantalla = cuerpo => {
+    app.innerHTML = `<a class="volver" href="#/">← Unidades</a>
+      <div class="barra">${u.pasos.map((_, k) => `<span class="${k <= paso ? 'hecho' : ''}"></span>`).join('')}</div>
+      <section class="tarjeta">${cuerpo}<p id="aviso-paso" class="aviso"></p><div class="acciones"><span></span><button class="boton" id="seguir">Seguir →</button></div></section>`;
+    if (u.ayudaVerbos) app.querySelector('.barra').after(ayudaVerbos());
+    activarOir(app);
+    app.querySelector('#seguir').onclick = () => { paso++; anotar(); mostrar(); };
+    scrollTo(0, 0);
+    return app.querySelector('#seguir');
+  };
+  const mostrar = () => {
+    window.speechSynthesis?.cancel();
+    if (paso === -1) return portada();
+    if (paso >= u.pasos.length) return final();
+    const s = u.pasos[paso];
+    if (s.idea) return pantalla(`<div class="grande">${s.idea}</div><p class="texto">${fmt(s.t)}</p>${s.ej ? `<div class="ejemplos">${s.ej.map(x => botonOir(x)).join('')}</div>` : ''}`);
+    if (s.tabla) return pantalla(`<p class="texto">${fmt(s.tabla)}</p><div class="ancho"><table class="regla"><thead><tr>${s.cols.map(c => `<th>${esc(c)}</th>`).join('')}</tr></thead><tbody>${s.filas.map(f => `<tr>${f.map(c => `<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>${s.nota ? `<p class="glosa">💡 ${fmt(s.nota)}</p>` : ''}`);
+    if (s.vocab) return pantalla(`<p class="etiqueta">Palabras nuevas</p><p class="texto">${fmt(s.vocab)}</p><p class="seguro">Tocá cada una para escucharla, y repetila en voz alta.</p><div class="ejemplos">${s.items.map(([e, en, es]) => `<button class="ejemplo" data-oir="${esc(en.replace(/→|\//g, '. '))}" aria-label="Escuchar ${esc(en)}"><span>${e} <strong lang="en">${esc(en)}</strong> <small>${esc(es)}</small></span><span aria-hidden="true">🔊</span></button>`).join('')}</div>`);
+    if (s.leer) return pantalla(`<p class="etiqueta">Lectura</p><p class="texto" lang="en">${fmt(s.leer)}</p><div class="fila"><button class="opcion" data-oir="${esc(s.texto)}">🔊 Escuchar el texto</button></div><div class="lectura" lang="en">${esc(s.texto)}</div>${s.es ? `<p class="glosa">📌 ${esc(s.es)}</p>` : ''}<p class="seguro">Leelo con calma: las preguntas que siguen son sobre este texto.</p>`);
+    if (s.personal) return personal(s);
+    ejercicio(s);
+  };
+  const portada = () => {
+    app.innerHTML = `<a class="volver" href="#/">← Unidades</a>
+      <section class="tarjeta"><div class="grande">${u.emoji}</div><p class="etiqueta">Unidad ${i + 1} de ${UNIDADES.length}</p><p class="texto">${esc(u.titulo)}</p>
+      <p><strong>🎯 Al terminar vas a poder:</strong></p><ul class="objetivos">${u.objetivos.map(o => `<li>${esc(o)}</li>`).join('')}</ul>
+      <div class="acciones"><a class="volver" href="#/imprimir/${i}">🖨️ Imprimir la teoría</a><button class="boton" id="seguir">Empezar →</button></div></section>`;
+    app.querySelector('#seguir').onclick = () => { paso = 0; anotar(); mostrar(); };
+    scrollTo(0, 0);
+  };
+  const ejercicio = s => {
+    const seguir = pantalla(`${s.rep ? '<p class="etiqueta">🔁 ¿Te acordás? De una unidad anterior</p>' : ''}<div id="ejercicio"></div>`);
+    seguir.disabled = true;
+    montarEjercicio(s, app.querySelector('#ejercicio'), primero => {
+      if (primero !== null) {
+        total++; if (primero) bien++;
+        const k = claveEj(s);
+        if (k) { const p = cargar(); agendarPrimera(p, k, primero); guardar(p); }
+      }
+      seguir.disabled = false;
+      seguir.focus();
+    });
+  };
+  const personal = s => {
+    const seguir = pantalla(`<p class="etiqueta">Sobre vos</p><div class="ejemplos">${botonOir(s.personal)}</div><p class="glosa">${esc(s.es)}</p>
+      <textarea id="resp" rows="2" lang="en" autocomplete="off" aria-label="Tu respuesta en inglés"></textarea>
+      <p class="seguro">🛡️ Podés inventar la respuesta. No escribas tu apellido, tu dirección ni tu teléfono.</p>
+      <button class="boton" id="guardar-resp">Guardar en My profile</button><p class="aviso" id="aviso-personal" aria-live="polite"></p><div id="modelo"></div>`);
+    seguir.disabled = true;
+    const resp = app.querySelector('#resp'), aviso = app.querySelector('#aviso-personal');
+    resp.value = cargar().diario[s.clave] || '';
+    app.querySelector('#guardar-resp').onclick = () => {
+      const texto = resp.value.trim();
+      if (!new RegExp(s.patron).test(normalizar(texto))) { aviso.className = 'aviso mal'; aviso.textContent = '🤔 Revisala. Pista: ' + s.pista; return resp.focus(); }
+      const p = cargar(); p.diario[s.clave] = texto; guardar(p);
+      aviso.className = 'aviso bien'; aviso.textContent = '📓 ¡Guardada! Ahora leela en voz alta y comparala con este ejemplo:';
+      app.querySelector('#modelo').innerHTML = `<div class="ejemplos">${botonOir(s.modelo)}</div><p class="seguro">Solo un ejemplo: tu respuesta puede ser distinta. ¿Usaste la misma forma del verbo?</p>`;
+      activarOir(app.querySelector('#modelo'));
+      seguir.disabled = false;
+    };
+  };
+  const final = () => {
+    const estrellas = estrellasDe(bien, total), p = cargar();
+    p.u[i] = Math.max(p.u[i] || 0, estrellas);
+    delete p.enCurso[i];
+    guardar(p);
+    app.innerHTML = `<section class="tarjeta"><div class="fiesta">🎉🎊🎉</div><p class="texto">¡Unidad ${i + 1} terminada!</p>
+      <div class="grande">${'⭐'.repeat(estrellas) + '☆'.repeat(3 - estrellas)}</div>
+      <p>Al primer intento: <strong>${bien} de ${total}</strong> ejercicios.</p>
+      <p><strong>✅ ¿Podés hacer esto sin mirar?</strong></p><ul class="objetivos">${u.objetivos.map(o => `<li>${esc(o)}</li>`).join('')}</ul>
+      <p class="chip" style="display:block">💭 <strong>Contale a alguien de tu casa:</strong> ${esc(u.reflexion)} Si podés explicarlo con tus palabras, ¡lo aprendiste de verdad!</p>
+      <p class="seguro">🔁 Mañana vuelven algunos ejercicios en el Repaso de hoy. <a href="#/imprimir/${i}">🖨️ Imprimir la teoría de esta unidad</a></p>
+      <div class="acciones"><a class="volver" href="#/">← Unidades</a>${UNIDADES[i + 1] ? `<a class="boton" href="#/u/${i + 1}">Siguiente unidad →</a>` : '<a class="boton" href="#/perfil">🏆 Ver My profile</a>'}</div></section>`;
+    scrollTo(0, 0);
+  };
+  mostrar();
+}
+
+// Una tanda de ejercicios sueltos: el repaso de hoy o la práctica de verbos.
+function tanda(titulo, volver, items, registrar) {
+  let k = 0, bien = 0;
+  const pintar = () => {
+    if (k === items.length) {
+      app.innerHTML = `<section class="tarjeta"><div class="fiesta">🎉🔁🎉</div><p class="texto">¡${esc(titulo)} terminado!</p><p>Al primer intento: <strong>${bien} de ${items.length}</strong>.</p><div class="acciones"><span></span><a class="boton" href="${volver}">Listo →</a></div></section>`;
+      return;
+    }
+    const { s, clave, de } = items[k];
+    app.innerHTML = `<a class="volver" href="${volver}">← Salir</a><div class="barra">${items.map((_, j) => `<span class="${j <= k ? 'hecho' : ''}"></span>`).join('')}</div>
+      <section class="tarjeta">${de ? `<p class="etiqueta">${esc(de)}</p>` : ''}<div id="ejercicio"></div><div class="acciones"><span></span><button class="boton" id="seguir" disabled>Seguir →</button></div></section>`;
+    const seguir = app.querySelector('#seguir');
+    seguir.onclick = () => { k++; pintar(); };
+    montarEjercicio(s, app.querySelector('#ejercicio'), primero => {
+      if (primero) bien++;
+      registrar(clave, !!primero);
+      seguir.disabled = false; seguir.focus();
+    });
+    scrollTo(0, 0);
+  };
+  pintar();
+}
+
+function repaso() {
+  document.documentElement.style.setProperty('--color', '#ff7a59');
+  const p = cargar(), m = repasables(), claves = mezclar(paraRepasar(p)).slice(0, 10);
+  if (!claves.length) {
+    app.innerHTML = `<a class="volver" href="#/">← Unidades</a><section class="tarjeta"><div class="grande">🌱</div><p class="texto">Hoy no hay nada para repasar.</p><p>Hacé una unidad o practicá verbos: los ejercicios vuelven solos otro día.</p></section>`;
+    return;
+  }
+  // Mezcladas entre unidades a propósito: elegir el tiempo verbal sin saber de qué unidad viene es parte del aprendizaje.
+  tanda('Repaso', '#/', claves.map(clave => ({ clave, s: m[clave].s, de: m[clave].u ? '' : 'Verbo irregular' })), (clave, ok) => { const q = cargar(); registrarRepaso(q, clave, ok); guardar(q); });
+}
+
+function verbos() {
+  document.documentElement.style.setProperty('--color', '#c2572b');
+  app.innerHTML = `<a class="volver" href="#/">← Unidades</a>
+    <section class="tarjeta"><div class="grande">📘</div><p class="texto">Verbos irregulares</p>
+      <p>No llevan -ed: en pasado cambian de forma. Están agrupados por parecido, porque así se recuerdan mejor.</p>
+      <div class="fila"><a class="boton" href="#/verbos/practicar">🎯 Practicar 10 al azar</a><a class="opcion" style="text-decoration:none;color:inherit" href="#/imprimir/verbos">🖨️ Imprimir</a></div>
+      <input type="text" id="buscar-verbo" placeholder="Buscar: go, went, comer" aria-label="Buscar un verbo" autocomplete="off"></section>
+    <div id="grupos"></div>`;
+  const pintar = () => {
+    const q = app.querySelector('#buscar-verbo').value, lista = filtrarVerbos(q);
+    app.querySelector('#grupos').innerHTML = GRUPOS_VERBOS.map(g => {
+      const vs = lista.filter(v => v.grupo === g.titulo);
+      return vs.length ? `<h2 class="seccion">${esc(g.titulo)}</h2><p class="seguro" style="text-align:center">💡 ${esc(g.truco)}</p>${tablaVerbos(vs)}` : '';
+    }).join('') || '<p class="seccion">No está en la lista. Quizás es regular: probá con -ed.</p>';
+    activarOir(app);
+  };
+  app.querySelector('#buscar-verbo').oninput = pintar;
+  pintar();
+  scrollTo(0, 0);
+}
+
+function practicarVerbos() {
+  document.documentElement.style.setProperty('--color', '#c2572b');
+  const items = mezclar(VERBOS).slice(0, 10).map(v => ({ clave: claveVerbo(v), s: ejercicioVerbo(v), de: 'Verbo irregular' }));
+  tanda('Práctica de verbos', '#/verbos', items, (clave, ok) => { const q = cargar(); agendarPrimera(q, clave, ok); guardar(q); });
+}
+
+function palabras() {
+  document.documentElement.style.setProperty('--color', '#1f9dd6');
+  app.innerHTML = `<a class="volver" href="#/">← Unidades</a><h2 class="seccion">📖 Vocabulario</h2>
+    <p class="seguro" style="text-align:center">Tapá la traducción con la mano e intentá recordarla: rinde mucho más que releer.</p>
+    ${UNIDADES.map((u, i) => u.pasos.filter(s => s.vocab).map(s => `<h3>${i + 1}. ${esc(s.vocab)}</h3><div class="ejemplos">${s.items.map(([e, en, es]) => `<button class="ejemplo" data-oir="${esc(en.replace(/→|\//g, '. '))}" aria-label="Escuchar ${esc(en)}"><span>${e} <strong lang="en">${esc(en)}</strong> <small>${esc(es)}</small></span><span aria-hidden="true">🔊</span></button>`).join('')}</div>`).join('')).join('')}`;
+  activarOir(app);
+  scrollTo(0, 0);
+}
+
+// My profile: lo que el chico fue escribiendo sobre su vida. Al final queda un texto suyo en inglés.
+function perfil() {
+  document.documentElement.style.setProperty('--color', '#1f9d55');
+  const p = cargar();
+  const filas = UNIDADES.flatMap(u => u.pasos.filter(s => s.personal && p.diario[s.clave]));
+  app.innerHTML = `<a class="volver" href="#/">← Unidades</a><section class="tarjeta"><div class="grande">📓</div><p class="texto">My profile</p>
+    ${filas.length ? `<p>Esto lo escribiste vos, en inglés. Tocá para escucharlo.</p><div class="ejemplos">${filas.map(s => `<p class="glosa" lang="en"><strong>${esc(s.personal)}</strong></p>${botonOir(p.diario[s.clave])}`).join('')}</div>
+    <p class="seguro">🎤 Desafío: leé todo en voz alta sin trabarte. Después pedile a alguien que te haga estas preguntas sin mirar.</p>
+    <p class="seguro">Se guarda solo en este navegador.</p><button class="chico" id="borrar" style="font-size:.95rem">🗑️ Borrar mis respuestas</button>` : '<p>Todavía está vacío. Cada unidad te hace preguntas sobre vos, y tus respuestas se guardan acá.</p>'}</section>`;
+  activarOir(app);
+  const borrar = app.querySelector('#borrar');
+  if (borrar) borrar.onclick = () => { const q = cargar(); q.diario = {}; guardar(q); perfil(); };
+  scrollTo(0, 0);
+}
+
+function rutear() {
+  window.speechSynthesis?.cancel();
+  const h = location.hash;
+  if (h === '#/repaso') return repaso();
+  if (h === '#/verbos') return verbos();
+  if (h === '#/verbos/practicar') return practicarVerbos();
+  if (h === '#/palabras') return palabras();
+  if (h === '#/perfil') return perfil();
+  const imp = h.match(/^#\/imprimir\/(todo|verbos|\d+)$/);
+  if (imp && (isNaN(imp[1]) || UNIDADES[imp[1]])) return imprimir(imp[1]);
+  const m = h.match(/^#\/u\/(\d+)$/);
+  if (m && UNIDADES[m[1]]) return unidad(Number(m[1]));
+  inicio();
+}
+addEventListener('hashchange', rutear);
+rutear();
+</script>
+</body>
+</html>

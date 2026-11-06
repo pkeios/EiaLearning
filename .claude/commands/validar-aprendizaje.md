@@ -46,6 +46,8 @@ Respetá todas las reglas de `.claude/commands/mejorar.md`: sin backticks en las
 ## 4. Versión para chicos (`chicos`)
 Corré `node tools/test-chicos.js` y validá `public/chicos/index.html` con estos criterios para 10 a 13 años: frases de una idea (≤ 22 palabras), un apoyo visual por tarjeta, cada misión con 3 ejercicios interactivos y retroalimentación inmediata que explique, **práctica intercalada** (nunca más de 2 preguntas seguidas; las actividades de hacer algo, como entrenar una IA o programar el robot, van dentro de las misiones y no solo en una sección aparte), aprender haciendo con algo que el chico construye y ve funcionar, conexión con la escuela (que pueda usar sus propios textos o temas de clase), nada de links a sitios externos, lenguaje sin tecnicismos (o explicados con un ejemplo cotidiano) y mensajes de seguridad y honestidad presentes. Mejorá una sola cosa (por ejemplo, un ejercicio más claro o una frase más corta) sin cambiar el formato de la clave `chicos` del `localStorage`.
 
+Curso de inglés (`public/chicos/ingles-unidades.js`, 13 años): corré `node tools/test-ingles.js`. Mismos criterios, más: el ejercicio explica por qué falla la trampa, no hay más de 3 ejercicios seguidos sin una pausa, cada unidad repasa unidades anteriores, tiene preguntas personales sin datos sensibles y su teoría se puede imprimir. El texto de cada ejercicio es la clave del repaso: no lo cambies.
+
 ## 5. Publicar
 Commit con mensaje `metodologia(<modulo>): ...` y la línea de co-autoría de la sesión, después `git pull --rebase` y `git push`. Si algo falla dos veces seguidas, no insistas: dejá el trabajo sin commitear y explicá el problema.
 
