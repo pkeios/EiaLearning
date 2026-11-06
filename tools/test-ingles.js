@@ -160,6 +160,10 @@ assert(!fs.readFileSync(dir + 'index.html', 'utf8').includes('imprimir'), 'impri
 assert(h.includes('href="ingles-teoria.pdf"') && fs.existsSync(dir + 'ingles-teoria.pdf'), 'falta el PDF para descargar');
 assert.equal(fs.readFileSync(dir + 'ingles-teoria.huella', 'utf8').trim(), require('./huella-ingles.js').huellaTeoria(), 'la teoría cambió: regenerá el PDF con node tools/generar-pdf-ingles.js');
 
+// Los cursos para chicos no pueden mostrar una copia vieja si hay internet (por ejemplo, un PDF desactualizado).
+const sw = fs.readFileSync(dir + '../sw.js', 'utf8');
+assert(sw.includes("pathname.includes('/chicos/')") && sw.indexOf("pathname.includes('/chicos/')") < sw.indexOf('caches.match(e.request).then(enCache => enCache || red)'), 'chicos tiene que ir primero a la red');
+
 // La entrada de chicos deja elegir curso.
 const entrada = fs.readFileSync(dir + 'index.html', 'utf8');
 assert(entrada.includes('href="ingles.html"'));

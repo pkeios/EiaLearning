@@ -194,3 +194,4 @@ Lo completa el comando `/mejorar`. Una línea por ejecución.
 - 2026-11-06 · chicos-ingles · penalización: una sola oportunidad al elegir y clasificar, los errores vuelven al final hasta resolverlos, 70% al primer intento para aprobar (si no, 0 estrellas y se repite), y la unidad siguiente se abre al aprobar la anterior
 - 2026-11-06 · chicos-ingles · PDF de toda la teoría para descargar (21 páginas); se regenera con tools/generar-pdf-ingles.js y test-ingles avisa si quedó desactualizado
 - 2026-11-06 · chicos-ingles · teoría impresa en dos columnas y letra de 12 pt: cada unidad entra en una hoja (el PDF pasó de 21 a 11 páginas)
+- 2026-11-06 · app · los cursos para chicos buscan primero la versión nueva y usan la copia guardada solo sin internet: una copia vieja hacía ver el PDF e impresión anteriores (23 páginas en papel Carta)
