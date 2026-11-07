@@ -198,3 +198,4 @@ Lo completa el comando `/mejorar`. Una línea por ejecución.
 - 2026-11-06 · chicos-ingles · teoría impresa en A4 horizontal, a tres columnas y con el color de cada unidad: banda de título, tablas de color y recuadros; una hoja por unidad (11 páginas)
 - 2026-11-06 · chicos-ingles · todas las unidades abiertas en cualquier orden (la penalización sigue: una oportunidad, errores que vuelven y 70% para aprobar); el curso pasa a llamarse Inglés con el PIPI
 - 2026-11-07 · chicos-ingles · las preguntas de una lectura muestran el texto a la vista (también al corregir errores y en el repaso de otro día): miden comprensión, no memoria
+- 2026-11-07 · chicos · celular: las tablas anchas se apilan como fichas, los botones de clasificar bajan de línea, botones más fáciles de tocar; revisadas las 250 pantallas a 320, 360 y 412 px sin nada que se salga

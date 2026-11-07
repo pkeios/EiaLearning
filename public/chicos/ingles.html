@@ -157,7 +157,7 @@ function montarEjercicio(s, cont, fin) {
         <div class="fila"><button class="boton" id="oir-dictado">🔊 Escuchar</button><button class="opcion" id="oir-lento">🐢 Lento</button></div>`
         : `<p class="texto">${fmt(s.escribir)}</p>`}
       <input type="text" id="resp" lang="en" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Tu respuesta">
-      <div class="fila"><button class="boton" id="comprobar">Comprobar</button>${s.dictado && sinVoz ? '<button class="chico" id="sin-audio" style="font-size:.95rem">🙉 No puedo escuchar</button>' : ''}</div>
+      <div class="fila"><button class="boton" id="comprobar">Comprobar</button>${s.dictado && sinVoz ? '<button class="chico" id="sin-audio" style="font-size:.95rem;padding:.6rem 1rem">🙉 No puedo escuchar</button>' : ''}</div>
       <p class="aviso" aria-live="polite"></p>`;
     const inp = cont.querySelector('#resp');
     const cerrar = () => { inp.disabled = true; cont.querySelector('.fila:last-of-type')?.remove(); };
@@ -206,8 +206,8 @@ function ayudaVerbos() {
 
 // ---------- Teoría para imprimir ----------
 const hojaUnidad = (u, i) => {
-  const t = teoriaDe(u), fila = c => `<td>${esc(c)}</td>`, ancha = s => s.cols.length > 4;
-  const tabla = s => `<div class="bloque"><h3>📐 ${fmt(s.tabla)}</h3><table class="regla"><thead><tr>${s.cols.map(c => `<th>${esc(c)}</th>`).join('')}</tr></thead><tbody>${s.filas.map(f => `<tr>${f.map(fila).join('')}</tr>`).join('')}</tbody></table>${s.nota ? `<p class="nota">💡 ${fmt(s.nota)}</p>` : ''}</div>`;
+  const t = teoriaDe(u), ancha = s => s.cols.length > 4;
+  const tabla = s => `<div class="bloque"><h3>📐 ${fmt(s.tabla)}</h3><table class="regla ${s.cols.length > 3 ? 'apilar' : ''}"><thead><tr>${s.cols.map(c => `<th>${esc(c)}</th>`).join('')}</tr></thead><tbody>${s.filas.map(f => `<tr>${f.map((c, j) => `<td data-l="${esc(s.cols[j])}">${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table>${s.nota ? `<p class="nota">💡 ${fmt(s.nota)}</p>` : ''}</div>`;
   return `<section class="hoja" style="--c:${u.color}">
     <div class="banda"><span class="banda-emoji">${u.emoji}</span><h2>Unidad ${i + 1}: ${esc(u.titulo)}</h2></div>
     <div class="meta"><strong>🎯 Al terminar vas a poder:</strong> ${u.objetivos.map(esc).join(' · ')}</div>
@@ -281,7 +281,7 @@ function unidad(i) {
     if (paso >= u.pasos.length) return pendientes.length ? correccion() : final();
     const s = u.pasos[paso];
     if (s.idea) return pantalla(`<div class="grande">${s.idea}</div><p class="texto">${fmt(s.t)}</p>${s.ej ? `<div class="ejemplos">${s.ej.map(x => botonOir(x)).join('')}</div>` : ''}`);
-    if (s.tabla) return pantalla(`<p class="texto">${fmt(s.tabla)}</p><div class="ancho"><table class="regla"><thead><tr>${s.cols.map(c => `<th>${esc(c)}</th>`).join('')}</tr></thead><tbody>${s.filas.map(f => `<tr>${f.map(c => `<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>${s.nota ? `<p class="glosa">💡 ${fmt(s.nota)}</p>` : ''}`);
+    if (s.tabla) return pantalla(`<p class="texto">${fmt(s.tabla)}</p><div class="ancho"><table class="regla ${s.cols.length > 3 ? 'apilar' : ''}"><thead><tr>${s.cols.map(c => `<th>${esc(c)}</th>`).join('')}</tr></thead><tbody>${s.filas.map(f => `<tr>${f.map((c, j) => `<td data-l="${esc(s.cols[j])}">${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>${s.nota ? `<p class="glosa">💡 ${fmt(s.nota)}</p>` : ''}`);
     if (s.vocab) return pantalla(`<p class="etiqueta">Palabras nuevas</p><p class="texto">${fmt(s.vocab)}</p><p class="seguro">Tocá cada una para escucharla, y repetila en voz alta.</p><div class="ejemplos">${s.items.map(([e, en, es]) => `<button class="ejemplo" data-oir="${esc(en.replace(/→|\//g, '. '))}" aria-label="Escuchar ${esc(en)}"><span>${e} <strong lang="en">${esc(en)}</strong> <small>${esc(es)}</small></span><span aria-hidden="true">🔊</span></button>`).join('')}</div>`);
     if (s.leer) return pantalla(`<p class="etiqueta">Lectura</p><p class="texto" lang="en">${fmt(s.leer)}</p><div class="fila"><button class="opcion" data-oir="${esc(s.texto)}">🔊 Escuchar el texto</button></div><div class="lectura" lang="en">${esc(s.texto)}</div>${s.es ? `<p class="glosa">📌 ${esc(s.es)}</p>` : ''}<p class="seguro">Leelo con calma. En las preguntas que siguen vas a tener el texto a la vista, para volver a leerlo cuando quieras.</p>`);
     if (s.personal) return personal(s);
