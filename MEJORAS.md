@@ -197,3 +197,4 @@ Lo completa el comando `/mejorar`. Una línea por ejecución.
 - 2026-11-06 · app · los cursos para chicos buscan primero la versión nueva y usan la copia guardada solo sin internet: una copia vieja hacía ver el PDF e impresión anteriores (23 páginas en papel Carta)
 - 2026-11-06 · chicos-ingles · teoría impresa en A4 horizontal, a tres columnas y con el color de cada unidad: banda de título, tablas de color y recuadros; una hoja por unidad (11 páginas)
 - 2026-11-06 · chicos-ingles · todas las unidades abiertas en cualquier orden (la penalización sigue: una oportunidad, errores que vuelven y 70% para aprobar); el curso pasa a llamarse Inglés con el PIPI
+- 2026-11-07 · chicos-ingles · las preguntas de una lectura muestran el texto a la vista (también al corregir errores y en el repaso de otro día): miden comprensión, no memoria

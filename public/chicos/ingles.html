@@ -38,9 +38,20 @@ const VERBOS = GRUPOS_VERBOS.flatMap(g => g.verbos.map(([base, pasado, es]) => (
 const ejercicioVerbo = v => ({ verbo: v.base, escribir: `Pasado de "${v.base}" (${v.es}):`, r: v.pasado.split(' / '), p: `Grupo: ${v.grupo}. ${v.truco}`, e: `${v.base} → ${v.pasado}. Es del grupo "${v.grupo}".` });
 const claveVerbo = v => 'verbo: ' + v.base;
 // Todos los ejercicios que se pueden repasar, por clave.
+// Las preguntas que vienen justo después de una lectura son sobre ese texto: se responden con el texto a la vista,
+// también al corregir errores y en el repaso de otro día. Evalúan comprensión, no memoria.
+function lecturaDe(pasos, n) {
+  const sobreTexto = s => s.q || s.escribir || s.clasificar;
+  if (!sobreTexto(pasos[n])) return null; // el dictado no: el texto podría delatar la frase
+  for (let k = n - 1; k >= 0; k--) {
+    if (pasos[k].leer) return pasos[k];
+    if (!sobreTexto(pasos[k])) return null;
+  }
+  return null;
+}
 const repasables = () => {
   const mapa = {};
-  UNIDADES.forEach((u, i) => u.pasos.forEach(s => { const k = claveEj(s); if (k) mapa[k] = { s, u, i }; }));
+  UNIDADES.forEach((u, i) => u.pasos.forEach((s, n) => { const k = claveEj(s); if (k) mapa[k] = { s, u, i, lectura: lecturaDe(u.pasos, n) }; }));
   VERBOS.forEach(v => { mapa[claveVerbo(v)] = { s: ejercicioVerbo(v) }; });
   return mapa;
 };
@@ -66,6 +77,8 @@ const cargar = () => { let p = {}; try { p = JSON.parse(localStorage.getItem('ch
 const guardar = p => localStorage.setItem('chicos-ingles', JSON.stringify(p));
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const fmt = s => esc(s).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+// El texto de la lectura, a la vista mientras se responde. Se puede plegar para ganar lugar en el celular.
+const cajaLectura = l => l ? `<details class="releer" open><summary>📖 El texto: ${fmt(l.leer)}</summary><div class="lectura" lang="en">${esc(l.texto)}</div>${l.es ? `<p class="glosa">📌 ${esc(l.es)}</p>` : ''}</details>` : '';
 
 // Voz en inglés. El tono de cada frase se escucha en su botón 🔊.
 function hablar(texto, velocidad = .9) {
@@ -270,7 +283,7 @@ function unidad(i) {
     if (s.idea) return pantalla(`<div class="grande">${s.idea}</div><p class="texto">${fmt(s.t)}</p>${s.ej ? `<div class="ejemplos">${s.ej.map(x => botonOir(x)).join('')}</div>` : ''}`);
     if (s.tabla) return pantalla(`<p class="texto">${fmt(s.tabla)}</p><div class="ancho"><table class="regla"><thead><tr>${s.cols.map(c => `<th>${esc(c)}</th>`).join('')}</tr></thead><tbody>${s.filas.map(f => `<tr>${f.map(c => `<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>${s.nota ? `<p class="glosa">💡 ${fmt(s.nota)}</p>` : ''}`);
     if (s.vocab) return pantalla(`<p class="etiqueta">Palabras nuevas</p><p class="texto">${fmt(s.vocab)}</p><p class="seguro">Tocá cada una para escucharla, y repetila en voz alta.</p><div class="ejemplos">${s.items.map(([e, en, es]) => `<button class="ejemplo" data-oir="${esc(en.replace(/→|\//g, '. '))}" aria-label="Escuchar ${esc(en)}"><span>${e} <strong lang="en">${esc(en)}</strong> <small>${esc(es)}</small></span><span aria-hidden="true">🔊</span></button>`).join('')}</div>`);
-    if (s.leer) return pantalla(`<p class="etiqueta">Lectura</p><p class="texto" lang="en">${fmt(s.leer)}</p><div class="fila"><button class="opcion" data-oir="${esc(s.texto)}">🔊 Escuchar el texto</button></div><div class="lectura" lang="en">${esc(s.texto)}</div>${s.es ? `<p class="glosa">📌 ${esc(s.es)}</p>` : ''}<p class="seguro">Leelo con calma: las preguntas que siguen son sobre este texto.</p>`);
+    if (s.leer) return pantalla(`<p class="etiqueta">Lectura</p><p class="texto" lang="en">${fmt(s.leer)}</p><div class="fila"><button class="opcion" data-oir="${esc(s.texto)}">🔊 Escuchar el texto</button></div><div class="lectura" lang="en">${esc(s.texto)}</div>${s.es ? `<p class="glosa">📌 ${esc(s.es)}</p>` : ''}<p class="seguro">Leelo con calma. En las preguntas que siguen vas a tener el texto a la vista, para volver a leerlo cuando quieras.</p>`);
     if (s.personal) return personal(s);
     ejercicio(s);
   };
@@ -284,7 +297,7 @@ function unidad(i) {
     scrollTo(0, 0);
   };
   const ejercicio = s => {
-    const seguir = pantalla(`${s.rep ? '<p class="etiqueta">🔁 ¿Te acordás? De una unidad anterior</p>' : ''}<div id="ejercicio"></div>`);
+    const seguir = pantalla(`${s.rep ? '<p class="etiqueta">🔁 ¿Te acordás? De una unidad anterior</p>' : ''}${cajaLectura(lecturaDe(u.pasos, paso))}<div id="ejercicio"></div>`);
     seguir.disabled = true;
     montarEjercicio(s, app.querySelector('#ejercicio'), primero => {
       if (primero !== null) {
@@ -299,7 +312,7 @@ function unidad(i) {
   // Corregir los errores: no suma puntos, pero sin resolverlos bien no se termina la unidad.
   const correccion = () => {
     const k = pendientes[0];
-    const seguir = pantalla(`<p class="etiqueta">🔧 Corregí tus errores: ${pendientes.length === 1 ? 'queda 1' : 'quedan ' + pendientes.length}</p><div id="ejercicio"></div>`);
+    const seguir = pantalla(`<p class="etiqueta">🔧 Corregí tus errores: ${pendientes.length === 1 ? 'queda 1' : 'quedan ' + pendientes.length}</p>${cajaLectura(lecturaDe(u.pasos, k))}<div id="ejercicio"></div>`);
     seguir.disabled = true;
     montarEjercicio(u.pasos[k], app.querySelector('#ejercicio'), primero => {
       pendientes.shift();
@@ -361,9 +374,9 @@ function tanda(titulo, volver, items, registrar) {
       app.innerHTML = `<section class="tarjeta"><div class="fiesta">🎉🔁🎉</div><p class="texto">¡${esc(titulo)} terminado!</p><p>Al primer intento: <strong>${bien} de ${items.length}</strong>.</p><div class="acciones"><span></span><a class="boton" href="${volver}">Listo →</a></div></section>`;
       return;
     }
-    const { s, clave, de } = items[k];
+    const { s, clave, de, lectura } = items[k];
     app.innerHTML = `<a class="volver" href="${volver}">← Salir</a><div class="barra">${items.map((_, j) => `<span class="${j <= k ? 'hecho' : ''}"></span>`).join('')}</div>
-      <section class="tarjeta">${de ? `<p class="etiqueta">${esc(de)}</p>` : ''}<div id="ejercicio"></div><div class="acciones"><span></span><button class="boton" id="seguir" disabled>Seguir →</button></div></section>`;
+      <section class="tarjeta">${de ? `<p class="etiqueta">${esc(de)}</p>` : ''}${cajaLectura(lectura)}<div id="ejercicio"></div><div class="acciones"><span></span><button class="boton" id="seguir" disabled>Seguir →</button></div></section>`;
     const seguir = app.querySelector('#seguir');
     seguir.onclick = () => { k++; pintar(); };
     montarEjercicio(s, app.querySelector('#ejercicio'), primero => {
@@ -384,7 +397,7 @@ function repaso() {
     return;
   }
   // Mezcladas entre unidades a propósito: elegir el tiempo verbal sin saber de qué unidad viene es parte del aprendizaje.
-  tanda('Repaso', '#/', claves.map(clave => ({ clave, s: m[clave].s, de: m[clave].u ? '' : 'Verbo irregular' })), (clave, ok) => { const q = cargar(); registrarRepaso(q, clave, ok); guardar(q); });
+  tanda('Repaso', '#/', claves.map(clave => ({ clave, s: m[clave].s, lectura: m[clave].lectura, de: m[clave].u ? '' : 'Verbo irregular' })), (clave, ok) => { const q = cargar(); registrarRepaso(q, clave, ok); guardar(q); });
 }
 
 function verbos() {

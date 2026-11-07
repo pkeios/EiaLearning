@@ -8,7 +8,7 @@ const js = h.split('<script>')[1].split('</script>')[0];
 new Function(datos + js.replace(/rutear\(\);\s*$/, '')); // sintaxis
 
 const logica = js.split('const app =')[0];
-const X = new Function(datos + logica + ';return { UNIDADES, GRUPOS_VERBOS, VERBOS, normalizar, esCorrecta, claveEj, estrellasDe, agendarPrimera, registrarRepaso, dia, repasables, paraRepasar, fichas, filtrarVerbos, ejercicioVerbo, INTERVALOS, teoriaDe, APROBAR };')();
+const X = new Function(datos + logica + ';return { UNIDADES, GRUPOS_VERBOS, VERBOS, normalizar, esCorrecta, claveEj, estrellasDe, agendarPrimera, registrarRepaso, dia, repasables, paraRepasar, fichas, filtrarVerbos, ejercicioVerbo, INTERVALOS, teoriaDe, APROBAR, lecturaDe };')();
 const { UNIDADES: U, normalizar, esCorrecta, claveEj } = X;
 
 // Las palabras visibles de una frase, sin el marcado de negrita.
@@ -160,6 +160,22 @@ assert.equal(fs.readFileSync(dir + 'ingles-teoria.huella', 'utf8').trim(), requi
 // Los cursos para chicos no pueden mostrar una copia vieja si hay internet (por ejemplo, un PDF desactualizado).
 const sw = fs.readFileSync(dir + '../sw.js', 'utf8');
 assert(sw.includes("pathname.includes('/chicos/')") && sw.indexOf("pathname.includes('/chicos/')") < sw.indexOf('caches.match(e.request).then(enCache => enCache || red)'), 'chicos tiene que ir primero a la red');
+
+// Lecturas: las preguntas que siguen a un texto se responden con el texto a la vista, también en el repaso de otro día.
+U.forEach((u, i) => u.pasos.forEach((s, n) => {
+  if (!s.leer) return;
+  const sobreElTexto = [];
+  for (let k = n + 1; k < u.pasos.length && (u.pasos[k].q || u.pasos[k].escribir || u.pasos[k].clasificar); k++) sobreElTexto.push(k);
+  assert(sobreElTexto.length >= 2, 'unidad ' + (i + 1) + ': la lectura tiene pocas preguntas');
+  sobreElTexto.forEach(k => assert.equal(X.lecturaDe(u.pasos, k), s, 'unidad ' + (i + 1) + ': pregunta sin el texto: ' + claveEj(u.pasos[k])));
+  // Un repaso de otro día también trae el texto
+  const k0 = sobreElTexto.find(k => claveEj(u.pasos[k]));
+  assert.equal(X.repasables()[claveEj(u.pasos[k0])].lectura, s, 'el repaso pierde el texto');
+}));
+// Lo que no es sobre una lectura no la muestra
+U.forEach(u => u.pasos.forEach((s, n) => { if (s.dictado || s.personal) assert.equal(X.lecturaDe(u.pasos, n), null); }));
+assert.equal(X.lecturaDe(U[0].pasos, 3), null);
+assert(h.includes('cajaLectura(lecturaDe(u.pasos, paso))') && h.includes('cajaLectura(lecturaDe(u.pasos, k))') && h.includes('cajaLectura(lectura)'), 'la caja de lectura tiene que estar en la unidad, en la corrección y en el repaso');
 
 // La entrada de chicos deja elegir curso.
 const entrada = fs.readFileSync(dir + 'index.html', 'utf8');
