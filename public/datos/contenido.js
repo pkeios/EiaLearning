@@ -525,7 +525,7 @@ son? ¿Pasa lo mismo otros meses? Si es un grupo chico, decímelo.</code></pre>`
   objetivos: [
     "Reconocer las 4 formas más comunes en que la IA se equivoca con los datos",
     "Aplicar los 5 controles rápidos a cualquier resultado antes de usarlo",
-    "Pedirle a la IA que busque sus propios errores y contraejemplos",
+    "Pedirle a la IA que revise el análisis que ella misma hizo y busque errores y datos que lo contradigan",
   ],
   lecciones: [
     { titulo: "Cómo se equivoca la IA con los números", html: `
@@ -566,8 +566,8 @@ son? ¿Pasa lo mismo otros meses? Si es un grupo chico, decímelo.</code></pre>`
         <tr><td>Un informe interno</td><td>1, 2 y 3</td></tr>
         <tr><td>Una decisión con plata, personas o clientes</td><td>Los 5, y que otra persona lo revise</td></tr>
       </table>` },
-    { titulo: "Que la IA busque sus propios errores", html: `
-      <p class="idea">Así como pedirle a un compañero que te revise un informe encuentra errores que vos no ves, podés pedirle a la IA que revise su propio trabajo con otros ojos: que busque qué podría estar mal, no que te confirme que está bien.</p>
+    { titulo: "Que la IA revise el análisis que ella misma hizo", html: `
+      <p class="idea">Así como pedirle a un compañero que te revise un informe encuentra errores que vos no ves, podés pedirle a la IA que revise el análisis que ella misma te hizo: que busque qué podría estar mal, no que te confirme que está bien.</p>
       <p><strong>Tres pedidos que funcionan mejor que "¿está bien?":</strong></p>
       <pre><code>1. Revisá el análisis anterior como si fueras un auditor que busca errores.
    Hacé una lista de lo que podría estar mal y cómo comprobarlo.
@@ -606,7 +606,7 @@ son? ¿Pasa lo mismo otros meses? Si es un grupo chico, decímelo.</code></pre>`
     { q: "Querés comprobar un número del resultado sin rehacer todo. ¿Qué hacés?", opciones: ["Le preguntás a otra IA","Lo redondeás","Elegís uno y lo recalculás vos en Excel con un filtro, por ejemplo Norte en junio","Confiás en el resto"], correcta: 2, explicacion: "Recalcular una muestra a mano es rápido y confirma que el método es correcto. Preguntarle a otra IA tienta, pero puede cometer el mismo error." },
     { q: "Hacés la misma pregunta con otras palabras en una conversación nueva y el resultado cambia. ¿Qué concluís?", opciones: ["Que la segunda es la buena","Que la primera es la buena","Que hay que promediarlas","Que hay algo mal en al menos una de las dos respuestas y hay que averiguar cuál"], correcta: 3, explicacion: "Un cálculo bien hecho da lo mismo aunque cambies las palabras. Promediarlas tienta como salida rápida, pero si una está mal, el promedio también." },
     { q: "Vas a usar un número para decidir a quién contratar. ¿Cuántos controles hacés?", opciones: ["Ninguno, la IA es confiable","Solo contar filas","Solo pedirle el cálculo","Los 5, y que otra persona lo revise"], correcta: 3, explicacion: "Cuanto más importa la decisión, más controles. Contar filas tienta porque es lo más rápido, pero no detecta una columna mal leída." },
-    { q: "Querés que la IA encuentre sus propios errores. ¿Qué pedido ayuda más?", opciones: ["Revisá el análisis como un auditor que busca errores y decime cómo comprobarlos","¿Está bien lo que hiciste?","Hacelo más lindo","Resumilo"], correcta: 0, explicacion: "Pedirle que busque errores le cambia el objetivo. Preguntar si está bien tienta por simple, pero invita a que confirme lo que ya dijo." },
+    { q: "La IA te hizo un análisis y querés que ella misma lo revise para encontrar errores. ¿Qué le pedís?", opciones: ["Revisá el análisis como un auditor que busca errores y decime cómo comprobarlos","¿Está bien lo que hiciste?","Hacelo más lindo","Resumilo"], correcta: 0, explicacion: "Pedirle que busque errores le cambia el objetivo. Preguntar si está bien tienta por simple, pero invita a que confirme lo que ya dijo." },
     { q: "La conclusión es \"Norte crece por los clientes nuevos\". ¿Qué esperarías ver en los datos si fuera cierta?", opciones: ["Que Centro baje","Que el ticket promedio suba mucho","Que el porcentaje de clientes nuevos en Norte suba con los meses","Que el QR baje"], correcta: 2, explicacion: "Pensar qué tendría que aparecer si la idea fuera cierta es la forma de ponerla a prueba. Que Centro baje tienta, pero no dice nada sobre los clientes de Norte." },
     { q: "La IA confirma exactamente lo que vos pensabas, rapidísimo y sin mostrar ningún cálculo. ¿Qué hacés?", opciones: ["Te ponés contento y lo usás","Desconfiás un poco más y pedís el cálculo: es justo cuando el sesgo de confirmación engaña","Le pedís que lo diga más largo","Lo descartás siempre"], correcta: 1, explicacion: "Cuando algo confirma lo que esperabas, revisamos menos. Descartarlo siempre tienta como reacción, pero puede estar bien: solo hay que pedir la evidencia." },
   ],

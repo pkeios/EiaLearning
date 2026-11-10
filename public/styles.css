@@ -3,17 +3,21 @@
   --texto: #e8ebf5; --suave: #98a2c0; --acento: #8b7cff; --acento2: #3ad6e8;
   --ok: #34d399; --mal: #f87171; --radio: 14px;
   --cabecera: rgba(11, 16, 32, .85); --codigo: #070a14; --avanzado: #b3a9ff; --proyecto: #fbbf24;
+  --boton-fin: #6a8bff; --brillo: #2a1f6b; --brillo2: #0e4a5c;
 }
 :root[data-tema="claro"] {
   --bg: #f6f7fb; --card: #ffffff; --card2: #eef0f7; --borde: #dde1ee;
   --texto: #1b2033; --suave: #59627a; --acento: #6a5cf0; --acento2: #0a7f92;
   --ok: #127a54; --mal: #c02f2f; --cabecera: rgba(246, 247, 251, .9); --codigo: #f1f3f9; --avanzado: #5b4bd6; --proyecto: #9a5b00;
 }
+/* Cada curso tiene su color, para que no se mezclen: AI Engineering violeta, Datos con IA verde azulado (igual que su tarjeta del inicio). */
+:root[data-curso="datos"] { --acento: #1f9e8f; --acento2: #6fdc9b; --boton-fin: #14808f; --brillo: #0d4a43; --brillo2: #1d4a2a; }
+:root[data-curso="datos"][data-tema="claro"] { --acento: #157a6e; --acento2: #1d7a45; --boton-fin: #0f6b78; }
 :root[data-tema="claro"] body { background: var(--bg); }
 * { box-sizing: border-box; }
 body {
   margin: 0; color: var(--texto); font: 1.0625rem/1.7 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  background: radial-gradient(circle at 15% -10%, #2a1f6b 0, transparent 45%), radial-gradient(circle at 100% 0, #0e4a5c 0, transparent 40%), var(--bg);
+  background: radial-gradient(circle at 15% -10%, var(--brillo) 0, transparent 45%), radial-gradient(circle at 100% 0, var(--brillo2) 0, transparent 40%), var(--bg);
   background-attachment: fixed; min-height: 100vh;
 }
 a { color: var(--acento2); text-decoration: none; }
@@ -37,8 +41,8 @@ h2 { margin: 2.2rem 0 .8rem; font-size: 1.35rem; }
 .degradado { background: linear-gradient(90deg, var(--acento), var(--acento2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
 
 /* Botones */
-button, .boton { display: inline-block; background: linear-gradient(90deg, var(--acento), #6a8bff); color: #fff; border: 0; border-radius: 10px; padding: .7rem 1.3rem; font: inherit; font-weight: 700; cursor: pointer; transition: transform .15s, box-shadow .15s; }
-button:hover, .boton:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(139, 124, 255, .35); text-decoration: none; }
+button, .boton { display: inline-block; background: linear-gradient(90deg, var(--acento), var(--boton-fin)); color: #fff; border: 0; border-radius: 10px; padding: .7rem 1.3rem; font: inherit; font-weight: 700; cursor: pointer; transition: transform .15s, box-shadow .15s; }
+button:hover, .boton:hover { transform: translateY(-1px); box-shadow: 0 6px 20px color-mix(in srgb, var(--acento) 35%, transparent); text-decoration: none; }
 button:disabled { opacity: .45; cursor: default; transform: none; box-shadow: none; }
 .secundario { background: var(--card2); border: 1px solid var(--borde); color: var(--texto); }
 .datos { display: flex; gap: .6rem; flex-wrap: wrap; margin-top: 1rem; }
@@ -54,7 +58,7 @@ button:disabled { opacity: .45; cursor: default; transform: none; box-shadow: no
 .badge.proyecto { background: rgba(251, 191, 36, .15); color: var(--proyecto); }
 
 /* Inicio */
-.hero { background: linear-gradient(135deg, rgba(139, 124, 255, .14), rgba(58, 214, 232, .08)); border: 1px solid var(--borde); border-radius: 20px; padding: 2rem; margin-bottom: 2rem; }
+.hero { background: linear-gradient(135deg, color-mix(in srgb, var(--acento) 14%, transparent), color-mix(in srgb, var(--acento2) 8%, transparent)); border: 1px solid var(--borde); border-radius: 20px; padding: 2rem; margin-bottom: 2rem; }
 .hero p { color: var(--suave); max-width: 640px; }
 .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: .8rem; margin: 1.2rem 0 1.5rem; }
 .stat { background: var(--card); border: 1px solid var(--borde); border-radius: var(--radio); padding: .9rem 1rem; color: var(--texto); }
@@ -161,7 +165,7 @@ mark { background: rgba(250, 204, 21, .4); color: inherit; border-radius: 3px; p
 .pregunta.mal { border-color: rgba(248, 113, 113, .6); }
 .opcion { display: flex; gap: .7rem; align-items: center; clear: both; padding: .7rem 1rem; margin: .45rem 0; border: 1px solid var(--borde); border-radius: 10px; cursor: pointer; transition: background .15s, border-color .15s; }
 .opcion:hover { background: var(--card2); }
-.opcion:has(input:checked) { border-color: var(--acento); background: rgba(139, 124, 255, .12); }
+.opcion:has(input:checked) { border-color: var(--acento); background: color-mix(in srgb, var(--acento) 12%, transparent); }
 .opcion input { accent-color: var(--acento); }
 .opcion.correcta { border-color: var(--ok); background: rgba(52, 211, 153, .12); }
 .opcion.incorrecta { border-color: var(--mal); background: rgba(248, 113, 113, .12); }
