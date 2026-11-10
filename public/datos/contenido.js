@@ -826,15 +826,24 @@ Sur cerró del 7 al 20 de abril.</code></pre>
         <li>Las limitaciones y el uso de IA están explicados.</li>
       </ol>
       <p>Con 5 o 6 puntos, estás listo para hacerlo con datos de tu trabajo.</p>` },
-    { titulo: "Tu propio proyecto con datos del trabajo", html: `
-      <p class="idea">El objetivo del curso no es analizar un almacén inventado: es que el lunes puedas hacerlo con tus datos. Esta lección es la lista de pasos para llevarlo a tu trabajo sin riesgos.</p>
+    { titulo: "Ahora con una planilla real de tu trabajo", html: `
+      <p class="idea">Hasta acá practicaste con La Esquina, un almacén inventado. El paso que sigue es repetir lo mismo que hiciste en el proyecto guiado, pero con una planilla real de tu trabajo y una decisión real que tengas que tomar.</p>
+      <p><strong>Qué quiere decir, con ejemplos:</strong></p>
+      <table>
+        <tr><th>Si trabajás en...</th><th>Una planilla que ya tenés</th><th>Una decisión que te ayuda a tomar</th></tr>
+        <tr><td>Un comercio</td><td>Las ventas de los últimos meses</td><td>Qué productos reponer primero</td></tr>
+        <tr><td>Atención al cliente</td><td>Los reclamos del último trimestre</td><td>Qué problema resolver primero</td></tr>
+        <tr><td>Recursos humanos</td><td>Las ausencias por mes y por área (sin nombres)</td><td>En qué área reforzar el equipo</td></tr>
+        <tr><td>Administración</td><td>Las facturas y cuándo se cobraron</td><td>A qué clientes llamar por pagos atrasados</td></tr>
+      </table>
+      <p>Lo que cambia son los datos; los pasos son los mismos seis del proyecto guiado. Esta lección es la lista para hacerlo sin riesgos.</p>
       <p><strong>Antes de empezar:</strong></p>
       <ol>
         <li><strong>Elegí una decisión real y chica,</strong> que se tome en las próximas semanas: un turno, un pedido de stock, a qué clientes llamar.</li>
         <li><strong>Pedí permiso y revisá las reglas</strong> de tu empresa sobre datos e IA, como viste en el primer módulo.</li>
         <li><strong>Anonimizá</strong> y dejá solo las columnas que hacen falta para la pregunta.</li>
       </ol>
-      <p><strong>Durante el análisis,</strong> usá el mismo camino del proyecto guiado y guardá todo en un solo documento:</p>
+      <p><strong>Durante el análisis,</strong> seguí los mismos pasos del proyecto guiado y andá anotando todo en un solo documento (un Word o un Google Docs alcanza), con estas 8 partes:</p>
       <pre><code>1. Pregunta y decisión que responde
 2. Datos: de dónde salen, período, cantidad de filas
 3. Diccionario de datos
@@ -854,7 +863,7 @@ Sur cerró del 7 al 20 de abril.</code></pre>
   practica: [
     "Hacé el proyecto guiado completo con \"ventas sucias\" y evaluate con la rúbrica de 6 puntos. Anotá tu puntaje y qué criterio te costó más.",
     "Verificá los valores de control del proyecto: 947 ventas, total $6.270.350, Norte en junio $520.500 y Centro en junio $453.100. Anotá cuáles coincidieron a la primera.",
-    "Hacé tu propio proyecto con datos de tu trabajo siguiendo el documento de 8 partes. Pedile a un compañero que lo evalúe con la rúbrica y anotá su puntaje.",
+    "Repetí el proyecto con una planilla real de tu trabajo (podés elegir uno de los ejemplos de la lección) y anotá las 8 partes en un documento. Pedile a un compañero que lo evalúe con la rúbrica y anotá su puntaje.",
     "Un mes después de tu recomendación, medí si funcionó y escribí 3 frases: qué recomendaste, qué pasó y qué harías distinto.",
   ],
   recursos: [
@@ -867,7 +876,7 @@ Sur cerró del 7 al 20 de abril.</code></pre>
     { q: "Si terminás de limpiar y te quedan 952 ventas, pero los valores de control dicen 947, ¿qué pasó?", opciones: ["Nada, es casi lo mismo","Faltó sacar algo: probablemente las 5 ventas sin cantidad","Los valores de control están mal","Hay que redondear"], correcta: 1, explicacion: "952 menos 5 da 947: faltó resolver las ventas sin cantidad. Pensar que los valores de control están mal tienta, pero son justamente la referencia para comprobarlo." },
     { q: "Tu compañero se preocupa porque no sabe cuál es la sucursal \"correcta\" en el proyecto guiado. ¿Qué le explicás que se evalúa?", opciones: ["Que elijas la sucursal correcta","Que uses la IA más nueva","Que la recomendación esté bien argumentada, con números verificados y limitaciones claras","Que el informe sea largo"], correcta: 2, explicacion: "Podés recomendar Norte o Centro si lo argumentás bien. Que elijas la correcta tienta, pero en decisiones reales casi nunca hay una sola respuesta." },
     { q: "Si recomendás Norte porque crece, ¿qué limitación es importante mencionar?", opciones: ["Que son solo 6 meses de datos y no sabemos si el crecimiento va a seguir","Que Norte empieza con N","Que la IA es nueva","Ninguna, el crecimiento es claro"], correcta: 0, explicacion: "Un crecimiento de 6 meses puede frenarse. Decir que es claro tienta porque los números suben todos los meses, pero no sabemos qué pasará después." },
-    { q: "Vas a llevar el método a tu trabajo. ¿Qué decisión conviene elegir para el primer proyecto?", opciones: ["La más grande e importante de la empresa","Una real y chica, que se tome en las próximas semanas","Una que ya se tomó","Ninguna, solo practicar"], correcta: 1, explicacion: "Una decisión chica y cercana permite aprender rápido y medir el resultado. La más grande tienta porque muestra más impacto, pero si sale mal, el costo también es grande." },
+    { q: "Vas a repetir el proyecto con una planilla real de tu trabajo. ¿Qué decisión conviene elegir la primera vez?", opciones: ["La más grande e importante de la empresa","Una real y chica, que se tome en las próximas semanas","Una que ya se tomó","Ninguna, solo practicar"], correcta: 1, explicacion: "Una decisión chica y cercana permite aprender rápido y medir el resultado. La más grande tienta porque muestra más impacto, pero si sale mal, el costo también es grande." },
     { q: "Antes de subir los datos de tu trabajo a la IA, ¿qué no puede faltar?", opciones: ["Revisar las reglas de la empresa y anonimizar los datos","Comprar una suscripción más cara","Armar los gráficos","Pedirle a la IA permiso"], correcta: 0, explicacion: "Los datos del trabajo pueden tener información personal o confidencial. Pedirle permiso a la IA tienta como chiste, pero la que decide es tu empresa." },
     { q: "Presentaste tu recomendación. ¿Qué hacés un mes después?", opciones: ["Nada, ya terminó","Hacés otro análisis distinto","Medís si la decisión funcionó y anotás qué harías distinto","Le pedís a la IA que te felicite"], correcta: 2, explicacion: "Medir el resultado es la forma de saber si tus análisis eran buenos. Dar por terminado el trabajo tienta, pero te perdés lo que más enseña." },
     { q: "En tu proyecto, la IA te da una conclusión muy convincente que no podés verificar con ningún control. ¿Qué hacés?", opciones: ["La usás porque es convincente","La presentás como lo principal","La borrás de la conversación","No la usás como resultado: como mucho, la mencionás como hipótesis a confirmar"], correcta: 3, explicacion: "Lo que no podés verificar no puede sostener una decisión. Que es convincente tienta, pero es justo lo que hace peligrosas a las alucinaciones." },
