@@ -29,6 +29,19 @@ const total = xs => xs.reduce((s, f) => s + Number(f.total), 0);
 const de = (xs, clave, valor) => xs.filter(f => f[clave] === valor);
 const mes = (xs, m) => xs.filter(f => Number(f.fecha.slice(5, 7)) === m);
 
+// ---- Limpiar las sucias como enseña el curso (sin duplicados, sin cantidad vacía, sucursal unificada, 400 → 4)
+// tiene que dar exactamente las limpias, también por sucursal: si no, el proyecto final no se puede verificar.
+{
+  const vistas = new Set(), recuperadas = [];
+  for (const f of sucias) {
+    const k = JSON.stringify(f); if (vistas.has(k) || f.cantidad === '') continue; vistas.add(k);
+    const cant = Number(f.cantidad) === 400 ? 4 : Number(f.cantidad), precio = Number(String(f.precio_unitario).replace(/[$.]/g, ''));
+    const s = f.sucursal.trim(); recuperadas.push({ sucursal: s[0].toUpperCase() + s.slice(1).toLowerCase(), total: cant * precio });
+  }
+  assert.equal(recuperadas.length, limpias.length, 'limpiar las sucias no da la cantidad de filas de las limpias');
+  for (const suc of ['Centro', 'Norte', 'Sur']) assert.equal(total(de(recuperadas, 'sucursal', suc)), total(de(limpias, 'sucursal', suc)), 'limpiar las sucias no da el total de ' + suc);
+}
+
 // ---- Tendencias que el curso afirma: Norte crece todos los meses; Centro sube y baja sin crecer
 {
   const serie = s => [1, 2, 3, 4, 5, 6].map(m => total(mes(de(limpias, 'sucursal', s), m)));

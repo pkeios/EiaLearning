@@ -55,8 +55,16 @@ def toma(k):
     return [idx.pop() for _ in range(k)]
 for i in toma(5):
     sucias[i]['cantidad'] = ''; sucias[i]['total'] = ''; problemas['cantidad vacía'].append(sucias[i]['id_venta'])
-for i, escrito in zip(toma(8), ['sur', 'Sur ', 'NORTE', 'norte', 'Centro ', 'centro', 'SUR', 'Norte ']):
-    problemas['sucursal mal escrita'].append(f"{sucias[i]['id_venta']} ('{escrito}')"); sucias[i]['sucursal'] = escrito
+# Mal escrita, pero siempre la misma sucursal: así se puede recuperar al limpiar (strip + capitalize).
+# Se eligen a mano 3 de Sur, 3 de Norte y 2 de Centro (8 formas nuevas: 11 nombres distintos en total).
+# toma(8) se sigue llamando para no cambiar el resto de los datos que salen después.
+toma(8)
+vacias_ids = set(problemas['cantidad vacía'])
+for suc, escritos in [('Sur', ['sur', 'Sur ', 'SUR']), ('Norte', ['NORTE', 'norte', 'Norte ']), ('Centro', ['Centro ', 'centro'])]:
+    de_suc = [i for i, f in enumerate(sucias) if f['sucursal'] == suc and f['id_venta'] not in vacias_ids]
+    for k, escrito in enumerate(escritos):
+        i = de_suc[(k + 1) * len(de_suc) // (len(escritos) + 1)]
+        problemas['sucursal mal escrita'].append(f"{sucias[i]['id_venta']} ('{escrito}')"); sucias[i]['sucursal'] = escrito
 for i in toma(10):
     problemas['fecha en otro formato'].append(sucias[i]['id_venta']); sucias[i]['fecha'] = sucias[i]['fecha'].strftime('%d/%m/%Y')
 for i in toma(6):
