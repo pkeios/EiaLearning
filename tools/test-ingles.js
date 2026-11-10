@@ -8,7 +8,7 @@ const js = h.split('<script>')[1].split('</script>')[0];
 new Function(datos + js.replace(/rutear\(\);\s*$/, '')); // sintaxis
 
 const logica = js.split('const app =')[0];
-const X = new Function(datos + logica + ';return { UNIDADES, GRUPOS_VERBOS, VERBOS, normalizar, esCorrecta, claveEj, estrellasDe, agendarPrimera, registrarRepaso, dia, repasables, paraRepasar, fichas, filtrarVerbos, ejercicioVerbo, INTERVALOS, teoriaDe, APROBAR, lecturaDe };')();
+const X = new Function(datos + logica + ';return { UNIDADES, GRUPOS_VERBOS, VERBOS, normalizar, esCorrecta, claveEj, estrellasDe, agendarPrimera, registrarRepaso, dia, repasables, paraRepasar, fichas, filtrarVerbos, ejercicioVerbo, INTERVALOS, teoriaDe, APROBAR, lecturaDe, PARTES, fraseDe };')();
 const { UNIDADES: U, normalizar, esCorrecta, claveEj } = X;
 
 // Las palabras visibles de una frase, sin el marcado de negrita.
@@ -176,6 +176,21 @@ U.forEach((u, i) => u.pasos.forEach((s, n) => {
 U.forEach(u => u.pasos.forEach((s, n) => { if (s.dictado || s.personal) assert.equal(X.lecturaDe(u.pasos, n), null); }));
 assert.equal(X.lecturaDe(U[0].pasos, 3), null);
 assert(h.includes('cajaLectura(lecturaDe(u.pasos, paso))') && h.includes('cajaLectura(lecturaDe(u.pasos, k))') && h.includes('cajaLectura(lectura)'), 'la caja de lectura tiene que estar en la unidad, en la corrección y en el repaso');
+
+// Estructura de la frase: para alguien que empieza, cada tiempo verbal se muestra por partes (quién, ayudante, verbo...) y se practica separándolas.
+const conFormula = U.map(u => u.pasos.filter(s => s.formula));
+U.forEach((u, i) => {
+  if (i !== 7) assert(conFormula[i].length, 'unidad ' + (i + 1) + ': falta la fórmula de la frase');  // la 8 usa la misma fórmula que la 7
+  conFormula[i].forEach(s => s.filas.forEach(f => {
+    assert(f.partes.length >= 2 && f.partes.every(([r, x]) => X.PARTES[r] && x), 'fórmula mal armada: ' + f.tipo);
+    assert(f.partes.some(([r]) => r === 'S') && f.partes.some(([r]) => r === 'V'), 'toda frase tiene quién y verbo: ' + X.fraseDe(f));
+    if (/negativa/i.test(f.tipo)) assert(f.partes.some(([r]) => r === 'N' || (r === 'A' && /n't$/.test(f.partes.find(p => p[0] === 'A')[1]))), 'negativa sin negación: ' + X.fraseDe(f));
+    if (/pregunta/i.test(f.tipo)) assert(X.fraseDe(f).endsWith('?') && ['A', 'W', 'V'].includes(f.partes[0][0]), 'pregunta mal ordenada: ' + X.fraseDe(f));
+  }));
+  assert.equal(X.teoriaDe(u).formulas.length, conFormula[i].length, 'la fórmula tiene que salir en papel');
+});
+// Identificar las partes en una frase nueva, en cada unidad donde aparece una estructura nueva
+[0, 1, 3, 4, 5, 8].forEach(i => assert(U[i].pasos.some(s => s.clasificar && /^Separá las partes/.test(s.clasificar)), 'unidad ' + (i + 1) + ': falta separar las partes de una frase'));
 
 // La entrada de chicos deja elegir curso.
 const entrada = fs.readFileSync(dir + 'index.html', 'utf8');

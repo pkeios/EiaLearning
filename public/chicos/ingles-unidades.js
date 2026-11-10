@@ -4,6 +4,7 @@
 //   q (elegir) · clasificar · escribir (texto libre con respuestas válidas "r") · ordenar (armar la frase r[0]) · dictado (escuchar y escribir)
 //   personal (pregunta sobre vos: se guarda en "My profile"; "patron" chequea la forma de la respuesta, ya normalizada)
 // pantalla: 1 = la tarjeta no va en la versión impresa.
+// formula: la frase por partes, con un color fijo por tipo de parte: S quién (sujeto), A ayudante, V verbo, N not, W palabra de pregunta, R el resto.
 // e = explicación: por qué es así y por qué falla la trampa. p = pista si se equivoca. m = aviso para errores típicos. rep: 1 = repaso de una unidad anterior.
 // El texto de cada ejercicio es la clave del repaso del alumno: no lo cambies.
 
@@ -37,6 +38,12 @@ const UNIDADES = [
     { idea: "🗺️", t: "En este curso aprendés a contar tu vida en inglés: qué hacés siempre, qué estás haciendo ahora y qué hiciste ayer." },
     { idea: "🟰", t: "Empezamos por el verbo **to be**. Significa ser o estar: en inglés son una sola palabra.", ej: ["I am Sofia.", "I am happy."] },
     { tabla: "El verbo to be", cols: ["Quién", "Completo", "Corto"], filas: [["I (yo)", "I am", "I'm"], ["you (vos, ustedes)", "you are", "you're"], ["he (él), she (ella), it (eso)", "he is, she is, it is", "he's, she's, it's"], ["we (nosotros)", "we are", "we're"], ["they (ellos, ellas)", "they are", "they're"]], nota: "'Quién' hace la acción se llama sujeto. En inglés siempre hay que decirlo: 'soy Ana' no alcanza, va 'I am Ana'." },
+    { formula: "Cómo se arma una frase con to be", filas: [
+      { tipo: "Afirmativa", partes: [["S", "I"], ["V", "am"], ["R", "13 years old."]] },
+      { tipo: "Negativa", partes: [["S", "She"], ["V", "is"], ["N", "not"], ["R", "tired."]] },
+      { tipo: "Pregunta", partes: [["V", "Are"], ["S", "you"], ["R", "from Argentina?"]] },
+    ], nota: "Primero va quién y después el verbo. En la pregunta se dan vuelta: el verbo pasa adelante." },
+    { clasificar: "Separá las partes de: 'My sister is 15.'", grupos: ["👤 Quién", "⚙️ Verbo", "📦 El resto"], items: [["My sister", 0], ["is", 1], ["15", 2]], e: "My sister es quién, is es el verbo (to be) y 15 es el resto. Siempre en ese orden en una afirmativa." },
     { q: "Elegí la correcta: 'My sister ___ 15.'", o: ["is", "am", "are"], c: 0, e: "My sister es 'she', y con he, she e it va 'is'. 'Are' tienta porque ella no sos vos, pero se usa con you, we y they.", p: "My sister = she. ¿Qué forma va con she?" },
     { escribir: "Completá: 'We ___ from Argentina.'", r: ["are"], e: "Con we va 'are'. Fijate que 'from' significa 'de' cuando decís de dónde sos.", p: "Mirá la tabla: ¿qué va con we?" },
     { idea: "⚠️", t: "La trampa del español: la edad no se 'tiene', se 'es'. 'Tengo 13 años' se dice **I am 13**.", ej: ["I am 13 years old.", "My brother is 10."] },
@@ -63,6 +70,11 @@ const UNIDADES = [
     { q: "¿Qué significa 'I have breakfast at eight'?", o: ["Desayuno a las ocho", "Tengo ocho desayunos", "Ceno a las ocho"], c: 0, e: "Have breakfast es desayunar: acá 'have' no significa tener. Dinner es la cena.", p: "Breakfast es la primera comida del día." },
     { clasificar: "¿A la mañana o a la noche?", grupos: ["🌅 Mañana", "🌙 Noche"], items: [["get up", 0], ["go to bed", 1], ["have breakfast", 0], ["have dinner", 1]], e: "Ordenar tu día te ayuda a recordar las palabras." },
     { tabla: "Presente simple con I, you, we, they", cols: ["Tipo", "Fórmula", "Ejemplo"], filas: [["Afirmativa", "quién + verbo", "I play tennis."], ["Negativa", "quién + don't + verbo", "I don't play tennis."]], nota: "Don't es la forma corta de 'do not'. Es una palabra ayudante (se llama auxiliar): en español alcanza con 'no', en inglés no." },
+    { formula: "Cómo se arma el presente simple", filas: [
+      { tipo: "Afirmativa", partes: [["S", "I"], ["V", "play"], ["R", "tennis."]] },
+      { tipo: "Negativa", partes: [["S", "I"], ["A", "don't"], ["V", "play"], ["R", "tennis."]] },
+    ], nota: "La negativa necesita un ayudante: don't. Va entre quién y el verbo. Las preguntas se ven en la unidad 4." },
+    { clasificar: "Separá las partes de: 'We don't eat meat.'", grupos: ["👤 Quién", "🧰 Ayudante", "⚙️ Verbo", "📦 El resto"], items: [["We", 0], ["don't", 1], ["eat", 2], ["meat", 3]], e: "We es quién, don't es el ayudante de la negativa, eat es el verbo y meat es el resto." },
     { escribir: "Pasá a negativa: 'I watch TV.'", r: ["I don't watch TV", "I do not watch TV"], e: "Se agrega don't antes del verbo. 'I no watch' es copiar el español: en inglés hace falta el ayudante.", p: "Poné 'don't' entre I y watch.", m: { "i no watch tv": "En inglés no se usa 'no' así: va don't antes del verbo.", "i not watch tv": "Falta el ayudante: don't." } },
     { ordenar: "No tomamos café.", r: ["We don't drink coffee."], e: "Quién + don't + verbo + el resto. Drink significa tomar o beber.", p: "Empezá por 'We' y seguí con la negación." },
     { idea: "🕖", t: "Para la hora se usa **at**: at seven (a las siete), at half past seven (a las siete y media).", ej: ["I get up at seven.", "I have lunch at half past twelve."] },
@@ -88,6 +100,10 @@ const UNIDADES = [
     { vocab: "La familia", items: [["👩", "mother / mom", "mamá"], ["👨", "father / dad", "papá"], ["👧", "sister", "hermana"], ["👦", "brother", "hermano"], ["👵", "grandmother", "abuela"], ["👴", "grandfather", "abuelo"], ["🧑", "cousin", "primo o prima"], ["👩‍🦰", "aunt", "tía"], ["👨‍🦱", "uncle", "tío"]] },
     { q: "My mother's sister is my...", o: ["aunt", "cousin", "grandmother"], c: 0, e: "La hermana de tu mamá es tu tía: aunt. Cousin es su hija o su hijo.", p: "Pensalo en español primero: la hermana de mamá es mi..." },
     { idea: "🚫", t: "En negativa se usa **doesn't**, y el verbo **pierde la s**: la s ya está en doesn't.", ej: ["She doesn't play tennis.", "He doesn't like fish."] },
+    { formula: "Presente simple con he, she, it", filas: [
+      { tipo: "Afirmativa", partes: [["S", "She"], ["V", "plays"], ["R", "tennis."]] },
+      { tipo: "Negativa", partes: [["S", "She"], ["A", "doesn't"], ["V", "play"], ["R", "tennis."]] },
+    ], nota: "Mirá dónde está la s: en la afirmativa la lleva el verbo; en la negativa se pasa al ayudante (doesn't) y el verbo queda sin s." },
     { q: "Elegí la correcta:", o: ["She doesn't like pizza.", "She don't like pizza.", "She doesn't likes pizza."], c: 0, e: "Con she va doesn't, y el verbo vuelve a su forma base. 'Doesn't likes' tienta porque recordás la s, pero así estaría dos veces.", p: "Una sola s en toda la frase, y va en doesn't." },
     { escribir: "Corregí la frase: 'He don't plays football.'", r: ["He doesn't play football", "He does not play football"], e: "Dos arreglos: don't pasa a doesn't, y plays pierde la s.", p: "Hay dos errores: el ayudante y el verbo." },
     { ordenar: "Mi abuela no maneja.", r: ["My grandmother doesn't drive."], e: "Drive sin s, porque la s ya está en doesn't.", p: "Quién + doesn't + verbo." },
@@ -102,8 +118,15 @@ const UNIDADES = [
     { escribir: "Completá: 'My sister ___ (go) to bed at ten.'", rep: 1, r: ["goes"], e: "Go termina en -o: lleva -es. Lo viste en la unidad 3.", p: "My sister = she." },
     { idea: "🙋", t: "Para preguntar en presente simple hace falta un ayudante: **do** o **does**. Va al principio.", ej: ["Do you like pizza?", "Does she play tennis?"] },
     { tabla: "Preguntas en presente simple", cols: ["Quién", "Pregunta", "Respuesta corta"], filas: [["I, you, we, they", "Do you play?", "Yes, I do. / No, I don't."], ["he, she, it", "Does she play?", "Yes, she does. / No, she doesn't."]], nota: "Con does, el verbo vuelve a no tener s: 'Does she plays?' está mal, igual que con doesn't." },
+    { formula: "Cómo se arma una pregunta en presente simple", filas: [
+      { tipo: "Pregunta con you", partes: [["A", "Do"], ["S", "you"], ["V", "play"], ["R", "tennis?"]] },
+      { tipo: "Pregunta con he o she", partes: [["A", "Does"], ["S", "she"], ["V", "play"], ["R", "tennis?"]] },
+      { tipo: "Con palabra de pregunta", partes: [["W", "Where"], ["A", "do"], ["S", "you"], ["V", "live?"]] },
+    ], nota: "En la pregunta, el ayudante va primero, antes de quién. Si hay palabra de pregunta (where, what...), va antes del ayudante." },
+    { clasificar: "Separá las partes de: 'Where does she work?'", grupos: ["❓ Palabra de pregunta", "🧰 Ayudante", "👤 Quién", "⚙️ Verbo"], items: [["Where", 0], ["does", 1], ["she", 2], ["work", 3]], e: "Where es la palabra de pregunta, does el ayudante, she es quién y work el verbo, sin s porque la lleva does." },
     { q: "Elegí la correcta:", o: ["Does your dad work here?", "Do your dad works here?", "Does your dad works here?"], c: 0, e: "Your dad = he, entonces va does, y work sin s. La tercera tienta, pero tiene la s repetida.", p: "Your dad es 'he'. ¿Qué ayudante va con he?" },
     { escribir: "Completá: '___ you speak English?'", r: ["do"], e: "Con you va do. Speak significa hablar.", p: "¿Qué ayudante va con you?" },
+    { idea: "💬", t: "Para responder corto, repetí el ayudante de la pregunta: si pregunta con do, respondés con do.", ej: ["Do you like pizza? Yes, I do.", "Does she play? No, she doesn't."] },
     { q: "Te preguntan: 'Do you have a pet?' Una buena respuesta corta es:", o: ["Yes, I do.", "Yes, I have.", "Yes, I am."], c: 0, e: "La respuesta corta repite el ayudante de la pregunta: do. 'Yes, I have' tienta porque la pregunta dice have, pero así no se responde. Pet = mascota.", p: "Repetí el ayudante con el que empieza la pregunta." },
     { vocab: "Palabras de pregunta", items: [["❔", "what", "qué, cuál"], ["📍", "where", "dónde"], ["📅", "when", "cuándo"], ["🧑", "who", "quién"], ["🤷", "why", "por qué"], ["🛠️", "how", "cómo"], ["🔢", "how many", "cuántos"], ["⏳", "how often", "con qué frecuencia"]] },
     { idea: "🧩", t: "Orden de una pregunta: palabra de pregunta + do o does + quién + verbo.", ej: ["Where do you live?", "What does she study?", "When do you get up?"] },
@@ -127,6 +150,12 @@ const UNIDADES = [
     { escribir: "Traducí: '¿Dónde vivís?'", rep: 1, r: ["Where do you live?"], e: "Palabra de pregunta + do + you + verbo. Unidad 4.", p: "Where + do + you..." },
     { idea: "📸", t: "El **presente continuo** es como sacarle una foto a este momento: lo que está pasando ahora.", ej: ["I am reading.", "She is eating.", "They are playing."] },
     { tabla: "Presente continuo", cols: ["Quién", "to be", "verbo + ing"], filas: [["I", "am", "reading"], ["you, we, they", "are", "reading"], ["he, she, it", "is", "reading"]], nota: "Hacen falta las dos partes: 'I reading' está mal. Es como 'estoy leyendo': estoy = am, leyendo = reading." },
+    { formula: "Cómo se arma el presente continuo", filas: [
+      { tipo: "Con I", partes: [["S", "I"], ["A", "am"], ["V", "reading"], ["R", "a book."]] },
+      { tipo: "Con he, she, it", partes: [["S", "She"], ["A", "is"], ["V", "reading"], ["R", "a book."]] },
+      { tipo: "Con you, we, they", partes: [["S", "They"], ["A", "are"], ["V", "playing"], ["R", "football."]] },
+    ], nota: "Siempre van juntos el ayudante (am, is o are) y el verbo con -ing. Si falta uno de los dos, la frase está incompleta." },
+    { clasificar: "Separá las partes de: 'My friends are playing football.'", grupos: ["👤 Quién", "🧰 Ayudante", "⚙️ Verbo", "📦 El resto"], items: [["My friends", 0], ["are", 1], ["playing", 2], ["football", 3]], e: "My friends es quién, are el ayudante, playing el verbo con -ing y football el resto." },
     { q: "Elegí la correcta: 'Look! The dog ___ .'", o: ["is running", "running", "runs now"], c: 0, e: "Look! avisa que pasa ahora. Hace falta is + running. 'Running' solo tienta porque en español 'corriendo' suena bien, pero le falta el to be.", p: "Faltan dos partes: to be y verbo con -ing." },
     { tabla: "Cómo escribir el -ing", cols: ["Si el verbo", "Hacés esto", "Ejemplo"], filas: [["es normal", "agregás -ing", "play → playing"], ["termina en -e", "sacás la e", "write → writing"], ["es corto: consonante + vocal + consonante", "repetís la última letra", "run → running, swim → swimming"], ["termina en -ie", "cambia a -ying", "lie → lying"]], nota: "Los que terminan en w, x o y no repiten letra: play → playing." },
     { clasificar: "¿Cómo se escribe con -ing?", grupos: ["+ ing", "Sin la e", "Doble letra"], items: [["read", 0], ["dance", 1], ["sit", 2], ["play", 0], ["make", 1], ["swim", 2]], e: "Reading y playing son normales. Dancing y making pierden la e. Sitting y swimming repiten la última letra." },
@@ -149,8 +178,15 @@ const UNIDADES = [
     { escribir: "Completá: 'I ___ (not / like) fish.'", rep: 1, r: ["don't like", "do not like"], e: "Es un gusto, así que va presente simple con don't. Unidad 2.", p: "Con I, el ayudante es don't." },
     { escribir: "Completá: 'He is ___ (run).'", rep: 1, r: ["running"], e: "Run es corto: repite la n. Unidad 5.", p: "Repetí la última letra." },
     { tabla: "Negativas y preguntas", cols: ["Tipo", "Fórmula", "Ejemplo"], filas: [["Negativa", "to be + not + -ing", "She isn't sleeping."], ["Pregunta", "to be + quién + -ing", "Is she sleeping?"], ["Con palabra de pregunta", "what + to be + quién + -ing", "What is she doing?"], ["Respuesta corta", "Yes, she is. / No, she isn't.", "Sin -ing"]], nota: "Acá no se usa do ni does: el ayudante es el mismo to be. Isn't = is not. Aren't = are not." },
+    { formula: "Presente continuo: negativa y pregunta", filas: [
+      { tipo: "Negativa", partes: [["S", "She"], ["A", "is"], ["N", "not"], ["V", "sleeping."]] },
+      { tipo: "Pregunta", partes: [["A", "Is"], ["S", "she"], ["V", "sleeping?"]] },
+      { tipo: "Con palabra de pregunta", partes: [["W", "What"], ["A", "are"], ["S", "you"], ["V", "doing?"]] },
+    ], nota: "Es la misma idea que en el presente simple, pero el ayudante es am, is o are. No se usa do ni does." },
+    { clasificar: "Separá las partes de: 'What is your brother eating?'", grupos: ["❓ Palabra de pregunta", "🧰 Ayudante", "👤 Quién", "⚙️ Verbo"], items: [["What", 0], ["is", 1], ["your brother", 2], ["eating", 3]], e: "What es la palabra de pregunta, is el ayudante, your brother es quién y eating el verbo con -ing." },
     { q: "Elegí la correcta:", o: ["Are you listening?", "Do you listening?", "You are listening?"], c: 0, e: "En el continuo, el to be pasa adelante. 'Do you' es del presente simple: mezclar los dos es el error más común.", p: "¿Qué ayudante usa el continuo?" },
     { escribir: "Pasá a negativa: 'They are watching TV.'", r: ["They aren't watching TV", "They are not watching TV", "They're not watching TV"], e: "Se agrega not después de are. No hace falta don't.", p: "Poné not después de are.", m: { "they don't watching tv": "Don't es del presente simple. Acá va are not." } },
+    { idea: "❓", t: "Con palabra de pregunta, esa palabra va primero: What + are + you + verbo con -ing.", ej: ["What are you doing?", "Where is she going?"] },
     { ordenar: "¿Qué estás comiendo?", r: ["What are you eating?"], e: "What + are + you + eating.", p: "Empieza con la palabra 'qué'." },
     { idea: "🆚", t: "**Simple**: lo que hacés siempre. **Continuo**: lo que pasa ahora. Podés necesitar los dos juntos.", ej: ["I usually walk to school.", "Today I am going by car."] },
     { tabla: "Las palabras que dan la pista", cols: ["Presente simple", "Presente continuo"], filas: [["always, usually, often", "now, right now"], ["sometimes, never", "at the moment"], ["every day, on Mondays", "today, Look!, Listen!"]], nota: "Antes de elegir, buscá estas palabras en la frase." },
@@ -177,6 +213,10 @@ const UNIDADES = [
     { idea: "🏁", t: "Se usa para lo que ya terminó, con un cuándo claro: ayer, la semana pasada, en 2020.", ej: ["We visited my aunt last week.", "They watched a movie last night."] },
     { vocab: "Palabras del pasado", items: [["⬅️", "yesterday", "ayer"], ["🌙", "last night", "anoche"], ["📅", "last week", "la semana pasada"], ["🗓️", "last year", "el año pasado"], ["⏮️", "two days ago", "hace dos días"], ["🗝️", "in 2020", "en 2020"]] },
     { q: "'Hace tres días' se dice:", o: ["three days ago", "ago three days", "last three days"], c: 0, e: "Ago va DESPUÉS del tiempo: three days ago. En español es al revés: 'hace' va antes.", p: "Ago va al final." },
+    { formula: "Cómo se arma el pasado simple", filas: [
+      { tipo: "Con I", partes: [["S", "I"], ["V", "played"], ["R", "tennis yesterday."]] },
+      { tipo: "Con she", partes: [["S", "She"], ["V", "played"], ["R", "tennis yesterday."]] },
+    ], nota: "En la afirmativa no hay ayudante: quién + verbo en pasado + el resto. Y el verbo es igual para todas las personas." },
     { tabla: "Cómo escribir el -ed", cols: ["Si el verbo", "Hacés esto", "Ejemplo"], filas: [["es normal", "agregás -ed", "walk → walked"], ["termina en -e", "agregás -d", "dance → danced"], ["termina en consonante + y", "cambia a -ied", "study → studied"], ["termina en vocal + y", "agregás -ed", "play → played"], ["es corto: consonante + vocal + consonante", "repetís la última letra", "stop → stopped"]], nota: "Son reglas parecidas a las de la s y del -ing: si sabés esas, ya sabés casi todo esto." },
     { clasificar: "¿Cómo se escribe en pasado?", grupos: ["-ed o -d", "-ied", "Doble letra"], items: [["clean", 0], ["try", 1], ["stop", 2], ["love", 0], ["cry", 1], ["plan", 2]], e: "Cleaned y loved son normales. Tried y cried cambian la y. Stopped y planned repiten la última letra." },
     { escribir: "Completá: 'I ___ (study) for three hours last night.'", r: ["studied"], e: "Consonante + y: cambia a -ied.", p: "Antes de la y hay una consonante.", m: { "studyed": "Con consonante + y, la y pasa a i: studied." } },
@@ -230,8 +270,15 @@ const UNIDADES = [
     { q: "Elegí la correcta: 'Where ___ your parents work?'", rep: 1, o: ["do", "does", "are"], c: 0, e: "Your parents = they, entonces va do. Unidad 4.", p: "Your parents = they." },
     { idea: "🕵️", t: "En pasado, el ayudante es **did** para todos. Y como did ya dice 'pasado', el verbo vuelve a su forma normal.", ej: ["Did you see the movie?", "I didn't see the movie."] },
     { tabla: "Pasado: negativas y preguntas", cols: ["Tipo", "Fórmula", "Ejemplo"], filas: [["Afirmativa", "quién + pasado", "She went home."], ["Negativa", "quién + didn't + verbo normal", "She didn't go home."], ["Pregunta", "Did + quién + verbo normal", "Did she go home?"], ["Con palabra de pregunta", "Where + did + quién + verbo normal", "Where did she go?"], ["Respuesta corta", "Yes, she did. / No, she didn't.", ""]], nota: "El pasado va una sola vez: en did. 'Did she went?' tiene dos pasados y está mal." },
+    { formula: "Pasado simple: negativa y pregunta", filas: [
+      { tipo: "Negativa", partes: [["S", "I"], ["A", "didn't"], ["V", "see"], ["R", "the movie."]] },
+      { tipo: "Pregunta", partes: [["A", "Did"], ["S", "you"], ["V", "see"], ["R", "the movie?"]] },
+      { tipo: "Con palabra de pregunta", partes: [["W", "Where"], ["A", "did"], ["S", "you"], ["V", "go?"]] },
+    ], nota: "Igual que en presente, pero el ayudante es did para todos. Como did ya marca el pasado, el verbo queda en su forma normal." },
+    { clasificar: "Separá las partes de: 'Did your sister buy a bike?'", grupos: ["👤 Quién", "🧰 Ayudante", "⚙️ Verbo", "📦 El resto"], items: [["Did", 1], ["your sister", 0], ["buy", 2], ["a bike", 3]], e: "Did es el ayudante y va primero porque es pregunta. Your sister es quién, buy el verbo sin pasado y a bike el resto." },
     { q: "Elegí la correcta:", o: ["I didn't see him.", "I didn't saw him.", "I don't saw him."], c: 0, e: "Después de didn't va el verbo normal: see. 'Didn't saw' tienta porque es pasado, pero el pasado ya está en didn't.", p: "Un solo pasado por frase." },
     { escribir: "Pasá a negativa: 'We played football.'", r: ["We didn't play football", "We did not play football"], e: "Didn't + play. La -ed se va.", p: "Didn't y el verbo sin -ed.", m: { "we didn't played football": "La -ed se va: el pasado ya está en didn't." } },
+    { idea: "🔙", t: "Truco: con didn't, el verbo vuelve a su forma normal, la del diccionario: ate pasa a eat, went pasa a go.", ej: ["She didn't eat meat.", "I didn't go."] },
     { escribir: "Pasá a negativa: 'She ate meat.'", r: ["She didn't eat meat", "She did not eat meat"], e: "Ate vuelve a eat. Meat = carne.", p: "¿Cuál es la forma normal de ate?" },
     { idea: "❓", t: "Ahora preguntas: did va adelante, y el verbo sigue en su forma normal.", ej: ["Did you go?", "Where did you go?"] },
     { ordenar: "¿A dónde fuiste ayer?", r: ["Where did you go yesterday?"], e: "Where + did + you + go + cuándo. Go, no went.", p: "Empezá con la palabra 'dónde'." },
@@ -255,6 +302,11 @@ const UNIDADES = [
   { emoji: "🏆", titulo: "Final mission: my story", color: "#e63946", ayudaVerbos: true, objetivos: ["Elegir entre presente simple, continuo y pasado leyendo las pistas", "Hacer preguntas en los tres tiempos", "Escribir un texto sobre vos en los tres tiempos"], reflexion: "Explicale a alguien cuándo usarías cada uno de los tres tiempos.", pasos: [
     { idea: "🏆", t: "Última unidad: mezclamos todo. Mezclar cuesta más, pero es lo que hace que no te olvides." },
     { tabla: "Los tres tiempos juntos", cols: ["Tiempo", "Para qué", "Afirmativa", "Negativa", "Pregunta"], filas: [["Presente simple", "Siempre", "She plays.", "She doesn't play.", "Does she play?"], ["Presente continuo", "Ahora", "She is playing.", "She isn't playing.", "Is she playing?"], ["Pasado simple", "Ya terminó", "She played.", "She didn't play.", "Did she play?"]], nota: "Cada tiempo tiene su ayudante: do o does, am o is o are, y did." },
+    { formula: "La misma pregunta en los tres tiempos", filas: [
+      { tipo: "Presente simple", partes: [["A", "Does"], ["S", "she"], ["V", "play"], ["R", "tennis?"]] },
+      { tipo: "Presente continuo", partes: [["A", "Is"], ["S", "she"], ["V", "playing"], ["R", "tennis?"]] },
+      { tipo: "Pasado simple", partes: [["A", "Did"], ["S", "she"], ["V", "play"], ["R", "tennis?"]] },
+    ], nota: "El orden es el mismo en los tres: ayudante + quién + verbo. Lo que cambia es el ayudante, y con él, la forma del verbo." },
     { clasificar: "¿Qué tiempo piden estas pistas?", grupos: ["🔁 Simple", "📸 Continuo", "⬅️ Pasado"], items: [["every morning", 0], ["right now", 1], ["last year", 2], ["usually", 0], ["at the moment", 1], ["two days ago", 2]], e: "Buscar la pista es el primer paso para elegir el tiempo." },
     { idea: "🧭", t: "Primer paso, siempre: buscá la pista de tiempo. Recién después elegí el verbo." },
     { escribir: "Completá: 'I ___ (go) to Brazil last year.'", rep: 1, r: ["went"], e: "Last year pide pasado. Go es irregular.", p: "Mirá la pista: last year." },
