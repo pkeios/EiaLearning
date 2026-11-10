@@ -21,7 +21,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.13"
-      - run: pip install pandas
+      # La misma versión de pandas que el laboratorio del navegador (Pyodide 0.29.3) y la que dan las salidas de las lecciones
+      - run: pip install pandas==2.3.2
       - run: node tools/validar.js && node tools/test-app.js && node tools/test-chicos.js && node tools/test-ingles.js && node tools/validar.js datos && node tools/test-datos.js && node tools/test-mapas.js && node tools/validar.js data-engineering && PYTHON=python node tools/test-de.js
       - uses: actions/upload-pages-artifact@v3
         with:
