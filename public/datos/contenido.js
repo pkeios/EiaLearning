@@ -125,7 +125,7 @@ Mostrame la tabla con el resultado y explicame en una frase cómo lo calculaste.
       <p><strong>Así se ve la planilla de práctica</strong> (las primeras tres filas):</p>
       <table>
         <tr><th>id_venta</th><th>fecha</th><th>sucursal</th><th>categoria</th><th>producto</th><th>cantidad</th><th>precio_unitario</th><th>total</th><th>medio_pago</th><th>cliente</th></tr>
-        <tr><td>V0001</td><td>2025-01-01</td><td>Sur</td><td>Almacén</td><td>Arroz 1 kg</td><td>4</td><td>1700</td><td>6800</td><td>Efectivo</td><td>Habitual</td></tr>
+        <tr><td>V0001</td><td>2025-01-01</td><td>Centro</td><td>Almacén</td><td>Arroz 1 kg</td><td>4</td><td>1700</td><td>6800</td><td>Efectivo</td><td>Habitual</td></tr>
         <tr><td>V0002</td><td>2025-01-01</td><td>Centro</td><td>Bebidas</td><td>Agua 2 L</td><td>6</td><td>900</td><td>5400</td><td>Efectivo</td><td>Habitual</td></tr>
       </table>
       <p><strong>Errores de formato que más se ven en el trabajo</strong> (y que confunden a la IA):</p>

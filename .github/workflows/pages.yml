@@ -17,7 +17,12 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
-      - run: node tools/validar.js && node tools/test-app.js && node tools/test-chicos.js && node tools/test-ingles.js && node tools/validar.js datos && node tools/test-datos.js && node tools/test-mapas.js
+      # El curso de Data Engineering corre de verdad los códigos Python de sus lecciones (test-de)
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: pip install pandas
+      - run: node tools/validar.js && node tools/test-app.js && node tools/test-chicos.js && node tools/test-ingles.js && node tools/validar.js datos && node tools/test-datos.js && node tools/test-mapas.js && node tools/validar.js data-engineering && PYTHON=python node tools/test-de.js
       - uses: actions/upload-pages-artifact@v3
         with:
           path: public

@@ -166,7 +166,7 @@ function novedadesPagina() {
 // Diagrama de flujo del curso (window.MAPA en contenido.js, dibujado por mapa.js): cada etapa con sus módulos.
 const mapaDelCurso = p => window.MAPA && window.mapaFlujo ? mapaFlujo({ ...MAPA, etapas: MAPA.etapas.map(e => ({ ...e, items: e.modulos.map(id => {
   const i = T.findIndex(m => m.id === id), m = T[i];
-  return m && { icono: icono(m), titulo: m.titulo, href: '#/m/' + id, num: 'Módulo ' + (i + 1), hecho: aprobado(m, p) };
+  return m && { icono: icono(m), titulo: m.titulo, href: '#/m/' + id, num: 'Módulo ' + i, hecho: aprobado(m, p) };
 }).filter(Boolean) })) }) : '';
 
 function inicio() {
@@ -327,6 +327,10 @@ function montarLab(pre) {
       let texto = '';
       try {
         const py = await cargarPython();
+        // Los archivos de práctica del curso (CURSO.archivos) se copian a la carpeta de Python la primera vez que un código los nombra
+        for (const [nombre, url] of Object.entries(CURSO.archivos || {})) {
+          if (area.value.includes(nombre) && !py.FS.analyzePath(nombre).exists) py.FS.writeFile(nombre, new Uint8Array(await (await fetch(url)).arrayBuffer()));
+        }
         salida.textContent = '⏳ Ejecutando...';
         py.setStdout({ batched: s => { texto += s + '\n'; } });
         py.setStderr({ batched: s => { texto += s + '\n'; } });
@@ -337,6 +341,14 @@ function montarLab(pre) {
       } catch (e) {
         // El último renglón del error de Python es el que explica qué pasó
         const error = String(e.message || e).trim().split('\n').slice(-1)[0];
+        // sys.exit() no es un error: es el programa avisando cómo terminó (el código de salida)
+        const salidaCodigo = error.match(/^SystemExit: ?(\d*)$/);
+        if (salidaCodigo) {
+          const n = Number(salidaCodigo[1] || 0);
+          salida.textContent = texto + (n === 0 ? '✔ El programa terminó bien (código de salida 0).' : `✘ El programa terminó con código de salida ${n}: avisó que algo falló.`);
+          correr.disabled = false;
+          return;
+        }
         salida.textContent = texto + '✘ ' + error + (
           /NameError/.test(error) ? '\n💡 Este fragmento es parte de un ejemplo más grande: usa algo que se define en otro lado. Definilo arriba (por ejemplo, con datos inventados) y volvé a ejecutar.'
           : /ModuleNotFoundError/.test(error) ? '\n💡 Esa librería no está disponible en el navegador: probalo en tu computadora.' : '');

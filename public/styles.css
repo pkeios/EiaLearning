@@ -10,8 +10,10 @@
   --texto: #1b2033; --suave: #59627a; --acento: #6a5cf0; --acento2: #0a7f92;
   --ok: #127a54; --mal: #c02f2f; --cabecera: rgba(246, 247, 251, .9); --codigo: #f1f3f9; --avanzado: #5b4bd6; --proyecto: #9a5b00;
 }
-/* Cada curso tiene su color, para que no se mezclen: AI Engineering violeta, Datos con IA verde azulado (igual que su tarjeta del inicio). */
+/* Cada curso tiene su color, para que no se mezclen: AI Engineering violeta, Datos con IA verde azulado, Data Engineering magenta (igual que sus tarjetas del inicio). */
 :root[data-curso="datos"] { --acento: #1f9e8f; --acento2: #6fdc9b; --boton-fin: #14808f; --brillo: #0d4a43; --brillo2: #1d4a2a; }
+:root[data-curso="de"] { --acento: #c2417a; --acento2: #f2a65a; --boton-fin: #9b3f9e; --brillo: #4a1238; --brillo2: #4a2a0e; }
+:root[data-curso="de"][data-tema="claro"] { --acento: #a8336a; --acento2: #b0561a; --boton-fin: #85348a; }
 :root[data-curso="datos"][data-tema="claro"] { --acento: #157a6e; --acento2: #1d7a45; --boton-fin: #0f6b78; }
 :root[data-tema="claro"] body { background: var(--bg); }
 * { box-sizing: border-box; }
@@ -159,7 +161,7 @@ mark { background: rgba(250, 204, 21, .4); color: inherit; border-radius: 3px; p
 /* Quiz */
 @media (pointer: coarse) { .atajos { display: none; } }
 .quiz-estado { position: sticky; top: 62px; z-index: 5; background: var(--cabecera); backdrop-filter: blur(8px); padding: .5rem 0; color: var(--suave); font-size: .9rem; }
-.pregunta { background: var(--card); border: 1px solid var(--borde); border-radius: var(--radio); margin: 1rem 0; padding: 1.2rem 1.3rem; }
+.pregunta { min-width: 0; overflow-wrap: anywhere; background: var(--card); border: 1px solid var(--borde); border-radius: var(--radio); margin: 1rem 0; padding: 1.2rem 1.3rem; }
 .pregunta legend { float: left; width: 100%; font-weight: 700; display: flex; gap: .8rem; align-items: flex-start; margin-bottom: .8rem; }
 .pregunta.bien { border-color: rgba(52, 211, 153, .6); }
 .pregunta.mal { border-color: rgba(248, 113, 113, .6); }

@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="es" data-curso="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Data Engineering desde cero: de la planilla al pipeline</title>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="icon" href="../icono-192.png">
+  <meta name="theme-color" content="#0b1020">
+  <script>document.documentElement.style.fontSize = Math.round((Number(localStorage.getItem('letra')) || 1) * 100) + '%'; document.documentElement.dataset.tema = localStorage.getItem('tema') || (matchMedia('(prefers-color-scheme: light)').matches ? 'claro' : 'oscuro');</script>
+  <!-- Mismo motor que el curso principal (../app.js), con su propio contenido y su propio progreso guardado aparte. -->
+  <!-- archivos: el laboratorio los copia a su carpeta antes de correr un código que los nombra, así open('ventas-sucias.csv') funciona igual que en tu computadora. -->
+  <script>window.CURSO = { clave: 'progreso-de', nombre: 'Data Engineering', archivo: 'data-engineering', titular: 'Data Engineering desde cero: <span class="degradado">de la planilla al pipeline</span>', bajada: 'para aprender Python y SQL desde cero y armar pipelines de datos', chicos: false, sw: '../sw.js', archivos: { 'ventas-sucias.csv': '../datos/practica/ventas-sucias.csv', 'ventas-limpias.csv': '../datos/practica/ventas-limpias.csv' } };</script>
+</head>
+<body>
+  <header>
+    <a href="#/" class="marca">🚰 Data Engineering</a>
+    <nav><a href="../">🏠 Inicio</a><a href="#/buscar">🔎 Buscar</a><a href="#/glosario">📖 Glosario</a><a href="#/repaso">Repaso</a><a href="#/examen">Examen final</a><button id="letra-menos" class="tema" aria-label="Achicar la letra">A−</button><button id="letra-mas" class="tema" aria-label="Agrandar la letra">A+</button><button id="tema" class="tema" aria-label="Cambiar entre modo claro y oscuro"></button></nav>
+  </header>
+  <main id="app"></main>
+  <script src="contenido.js"></script>
+  <script src="glosario.js"></script>
+  <script src="../vendor/qrcode.js"></script>
+  <script src="../mapa.js"></script>
+  <script src="../app.js"></script>
+</body>
+</html>

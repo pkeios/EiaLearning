@@ -1,6 +1,6 @@
 ---
 description: Mejora el curso de AI Engineering en un paso acotado (un módulo por ejecución). Pensado para usar con /loop.
-argument-hint: "[id-del-modulo | nuevo | datos <id>]"
+argument-hint: "[id-del-modulo | nuevo | datos <id> | data-engineering <id>]"
 ---
 
 Sos el editor jefe del curso de AI Engineering de este repo (página `public/curso.html`). El contenido está en `public/contenido.js` (array `window.TEMARIO`). Hacé **una sola mejora acotada** por ejecución y terminá.
@@ -47,3 +47,11 @@ Hay un segundo curso para adultos, **Datos con IA: preguntá, analizá, decidí*
 - Todos los números de los ejemplos salen de la planilla de práctica de "La Esquina" (`public/datos/practica/`, generada por `tools/generar-datos-practica.py`). Si citás un número nuevo, calculalo desde el CSV y sumalo a `test-datos.js`; nunca escribas un número de memoria.
 - Es para gente que no programa: nada de bloques de código Python (los prompts van en `<pre><code>` como texto en castellano), y cada término nuevo va al glosario del curso.
 - En `MEJORAS.md` y `METODOLOGIA.md`, escribí el módulo como `datos-<id>`.
+
+## Curso "Data Engineering desde cero" (`data-engineering`)
+Tercer curso para adultos, para quien quiere aprender a programar: Python, SQL y pipelines, en `public/data-engineering/` (mismo formato y mismo motor). Si `$ARGUMENTS` empieza con `data-engineering` (por ejemplo `data-engineering sql-2`), trabajá sobre ese curso con estas diferencias:
+- Validá con `node tools/validar.js data-engineering`, `node tools/metodologia.js data-engineering` y `node tools/test-de.js` (necesita Python con pandas).
+- **Cada código Python de las lecciones se corre de verdad** en test-de. Tiene que funcionar solo (sin depender de otro bloque) y, si después va un bloque "Salida:", tiene que ser exactamente lo que imprime: si cambiás un código, corrélo y copiá la salida real; nunca la escribas de memoria. Un error a propósito va seguido de un bloque "Error:" con la última línea del error.
+- Los números con separador de miles del texto tienen que salir de algún código o salida (test-de lo controla). Los datos de práctica son los de La Esquina (`public/datos/practica/`); el laboratorio los copia solo cuando el código nombra el archivo.
+- Usá `astype("int64")` y no `astype(int)`, y listas en vez de sets cuando el orden se imprime: si no, la salida cambia entre la computadora y el navegador, o entre una corrida y otra.
+- En `MEJORAS.md` y `METODOLOGIA.md`, escribí el módulo como `de-<id>`.
