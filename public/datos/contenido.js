@@ -8,7 +8,7 @@ window.TEMARIO = [
   nivel: "Básico",
   objetivos: [
     "Explicar con tus palabras qué hace un asistente de IA cuando le subís una planilla",
-    "Decidir si una tarea de tu trabajo conviene hacerla con IA, sin IA o con IA y revisión",
+    "Decidir si una tarea con datos conviene hacerla con IA, sin IA o con IA y revisión",
     "Preparar una planilla para subirla sin exponer datos personales ni confidenciales",
   ],
   lecciones: [
@@ -30,7 +30,14 @@ Mostrame la tabla con el resultado y explicame en una frase cómo lo calculaste.
         <li><strong>Ventas sucias</strong> (<a href="practica/ventas-sucias.xlsx" download>Excel</a> · <a href="practica/ventas-sucias.csv" download>CSV</a>): como llegan en la vida real, con errores. La usamos en el módulo de preparar datos.</li>
         <li><strong>Ventas limpias</strong> (<a href="practica/ventas-limpias.xlsx" download>Excel</a> · <a href="practica/ventas-limpias.csv" download>CSV</a>): ya corregidas. La usamos para analizar.</li>
       </ul>
-      <p>Un <strong>CSV</strong> es una planilla guardada como texto simple, con los valores separados por comas: casi cualquier programa la abre. Si al abrirlo en Excel te aparece todo en una sola columna, usá la versión Excel o, en Excel, <em>Datos → Desde texto/CSV</em>.</p>` },
+      <p>Un <strong>CSV</strong> es una planilla guardada como texto simple, con los valores separados por comas: casi cualquier programa la abre. Si al abrirlo en Excel te aparece todo en una sola columna, usá la versión Excel o, en Excel, <em>Datos → Desde texto/CSV</em>.</p>
+      <p><strong>Tu planilla real.</strong> Varias prácticas te piden probar con una planilla de verdad, además de La Esquina. No hace falta tener trabajo: sirve cualquiera de estas tres.</p>
+      <table>
+        <tr><th>Si...</th><th>Usá</th><th>Ejemplo de pregunta</th></tr>
+        <tr><td>Trabajás con datos</td><td>Una planilla de tu trabajo (con permiso, como se ve en la lección 3)</td><td>¿Qué productos se venden menos?</td></tr>
+        <tr><td>Hoy no trabajás</td><td>Tus gastos de los últimos 3 meses: los bajás del home banking o los anotás a mano</td><td>¿En qué se me va más la plata?</td></tr>
+        <tr><td>Querés algo más grande</td><td>Datos públicos y gratuitos, como los de <a href="https://www.datos.gob.ar/" target="_blank" rel="noopener">datos.gob.ar</a> (el portal de datos abiertos de Argentina)</td><td>¿Cómo cambió un número de tu provincia en los últimos años?</td></tr>
+      </table>` },
     { titulo: "La frontera irregular: dónde la IA ayuda y dónde falla", html: `
       <p class="idea">La IA no es buena o mala "en general": es excelente en algunas tareas y floja en otras que parecen igual de fáciles. Como un compañero que resuelve en un minuto una tabla dinámica, pero se confunde con una regla de tu negocio que nadie le explicó.</p>
       <p>En 2023, investigadores de Harvard, Wharton, MIT y otras universidades hicieron un experimento con 758 consultores de la empresa BCG. A algunos les dieron acceso a una IA (GPT-4) y a otros no. Los resultados:</p>
@@ -71,8 +78,8 @@ Mostrame la tabla con el resultado y explicame en una frase cómo lo calculaste.
   ],
   practica: [
     "Subí la planilla \"ventas limpias\" a tu herramienta de IA y pedile, con código, cuántas filas y columnas tiene. Comparalo con la respuesta correcta: 947 filas y 10 columnas. Anotá si coincidió.",
-    "Anotá 3 tareas de tu trabajo con datos. Para cada una escribí cómo te darías cuenta si la IA se equivoca. Probá con IA la que tenga la forma de control más clara y anotá cuánto tiempo te ahorró.",
-    "Tomá una planilla real de tu trabajo y hacé una copia anonimizada: anotá qué columnas borraste, cuáles reemplazaste por códigos y por qué. Verificá con alguien de tu empresa que se puede subir.",
+    "Anotá 3 tareas con datos que hagas o te gustaría hacer (en un trabajo, en tu casa o en el trabajo que buscás). Para cada una escribí cómo te darías cuenta si la IA se equivoca. Probá con IA la que tenga la forma de control más clara y anotá cuánto tiempo te ahorró.",
+    "Tomá tu planilla real y hacé una copia anonimizada: anotá qué columnas borraste, cuáles reemplazaste por códigos y por qué. Si es de una empresa, verificá con alguien de ahí que se puede subir.",
   ],
   recursos: [
     { t: "OpenAI: análisis de datos con ChatGPT (ayuda oficial)", url: "https://help.openai.com/en/articles/8437071-data-analysis-with-chatgpt" },
@@ -129,7 +136,7 @@ Mostrame la tabla con el resultado y explicame en una frase cómo lo calculaste.
         <tr><td>Un mes por columna (enero, febrero, marzo...)</td><td>Cada mes nuevo cambia la forma de la tabla</td><td>Una columna "mes" y otra "valor"</td></tr>
         <tr><td>Colores para marcar algo ("en rojo los atrasados")</td><td>La IA no lee colores de forma confiable</td><td>Una columna "estado" con la palabra</td></tr>
       </table>
-      <p>Si tu planilla del trabajo tiene estos problemas, podés pedirle a la IA que la reorganice, y revisar el resultado antes de analizar:</p>
+      <p>Si tu planilla real tiene estos problemas, podés pedirle a la IA que la reorganice, y revisar el resultado antes de analizar:</p>
       <pre><code>Esta planilla tiene un mes por columna. Reorganizala para que quede
 una fila por producto y mes, con columnas: producto, mes, unidades.
 Decime cuántas filas tenía antes y cuántas tiene ahora.</code></pre>` },
@@ -178,7 +185,7 @@ no está en el diccionario, preguntame antes de usarla.
   practica: [
     "Pedile a la IA un diagnóstico de la planilla \"ventas sucias\" sin cambiar nada. Compará su lista con los 6 problemas de la lección: anotá cuántos encontró y cuáles se le escaparon.",
     "Limpiá la planilla \"ventas sucias\" con ayuda de la IA y pedile un registro de cambios. Verificá el resultado: tienen que quedar 947 filas, 3 sucursales y un total de $6.270.350.",
-    "Escribí el diccionario de datos de una planilla de tu trabajo, con al menos 5 columnas y una aclaración en cada una. Pedile a la IA que te diga qué columna le resulta ambigua y corregila.",
+    "Escribí el diccionario de datos de tu planilla real, con al menos 5 columnas y una aclaración en cada una. Pedile a la IA que te diga qué columna le resulta ambigua y corregila.",
   ],
   recursos: [
     { t: "Tidy Data, el artículo que definió la tabla ordenada (Wickham, 2014, en inglés)", url: "https://www.jstatsoft.org/article/view/v059i10" },
@@ -268,7 +275,7 @@ Entrega: una tabla por mes, un gráfico de líneas y 2 frases de conclusión.</c
       <p><strong>Cuándo arrancar de nuevo:</strong> si la conversación se hizo muy larga o mezclaste varios temas, abrí una nueva y pegá solo lo importante (el diccionario y la pregunta). Una conversación limpia da respuestas más prolijas.</p>` },
   ],
   practica: [
-    "Escribí 3 inquietudes de tu trabajo y convertí cada una en una pregunta que diga qué medir, cómo cortarlo y en qué período. Para cada una, dibujá a mano la tabla o el gráfico que esperás ver.",
+    "Escribí 3 inquietudes sobre tu planilla real (por ejemplo, \"¿gasto mucho en comida?\") y convertí cada una en una pregunta que diga qué medir, cómo cortarlo y en qué período. Para cada una, dibujá a mano la tabla o el gráfico que esperás ver.",
     "Con la planilla \"ventas limpias\", pedí con la plantilla de 5 partes el porcentaje de ventas pagadas con QR por mes. Verificá: enero 12% y junio 44%. Anotá si la IA mostró su plan antes de calcular.",
     "Hacé la misma pregunta de dos formas, una sesgada (\"confirmame que...\") y una abierta, en conversaciones separadas. Compará las dos respuestas y anotá qué cambió.",
   ],
@@ -386,7 +393,7 @@ para estar más seguro.</code></pre>
   practica: [
     "Con \"ventas limpias\", pedile a la IA el promedio y la mediana del total por venta. Verificá: $6.621 y $4.200. Pedile que te muestre las 5 ventas más grandes y anotá qué productos son.",
     "Calculá vos, con la planilla, cuántos puntos porcentuales subió el pago con QR entre enero (12%) y junio (44%), y cuánto subió en porcentaje. Escribí una frase correcta para un informe con cada número.",
-    "Buscá en tu trabajo un caso de \"dos cosas que suben juntas\". Escribí 2 explicaciones distintas a \"una causa la otra\" y anotá qué dato necesitarías para distinguirlas.",
+    "Buscá un caso de \"dos cosas que suben juntas\" en tu planilla real o en una noticia. Escribí 2 explicaciones distintas a \"una causa la otra\" y anotá qué dato necesitarías para distinguirlas.",
     "Calculá a mano, con la tabla de la lección sobre la oferta por mail y WhatsApp, los porcentajes de cada grupo y del total. Verificá que el mail gana en cada grupo y WhatsApp en el total, y explicalo en dos frases.",
   ],
   recursos: [
@@ -495,7 +502,7 @@ son? ¿Pasa lo mismo otros meses? Si es un grupo chico, decímelo.</code></pre>`
   practica: [
     "Pedile a la IA la tabla por sucursal de la lección (total, ventas, ticket promedio y porcentaje). Verificá que coincida con la de la lección y que las partes sumen 947 ventas y $6.270.350.",
     "Pedile un gráfico de líneas con las ventas por mes de cada sucursal. Verificá dos datos: Norte en junio ($520.500) supera a Centro ($453.100), y Sur baja en abril. Escribí una frase que explique cada cosa.",
-    "Elegí un cambio en tus datos del trabajo y seguí los 4 pasos para buscar el porqué. Escribí la explicación final como hipótesis y qué dato haría falta para confirmarla.",
+    "Elegí un cambio en tu planilla real (un mes que subió o bajó mucho) y seguí los 4 pasos para buscar el porqué. Escribí la explicación final como hipótesis y qué dato haría falta para confirmarla.",
   ],
   recursos: [
     { t: "Microsoft: análisis avanzado con Copilot en Excel y Python", url: "https://support.microsoft.com/office/copilot-in-excel-with-python-364e4ae9-9343-4d56-952a-5f62b0f70db6" },
@@ -666,7 +673,7 @@ Montos en miles de pesos, sin decimales.</code></pre>
   practica: [
     "Pedile a la IA un gráfico de barras con el total por categoría, ordenado de mayor a menor. Verificá el orden: Frescos, Almacén, Bebidas, Limpieza. Escribí un título que diga la conclusión.",
     "Pedile el gráfico de líneas de la lección con el pedido completo. Revisá 3 cosas y anotá si se cumplieron: los valores de junio de Norte y Centro, el color destacado y el título.",
-    "Tomá un gráfico de tu trabajo y aplicale los 5 arreglos. Mostrá las dos versiones a alguien y anotá en cuántos segundos entendió cada una.",
+    "Tomá un gráfico real (de tu trabajo, de una noticia o de un informe público) y aplicale los 5 arreglos. Mostrá las dos versiones a alguien y anotá en cuántos segundos entendió cada una.",
   ],
   recursos: [
     { t: "Libro: Storytelling con datos, de Cole Nussbaumer Knaflic (Anaya)", url: "https://www.marcialpons.es/libros/storytelling-con-datos-guia-de-visualizacion-de-datos-para-profesionales-de-los-negocios/9788441553125/" },
@@ -764,7 +771,7 @@ Sur cerró del 7 al 20 de abril.</code></pre>
   practica: [
     "Escribí con ayuda de la IA el resumen de una página de La Esquina con la estructura respuesta, evidencia y recomendación. Verificá que cada número del resumen esté en tus resultados verificados y tachá los que no.",
     "Agregale a ese resumen un párrafo de limitaciones con al menos 3 puntos y reescribí cada conclusión con la frase que corresponda a tu nivel de seguridad.",
-    "Escribí la nota al pie de un análisis de tu trabajo: datos usados, para qué usaste IA, cómo verificaste y limitaciones. Pedile a un compañero que la lea y anotá si pudo entender cómo repetir el análisis.",
+    "Escribí la nota al pie de un análisis que hayas hecho con tu planilla real: datos usados, para qué usaste IA, cómo verificaste y limitaciones. Pedile a alguien que la lea y anotá si pudo entender cómo repetir el análisis.",
   ],
   recursos: [
     { t: "Libro: Storytelling con datos, de Cole Nussbaumer Knaflic (Anaya)", url: "https://www.marcialpons.es/libros/storytelling-con-datos-guia-de-visualizacion-de-datos-para-profesionales-de-los-negocios/9788441553125/" },
@@ -793,11 +800,11 @@ Sur cerró del 7 al 20 de abril.</code></pre>
   nivel: "Proyecto final",
   objetivos: [
     "Hacer un análisis completo de La Esquina: preparar, preguntar, analizar, verificar, mostrar y recomendar",
-    "Aplicar el mismo camino a datos de tu trabajo y evaluarlo con la rúbrica",
+    "Aplicar el mismo camino a una planilla real y evaluarlo con la rúbrica",
   ],
   lecciones: [
     { titulo: "Proyecto guiado: la pregunta de la dueña de La Esquina", html: `
-      <p class="idea">El proyecto final junta todo el curso en un solo trabajo, como un ensayo general antes de hacerlo con tus datos. Vas a responder una pregunta real de negocio, con los datos de práctica, de principio a fin.</p>
+      <p class="idea">El proyecto final junta todo el curso en un solo trabajo, como un ensayo general antes de hacerlo con tu planilla real. Vas a responder una pregunta real de negocio, con los datos de práctica, de principio a fin.</p>
       <p><strong>La consigna:</strong> la dueña de La Esquina pregunta: <em>"Tengo presupuesto para reforzar una sola sucursal el segundo semestre. ¿Cuál elijo y por qué?"</em>. Arrancás con la planilla <a href="practica/ventas-sucias.xlsx" download>ventas sucias</a>.</p>
       <table>
         <tr><th>Paso</th><th>Qué hacés</th><th>Módulo</th><th>Control</th></tr>
@@ -825,22 +832,24 @@ Sur cerró del 7 al 20 de abril.</code></pre>
         <li>El resumen empieza por la respuesta y termina en una recomendación concreta.</li>
         <li>Las limitaciones y el uso de IA están explicados.</li>
       </ol>
-      <p>Con 5 o 6 puntos, estás listo para hacerlo con datos de tu trabajo.</p>` },
-    { titulo: "Ahora con una planilla real de tu trabajo", html: `
-      <p class="idea">Hasta acá practicaste con La Esquina, un almacén inventado. El paso que sigue es repetir lo mismo que hiciste en el proyecto guiado, pero con una planilla real de tu trabajo y una decisión real que tengas que tomar.</p>
+      <p>Con 5 o 6 puntos, estás listo para hacerlo con una planilla real.</p>` },
+    { titulo: "Ahora con una planilla real", html: `
+      <p class="idea">Hasta acá practicaste con La Esquina, un almacén inventado. El paso que sigue es repetir lo mismo que hiciste en el proyecto guiado, pero con una planilla real y una decisión real. No hace falta tener trabajo: tus gastos o unos datos públicos sirven igual.</p>
       <p><strong>Qué quiere decir, con ejemplos:</strong></p>
       <table>
-        <tr><th>Si trabajás en...</th><th>Una planilla que ya tenés</th><th>Una decisión que te ayuda a tomar</th></tr>
-        <tr><td>Un comercio</td><td>Las ventas de los últimos meses</td><td>Qué productos reponer primero</td></tr>
-        <tr><td>Atención al cliente</td><td>Los reclamos del último trimestre</td><td>Qué problema resolver primero</td></tr>
-        <tr><td>Recursos humanos</td><td>Las ausencias por mes y por área (sin nombres)</td><td>En qué área reforzar el equipo</td></tr>
-        <tr><td>Administración</td><td>Las facturas y cuándo se cobraron</td><td>A qué clientes llamar por pagos atrasados</td></tr>
+        <tr><th>Si...</th><th>Una planilla que podés conseguir</th><th>Una decisión que te ayuda a tomar</th></tr>
+        <tr><td>Hoy no trabajás</td><td>Tus gastos de los últimos 3 meses</td><td>En qué recortar el mes que viene</td></tr>
+        <tr><td>Estás buscando trabajo</td><td>Datos públicos del rubro que te interesa, de datos.gob.ar</td><td>Qué contarías en una entrevista sobre ese rubro</td></tr>
+        <tr><td>Trabajás en un comercio</td><td>Las ventas de los últimos meses</td><td>Qué productos reponer primero</td></tr>
+        <tr><td>Trabajás en atención al cliente</td><td>Los reclamos del último trimestre</td><td>Qué problema resolver primero</td></tr>
+        <tr><td>Trabajás en recursos humanos</td><td>Las ausencias por mes y por área (sin nombres)</td><td>En qué área reforzar el equipo</td></tr>
+        <tr><td>Trabajás en administración</td><td>Las facturas y cuándo se cobraron</td><td>A qué clientes llamar por pagos atrasados</td></tr>
       </table>
       <p>Lo que cambia son los datos; los pasos son los mismos seis del proyecto guiado. Esta lección es la lista para hacerlo sin riesgos.</p>
       <p><strong>Antes de empezar:</strong></p>
       <ol>
         <li><strong>Elegí una decisión real y chica,</strong> que se tome en las próximas semanas: un turno, un pedido de stock, a qué clientes llamar.</li>
-        <li><strong>Pedí permiso y revisá las reglas</strong> de tu empresa sobre datos e IA, como viste en el primer módulo.</li>
+        <li><strong>Si los datos son de una empresa, pedí permiso</strong> y revisá sus reglas sobre datos e IA, como viste en el primer módulo. Si son tuyos o públicos, no hace falta.</li>
         <li><strong>Anonimizá</strong> y dejá solo las columnas que hacen falta para la pregunta.</li>
       </ol>
       <p><strong>Durante el análisis,</strong> seguí los mismos pasos del proyecto guiado y andá anotando todo en un solo documento (un Word o un Google Docs alcanza), con estas 8 partes:</p>
@@ -856,14 +865,15 @@ Sur cerró del 7 al 20 de abril.</code></pre>
       <ul>
         <li><strong>Pedí una revisión</strong> a alguien que conozca el tema, antes de presentarlo.</li>
         <li><strong>Medí el resultado de la decisión.</strong> Si recomendaste algo, fijate al mes si funcionó. Así aprendés qué tan buenos eran tus análisis.</li>
-        <li><strong>Anotá cuánto tiempo te llevó</strong> con IA, comparado con antes. Es el mejor argumento para seguir usándola, o para darte cuenta de dónde no conviene.</li>
+        <li><strong>Anotá cuánto tiempo te llevó</strong> con IA, comparado con hacerlo a mano. Te sirve para saber dónde conviene usarla y dónde no.</li>
+        <li><strong>Si estás buscando trabajo,</strong> el documento de 8 partes es una muestra concreta de lo que sabés hacer: llevalo a las entrevistas o sumalo a tu CV.</li>
       </ul>
       <p><strong>Para seguir aprendiendo:</strong> los tres libros base del curso son <em>Cointeligencia</em> (trabajar con IA), <em>El arte de la estadística</em> (entender los datos) y <em>Storytelling con datos</em> (comunicar). Están en los recursos de cada módulo.</p>` },
   ],
   practica: [
     "Hacé el proyecto guiado completo con \"ventas sucias\" y evaluate con la rúbrica de 6 puntos. Anotá tu puntaje y qué criterio te costó más.",
     "Verificá los valores de control del proyecto: 947 ventas, total $6.270.350, Norte en junio $520.500 y Centro en junio $453.100. Anotá cuáles coincidieron a la primera.",
-    "Repetí el proyecto con una planilla real de tu trabajo (podés elegir uno de los ejemplos de la lección) y anotá las 8 partes en un documento. Pedile a un compañero que lo evalúe con la rúbrica y anotá su puntaje.",
+    "Repetí el proyecto con tu planilla real (podés elegir uno de los ejemplos de la lección) y anotá las 8 partes en un documento. Pedile a alguien que lo evalúe con la rúbrica y anotá su puntaje.",
     "Un mes después de tu recomendación, medí si funcionó y escribí 3 frases: qué recomendaste, qué pasó y qué harías distinto.",
   ],
   recursos: [
@@ -876,7 +886,7 @@ Sur cerró del 7 al 20 de abril.</code></pre>
     { q: "Si terminás de limpiar y te quedan 952 ventas, pero los valores de control dicen 947, ¿qué pasó?", opciones: ["Nada, es casi lo mismo","Faltó sacar algo: probablemente las 5 ventas sin cantidad","Los valores de control están mal","Hay que redondear"], correcta: 1, explicacion: "952 menos 5 da 947: faltó resolver las ventas sin cantidad. Pensar que los valores de control están mal tienta, pero son justamente la referencia para comprobarlo." },
     { q: "Tu compañero se preocupa porque no sabe cuál es la sucursal \"correcta\" en el proyecto guiado. ¿Qué le explicás que se evalúa?", opciones: ["Que elijas la sucursal correcta","Que uses la IA más nueva","Que la recomendación esté bien argumentada, con números verificados y limitaciones claras","Que el informe sea largo"], correcta: 2, explicacion: "Podés recomendar Norte o Centro si lo argumentás bien. Que elijas la correcta tienta, pero en decisiones reales casi nunca hay una sola respuesta." },
     { q: "Si recomendás Norte porque crece, ¿qué limitación es importante mencionar?", opciones: ["Que son solo 6 meses de datos y no sabemos si el crecimiento va a seguir","Que Norte empieza con N","Que la IA es nueva","Ninguna, el crecimiento es claro"], correcta: 0, explicacion: "Un crecimiento de 6 meses puede frenarse. Decir que es claro tienta porque los números suben todos los meses, pero no sabemos qué pasará después." },
-    { q: "Vas a repetir el proyecto con una planilla real de tu trabajo. ¿Qué decisión conviene elegir la primera vez?", opciones: ["La más grande e importante de la empresa","Una real y chica, que se tome en las próximas semanas","Una que ya se tomó","Ninguna, solo practicar"], correcta: 1, explicacion: "Una decisión chica y cercana permite aprender rápido y medir el resultado. La más grande tienta porque muestra más impacto, pero si sale mal, el costo también es grande." },
+    { q: "Vas a repetir el proyecto con una planilla real. ¿Qué decisión conviene elegir la primera vez?", opciones: ["La más grande e importante de la empresa","Una real y chica, que se tome en las próximas semanas","Una que ya se tomó","Ninguna, solo practicar"], correcta: 1, explicacion: "Una decisión chica y cercana permite aprender rápido y medir el resultado. La más grande tienta porque muestra más impacto, pero si sale mal, el costo también es grande." },
     { q: "Antes de subir los datos de tu trabajo a la IA, ¿qué no puede faltar?", opciones: ["Revisar las reglas de la empresa y anonimizar los datos","Comprar una suscripción más cara","Armar los gráficos","Pedirle a la IA permiso"], correcta: 0, explicacion: "Los datos del trabajo pueden tener información personal o confidencial. Pedirle permiso a la IA tienta como chiste, pero la que decide es tu empresa." },
     { q: "Presentaste tu recomendación. ¿Qué hacés un mes después?", opciones: ["Nada, ya terminó","Hacés otro análisis distinto","Medís si la decisión funcionó y anotás qué harías distinto","Le pedís a la IA que te felicite"], correcta: 2, explicacion: "Medir el resultado es la forma de saber si tus análisis eran buenos. Dar por terminado el trabajo tienta, pero te perdés lo que más enseña." },
     { q: "En tu proyecto, la IA te da una conclusión muy convincente que no podés verificar con ningún control. ¿Qué hacés?", opciones: ["La usás porque es convincente","La presentás como lo principal","La borrás de la conversación","No la usás como resultado: como mucho, la mencionás como hipótesis a confirmar"], correcta: 3, explicacion: "Lo que no podés verificar no puede sostener una decisión. Que es convincente tienta, pero es justo lo que hace peligrosas a las alucinaciones." },

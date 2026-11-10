@@ -7,6 +7,7 @@ window.GLOSARIO = [
   { t: 'Python', d: 'Un lenguaje de programación. Las herramientas de IA lo usan por detrás para hacer cálculos sobre tu planilla; no necesitás saberlo.', m: 'ia-y-datos' },
   { t: 'CSV', d: 'Una planilla guardada como texto simple, con los valores separados por comas. Casi cualquier programa la puede abrir.', m: 'ia-y-datos' },
   { t: 'Frontera irregular', d: 'La idea de que la IA hace muy bien algunas tareas y mal otras que parecen igual de fáciles, sin que se note a simple vista cuál es cuál.', m: 'ia-y-datos' },
+  { t: 'Planilla real', d: 'La planilla de verdad con la que practicás, además de La Esquina: una de tu trabajo, tus propios gastos o datos públicos. No hace falta tener trabajo.', m: 'ia-y-datos' },
   { t: 'Datos personales', d: 'Los datos que permiten saber quién es una persona: nombre, DNI, mail, teléfono, dirección.', m: 'ia-y-datos' },
   { t: 'Anonimizar', d: 'Cambiar los datos que identifican a una persona por otros que no la identifican, como un código, sin perder lo que necesitás para analizar.', m: 'ia-y-datos' },
   { t: 'Tabla ordenada', d: 'Una planilla lista para analizar: cada fila es un caso, cada columna es un dato y cada celda tiene un solo valor.', m: 'preparar' },
