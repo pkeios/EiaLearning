@@ -1,7 +1,7 @@
-// Mide cada módulo con criterios de aprendizaje basado en evidencia. Uso: node tools/metodologia.js
+// Mide cada módulo con criterios de aprendizaje basado en evidencia. Uso: node tools/metodologia.js [carpeta]  (datos: el curso de análisis de datos)
 // shortcut: son heurísticas de texto (palabras clave y longitudes); sirven para encontrar dónde mirar, no reemplazan leer el módulo.
 global.window = {};
-require('../public/contenido.js');
+require('../public/' + (process.argv[2] ? process.argv[2] + '/' : '') + 'contenido.js');
 
 const texto = html => html.replace(/<[^>]+>/g, ' ').replace(/&[a-z]+;/g, ' ');
 const palabras = html => texto(html).split(/\s+/).filter(Boolean).length;

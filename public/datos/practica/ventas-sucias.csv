@@ -1,0 +1,959 @@
+﻿id_venta,fecha,sucursal,categoria,producto,cantidad,precio_unitario,total,medio_pago,cliente
+V0001,2025-01-01,sur,Almacén,Arroz 1 kg,4,1700,6800,Efectivo,Habitual
+V0002,2025-01-01,Centro,Bebidas,Agua 2 L,6,900,5400,Efectivo,Habitual
+V0003,2025-01-01,Sur,Bebidas,Agua 2 L,1,900,900,Efectivo,Habitual
+V0004,2025-01-01,Sur,Bebidas,"Gaseosa 1,5 L",3,2100,6300,Débito,Habitual
+V0005,2025-01-01,Sur,Frescos,Leche 1 L,4,1400,5600,Crédito,Habitual
+V0006,2025-01-02,Centro,Frescos,Leche 1 L,4,1400,5600,Débito,Habitual
+V0007,2025-01-02,Centro,Almacén,Fideos 500 g,1,1300,1300,Efectivo,Nuevo
+V0008,2025-01-02,Sur,Frescos,Queso cremoso kg,4,9800,39200,Efectivo,Nuevo
+V0009,2025-01-02,Sur,Limpieza,Papel higiénico x4,2,2600,5200,Efectivo,Habitual
+V0010,2025-01-03,Centro,Limpieza,Papel higiénico x4,1,2600,2600,Efectivo,Habitual
+V0011,2025-01-03,Centro,Almacén,Fideos 500 g,1,1300,1300,QR,Habitual
+V0012,2025-01-03,Centro,Almacén,Fideos 500 g,2,1300,2600,Débito,Nuevo
+V0013,2025-01-03,Norte,Bebidas,Jugo en polvo,1,450,450,QR,Habitual
+V0014,2025-01-03,Sur,Frescos,Huevos x12,6,3400,20400,Débito,Nuevo
+V0015,2025-01-03,Sur,Almacén,Yerba 1 kg,1,4800,4800,Crédito,Habitual
+V0016,2025-01-04,Centro,Bebidas,Cerveza lata,1,1600,1600,Efectivo,Habitual
+V0017,2025-01-04,Centro,Almacén,Arroz 1 kg,4,1700,6800,Efectivo,Nuevo
+V0018,2025-01-04,Centro,Frescos,Pan kg,6,2900,17400,Efectivo,Habitual
+V0019,2025-01-04,Sur,Limpieza,Papel higiénico x4,3,2600,7800,Débito,Nuevo
+V0020,2025-01-04,Sur,Limpieza,Papel higiénico x4,2,2600,5200,Efectivo,Nuevo
+V0020,2025-01-04,Sur,Limpieza,Papel higiénico x4,2,2600,5200,Efectivo,Nuevo
+V0021,2025-01-05,Centro,Limpieza,Papel higiénico x4,1,2600,2600,Débito,Habitual
+V0022,2025-01-05,Centro,Almacén,Arroz 1 kg,1,1700,1700,Crédito,Habitual
+V0023,2025-01-05,Centro,Almacén,Arroz 1 kg,1,1700,1700,Débito,Nuevo
+V0024,2025-01-05,Norte,Limpieza,Papel higiénico x4,1,2600,2600,Crédito,Habitual
+V0025,2025-01-05,Norte,Limpieza,Lavandina 1 L,6,1100,6600,Efectivo,Habitual
+V0026,2025-01-05,Sur,Bebidas,Cerveza lata,2,1600,3200,Débito,Habitual
+V0027,2025-01-05,Sur,Bebidas,Agua 2 L,3,900,2700,QR,Habitual
+V0028,2025-01-06,Centro,Almacén,Arroz 1 kg,4,1700,6800,Efectivo,Nuevo
+V0029,2025-01-06,Centro,Frescos,Leche 1 L,1,1400,1400,Débito,Nuevo
+V0030,2025-01-06,Centro,Bebidas,Agua 2 L,1,900,900,Débito,Nuevo
+V0031,2025-01-06,Norte,Almacén,Yerba 1 kg,2,4800,9600,Efectivo,Nuevo
+V0032,2025-01-06,Sur,Frescos,Leche 1 L,1,1400,1400,QR,Habitual
+V0033,2025-01-06,Sur,Almacén,Aceite 900 ml,3,3200,9600,Crédito,Habitual
+V0034,2025-01-07,Centro,Almacén,Arroz 1 kg,1,1700,1700,Débito,Nuevo
+V0035,2025-01-07,Centro,Bebidas,Agua 2 L,6,900,5400,Efectivo,Habitual
+V0036,2025-01-07,Sur,Almacén,Fideos 500 g,,1300,,Efectivo,Habitual
+V0037,2025-01-07,Sur,Bebidas,Cerveza lata,1,1600,1600,Efectivo,Habitual
+V0038,2025-01-08,Centro,Bebidas,Jugo en polvo,2,450,900,Crédito,Habitual
+V0039,2025-01-08,Centro,Bebidas,Jugo en polvo,6,450,2700,Crédito,Habitual
+V0040,2025-01-08,Sur,Limpieza,Papel higiénico x4,2,2600,5200,Efectivo,Habitual
+V0041,2025-01-08,Sur,Bebidas,Cerveza lata,4,1600,6400,Efectivo,Habitual
+V0042,2025-01-09,Centro,Frescos,Leche 1 L,4,1400,5600,Crédito,Habitual
+V0043,2025-01-09,Centro,Almacén,Aceite 900 ml,6,3200,19200,Débito,Habitual
+V0044,09/01/2025,Norte,Limpieza,Lavandina 1 L,3,1100,3300,Crédito,Habitual
+V0045,2025-01-09,Sur,Bebidas,Jugo en polvo,4,450,1800,Débito,Nuevo
+V0046,2025-01-09,Sur,Bebidas,"Gaseosa 1,5 L",2,2100,4200,Efectivo,Habitual
+V0047,2025-01-10,Centro,Frescos,Queso cremoso kg,3,9800,29400,Crédito,Habitual
+V0048,2025-01-10,Centro,Almacén,Aceite 900 ml,1,3200,3200,Efectivo,Habitual
+V0049,2025-01-10,Norte,Almacén,Aceite 900 ml,1,3200,3200,Efectivo,Nuevo
+V0050,2025-01-10,Sur,Almacén,Fideos 500 g,3,1300,3900,Efectivo,Nuevo
+V0051,2025-01-11,Centro,Frescos,Leche 1 L,2,1400,2800,QR,Habitual
+V0052,2025-01-11,Centro,Bebidas,Cerveza lata,4,1600,6400,Crédito,Habitual
+V0053,2025-01-11,Norte,Limpieza,Papel higiénico x4,2,2600,5200,QR,Nuevo
+V0054,2025-01-11,Sur,Frescos,Leche 1 L,2,1400,2800,Débito,Habitual
+V0055,2025-01-11,Sur,Almacén,Yerba 1 kg,1,4800,4800,Débito,Habitual
+V0056,2025-01-12,Centro,Almacén,Arroz 1 kg,1,1700,1700,Débito,Habitual
+V0057,2025-01-12,Norte,Bebidas,"Gaseosa 1,5 L",2,2100,4200,Efectivo,Nuevo
+V0058,2025-01-12,Sur,Bebidas,Cerveza lata,4,1600,6400,Débito,Habitual
+V0059,2025-01-12,Sur,Bebidas,Cerveza lata,2,1600,3200,Efectivo,Habitual
+V0060,2025-01-13,Centro,Limpieza,Papel higiénico x4,3,2600,7800,QR,Habitual
+V0061,2025-01-13,Centro,Frescos,Leche 1 L,2,1400,2800,Débito,Habitual
+V0062,2025-01-13,Centro,Almacén,Arroz 1 kg,2,1700,3400,QR,Habitual
+V0063,2025-01-13,Norte,Limpieza,Detergente 750 ml,1,1900,1900,Débito,Habitual
+V0064,2025-01-13,Sur,Frescos,Pan kg,6,2900,17400,Efectivo,Habitual
+V0065,2025-01-14,Centro,Limpieza,Detergente 750 ml,1,1900,1900,Débito,Habitual
+V0066,2025-01-14,Norte,Almacén,Aceite 900 ml,1,3200,3200,Débito,Habitual
+V0067,2025-01-14,Sur,Frescos,Huevos x12,2,3400,6800,Efectivo,Habitual
+V0068,2025-01-14,Sur,Bebidas,"Gaseosa 1,5 L",4,2100,8400,Débito,Habitual
+V0069,2025-01-15,Centro,Bebidas,Jugo en polvo,1,450,450,Efectivo,Habitual
+V0070,2025-01-15,Centro,Frescos,Pan kg,1,2900,2900,Efectivo,Habitual
+V0071,2025-01-15,Norte,Limpieza,Papel higiénico x4,1,2600,2600,Crédito,Habitual
+V0072,2025-01-15,Sur,Almacén,Arroz 1 kg,2,1700,3400,Crédito,Nuevo
+V0073,2025-01-15,Sur,Limpieza,Lavandina 1 L,2,1100,2200,Efectivo,Habitual
+V0074,2025-01-16,Centro,Almacén,Yerba 1 kg,4,4800,19200,Efectivo,Habitual
+V0075,2025-01-16,Centro,Bebidas,Agua 2 L,4,900,3600,Débito,Habitual
+V0076,2025-01-16,Norte,Frescos,Leche 1 L,4,1400,5600,Efectivo,Habitual
+V0077,2025-01-16,Sur,Frescos,Queso cremoso kg,1,9800,9800,Crédito,Habitual
+V0078,2025-01-17,Centro,Almacén,Fideos 500 g,1,1300,1300,Débito,Habitual
+V0079,2025-01-17,Centro,Frescos,Huevos x12,4,3400,13600,Efectivo,Habitual
+V0080,2025-01-17,Centro,Frescos,Leche 1 L,2,1400,2800,Crédito,Habitual
+V0081,2025-01-17,Norte,Frescos,Pan kg,4,2900,11600,Crédito,Habitual
+V0082,2025-01-17,Sur,Bebidas,Cerveza lata,3,1600,4800,Crédito,Habitual
+V0083,2025-01-17,Sur,Limpieza,Detergente 750 ml,6,1900,11400,Efectivo,Nuevo
+V0084,2025-01-18,Centro,Frescos,Huevos x12,2,3400,6800,Efectivo,Nuevo
+V0085,2025-01-18,Centro,Frescos,Queso cremoso kg,6,9800,58800,Débito,Nuevo
+V0086,2025-01-18,Centro,Almacén,Fideos 500 g,2,1300,2600,Crédito,Habitual
+V0087,2025-01-18,Norte,Almacén,Aceite 900 ml,1,3200,3200,Efectivo,Habitual
+V0088,2025-01-18,Sur,Bebidas,Agua 2 L,1,900,900,Efectivo,Habitual
+V0089,2025-01-18,Sur,Limpieza,Detergente 750 ml,1,1900,1900,Efectivo,Nuevo
+V0090,2025-01-19,Centro,Frescos,Queso cremoso kg,3,9800,29400,Débito,Habitual
+V0091,2025-01-19,Centro,Limpieza,Papel higiénico x4,3,2600,7800,Crédito,Habitual
+V0092,2025-01-19,Centro,Bebidas,"Gaseosa 1,5 L",3,2100,6300,Débito,Habitual
+V0093,2025-01-19,Norte,Almacén,Aceite 900 ml,2,3200,6400,Débito,Habitual
+V0094,2025-01-19,Sur,Almacén,Arroz 1 kg,1,1700,1700,Débito,Nuevo
+V0095,2025-01-19,Sur,Frescos,Huevos x12,4,3400,13600,Crédito,Habitual
+V0096,2025-01-20,Centro,Limpieza,Detergente 750 ml,1,1900,1900,Débito,Habitual
+V0097,2025-01-20,Centro,Almacén,Yerba 1 kg,1,4800,4800,Débito,Habitual
+V0098,2025-01-20,Centro,Bebidas,Cerveza lata,3,1600,4800,Débito,Nuevo
+V0099,2025-01-20,Centro,Almacén,Arroz 1 kg,1,1700,1700,Crédito,Habitual
+V0100,2025-01-20,Norte,Bebidas,"Gaseosa 1,5 L",3,2100,6300,Crédito,Habitual
+V0101,2025-01-20,Sur,Almacén,Fideos 500 g,2,1300,2600,Crédito,Habitual
+V0102,2025-01-20,Sur,Limpieza,Lavandina 1 L,1,1100,1100,Débito,Habitual
+V0103,2025-01-21,Centro,Bebidas,Jugo en polvo,2,450,900,QR,Habitual
+V0104,2025-01-21,Centro,Bebidas,"Gaseosa 1,5 L",1,2100,2100,Débito,Nuevo
+V0105,21/01/2025,Sur,Almacén,Yerba 1 kg,2,4800,9600,Efectivo,Nuevo
+V0106,2025-01-21,Sur,Almacén,Arroz 1 kg,1,1700,1700,Efectivo,Habitual
+V0107,2025-01-22,Centro,Limpieza,Papel higiénico x4,4,2600,10400,Débito,Habitual
+V0108,2025-01-22,Centro,Frescos,Leche 1 L,1,1400,1400,Débito,Habitual
+V0109,2025-01-22,Centro,Frescos,Leche 1 L,2,1400,2800,Crédito,Habitual
+V0110,2025-01-22,Norte,Frescos,Pan kg,1,2900,2900,Débito,Habitual
+V0111,2025-01-22,Norte,Frescos,Pan kg,1,2900,2900,Efectivo,Habitual
+V0112,2025-01-22,Sur,Almacén,Aceite 900 ml,3,3200,9600,Débito,Habitual
+V0113,2025-01-23,Centro,Frescos,Pan kg,2,2900,5800,Crédito,Habitual
+V0114,2025-01-23,Centro,Limpieza,Papel higiénico x4,6,2600,15600,Crédito,Habitual
+V0115,2025-01-23,Centro,Frescos,Leche 1 L,1,1400,1400,Débito,Habitual
+V0116,2025-01-23,Norte,Almacén,Yerba 1 kg,6,4800,28800,Crédito,Nuevo
+V0117,2025-01-23,Sur,Limpieza,Papel higiénico x4,3,2600,7800,Efectivo,Habitual
+V0118,2025-01-24,Centro,Frescos,Pan kg,2,2900,5800,Efectivo,Habitual
+V0119,2025-01-24,Centro,Bebidas,Agua 2 L,1,900,900,QR,Habitual
+V0120,2025-01-24,Centro,Frescos,Huevos x12,1,3400,3400,Crédito,Habitual
+V0121,2025-01-24,Sur,Limpieza,Papel higiénico x4,2,2600,5200,Crédito,Habitual
+V0122,2025-01-25,Centro,Almacén,Arroz 1 kg,1,1700,1700,QR,Habitual
+V0123,2025-01-25,Centro,Limpieza,Detergente 750 ml,6,1900,11400,Efectivo,Nuevo
+V0124,2025-01-25,Centro,Bebidas,Cerveza lata,2,1600,3200,QR,Nuevo
+V0125,2025-01-25,Norte,Bebidas,Agua 2 L,2,900,1800,Efectivo,Habitual
+V0126,2025-01-25,Sur,Bebidas,"Gaseosa 1,5 L",6,2100,12600,QR,Nuevo
+V0127,2025-01-25,Sur,Limpieza,Papel higiénico x4,4,2600,10400,Efectivo,Habitual
+V0128,2025-01-26,Centro,Bebidas,Cerveza lata,2,1600,3200,Débito,Habitual
+V0129,2025-01-26,Centro,Bebidas,Jugo en polvo,2,450,900,Efectivo,Habitual
+V0130,2025-01-26,Centro,Almacén,Fideos 500 g,6,1300,7800,Efectivo,Habitual
+V0131,2025-01-26,Centro,Limpieza,Papel higiénico x4,4,2600,10400,QR,Habitual
+V0132,2025-01-26,Norte,Almacén,Fideos 500 g,3,1300,3900,Crédito,Habitual
+V0133,2025-01-26,Norte,Almacén,Yerba 1 kg,4,4800,19200,Efectivo,Nuevo
+V0134,2025-01-26,Sur,Bebidas,Agua 2 L,2,900,1800,QR,Habitual
+V0135,2025-01-26,Sur,Limpieza,Detergente 750 ml,1,1900,1900,Efectivo,Habitual
+V0136,2025-01-27,Centro,Almacén,Yerba 1 kg,1,4800,4800,Débito,Habitual
+V0137,2025-01-27,Norte,Bebidas,Jugo en polvo,1,450,450,Efectivo,Habitual
+V0138,2025-01-28,Centro,Bebidas,"Gaseosa 1,5 L",2,2100,4200,Crédito,Habitual
+V0139,2025-01-28,Centro,Almacén,Yerba 1 kg,1,4800,4800,Crédito,Habitual
+V0140,2025-01-28,Centro,Bebidas,Jugo en polvo,1,450,450,QR,Habitual
+V0141,28/01/2025,Sur,Almacén,Aceite 900 ml,2,3200,6400,Efectivo,Habitual
+V0142,2025-01-29,Centro,Limpieza,Papel higiénico x4,3,2600,7800,QR,Habitual
+V0143,2025-01-29,Centro,Limpieza,Detergente 750 ml,1,1900,1900,Crédito,Habitual
+V0144,2025-01-29,Norte,Bebidas,Agua 2 L,4,900,3600,Efectivo,Nuevo
+V0145,2025-01-29,Sur,Almacén,Fideos 500 g,6,1300,7800,Débito,Nuevo
+V0146,2025-01-29,Sur,Limpieza,Papel higiénico x4,2,2600,5200,QR,Habitual
+V0147,2025-01-30,Centro,Frescos,Leche 1 L,2,1400,2800,Efectivo,Habitual
+V0148,2025-01-30,Norte,Limpieza,Lavandina 1 L,1,1100,1100,Débito,Habitual
+V0149,2025-01-30,Sur,Limpieza,Detergente 750 ml,2,1900,3800,Débito,Habitual
+V0150,2025-01-31,Centro,Frescos,Huevos x12,2,3400,6800,Débito,Habitual
+V0151,2025-01-31,Centro,Bebidas,Cerveza lata,2,1600,3200,Débito,Habitual
+V0152,2025-01-31,Norte,Almacén,Arroz 1 kg,1,1700,1700,Débito,Habitual
+V0153,2025-01-31,Sur,Almacén,Yerba 1 kg,1,4800,4800,Crédito,Nuevo
+V0154,2025-01-31,Sur,Bebidas,Jugo en polvo,3,450,1350,Efectivo,Habitual
+V0155,2025-01-31,Sur,Bebidas,Agua 2 L,6,900,5400,Efectivo,Nuevo
+V0156,2025-02-01,Centro,Bebidas,Jugo en polvo,1,450,450,Crédito,Habitual
+V0157,2025-02-01,Centro,Almacén,Aceite 900 ml,2,3200,6400,QR,Nuevo
+V0158,2025-02-01,Centro,Almacén,Yerba 1 kg,3,4800,14400,Crédito,Habitual
+V0159,2025-02-01,Norte,Frescos,Pan kg,2,2900,5800,Efectivo,Habitual
+V0160,2025-02-01,Sur,Limpieza,Detergente 750 ml,4,1900,7600,Crédito,Habitual
+V0161,2025-02-02,Centro,Frescos,Leche 1 L,1,1400,1400,Efectivo,Habitual
+V0162,2025-02-02,Centro,Limpieza,Papel higiénico x4,3,2600,7800,Efectivo,Habitual
+V0163,2025-02-02,Centro,Limpieza,Papel higiénico x4,2,2600,5200,Efectivo,Habitual
+V0164,2025-02-02,Sur ,Frescos,Pan kg,1,2900,2900,Efectivo,Habitual
+V0165,2025-02-02,Norte,Almacén,Aceite 900 ml,1,3200,3200,QR,Nuevo
+V0166,2025-02-02,Sur,Almacén,Fideos 500 g,3,1300,3900,Débito,Habitual
+V0167,2025-02-03,Centro,Bebidas,Jugo en polvo,2,450,900,Débito,Habitual
+V0168,2025-02-03,Centro,Bebidas,"Gaseosa 1,5 L",2,2100,4200,Efectivo,Habitual
+V0169,2025-02-03,Centro,Bebidas,"Gaseosa 1,5 L",6,2100,12600,Efectivo,Habitual
+V0170,2025-02-03,Sur,Almacén,Fideos 500 g,1,1300,1300,Efectivo,Habitual
+V0171,2025-02-04,Centro,Almacén,Yerba 1 kg,1,4800,4800,Efectivo,Habitual
+V0172,2025-02-04,Centro,Frescos,Huevos x12,2,3400,6800,QR,Habitual
+V0173,2025-02-04,Norte,Bebidas,Agua 2 L,2,900,1800,Efectivo,Habitual
+V0174,2025-02-04,Sur,Bebidas,"Gaseosa 1,5 L",1,2100,2100,Débito,Habitual
+V0175,2025-02-04,Sur,Limpieza,Papel higiénico x4,4,2600,10400,Crédito,Habitual
+V0176,2025-02-05,Centro,Almacén,Yerba 1 kg,4,4800,19200,Crédito,Habitual
+V0177,2025-02-05,Centro,Almacén,Arroz 1 kg,1,1700,1700,Débito,Nuevo
+V0178,2025-02-05,Norte,Bebidas,"Gaseosa 1,5 L",1,2100,2100,Efectivo,Habitual
+V0179,2025-02-05,Sur,Frescos,Leche 1 L,2,1400,2800,Efectivo,Habitual
+V0180,2025-02-06,Centro,Frescos,Pan kg,1,$2.900,2900,Débito,Habitual
+V0181,2025-02-06,Centro,Almacén,Arroz 1 kg,3,1700,5100,Efectivo,Habitual
+V0182,2025-02-06,Norte,Bebidas,"Gaseosa 1,5 L",2,2100,4200,Débito,Habitual
+V0183,2025-02-06,Sur,Bebidas,Jugo en polvo,1,450,450,Débito,Nuevo
+V0184,2025-02-06,Sur,Almacén,Yerba 1 kg,1,4800,4800,Efectivo,Nuevo
+V0185,2025-02-07,Centro,Almacén,Arroz 1 kg,1,1700,1700,Efectivo,Nuevo
+V0186,2025-02-07,Centro,Limpieza,Papel higiénico x4,2,2600,5200,Débito,Nuevo
+V0187,2025-02-07,Norte,Frescos,Queso cremoso kg,2,9800,19600,Crédito,Habitual
+V0188,2025-02-07,Norte,Almacén,Yerba 1 kg,4,4800,19200,Efectivo,Habitual
+V0189,2025-02-07,Sur,Bebidas,Jugo en polvo,6,450,2700,QR,Nuevo
+V0190,2025-02-07,Sur,Almacén,Arroz 1 kg,2,1700,3400,Débito,Habitual
+V0191,2025-02-08,Centro,Almacén,Aceite 900 ml,1,3200,3200,Crédito,Habitual
+V0192,2025-02-08,Centro,Bebidas,Cerveza lata,3,1600,4800,Crédito,Habitual
+V0193,2025-02-08,Norte,Bebidas,Cerveza lata,3,1600,4800,Crédito,Habitual
+V0194,2025-02-08,Sur,Bebidas,Agua 2 L,2,900,1800,QR,Nuevo
+V0195,2025-02-08,Sur,Bebidas,Cerveza lata,1,1600,1600,Efectivo,Habitual
+V0196,2025-02-09,Centro,Almacén,Arroz 1 kg,4,1700,6800,Débito,Nuevo
+V0197,2025-02-09,Centro,Almacén,Aceite 900 ml,1,3200,3200,QR,Habitual
+V0198,2025-02-09,Centro,Bebidas,"Gaseosa 1,5 L",2,2100,4200,Crédito,Habitual
+V0199,2025-02-09,Sur,Bebidas,Agua 2 L,4,900,3600,QR,Habitual
+V0200,2025-02-10,Centro,Limpieza,Papel higiénico x4,1,2600,2600,QR,Habitual
+V0201,2025-02-10,Centro,Bebidas,Agua 2 L,2,900,1800,QR,Habitual
+V0202,2025-02-10,Norte,Limpieza,Lavandina 1 L,2,1100,2200,QR,Nuevo
+V0203,2025-02-10,Norte,Limpieza,Detergente 750 ml,1,1900,1900,QR,Nuevo
+V0204,2025-02-10,Sur,Almacén,Yerba 1 kg,6,4800,28800,QR,Habitual
+V0205,2025-02-11,Centro,Limpieza,Papel higiénico x4,1,2600,2600,Efectivo,Habitual
+V0206,2025-02-11,Centro,Frescos,Pan kg,2,2900,5800,Débito,Nuevo
+V0207,2025-02-11,Norte,Almacén,Aceite 900 ml,2,3200,6400,Efectivo,Habitual
+V0208,2025-02-11,Sur,Bebidas,Agua 2 L,3,900,2700,Efectivo,Habitual
+V0209,2025-02-11,Sur,Frescos,Pan kg,1,2900,2900,Efectivo,Habitual
+V0210,2025-02-11,Sur,Frescos,Leche 1 L,1,$1.400,1400,Crédito,Habitual
+V0211,12/02/2025,Centro,Limpieza,Papel higiénico x4,3,2600,7800,QR,Habitual
+V0212,2025-02-12,Centro,Bebidas,Jugo en polvo,6,450,2700,Débito,Habitual
+V0213,2025-02-12,Norte,Bebidas,Cerveza lata,6,1600,9600,QR,Habitual
+V0214,2025-02-12,Sur,Frescos,Leche 1 L,6,1400,8400,Efectivo,Habitual
+V0215,2025-02-13,Centro ,Frescos,Pan kg,4,2900,11600,QR,Habitual
+V0216,2025-02-13,Centro,Bebidas,Cerveza lata,2,1600,3200,Débito,Habitual
+V0217,2025-02-13,Centro,Frescos,Pan kg,1,2900,2900,Débito,Habitual
+V0218,2025-02-13,Norte,Frescos,Huevos x12,2,3400,6800,QR,Habitual
+V0219,2025-02-13,Sur,Bebidas,"Gaseosa 1,5 L",1,2100,2100,Efectivo,Habitual
+V0220,2025-02-13,Sur,Frescos,Leche 1 L,3,1400,4200,Débito,Habitual
+V0221,2025-02-14,Centro,Limpieza,Lavandina 1 L,4,1100,4400,QR,Habitual
+V0222,2025-02-14,Centro,Frescos,Queso cremoso kg,1,9800,9800,Efectivo,Nuevo
+V0223,2025-02-14,Centro,Almacén,Yerba 1 kg,2,4800,9600,QR,Habitual
+V0224,2025-02-14,Norte,Almacén,Fideos 500 g,2,1300,2600,Débito,Nuevo
+V0225,2025-02-14,Sur,Bebidas,Agua 2 L,4,900,3600,QR,Nuevo
+V0226,2025-02-14,Sur,Bebidas,Jugo en polvo,3,450,1350,Crédito,Habitual
+V0227,2025-02-15,Centro,Limpieza,Lavandina 1 L,6,1100,6600,Crédito,Habitual
+V0228,2025-02-15,Centro,Limpieza,Papel higiénico x4,2,2600,5200,Crédito,Habitual
+V0229,2025-02-15,Centro,Bebidas,"Gaseosa 1,5 L",1,2100,2100,Crédito,Habitual
+V0230,2025-02-15,Norte,Bebidas,Cerveza lata,4,1600,6400,Débito,Nuevo
+V0231,2025-02-15,Norte,Almacén,Yerba 1 kg,2,4800,9600,Efectivo,Habitual
+V0232,2025-02-15,Sur,Almacén,Fideos 500 g,4,1300,5200,Efectivo,Habitual
+V0233,2025-02-15,Sur,Almacén,Fideos 500 g,4,1300,5200,QR,Habitual
+V0233,2025-02-15,Sur,Almacén,Fideos 500 g,4,1300,5200,QR,Habitual
+V0234,2025-02-16,Centro,Almacén,Fideos 500 g,2,1300,2600,QR,Habitual
+V0235,2025-02-16,Centro,Frescos,Leche 1 L,3,1400,4200,Débito,Habitual
+V0236,2025-02-16,Centro,Almacén,Fideos 500 g,1,1300,1300,QR,Habitual
+V0237,2025-02-16,Norte,Bebidas,Cerveza lata,6,1600,9600,Crédito,Habitual
+V0238,2025-02-16,Sur,Almacén,Fideos 500 g,1,1300,1300,Débito,Habitual
+V0239,2025-02-16,Sur,Frescos,Huevos x12,2,3400,6800,Efectivo,Habitual
+V0240,2025-02-17,Centro,Limpieza,Lavandina 1 L,1,1100,1100,Efectivo,Nuevo
+V0241,2025-02-17,Centro,Limpieza,Detergente 750 ml,4,1900,7600,Efectivo,Habitual
+V0242,2025-02-17,Norte,Almacén,Arroz 1 kg,1,1700,1700,Débito,Habitual
+V0243,2025-02-18,Centro,Bebidas,Agua 2 L,4,900,3600,Débito,Habitual
+V0244,2025-02-18,Norte,Bebidas,Agua 2 L,1,900,900,Débito,Habitual
+V0245,2025-02-18,Sur,Almacén,Arroz 1 kg,4,1700,6800,Débito,Habitual
+V0246,2025-02-18,Sur,Almacén,Yerba 1 kg,1,4800,4800,Efectivo,Habitual
+V0247,2025-02-19,Centro,Almacén,Aceite 900 ml,6,3200,19200,Débito,Habitual
+V0248,2025-02-19,Centro,Frescos,Pan kg,2,2900,5800,QR,Habitual
+V0249,2025-02-19,Centro,Almacén,Arroz 1 kg,1,1700,1700,QR,Habitual
+V0250,2025-02-19,Norte,Frescos,Leche 1 L,6,1400,8400,Crédito,Nuevo
+V0251,2025-02-19,Sur,Almacén,Aceite 900 ml,1,3200,3200,Débito,Habitual
+V0252,2025-02-19,Sur,Bebidas,Agua 2 L,3,900,2700,Débito,Habitual
+V0253,2025-02-20,Centro,Bebidas,Cerveza lata,1,1600,1600,Débito,Habitual
+V0254,2025-02-20,Centro,Limpieza,Lavandina 1 L,1,1100,1100,Débito,Nuevo
+V0255,2025-02-20,Sur,Almacén,Arroz 1 kg,4,1700,6800,Débito,Nuevo
+V0256,2025-02-21,Centro,Frescos,Huevos x12,4,3400,13600,Efectivo,Habitual
+V0257,2025-02-21,Centro,Bebidas,Jugo en polvo,6,450,2700,Débito,Habitual
+V0258,2025-02-21,Centro,Bebidas,Jugo en polvo,3,450,1350,Efectivo,Habitual
+V0259,2025-02-21,Norte,Almacén,Aceite 900 ml,1,3200,3200,QR,Habitual
+V0260,2025-02-21,Norte,Frescos,Queso cremoso kg,2,9800,19600,Efectivo,Nuevo
+V0261,2025-02-21,Sur,Bebidas,Cerveza lata,2,1600,3200,QR,Habitual
+V0262,2025-02-22,Centro,Frescos,Pan kg,1,2900,2900,Débito,Nuevo
+V0263,2025-02-22,Norte,Limpieza,Papel higiénico x4,3,2600,7800,Crédito,Nuevo
+V0264,2025-02-22,Norte,Limpieza,Lavandina 1 L,1,1100,1100,Débito,Habitual
+V0265,2025-02-22,Sur,Frescos,Queso cremoso kg,3,9800,29400,Efectivo,Habitual
+V0266,2025-02-22,Sur,Bebidas,Cerveza lata,4,1600,6400,Crédito,Nuevo
+V0267,2025-02-23,Centro,Bebidas,Jugo en polvo,6,450,2700,Efectivo,Habitual
+V0268,2025-02-23,Centro,Limpieza,Papel higiénico x4,2,2600,5200,QR,Habitual
+V0269,2025-02-23,Centro,Almacén,Yerba 1 kg,4,4800,19200,Débito,Habitual
+V0270,2025-02-23,Norte,Almacén,Arroz 1 kg,2,1700,3400,Crédito,Habitual
+V0271,2025-02-23,Norte,Almacén,Arroz 1 kg,1,1700,1700,QR,Habitual
+V0272,2025-02-23,Sur,Bebidas,Agua 2 L,4,900,3600,Efectivo,Habitual
+V0273,2025-02-24,Centro,Limpieza,Detergente 750 ml,2,1900,3800,Crédito,Habitual
+V0274,2025-02-24,Centro,Frescos,Queso cremoso kg,1,9800,9800,Débito,Habitual
+V0275,2025-02-24,Sur,Almacén,Yerba 1 kg,4,4800,19200,Efectivo,Habitual
+V0276,2025-02-24,Sur,Almacén,Yerba 1 kg,1,4800,4800,Débito,Habitual
+V0277,2025-02-24,Sur,Limpieza,Papel higiénico x4,4,2600,10400,Débito,Nuevo
+V0278,2025-02-25,Centro,Bebidas,"Gaseosa 1,5 L",2,2100,4200,QR,Nuevo
+V0279,2025-02-25,Norte,Almacén,Aceite 900 ml,1,3200,3200,Débito,Habitual
+V0280,2025-02-25,Norte,Almacén,Arroz 1 kg,3,1700,5100,Efectivo,Habitual
+V0281,2025-02-25,Sur,Limpieza,Papel higiénico x4,6,2600,15600,Efectivo,Habitual
+V0282,2025-02-26,Centro,Frescos,Leche 1 L,4,1400,5600,Crédito,Habitual
+V0283,2025-02-26,Norte,Bebidas,"Gaseosa 1,5 L",1,2100,2100,Efectivo,Nuevo
+V0284,2025-02-27,Centro,Frescos,Huevos x12,2,3400,6800,QR,Habitual
+V0285,2025-02-27,Centro,Frescos,Huevos x12,1,3400,3400,Efectivo,Habitual
+V0286,2025-02-27,Centro,Almacén,Aceite 900 ml,2,3200,6400,QR,Habitual
+V0287,2025-02-27,Norte,Bebidas,Agua 2 L,1,900,900,QR,Habitual
+V0288,2025-02-27,Norte,Frescos,Leche 1 L,1,1400,1400,Efectivo,Habitual
+V0289,2025-02-27,Sur,Limpieza,Lavandina 1 L,1,1100,1100,Efectivo,Nuevo
+V0290,2025-02-28,Centro,Almacén,Fideos 500 g,4,1300,5200,Efectivo,Habitual
+V0291,2025-02-28,Centro,Limpieza,Lavandina 1 L,1,1100,1100,Débito,Habitual
+V0292,2025-02-28,Centro,Bebidas,"Gaseosa 1,5 L",3,2100,6300,Débito,Habitual
+V0293,2025-02-28,Norte,Bebidas,Jugo en polvo,4,450,1800,QR,Nuevo
+V0294,2025-02-28,Norte,Frescos,Leche 1 L,3,1400,4200,Efectivo,Habitual
+V0295,2025-02-28,Sur,Bebidas,"Gaseosa 1,5 L",3,2100,6300,Crédito,Habitual
+V0296,2025-03-01,Centro,Almacén,Yerba 1 kg,2,4800,9600,Crédito,Nuevo
+V0297,2025-03-01,Centro,Bebidas,"Gaseosa 1,5 L",1,2100,2100,Débito,Habitual
+V0298,2025-03-01,Centro,Almacén,Yerba 1 kg,1,4800,4800,Efectivo,Habitual
+V0299,2025-03-01,Sur,Bebidas,Jugo en polvo,1,450,450,Débito,Nuevo
+V0300,2025-03-01,Sur,Bebidas,Agua 2 L,3,900,2700,QR,Habitual
+V0301,2025-03-02,Centro,Almacén,Fideos 500 g,2,1300,2600,QR,Habitual
+V0302,2025-03-02,Centro,Almacén,Aceite 900 ml,3,3200,9600,Efectivo,Habitual
+V0303,2025-03-02,Centro,Frescos,Queso cremoso kg,2,9800,19600,Efectivo,Habitual
+V0304,2025-03-02,Centro,Almacén,Fideos 500 g,1,1300,1300,Débito,Habitual
+V0305,2025-03-02,Norte,Almacén,Yerba 1 kg,1,4800,4800,Efectivo,Habitual
+V0306,2025-03-02,Sur,Bebidas,"Gaseosa 1,5 L",2,2100,4200,QR,Habitual
+V0307,2025-03-02,Sur,Frescos,Leche 1 L,1,1400,1400,Efectivo,Nuevo
+V0308,2025-03-03,Centro,Frescos,Pan kg,1,2900,2900,Efectivo,Nuevo
+V0309,2025-03-03,Centro,Almacén,Fideos 500 g,1,1300,1300,QR,Habitual
+V0310,2025-03-03,Centro,Almacén,Arroz 1 kg,1,1700,1700,Efectivo,Habitual
+V0311,2025-03-03,Norte,Frescos,Leche 1 L,1,1400,1400,Crédito,Nuevo
+V0312,2025-03-03,Sur,Frescos,Queso cremoso kg,1,9800,9800,Efectivo,Habitual
+V0313,2025-03-03,Sur,Frescos,Huevos x12,1,3400,3400,Efectivo,Habitual
+V0314,2025-03-04,Centro,Frescos,Queso cremoso kg,6,9800,58800,QR,Nuevo
+V0315,2025-03-04,Centro,Limpieza,Lavandina 1 L,2,1100,2200,QR,Habitual
+V0316,2025-03-04,Centro,Bebidas,"Gaseosa 1,5 L",1,2100,2100,Débito,Habitual
+V0317,2025-03-04,Norte,Limpieza,Papel higiénico x4,3,2600,7800,Crédito,Nuevo
+V0318,2025-03-04,Norte,Limpieza,Detergente 750 ml,2,1900,3800,Débito,Habitual
+V0319,2025-03-04,Norte,Bebidas,"Gaseosa 1,5 L",6,2100,12600,Crédito,Habitual
+V0320,2025-03-05,Centro,Frescos,Queso cremoso kg,1,9800,9800,Efectivo,Habitual
+V0321,2025-03-05,Norte,Frescos,Pan kg,3,2900,8700,Efectivo,Habitual
+V0322,2025-03-05,Sur,Bebidas,Agua 2 L,1,900,900,Efectivo,Nuevo
+V0323,2025-03-06,Centro,Almacén,Fideos 500 g,6,1300,7800,Efectivo,Habitual
+V0324,2025-03-06,Centro,Almacén,Arroz 1 kg,2,1700,3400,Efectivo,Nuevo
+V0325,2025-03-06,Norte,Limpieza,Lavandina 1 L,4,1100,4400,QR,Habitual
+V0326,2025-03-07,Centro,Almacén,Yerba 1 kg,4,4800,19200,Crédito,Habitual
+V0327,2025-03-07,Centro,Almacén,Yerba 1 kg,2,4800,9600,Débito,Habitual
+V0328,2025-03-07,Norte,Almacén,Arroz 1 kg,1,1700,1700,Crédito,Habitual
+V0329,2025-03-07,Norte,Limpieza,Lavandina 1 L,4,1100,4400,Débito,Habitual
+V0330,2025-03-07,Sur,Almacén,Fideos 500 g,1,1300,1300,Débito,Habitual
+V0331,2025-03-08,Centro,Limpieza,Detergente 750 ml,1,1900,1900,QR,Habitual
+V0332,2025-03-08,Centro,Bebidas,Agua 2 L,1,900,900,Efectivo,Habitual
+V0333,2025-03-08,Centro,Frescos,Queso cremoso kg,6,9800,58800,Débito,Habitual
+V0334,2025-03-08,Norte,Bebidas,Cerveza lata,6,1600,9600,QR,Habitual
+V0335,2025-03-08,Norte,Frescos,Pan kg,2,2900,5800,Crédito,Habitual
+V0336,2025-03-08,Sur,Bebidas,"Gaseosa 1,5 L",3,2100,6300,Efectivo,Nuevo
+V0337,2025-03-08,Sur,Limpieza,Detergente 750 ml,4,1900,7600,QR,Habitual
+V0338,2025-03-09,Centro,Limpieza,Lavandina 1 L,2,1100,2200,QR,Habitual
+V0339,2025-03-09,Centro,Almacén,Fideos 500 g,2,1300,2600,Débito,Habitual
+V0340,2025-03-09,Centro,Bebidas,Agua 2 L,1,900,900,QR,Habitual
+V0341,2025-03-09,Norte,Almacén,Fideos 500 g,6,1300,7800,Débito,Habitual
+V0342,2025-03-09,Norte,Almacén,Aceite 900 ml,1,3200,3200,Efectivo,Nuevo
+V0343,2025-03-09,Sur,Frescos,Huevos x12,4,3400,13600,QR,Habitual
+V0344,2025-03-10,Centro,Limpieza,Papel higiénico x4,2,2600,5200,Débito,Habitual
+V0345,2025-03-10,Norte,Limpieza,Papel higiénico x4,1,2600,2600,Crédito,Nuevo
+V0346,2025-03-10,Norte,Bebidas,"Gaseosa 1,5 L",1,2100,2100,Efectivo,Habitual
+V0347,2025-03-10,Sur,Bebidas,Cerveza lata,1,1600,1600,Crédito,Habitual
+V0348,2025-03-10,Sur,Frescos,Queso cremoso kg,1,9800,9800,QR,Habitual
+V0349,2025-03-11,Centro,Bebidas,Cerveza lata,6,1600,9600,QR,Habitual
+V0350,2025-03-11,Centro,Bebidas,Cerveza lata,2,1600,3200,QR,Nuevo
+V0351,2025-03-11,Norte,Almacén,Yerba 1 kg,3,4800,14400,Crédito,Habitual
+V0352,2025-03-11,Norte,Frescos,Leche 1 L,1,1400,1400,Débito,Nuevo
+V0353,2025-03-11,Sur,Bebidas,"Gaseosa 1,5 L",6,2100,12600,Efectivo,Habitual
+V0354,2025-03-12,Centro,Frescos,Leche 1 L,6,1400,8400,Efectivo,Habitual
+V0355,2025-03-12,Norte,Almacén,Arroz 1 kg,4,1700,6800,Efectivo,Habitual
+V0356,2025-03-12,Sur,Bebidas,"Gaseosa 1,5 L",2,2100,4200,Crédito,Habitual
+V0357,2025-03-12,Sur,Frescos,Queso cremoso kg,6,9800,58800,Efectivo,Habitual
+V0358,2025-03-13,Centro,Bebidas,Cerveza lata,1,1600,1600,Débito,Habitual
+V0359,2025-03-13,Centro,Almacén,Aceite 900 ml,4,3200,12800,Débito,Habitual
+V0360,2025-03-13,Centro,Almacén,Fideos 500 g,6,1300,7800,Débito,Nuevo
+V0361,2025-03-13,Norte,Frescos,Leche 1 L,6,1400,8400,Débito,Habitual
+V0362,2025-03-13,Norte,Frescos,Huevos x12,1,3400,3400,Crédito,Habitual
+V0363,2025-03-13,Sur,Almacén,Arroz 1 kg,1,1700,1700,Crédito,Nuevo
+V0364,2025-03-14,Centro,Frescos,Pan kg,6,2900,17400,Efectivo,Nuevo
+V0365,2025-03-14,Centro,Almacén,Aceite 900 ml,3,3200,9600,Efectivo,Habitual
+V0366,2025-03-14,Norte,Almacén,Yerba 1 kg,1,4800,4800,Efectivo,Habitual
+V0367,2025-03-14,Sur,Almacén,Aceite 900 ml,2,3200,6400,Crédito,Habitual
+V0368,2025-03-14,Sur,Almacén,Fideos 500 g,6,1300,7800,Débito,Habitual
+V0369,2025-03-15,Centro,Almacén,Fideos 500 g,2,1300,2600,Débito,Habitual
+V0370,2025-03-15,Centro,Bebidas,Jugo en polvo,1,450,450,Débito,Habitual
+V0371,2025-03-15,Centro,Frescos,Leche 1 L,2,1400,2800,Débito,Nuevo
+V0372,2025-03-15,Sur,Limpieza,Detergente 750 ml,2,1900,3800,Débito,Habitual
+V0373,2025-03-15,Sur,Frescos,Queso cremoso kg,2,9800,19600,Efectivo,Habitual
+V0374,2025-03-16,Centro,Limpieza,Detergente 750 ml,4,1900,7600,QR,Habitual
+V0375,2025-03-16,Centro,Frescos,Queso cremoso kg,6,9800,58800,Efectivo,Habitual
+V0376,2025-03-16,Centro,Almacén,Yerba 1 kg,1,4800,4800,QR,Habitual
+V0377,2025-03-16,Centro,Frescos,Pan kg,4,2900,11600,Efectivo,Nuevo
+V0378,2025-03-16,Norte,Limpieza,Papel higiénico x4,6,2600,15600,QR,Habitual
+V0379,2025-03-16,Norte,Almacén,Fideos 500 g,6,1300,7800,Efectivo,Habitual
+V0380,2025-03-16,Norte,Almacén,Arroz 1 kg,2,1700,3400,Crédito,Nuevo
+V0381,2025-03-16,Sur,Bebidas,Cerveza lata,2,$1.600,3200,Crédito,Habitual
+V0382,2025-03-16,Sur,Bebidas,Jugo en polvo,1,450,450,Débito,Nuevo
+V0383,2025-03-17,Centro,Limpieza,Lavandina 1 L,1,1100,1100,Débito,Nuevo
+V0384,2025-03-17,Centro,Bebidas,Jugo en polvo,1,450,450,Débito,Habitual
+V0385,2025-03-17,Norte,Limpieza,Papel higiénico x4,1,2600,2600,Crédito,Nuevo
+V0386,2025-03-17,Sur,Bebidas,Jugo en polvo,1,450,450,Efectivo,Habitual
+V0387,2025-03-18,Centro,Limpieza,Papel higiénico x4,3,2600,7800,Débito,Nuevo
+V0388,2025-03-18,Centro,Almacén,Yerba 1 kg,1,4800,4800,Efectivo,Habitual
+V0389,2025-03-18,Norte,Almacén,Yerba 1 kg,3,4800,14400,Efectivo,Habitual
+V0390,2025-03-18,Norte,Bebidas,Agua 2 L,3,900,2700,Crédito,Nuevo
+V0391,2025-03-18,Sur,Almacén,Arroz 1 kg,2,1700,3400,Débito,Habitual
+V0392,2025-03-19,Centro,Bebidas,Agua 2 L,2,900,1800,QR,Habitual
+V0393,2025-03-19,Centro,Almacén,Fideos 500 g,2,1300,2600,QR,Habitual
+V0394,2025-03-19,Norte,Limpieza,Detergente 750 ml,2,1900,3800,Efectivo,Habitual
+V0395,2025-03-19,Sur,Limpieza,Detergente 750 ml,4,1900,7600,Débito,Nuevo
+V0396,2025-03-20,Centro,Almacén,Arroz 1 kg,1,1700,1700,QR,Habitual
+V0397,2025-03-20,Centro,Almacén,Yerba 1 kg,1,4800,4800,Crédito,Habitual
+V0398,2025-03-20,Centro,Bebidas,Jugo en polvo,1,450,450,Débito,Habitual
+V0399,2025-03-20,Norte,Frescos,Leche 1 L,2,1400,2800,Crédito,Habitual
+V0400,2025-03-20,Sur,Almacén,Fideos 500 g,1,1300,1300,QR,Habitual
+V0401,2025-03-21,Centro,Bebidas,Jugo en polvo,2,450,900,Débito,Habitual
+V0402,21/03/2025,Centro,Almacén,Aceite 900 ml,4,3200,12800,QR,Nuevo
+V0403,2025-03-21,Norte,Bebidas,Jugo en polvo,3,450,1350,Crédito,Habitual
+V0404,2025-03-21,Norte,Bebidas,"Gaseosa 1,5 L",1,2100,2100,QR,Nuevo
+V0405,2025-03-21,Sur,Frescos,Huevos x12,3,3400,10200,Crédito,Habitual
+V0406,2025-03-22,Centro,Almacén,Yerba 1 kg,1,4800,4800,Efectivo,Nuevo
+V0407,2025-03-22,Centro,Bebidas,Cerveza lata,1,1600,1600,QR,Habitual
+V0408,2025-03-22,Centro,Limpieza,Papel higiénico x4,2,2600,5200,Crédito,Habitual
+V0409,2025-03-22,Norte,Almacén,Arroz 1 kg,3,1700,5100,Efectivo,Nuevo
+V0410,2025-03-22,Sur,Almacén,Arroz 1 kg,2,1700,3400,QR,Nuevo
+V0411,2025-03-23,Centro,Bebidas,Agua 2 L,1,900,900,QR,Habitual
+V0412,2025-03-23,Centro,Limpieza,Papel higiénico x4,2,2600,5200,Débito,Habitual
+V0413,2025-03-23,Centro,Almacén,Yerba 1 kg,2,4800,9600,Crédito,Habitual
+V0414,2025-03-23,Norte,Almacén,Yerba 1 kg,3,4800,14400,Crédito,Habitual
+V0415,2025-03-23,Norte,Limpieza,Lavandina 1 L,4,1100,4400,Débito,Habitual
+V0416,2025-03-23,Sur,Bebidas,Agua 2 L,1,900,900,QR,Habitual
+V0417,2025-03-24,Centro,Bebidas,"Gaseosa 1,5 L",6,2100,12600,Efectivo,Habitual
+V0418,2025-03-24,Centro,Almacén,Aceite 900 ml,2,3200,6400,Débito,Habitual
+V0419,2025-03-24,Sur,Almacén,Arroz 1 kg,3,1700,5100,Débito,Habitual
+V0420,2025-03-25,Centro,Frescos,Pan kg,6,2900,17400,Débito,Nuevo
+V0421,2025-03-25,Centro,Frescos,Leche 1 L,3,1400,4200,Efectivo,Nuevo
+V0422,2025-03-25,Norte,Frescos,Queso cremoso kg,1,$9.800,9800,Débito,Nuevo
+V0423,2025-03-25,Sur,Almacén,Fideos 500 g,3,1300,3900,Débito,Habitual
+V0424,2025-03-26,Centro,Almacén,Arroz 1 kg,2,1700,3400,Débito,Nuevo
+V0425,2025-03-26,Norte,Almacén,Aceite 900 ml,2,3200,6400,Débito,Nuevo
+V0426,2025-03-26,Sur,Almacén,Arroz 1 kg,1,1700,1700,Débito,Habitual
+V0427,2025-03-26,Sur,Limpieza,Papel higiénico x4,2,2600,5200,Crédito,Habitual
+V0428,2025-03-27,Centro,Almacén,Yerba 1 kg,1,4800,4800,Débito,Habitual
+V0429,2025-03-27,Centro,Almacén,Arroz 1 kg,4,1700,6800,Crédito,Nuevo
+V0430,2025-03-27,Norte,Almacén,Fideos 500 g,2,1300,2600,Crédito,Habitual
+V0431,2025-03-27,Norte,Limpieza,Detergente 750 ml,6,1900,11400,Efectivo,Habitual
+V0432,2025-03-27,Sur,Frescos,Pan kg,2,2900,5800,QR,Habitual
+V0433,2025-03-27,Sur,Almacén,Arroz 1 kg,2,1700,3400,QR,Habitual
+V0434,2025-03-28,Centro,Limpieza,Lavandina 1 L,2,1100,2200,Débito,Habitual
+V0435,2025-03-28,Centro,Bebidas,Cerveza lata,3,1600,4800,Débito,Habitual
+V0436,2025-03-28,Centro,Frescos,Huevos x12,3,3400,10200,Débito,Habitual
+V0437,2025-03-28,Centro,Almacén,Yerba 1 kg,2,4800,9600,Débito,Habitual
+V0438,2025-03-28,Norte,Bebidas,Agua 2 L,4,900,3600,Débito,Habitual
+V0439,2025-03-28,Sur,Bebidas,Jugo en polvo,6,450,2700,Crédito,Habitual
+V0440,2025-03-28,Sur,Limpieza,Detergente 750 ml,6,1900,11400,Débito,Habitual
+V0441,2025-03-29,Centro,Almacén,Aceite 900 ml,6,3200,19200,Efectivo,Habitual
+V0442,2025-03-29,Centro,Bebidas,"Gaseosa 1,5 L",6,2100,12600,QR,Nuevo
+V0443,2025-03-29,Centro,Frescos,Huevos x12,1,3400,3400,Débito,Nuevo
+V0444,2025-03-29,Norte,Frescos,Pan kg,4,2900,11600,Débito,Habitual
+V0445,2025-03-29,Norte,Almacén,Aceite 900 ml,1,3200,3200,Crédito,Habitual
+V0446,2025-03-29,Sur,Limpieza,Lavandina 1 L,3,1100,3300,Efectivo,Habitual
+V0447,2025-03-29,Sur,Almacén,Fideos 500 g,1,1300,1300,QR,Nuevo
+V0448,2025-03-30,Centro,Frescos,Huevos x12,6,3400,20400,Crédito,Habitual
+V0449,2025-03-30,Centro,Bebidas,Cerveza lata,1,1600,1600,Débito,Nuevo
+V0450,2025-03-30,Centro,Limpieza,Papel higiénico x4,4,2600,10400,Crédito,Habitual
+V0451,2025-03-30,Norte,Bebidas,Cerveza lata,2,1600,3200,Efectivo,Nuevo
+V0452,2025-03-30,Sur,Frescos,Huevos x12,3,3400,10200,QR,Nuevo
+V0453,2025-03-31,Centro,Bebidas,Cerveza lata,1,1600,1600,Crédito,Habitual
+V0454,2025-03-31,Centro,Almacén,Fideos 500 g,3,1300,3900,Crédito,Habitual
+V0455,2025-03-31,Centro,Bebidas,Cerveza lata,2,1600,3200,Efectivo,Habitual
+V0456,2025-03-31,Norte,Frescos,Huevos x12,2,3400,6800,QR,Habitual
+V0457,2025-03-31,Sur,Almacén,Fideos 500 g,2,1300,2600,Efectivo,Habitual
+V0458,2025-04-01,Centro,Almacén,Arroz 1 kg,1,1700,1700,Efectivo,Habitual
+V0459,2025-04-01,Centro,Limpieza,Lavandina 1 L,2,1100,2200,Efectivo,Nuevo
+V0460,2025-04-01,Norte,Frescos,Huevos x12,1,3400,3400,Débito,Habitual
+V0461,2025-04-01,Sur,Limpieza,Papel higiénico x4,6,2600,15600,QR,Nuevo
+V0462,2025-04-01,Sur,Bebidas,Cerveza lata,1,1600,1600,Crédito,Habitual
+V0463,2025-04-02,Centro,Bebidas,Cerveza lata,6,1600,9600,Débito,Habitual
+V0464,2025-04-02,Centro,Limpieza,Detergente 750 ml,1,1900,1900,Efectivo,Habitual
+V0465,2025-04-02,Centro,Almacén,Arroz 1 kg,4,1700,6800,Débito,Nuevo
+V0466,2025-04-02,Norte,Bebidas,Jugo en polvo,4,450,1800,QR,Nuevo
+V0467,2025-04-02,Sur,Almacén,Arroz 1 kg,1,1700,1700,QR,Habitual
+V0468,2025-04-02,Sur,Bebidas,Cerveza lata,1,1600,1600,Débito,Habitual
+V0469,2025-04-03,Centro,Bebidas,"Gaseosa 1,5 L",3,2100,6300,QR,Habitual
+V0470,2025-04-03,Centro,Almacén,Yerba 1 kg,1,4800,4800,Crédito,Habitual
+V0471,2025-04-03,Norte,Almacén,Fideos 500 g,2,1300,2600,Efectivo,Habitual
+V0472,2025-04-03,Norte,Frescos,Leche 1 L,2,1400,2800,Crédito,Habitual
+V0473,2025-04-03,Sur,Limpieza,Detergente 750 ml,6,1900,11400,QR,Habitual
+V0474,2025-04-04,Centro,Bebidas,Agua 2 L,1,900,900,QR,Habitual
+V0475,2025-04-04,Centro,Frescos,Pan kg,1,2900,2900,QR,Nuevo
+V0476,2025-04-04,Centro,Almacén,Yerba 1 kg,1,4800,4800,QR,Habitual
+V0477,2025-04-04,Norte,Almacén,Yerba 1 kg,6,4800,28800,Efectivo,Nuevo
+V0478,2025-04-04,Sur,Bebidas,"Gaseosa 1,5 L",4,2100,8400,Efectivo,Habitual
+V0479,2025-04-04,Sur,Frescos,Queso cremoso kg,6,9800,58800,QR,Habitual
+V0480,2025-04-04,Sur,Bebidas,Cerveza lata,1,1600,1600,Débito,Habitual
+V0481,2025-04-05,Centro,Bebidas,Cerveza lata,6,1600,9600,Efectivo,Habitual
+V0482,2025-04-05,Centro,Bebidas,"Gaseosa 1,5 L",1,2100,2100,Efectivo,Nuevo
+V0483,2025-04-05,Norte,Almacén,Arroz 1 kg,1,1700,1700,QR,Habitual
+V0484,2025-04-05,Norte,Bebidas,Cerveza lata,1,1600,1600,Débito,Nuevo
+V0485,2025-04-05,Sur,Bebidas,"Gaseosa 1,5 L",,2100,,QR,Habitual
+V0486,2025-04-05,Sur,Frescos,Queso cremoso kg,4,9800,39200,Crédito,Nuevo
+V0487,2025-04-06,Centro,Limpieza,Lavandina 1 L,2,1100,2200,QR,Habitual
+V0488,2025-04-06,Centro,Frescos,Queso cremoso kg,1,9800,9800,Débito,Nuevo
+V0489,2025-04-06,Centro,Almacén,Fideos 500 g,2,1300,2600,Débito,Habitual
+V0490,2025-04-06,Norte,Bebidas,Cerveza lata,1,1600,1600,Débito,Nuevo
+V0491,2025-04-06,Norte,Almacén,Aceite 900 ml,2,3200,6400,QR,Habitual
+V0492,2025-04-06,Sur,Almacén,Yerba 1 kg,1,4800,4800,Débito,Habitual
+V0493,2025-04-06,Sur,Bebidas,"Gaseosa 1,5 L",6,2100,12600,QR,Habitual
+V0494,2025-04-07,Centro,Almacén,Yerba 1 kg,4,4800,19200,Crédito,Habitual
+V0495,2025-04-07,Centro,Almacén,Yerba 1 kg,2,4800,9600,Débito,Habitual
+V0495,2025-04-07,Centro,Almacén,Yerba 1 kg,2,4800,9600,Débito,Habitual
+V0496,2025-04-07,Norte,Limpieza,Detergente 750 ml,1,1900,1900,QR,Habitual
+V0497,2025-04-08,Centro,Limpieza,Detergente 750 ml,4,1900,7600,Efectivo,Habitual
+V0498,2025-04-08,Centro,Bebidas,Jugo en polvo,2,450,900,QR,Habitual
+V0499,2025-04-08,Norte,Almacén,Arroz 1 kg,1,1700,1700,Débito,Habitual
+V0500,2025-04-08,Norte,Limpieza,Lavandina 1 L,2,1100,2200,Débito,Habitual
+V0501,2025-04-09,Centro,Frescos,Leche 1 L,1,1400,1400,Débito,Nuevo
+V0502,2025-04-09,Centro,Frescos,Pan kg,1,2900,2900,Efectivo,Habitual
+V0503,2025-04-09,Centro,Limpieza,Lavandina 1 L,1,1100,1100,Crédito,Nuevo
+V0504,2025-04-09,Norte,Almacén,Fideos 500 g,6,1300,7800,QR,Habitual
+V0505,2025-04-09,Norte,Frescos,Pan kg,6,2900,17400,QR,Habitual
+V0506,2025-04-10,Centro,Almacén,Arroz 1 kg,3,1700,5100,QR,Habitual
+V0507,2025-04-10,Centro,Bebidas,Cerveza lata,2,1600,3200,Débito,Habitual
+V0508,2025-04-10,Centro,Almacén,Arroz 1 kg,2,1700,3400,Débito,Habitual
+V0509,2025-04-10,Norte,Limpieza,Papel higiénico x4,1,2600,2600,Débito,Habitual
+V0510,2025-04-10,Norte,Frescos,Huevos x12,2,3400,6800,Débito,Nuevo
+V0511,2025-04-11,Centro,Limpieza,Papel higiénico x4,1,2600,2600,QR,Nuevo
+V0512,2025-04-11,Centro,Bebidas,Cerveza lata,2,1600,3200,Efectivo,Habitual
+V0513,2025-04-11,Centro,Bebidas,"Gaseosa 1,5 L",1,2100,2100,Débito,Habitual
+V0514,2025-04-12,Centro,Almacén,Aceite 900 ml,1,3200,3200,Débito,Habitual
+V0515,2025-04-12,Centro,Frescos,Leche 1 L,6,1400,8400,QR,Habitual
+V0516,2025-04-12,Centro,Almacén,Yerba 1 kg,2,4800,9600,Efectivo,Nuevo
+V0517,2025-04-12,Norte,Bebidas,Agua 2 L,1,900,900,Efectivo,Habitual
+V0518,2025-04-13,Centro,Frescos,Queso cremoso kg,3,9800,29400,Efectivo,Habitual
+V0519,2025-04-13,Centro,Bebidas,"Gaseosa 1,5 L",1,2100,2100,Efectivo,Nuevo
+V0520,2025-04-13,Centro,Limpieza,Lavandina 1 L,1,1100,1100,QR,Habitual
+V0521,2025-04-13,Norte,Almacén,Aceite 900 ml,1,3200,3200,QR,Habitual
+V0522,2025-04-14,Centro,Almacén,Yerba 1 kg,1,4800,4800,Crédito,Habitual
+V0523,2025-04-14,Centro,Almacén,Aceite 900 ml,1,3200,3200,QR,Habitual
+V0524,2025-04-14,Norte,Almacén,Aceite 900 ml,1,3200,3200,QR,Habitual
+V0525,2025-04-15,Centro,Almacén,Arroz 1 kg,6,1700,10200,Crédito,Habitual
+V0526,2025-04-15,Centro,Almacén,Yerba 1 kg,1,4800,4800,QR,Habitual
+V0527,2025-04-15,Centro,Frescos,Queso cremoso kg,3,9800,29400,Débito,Habitual
+V0528,2025-04-15,Norte,Limpieza,Papel higiénico x4,1,2600,2600,Débito,Habitual
+V0529,2025-04-16,Centro,Almacén,Aceite 900 ml,1,3200,3200,Efectivo,Habitual
+V0530,2025-04-16,Centro,Bebidas,Cerveza lata,3,1600,4800,Crédito,Habitual
+V0531,2025-04-16,Norte,Frescos,Queso cremoso kg,4,9800,39200,Crédito,Habitual
+V0532,2025-04-16,Norte,Limpieza,Papel higiénico x4,2,2600,5200,Efectivo,Habitual
+V0533,2025-04-17,Centro,Almacén,Fideos 500 g,6,1300,7800,Débito,Habitual
+V0534,2025-04-17,norte,Bebidas,Jugo en polvo,6,450,2700,QR,Nuevo
+V0535,2025-04-17,Centro,Frescos,Leche 1 L,1,1400,1400,Débito,Habitual
+V0536,2025-04-17,Norte,Limpieza,Lavandina 1 L,2,1100,2200,QR,Habitual
+V0537,2025-04-18,Centro,Frescos,Leche 1 L,1,1400,1400,QR,Habitual
+V0538,2025-04-18,Centro,Frescos,Pan kg,6,2900,17400,QR,Nuevo
+V0539,2025-04-18,Centro,Bebidas,Cerveza lata,4,1600,6400,Débito,Habitual
+V0540,18/04/2025,Norte,Almacén,Yerba 1 kg,1,4800,4800,Efectivo,Nuevo
+V0541,2025-04-18,Norte,Frescos,Queso cremoso kg,1,9800,9800,Crédito,Habitual
+V0542,2025-04-19,Centro,Frescos,Queso cremoso kg,1,9800,9800,Crédito,Nuevo
+V0543,2025-04-19,Centro,Almacén,Aceite 900 ml,2,3200,6400,QR,Habitual
+V0544,2025-04-19,Norte,Almacén,Yerba 1 kg,2,4800,9600,Débito,Habitual
+V0545,2025-04-20,Centro,Limpieza,Lavandina 1 L,1,$1.100,1100,Débito,Habitual
+V0546,2025-04-20,Centro,Frescos,Leche 1 L,1,1400,1400,Débito,Habitual
+V0547,2025-04-20,Norte,Almacén,Aceite 900 ml,2,3200,6400,Crédito,Habitual
+V0548,2025-04-20,Norte,Almacén,Yerba 1 kg,4,4800,19200,QR,Habitual
+V0549,2025-04-21,Centro,Almacén,Aceite 900 ml,3,3200,9600,Débito,Habitual
+V0550,2025-04-21,Norte,Bebidas,Jugo en polvo,4,450,1800,Débito,Habitual
+V0551,2025-04-22,Centro,Almacén,Fideos 500 g,2,1300,2600,QR,Nuevo
+V0552,22/04/2025,Centro,Almacén,Aceite 900 ml,4,3200,12800,Efectivo,Habitual
+V0553,2025-04-22,Norte,Bebidas,Jugo en polvo,1,450,450,Crédito,Habitual
+V0554,2025-04-22,Sur,Bebidas,Agua 2 L,6,900,5400,Efectivo,Habitual
+V0555,2025-04-22,Sur,Almacén,Yerba 1 kg,1,4800,4800,Débito,Habitual
+V0556,2025-04-23,Centro,Frescos,Huevos x12,1,3400,3400,Efectivo,Habitual
+V0557,2025-04-23,Centro,Frescos,Leche 1 L,4,1400,5600,Efectivo,Nuevo
+V0558,2025-04-23,Centro,Almacén,Yerba 1 kg,1,4800,4800,Débito,Habitual
+V0559,2025-04-23,Norte,Almacén,Arroz 1 kg,2,1700,3400,Crédito,Habitual
+V0560,2025-04-23,Sur,Bebidas,"Gaseosa 1,5 L",3,2100,6300,QR,Habitual
+V0561,2025-04-23,Sur,Frescos,Pan kg,6,2900,17400,QR,Habitual
+V0562,2025-04-24,Centro,Frescos,Queso cremoso kg,2,9800,19600,QR,Habitual
+V0563,2025-04-24,Centro,Almacén,Arroz 1 kg,4,1700,6800,QR,Habitual
+V0564,2025-04-24,Norte,Almacén,Yerba 1 kg,1,4800,4800,Efectivo,Habitual
+V0565,2025-04-25,Centro,Bebidas,Jugo en polvo,2,450,900,QR,Nuevo
+V0566,2025-04-25,Centro,Almacén,Arroz 1 kg,2,1700,3400,Crédito,Nuevo
+V0567,2025-04-25,Centro,Bebidas,"Gaseosa 1,5 L",1,2100,2100,Débito,Habitual
+V0568,2025-04-25,Norte,Frescos,Queso cremoso kg,1,9800,9800,Crédito,Nuevo
+V0569,2025-04-25,Sur,Limpieza,Detergente 750 ml,,1900,,QR,Nuevo
+V0569,2025-04-25,Sur,Limpieza,Detergente 750 ml,,1900,,QR,Nuevo
+V0570,2025-04-25,Sur,Almacén,Arroz 1 kg,1,1700,1700,Débito,Nuevo
+V0571,2025-04-26,Centro,Frescos,Pan kg,6,2900,17400,Crédito,Nuevo
+V0572,2025-04-26,Centro,Almacén,Yerba 1 kg,1,4800,4800,QR,Habitual
+V0573,2025-04-26,Norte,Bebidas,"Gaseosa 1,5 L",6,2100,12600,Efectivo,Habitual
+V0574,2025-04-26,Norte,Limpieza,Papel higiénico x4,1,2600,2600,Crédito,Habitual
+V0575,2025-04-26,Sur,Frescos,Huevos x12,2,3400,6800,Débito,Habitual
+V0576,2025-04-27,Centro,Almacén,Aceite 900 ml,3,3200,9600,QR,Habitual
+V0577,2025-04-27,Centro,Almacén,Yerba 1 kg,2,4800,9600,Débito,Nuevo
+V0578,2025-04-27,Norte,Almacén,Arroz 1 kg,1,1700,1700,Crédito,Habitual
+V0579,2025-04-27,Norte,Limpieza,Lavandina 1 L,1,1100,1100,Débito,Habitual
+V0580,2025-04-27,Sur,Frescos,Leche 1 L,3,1400,4200,Crédito,Habitual
+V0581,2025-04-27,Sur,Limpieza,Lavandina 1 L,3,1100,3300,Crédito,Habitual
+V0582,2025-04-27,Sur,Bebidas,Jugo en polvo,1,450,450,Efectivo,Habitual
+V0583,2025-04-28,Centro,Almacén,Arroz 1 kg,6,1700,10200,QR,Habitual
+V0584,2025-04-28,Centro,Almacén,Aceite 900 ml,2,3200,6400,QR,Habitual
+V0585,2025-04-28,Centro,Bebidas,Jugo en polvo,4,450,1800,QR,Habitual
+V0586,2025-04-28,Norte,Limpieza,Detergente 750 ml,6,1900,11400,QR,Habitual
+V0587,2025-04-28,Sur,Frescos,Leche 1 L,4,1400,5600,Débito,Habitual
+V0588,2025-04-29,Centro,Almacén,Yerba 1 kg,1,4800,4800,QR,Nuevo
+V0589,2025-04-29,Centro,Bebidas,"Gaseosa 1,5 L",2,2100,4200,Débito,Habitual
+V0590,2025-04-29,Centro,Bebidas,Agua 2 L,1,900,900,Débito,Habitual
+V0591,2025-04-29,Norte,Frescos,Leche 1 L,1,1400,1400,QR,Habitual
+V0592,2025-04-29,Sur,Limpieza,Detergente 750 ml,2,1900,3800,Débito,Habitual
+V0593,2025-04-29,Sur,Frescos,Leche 1 L,1,1400,1400,Efectivo,Habitual
+V0594,2025-04-30,Centro,Bebidas,Cerveza lata,4,1600,6400,Débito,Nuevo
+V0595,2025-04-30,Centro,Frescos,Pan kg,2,2900,5800,Débito,Habitual
+V0596,2025-04-30,Norte,Limpieza,Detergente 750 ml,6,1900,11400,Efectivo,Nuevo
+V0597,2025-04-30,Sur,Frescos,Huevos x12,2,3400,6800,Crédito,Habitual
+V0598,2025-05-01,Centro,Frescos,Pan kg,1,2900,2900,Débito,Habitual
+V0599,2025-05-01,Norte,Bebidas,Cerveza lata,1,1600,1600,Débito,Habitual
+V0600,2025-05-01,Norte,Bebidas,Cerveza lata,1,1600,1600,QR,Habitual
+V0601,2025-05-01,Sur,Almacén,Arroz 1 kg,3,1700,5100,Crédito,Nuevo
+V0602,2025-05-02,Centro,Bebidas,Jugo en polvo,1,450,450,Efectivo,Habitual
+V0603,2025-05-02,Centro,Bebidas,Jugo en polvo,1,450,450,QR,Habitual
+V0604,2025-05-02,Norte,Almacén,Yerba 1 kg,1,4800,4800,QR,Habitual
+V0605,2025-05-02,Norte,Frescos,Huevos x12,4,3400,13600,QR,Nuevo
+V0606,2025-05-02,Sur,Frescos,Queso cremoso kg,1,9800,9800,QR,Habitual
+V0607,2025-05-03,Centro,Frescos,Queso cremoso kg,4,9800,39200,Crédito,Habitual
+V0608,2025-05-03,Centro,Bebidas,Cerveza lata,1,1600,1600,QR,Habitual
+V0609,2025-05-03,Centro,Frescos,Queso cremoso kg,4,9800,39200,QR,Habitual
+V0610,2025-05-03,Norte,Limpieza,Lavandina 1 L,4,1100,4400,Crédito,Habitual
+V0611,2025-05-03,Norte,Almacén,Fideos 500 g,2,1300,2600,QR,Habitual
+V0612,2025-05-03,Sur,Bebidas,Cerveza lata,6,1600,9600,Débito,Nuevo
+V0613,2025-05-04,Centro,Bebidas,Agua 2 L,,900,,Débito,Habitual
+V0614,2025-05-04,Centro,Almacén,Aceite 900 ml,2,3200,6400,QR,Nuevo
+V0615,2025-05-04,Centro,Bebidas,"Gaseosa 1,5 L",1,2100,2100,Efectivo,Habitual
+V0616,2025-05-04,Norte,Almacén,Aceite 900 ml,1,3200,3200,Débito,Habitual
+V0617,2025-05-04,Norte,Frescos,Leche 1 L,2,1400,2800,Crédito,Nuevo
+V0618,2025-05-04,Norte,Bebidas,Agua 2 L,2,900,1800,Débito,Nuevo
+V0619,2025-05-04,Sur,Almacén,Aceite 900 ml,3,$3.200,9600,Débito,Habitual
+V0620,2025-05-04,Sur,Almacén,Aceite 900 ml,2,3200,6400,QR,Habitual
+V0621,2025-05-05,Centro,Almacén,Fideos 500 g,1,1300,1300,QR,Nuevo
+V0622,2025-05-05,Centro,Bebidas,"Gaseosa 1,5 L",1,2100,2100,Efectivo,Habitual
+V0623,2025-05-05,Centro,Bebidas,Cerveza lata,2,1600,3200,Débito,Habitual
+V0624,2025-05-05,Norte,Frescos,Leche 1 L,2,1400,2800,Efectivo,Habitual
+V0625,2025-05-05,Norte,Bebidas,"Gaseosa 1,5 L",2,2100,4200,Crédito,Habitual
+V0626,2025-05-05,Sur,Almacén,Yerba 1 kg,1,4800,4800,Débito,Habitual
+V0627,2025-05-05,Sur,Almacén,Yerba 1 kg,1,4800,4800,Débito,Habitual
+V0628,2025-05-06,Centro,Bebidas,"Gaseosa 1,5 L",2,2100,4200,QR,Habitual
+V0629,2025-05-06,Centro,Bebidas,Jugo en polvo,2,450,900,QR,Habitual
+V0630,2025-05-06,Centro,Frescos,Huevos x12,6,3400,20400,Crédito,Habitual
+V0631,2025-05-06,Norte,Frescos,Pan kg,6,2900,17400,QR,Habitual
+V0632,2025-05-06,Norte,Almacén,Arroz 1 kg,1,1700,1700,Débito,Nuevo
+V0633,2025-05-06,Sur,Almacén,Arroz 1 kg,2,1700,3400,Débito,Habitual
+V0633,2025-05-06,Sur,Almacén,Arroz 1 kg,2,1700,3400,Débito,Habitual
+V0634,2025-05-06,Sur,Almacén,Yerba 1 kg,1,4800,4800,Débito,Habitual
+V0635,2025-05-07,Centro,Almacén,Fideos 500 g,2,1300,2600,QR,Habitual
+V0636,2025-05-07,Centro,Frescos,Queso cremoso kg,6,9800,58800,QR,Habitual
+V0637,2025-05-07,Centro,Almacén,Yerba 1 kg,2,4800,9600,QR,Habitual
+V0638,2025-05-07,Centro,Limpieza,Lavandina 1 L,3,1100,3300,QR,Habitual
+V0639,2025-05-07,Norte,Frescos,Leche 1 L,2,1400,2800,QR,Habitual
+V0640,2025-05-07,Norte,Frescos,Leche 1 L,2,1400,2800,QR,Habitual
+V0641,2025-05-07,Sur,Frescos,Leche 1 L,1,1400,1400,QR,Habitual
+V0642,2025-05-07,Sur,Almacén,Aceite 900 ml,1,3200,3200,QR,Habitual
+V0643,2025-05-08,Centro,Bebidas,Agua 2 L,1,900,900,QR,Habitual
+V0644,2025-05-08,Centro,Almacén,Yerba 1 kg,1,4800,4800,Crédito,Habitual
+V0645,2025-05-08,Centro,Frescos,Leche 1 L,1,1400,1400,QR,Habitual
+V0646,2025-05-08,Norte,Frescos,Huevos x12,2,3400,6800,QR,Habitual
+V0647,2025-05-08,Sur,Bebidas,Agua 2 L,6,900,5400,Débito,Habitual
+V0648,2025-05-08,Sur,Frescos,Pan kg,6,2900,17400,QR,Habitual
+V0649,2025-05-09,Centro,Frescos,Huevos x12,1,3400,3400,Efectivo,Habitual
+V0650,2025-05-09,Centro,Almacén,Arroz 1 kg,1,1700,1700,QR,Habitual
+V0651,2025-05-09,Centro,Almacén,Yerba 1 kg,1,4800,4800,QR,Habitual
+V0652,2025-05-09,Norte,Limpieza,Lavandina 1 L,1,1100,1100,QR,Habitual
+V0653,2025-05-09,Norte,Almacén,Fideos 500 g,1,1300,1300,Crédito,Nuevo
+V0654,2025-05-09,Sur,Bebidas,Cerveza lata,3,1600,4800,Crédito,Habitual
+V0655,2025-05-10,Centro,Almacén,Yerba 1 kg,2,4800,9600,Débito,Nuevo
+V0656,2025-05-10,Centro,Bebidas,Agua 2 L,3,900,2700,QR,Habitual
+V0657,2025-05-10,Norte,Bebidas,"Gaseosa 1,5 L",1,2100,2100,Crédito,Habitual
+V0658,2025-05-10,Sur,Frescos,Leche 1 L,3,1400,4200,Crédito,Habitual
+V0659,2025-05-11,Centro,Almacén,Arroz 1 kg,2,1700,3400,Débito,Habitual
+V0660,2025-05-11,Centro,Limpieza,Papel higiénico x4,4,2600,10400,QR,Habitual
+V0661,11/05/2025,Centro,Frescos,Queso cremoso kg,3,9800,29400,QR,Habitual
+V0662,2025-05-11,Norte,Bebidas,Jugo en polvo,2,450,900,QR,Nuevo
+V0663,2025-05-11,Sur,Almacén,Aceite 900 ml,1,3200,3200,QR,Nuevo
+V0664,2025-05-11,Sur,Bebidas,Cerveza lata,6,1600,9600,QR,Habitual
+V0665,2025-05-12,Centro,Limpieza,Papel higiénico x4,2,2600,5200,QR,Habitual
+V0666,2025-05-12,Centro,Almacén,Aceite 900 ml,2,3200,6400,QR,Habitual
+V0667,2025-05-12,Centro,Frescos,Pan kg,1,2900,2900,QR,Habitual
+V0668,2025-05-12,Norte,Bebidas,Jugo en polvo,3,450,1350,QR,Nuevo
+V0669,2025-05-12,Norte,Bebidas,Agua 2 L,2,900,1800,QR,Nuevo
+V0670,2025-05-12,Sur,Bebidas,Jugo en polvo,6,450,2700,QR,Habitual
+V0671,2025-05-13,Centro,Bebidas,"Gaseosa 1,5 L",3,2100,6300,QR,Nuevo
+V0672,2025-05-13,Centro,Almacén,Yerba 1 kg,4,4800,19200,Débito,Habitual
+V0673,2025-05-13,Norte,Frescos,Queso cremoso kg,2,9800,19600,QR,Habitual
+V0674,2025-05-13,Sur,Frescos,Pan kg,1,2900,2900,Débito,Habitual
+V0675,2025-05-14,Centro,Bebidas,"Gaseosa 1,5 L",1,2100,2100,Débito,Nuevo
+V0676,2025-05-14,Centro,Frescos,Leche 1 L,4,1400,5600,Crédito,Habitual
+V0677,2025-05-14,Norte,Bebidas,Cerveza lata,1,1600,1600,QR,Habitual
+V0678,2025-05-14,Sur,Almacén,Fideos 500 g,4,1300,5200,Crédito,Habitual
+V0679,2025-05-14,Sur,Frescos,Huevos x12,1,3400,3400,QR,Habitual
+V0680,2025-05-15,Centro,Limpieza,Lavandina 1 L,2,1100,2200,Débito,Habitual
+V0681,2025-05-15,Centro,Frescos,Pan kg,1,2900,2900,QR,Habitual
+V0682,2025-05-15,Norte,Almacén,Fideos 500 g,6,1300,7800,Crédito,Nuevo
+V0683,2025-05-15,Norte,Bebidas,Cerveza lata,2,1600,3200,Crédito,Habitual
+V0684,2025-05-15,Sur,Limpieza,Lavandina 1 L,6,1100,6600,QR,Habitual
+V0685,2025-05-16,NORTE,Almacén,Fideos 500 g,4,1300,5200,Crédito,Habitual
+V0686,2025-05-16,Centro,Almacén,Aceite 900 ml,6,3200,19200,QR,Habitual
+V0687,2025-05-16,Norte,Limpieza,Lavandina 1 L,2,1100,2200,Débito,Nuevo
+V0688,2025-05-16,Sur,Bebidas,Cerveza lata,1,1600,1600,Crédito,Habitual
+V0689,2025-05-16,Sur,Bebidas,Cerveza lata,3,1600,4800,QR,Habitual
+V0690,2025-05-16,Sur,Frescos,Huevos x12,6,3400,20400,QR,Habitual
+V0691,2025-05-17,Centro,Bebidas,Agua 2 L,6,900,5400,QR,Habitual
+V0692,2025-05-17,Centro,Limpieza,Detergente 750 ml,1,1900,1900,Efectivo,Habitual
+V0693,2025-05-17,Centro,Limpieza,Detergente 750 ml,4,1900,7600,QR,Habitual
+V0694,2025-05-17,Norte,Almacén,Fideos 500 g,1,1300,1300,QR,Habitual
+V0695,2025-05-17,Sur,Bebidas,Agua 2 L,3,900,2700,Débito,Habitual
+V0696,2025-05-18,Centro,Frescos,Pan kg,2,2900,5800,Débito,Nuevo
+V0697,2025-05-18,Norte ,Bebidas,Jugo en polvo,1,450,450,Crédito,Habitual
+V0698,2025-05-18,Centro,Frescos,Huevos x12,3,3400,10200,QR,Habitual
+V0699,2025-05-18,Centro,Bebidas,Cerveza lata,2,1600,3200,QR,Nuevo
+V0700,2025-05-18,Norte,Bebidas,"Gaseosa 1,5 L",1,2100,2100,QR,Nuevo
+V0701,2025-05-18,Norte,Bebidas,Jugo en polvo,6,450,2700,Crédito,Habitual
+V0702,2025-05-18,Sur,Frescos,Leche 1 L,6,1400,8400,QR,Habitual
+V0703,2025-05-18,Sur,Bebidas,Cerveza lata,1,1600,1600,Débito,Habitual
+V0704,2025-05-19,Centro,Bebidas,Agua 2 L,1,900,900,QR,Nuevo
+V0705,2025-05-19,Centro,Bebidas,Cerveza lata,1,1600,1600,QR,Habitual
+V0706,2025-05-19,Norte,Almacén,Aceite 900 ml,1,3200,3200,Débito,Nuevo
+V0707,2025-05-19,Norte,Almacén,Yerba 1 kg,2,4800,9600,Efectivo,Habitual
+V0708,2025-05-19,Sur,Frescos,Pan kg,2,2900,5800,QR,Habitual
+V0709,2025-05-19,Sur,Frescos,Queso cremoso kg,2,9800,19600,Crédito,Nuevo
+V0710,2025-05-19,Sur,Bebidas,Cerveza lata,3,1600,4800,Crédito,Habitual
+V0711,2025-05-20,Centro,Almacén,Arroz 1 kg,1,1700,1700,Débito,Habitual
+V0712,2025-05-20,centro,Limpieza,Papel higiénico x4,1,2600,2600,QR,Habitual
+V0712,2025-05-20,centro,Limpieza,Papel higiénico x4,1,2600,2600,QR,Habitual
+V0713,2025-05-20,Norte,Bebidas,Jugo en polvo,4,450,1800,QR,Habitual
+V0714,2025-05-20,Sur,Frescos,Leche 1 L,2,1400,2800,QR,Nuevo
+V0715,2025-05-21,Centro,Frescos,Queso cremoso kg,4,9800,39200,Débito,Habitual
+V0716,2025-05-21,Centro,Frescos,Huevos x12,3,3400,10200,Débito,Habitual
+V0717,2025-05-21,Norte,Almacén,Yerba 1 kg,3,4800,14400,QR,Habitual
+V0718,2025-05-21,Norte,Bebidas,Cerveza lata,1,1600,1600,Débito,Habitual
+V0719,2025-05-21,Sur,Bebidas,Jugo en polvo,2,450,900,Crédito,Habitual
+V0720,2025-05-22,Centro,Frescos,Pan kg,2,2900,5800,Débito,Habitual
+V0721,2025-05-22,Centro,Bebidas,Jugo en polvo,2,450,900,QR,Habitual
+V0722,2025-05-22,Centro,Frescos,Queso cremoso kg,2,9800,19600,Débito,Habitual
+V0723,2025-05-22,Norte,Bebidas,Jugo en polvo,2,450,900,Crédito,Habitual
+V0724,2025-05-22,Sur,Limpieza,Lavandina 1 L,6,1100,6600,QR,Habitual
+V0725,2025-05-22,Sur,Frescos,Queso cremoso kg,2,9800,19600,QR,Habitual
+V0726,2025-05-23,Centro,Almacén,Arroz 1 kg,3,1700,5100,QR,Nuevo
+V0727,2025-05-23,Centro,Bebidas,"Gaseosa 1,5 L",1,2100,2100,Débito,Habitual
+V0728,2025-05-23,Centro,Bebidas,Agua 2 L,3,900,2700,Débito,Habitual
+V0729,2025-05-23,Norte,Frescos,Queso cremoso kg,2,9800,19600,Crédito,Habitual
+V0730,2025-05-23,Norte,Bebidas,"Gaseosa 1,5 L",4,2100,8400,QR,Habitual
+V0731,2025-05-23,Sur,Almacén,Aceite 900 ml,1,3200,3200,Débito,Habitual
+V0732,2025-05-24,Centro,Almacén,Fideos 500 g,6,1300,7800,Débito,Nuevo
+V0733,2025-05-24,Centro,Almacén,Arroz 1 kg,1,1700,1700,Crédito,Habitual
+V0734,2025-05-24,Centro,Frescos,Queso cremoso kg,1,9800,9800,Efectivo,Nuevo
+V0735,2025-05-24,Centro,Bebidas,Jugo en polvo,2,450,900,Débito,Nuevo
+V0736,2025-05-24,Norte,Almacén,Fideos 500 g,4,1300,5200,Débito,Nuevo
+V0737,2025-05-24,Sur,Almacén,Arroz 1 kg,3,1700,5100,Débito,Habitual
+V0738,2025-05-24,Sur,Frescos,Leche 1 L,1,1400,1400,Crédito,Habitual
+V0739,2025-05-25,Centro,Almacén,Yerba 1 kg,1,4800,4800,Crédito,Habitual
+V0740,2025-05-25,Centro,Frescos,Leche 1 L,4,1400,5600,QR,Habitual
+V0741,2025-05-25,Norte,Limpieza,Papel higiénico x4,3,2600,7800,QR,Habitual
+V0742,2025-05-25,Norte,Almacén,Aceite 900 ml,4,3200,12800,Efectivo,Habitual
+V0743,2025-05-25,Norte,Bebidas,Jugo en polvo,2,450,900,QR,Habitual
+V0744,2025-05-26,Centro,Limpieza,Papel higiénico x4,1,2600,2600,Débito,Habitual
+V0745,2025-05-26,Norte,Limpieza,Lavandina 1 L,1,1100,1100,QR,Habitual
+V0746,2025-05-26,Norte,Frescos,Queso cremoso kg,4,9800,39200,QR,Habitual
+V0747,2025-05-26,Sur,Frescos,Queso cremoso kg,3,9800,29400,QR,Nuevo
+V0748,2025-05-27,Centro,Frescos,Leche 1 L,2,1400,2800,QR,Habitual
+V0749,2025-05-27,Centro,Frescos,Leche 1 L,1,1400,1400,Débito,Habitual
+V0750,2025-05-27,Centro,Limpieza,Detergente 750 ml,1,1900,1900,Efectivo,Habitual
+V0751,2025-05-27,Sur,Limpieza,Detergente 750 ml,4,1900,7600,QR,Habitual
+V0752,2025-05-27,Sur,Bebidas,"Gaseosa 1,5 L",1,2100,2100,QR,Nuevo
+V0753,2025-05-28,Centro,Bebidas,Jugo en polvo,1,450,450,Crédito,Habitual
+V0754,2025-05-28,Centro,Bebidas,"Gaseosa 1,5 L",6,2100,12600,QR,Habitual
+V0755,2025-05-28,Centro,Almacén,Yerba 1 kg,1,4800,4800,Débito,Nuevo
+V0756,2025-05-28,Norte,Frescos,Leche 1 L,4,1400,5600,Débito,Habitual
+V0757,2025-05-28,Sur,Frescos,Leche 1 L,1,1400,1400,QR,Nuevo
+V0758,2025-05-29,Centro,Almacén,Fideos 500 g,2,1300,2600,Débito,Habitual
+V0759,2025-05-29,Centro,Bebidas,Jugo en polvo,2,450,900,Crédito,Habitual
+V0760,2025-05-29,Norte,Almacén,Yerba 1 kg,1,4800,4800,Débito,Habitual
+V0761,2025-05-29,Norte,Almacén,Aceite 900 ml,3,3200,9600,QR,Nuevo
+V0762,2025-05-29,Sur,Frescos,Leche 1 L,1,1400,1400,Débito,Nuevo
+V0763,2025-05-29,Sur,Frescos,Leche 1 L,2,1400,2800,Crédito,Habitual
+V0764,2025-05-30,Centro,Almacén,Aceite 900 ml,2,3200,6400,QR,Habitual
+V0765,2025-05-30,Centro,Almacén,Fideos 500 g,4,1300,5200,Débito,Nuevo
+V0766,2025-05-30,Norte,Frescos,Huevos x12,2,3400,6800,QR,Habitual
+V0767,2025-05-30,Norte,Almacén,Aceite 900 ml,4,3200,12800,QR,Habitual
+V0768,2025-05-30,Sur,Frescos,Leche 1 L,2,1400,2800,Débito,Habitual
+V0769,2025-05-30,Sur,Frescos,Queso cremoso kg,3,9800,29400,QR,Habitual
+V0770,2025-05-31,Centro,Almacén,Fideos 500 g,1,1300,1300,Débito,Habitual
+V0771,31/05/2025,Centro,Frescos,Leche 1 L,1,1400,1400,Débito,Nuevo
+V0772,2025-05-31,Centro,Frescos,Leche 1 L,1,1400,1400,Crédito,Habitual
+V0773,2025-05-31,Norte,Limpieza,Detergente 750 ml,6,1900,11400,Efectivo,Habitual
+V0774,2025-05-31,Norte,Bebidas,"Gaseosa 1,5 L",1,2100,2100,Débito,Habitual
+V0775,2025-05-31,Sur,Bebidas,Agua 2 L,2,900,1800,QR,Habitual
+V0776,2025-05-31,Sur,Almacén,Arroz 1 kg,2,1700,3400,Débito,Habitual
+V0777,2025-06-01,Centro,Almacén,Arroz 1 kg,2,1700,3400,Débito,Habitual
+V0778,2025-06-01,Centro,Almacén,Yerba 1 kg,6,4800,28800,Débito,Habitual
+V0779,2025-06-01,Centro,Limpieza,Lavandina 1 L,4,1100,4400,Crédito,Habitual
+V0780,2025-06-01,Norte,Frescos,Queso cremoso kg,3,9800,29400,Débito,Habitual
+V0781,2025-06-01,Norte,Limpieza,Papel higiénico x4,2,2600,5200,Débito,Habitual
+V0782,2025-06-01,Sur,Limpieza,Detergente 750 ml,1,1900,1900,Crédito,Habitual
+V0783,2025-06-02,Centro,Limpieza,Detergente 750 ml,6,1900,11400,QR,Habitual
+V0784,2025-06-02,Centro,Bebidas,Cerveza lata,1,1600,1600,Débito,Habitual
+V0785,2025-06-02,Centro,Frescos,Pan kg,3,2900,8700,QR,Habitual
+V0786,2025-06-02,Norte,Frescos,Queso cremoso kg,3,9800,29400,QR,Nuevo
+V0787,2025-06-02,Norte,Frescos,Pan kg,1,2900,2900,QR,Habitual
+V0788,2025-06-02,Sur,Almacén,Yerba 1 kg,1,4800,4800,Crédito,Habitual
+V0789,2025-06-02,Sur,Almacén,Yerba 1 kg,3,4800,14400,Débito,Habitual
+V0790,2025-06-03,Centro,Limpieza,Papel higiénico x4,2,2600,5200,QR,Habitual
+V0791,2025-06-03,Norte,Bebidas,"Gaseosa 1,5 L",2,2100,4200,QR,Habitual
+V0792,2025-06-03,Sur,Almacén,Arroz 1 kg,4,1700,6800,Débito,Habitual
+V0793,2025-06-03,Sur,Limpieza,Detergente 750 ml,3,1900,5700,Crédito,Habitual
+V0794,2025-06-04,Centro,Almacén,Aceite 900 ml,2,3200,6400,Crédito,Habitual
+V0795,2025-06-04,Norte,Frescos,Pan kg,4,2900,11600,QR,Habitual
+V0796,2025-06-04,Sur,Limpieza,Lavandina 1 L,6,1100,6600,Efectivo,Habitual
+V0797,2025-06-04,Sur,Bebidas,"Gaseosa 1,5 L",1,2100,2100,Crédito,Nuevo
+V0798,2025-06-05,Centro,Frescos,Queso cremoso kg,2,9800,19600,Débito,Nuevo
+V0799,2025-06-05,Centro,Bebidas,Jugo en polvo,2,450,900,Crédito,Habitual
+V0800,2025-06-05,Norte,Bebidas,Cerveza lata,2,1600,3200,Crédito,Nuevo
+V0801,2025-06-05,Norte,Frescos,Huevos x12,2,3400,6800,QR,Habitual
+V0802,2025-06-05,Sur,Almacén,Fideos 500 g,3,1300,3900,Débito,Habitual
+V0803,2025-06-05,Sur,Limpieza,Papel higiénico x4,1,2600,2600,Crédito,Habitual
+V0804,2025-06-06,Centro,Almacén,Yerba 1 kg,2,4800,9600,QR,Habitual
+V0805,2025-06-06,Centro,Bebidas,Jugo en polvo,1,450,450,Crédito,Habitual
+V0806,2025-06-06,Norte,Almacén,Fideos 500 g,2,1300,2600,QR,Nuevo
+V0807,2025-06-06,Norte,Bebidas,Jugo en polvo,6,450,2700,QR,Habitual
+V0808,2025-06-06,Sur,Almacén,Aceite 900 ml,4,3200,12800,QR,Habitual
+V0809,2025-06-07,Centro,Almacén,Yerba 1 kg,1,4800,4800,QR,Habitual
+V0810,2025-06-07,Centro,Bebidas,Agua 2 L,1,900,900,QR,Nuevo
+V0811,2025-06-07,Norte,Frescos,Pan kg,1,2900,2900,Crédito,Nuevo
+V0812,2025-06-07,Norte,Bebidas,Cerveza lata,2,1600,3200,QR,Habitual
+V0813,2025-06-07,Sur,Bebidas,Agua 2 L,6,900,5400,Débito,Habitual
+V0814,2025-06-07,Sur,Frescos,Queso cremoso kg,1,9800,9800,QR,Habitual
+V0815,2025-06-08,Centro,Bebidas,Jugo en polvo,4,450,1800,Efectivo,Nuevo
+V0816,2025-06-08,Centro,Bebidas,Jugo en polvo,2,450,900,QR,Nuevo
+V0817,2025-06-08,Centro,Almacén,Arroz 1 kg,2,1700,3400,QR,Habitual
+V0818,2025-06-08,Norte,Bebidas,Cerveza lata,3,1600,4800,Débito,Habitual
+V0819,2025-06-08,Norte,Bebidas,Agua 2 L,4,900,3600,QR,Habitual
+V0820,2025-06-08,Sur,Frescos,Leche 1 L,4,1400,5600,QR,Nuevo
+V0821,2025-06-08,Sur,Almacén,Aceite 900 ml,4,3200,12800,Crédito,Habitual
+V0822,2025-06-09,Centro,Bebidas,Jugo en polvo,6,450,2700,Crédito,Habitual
+V0823,2025-06-09,Centro,Almacén,Yerba 1 kg,4,4800,19200,QR,Habitual
+V0824,2025-06-09,Centro,Almacén,Arroz 1 kg,2,1700,3400,QR,Nuevo
+V0825,2025-06-09,Norte,Almacén,Fideos 500 g,1,1300,1300,QR,Habitual
+V0826,2025-06-09,Norte,Frescos,Huevos x12,3,3400,10200,QR,Habitual
+V0827,2025-06-09,Sur,Bebidas,Agua 2 L,2,900,1800,Débito,Habitual
+V0828,2025-06-10,Centro,Limpieza,Lavandina 1 L,2,1100,2200,QR,Habitual
+V0829,2025-06-10,Norte,Bebidas,Jugo en polvo,1,450,450,Efectivo,Nuevo
+V0830,2025-06-10,Norte,Almacén,Fideos 500 g,1,1300,1300,QR,Habitual
+V0831,2025-06-10,Sur,Frescos,Huevos x12,3,3400,10200,Débito,Habitual
+V0832,2025-06-10,Sur,Almacén,Fideos 500 g,2,1300,2600,Crédito,Habitual
+V0833,2025-06-11,Centro,Bebidas,Agua 2 L,4,900,3600,QR,Nuevo
+V0834,2025-06-11,Centro,Limpieza,Detergente 750 ml,2,1900,3800,Débito,Habitual
+V0835,2025-06-11,Centro,Frescos,Leche 1 L,1,1400,1400,Débito,Habitual
+V0836,2025-06-11,Norte,Bebidas,"Gaseosa 1,5 L",6,2100,12600,QR,Nuevo
+V0837,2025-06-11,Norte,Almacén,Fideos 500 g,1,1300,1300,QR,Habitual
+V0838,2025-06-11,Norte,Frescos,Huevos x12,1,3400,3400,QR,Habitual
+V0839,2025-06-11,Sur,Limpieza,Papel higiénico x4,6,2600,15600,Crédito,Habitual
+V0840,2025-06-12,Centro,Almacén,Yerba 1 kg,1,4800,4800,QR,Habitual
+V0841,2025-06-12,Norte,Frescos,Pan kg,6,2900,17400,Débito,Nuevo
+V0842,2025-06-12,Norte,Limpieza,Lavandina 1 L,1,1100,1100,Débito,Habitual
+V0843,2025-06-12,Sur,Limpieza,Papel higiénico x4,1,2600,2600,QR,Habitual
+V0844,2025-06-13,Centro,Frescos,Queso cremoso kg,6,9800,58800,QR,Nuevo
+V0845,2025-06-13,Centro,Almacén,Arroz 1 kg,2,1700,3400,QR,Nuevo
+V0846,2025-06-13,Centro,Almacén,Arroz 1 kg,1,1700,1700,QR,Habitual
+V0847,2025-06-13,Centro,Almacén,Fideos 500 g,1,1300,1300,Débito,Habitual
+V0848,2025-06-13,Centro,Almacén,Yerba 1 kg,2,4800,9600,QR,Habitual
+V0849,2025-06-13,Norte,Almacén,Fideos 500 g,2,1300,2600,QR,Habitual
+V0850,2025-06-13,Norte,Frescos,Huevos x12,4,3400,13600,Débito,Habitual
+V0851,2025-06-13,Norte,Almacén,Aceite 900 ml,2,3200,6400,QR,Habitual
+V0852,2025-06-13,Sur,Bebidas,Cerveza lata,1,1600,1600,Débito,Habitual
+V0853,2025-06-14,Centro,Frescos,Queso cremoso kg,1,9800,9800,Débito,Nuevo
+V0854,2025-06-14,Centro,Almacén,Aceite 900 ml,2,3200,6400,Débito,Habitual
+V0855,2025-06-14,Norte,Bebidas,Agua 2 L,3,900,2700,Efectivo,Habitual
+V0856,2025-06-14,Norte,Frescos,Pan kg,6,2900,17400,Débito,Habitual
+V0857,2025-06-14,Sur,Almacén,Arroz 1 kg,1,1700,1700,QR,Nuevo
+V0858,2025-06-14,Sur,Almacén,Fideos 500 g,1,1300,1300,Crédito,Nuevo
+V0859,15/06/2025,Centro,Bebidas,Cerveza lata,2,1600,3200,Débito,Habitual
+V0860,2025-06-15,Centro,Almacén,Yerba 1 kg,3,4800,14400,QR,Habitual
+V0861,2025-06-15,Centro,Limpieza,Detergente 750 ml,3,1900,5700,Crédito,Nuevo
+V0862,2025-06-15,Norte,Frescos,Pan kg,1,2900,2900,Débito,Habitual
+V0863,2025-06-15,Norte,Frescos,Queso cremoso kg,4,9800,39200,Débito,Habitual
+V0864,2025-06-15,Sur,Almacén,Arroz 1 kg,400,1700,680000,QR,Habitual
+V0865,2025-06-16,Centro,Bebidas,"Gaseosa 1,5 L",4,2100,8400,Débito,Habitual
+V0866,2025-06-16,Centro,Bebidas,Agua 2 L,1,900,900,QR,Habitual
+V0867,2025-06-16,Centro,Frescos,Queso cremoso kg,1,9800,9800,Crédito,Habitual
+V0868,2025-06-16,Norte,Frescos,Queso cremoso kg,1,9800,9800,QR,Habitual
+V0869,2025-06-16,Norte,Almacén,Arroz 1 kg,3,1700,5100,Débito,Nuevo
+V0870,2025-06-16,Sur,Almacén,Aceite 900 ml,1,3200,3200,QR,Habitual
+V0871,2025-06-17,Centro,Frescos,Pan kg,1,2900,2900,QR,Habitual
+V0872,2025-06-17,Norte,Bebidas,Jugo en polvo,1,450,450,Crédito,Habitual
+V0873,2025-06-17,Norte,Frescos,Pan kg,1,2900,2900,Crédito,Nuevo
+V0874,2025-06-17,Sur,Limpieza,Detergente 750 ml,4,1900,7600,Débito,Habitual
+V0875,2025-06-18,Centro,Almacén,Yerba 1 kg,2,4800,9600,QR,Habitual
+V0876,2025-06-18,Centro,Frescos,Leche 1 L,1,1400,1400,Débito,Nuevo
+V0877,2025-06-18,Norte,Bebidas,Agua 2 L,6,900,5400,Débito,Habitual
+V0878,2025-06-18,Norte,Almacén,Arroz 1 kg,2,1700,3400,Efectivo,Habitual
+V0879,2025-06-18,Sur,Almacén,Aceite 900 ml,1,3200,3200,QR,Habitual
+V0880,2025-06-18,Sur,Frescos,Pan kg,3,2900,8700,Débito,Habitual
+V0881,2025-06-19,Centro,Bebidas,Cerveza lata,1,1600,1600,Débito,Habitual
+V0882,2025-06-19,Centro,Frescos,Pan kg,2,2900,5800,QR,Nuevo
+V0883,2025-06-19,Norte,Frescos,Queso cremoso kg,4,9800,39200,Crédito,Nuevo
+V0884,2025-06-19,Norte,Almacén,Aceite 900 ml,2,3200,6400,Efectivo,Habitual
+V0885,2025-06-19,Sur,Almacén,Yerba 1 kg,1,4800,4800,QR,Habitual
+V0886,2025-06-20,Centro,Almacén,Aceite 900 ml,2,3200,6400,Débito,Nuevo
+V0887,2025-06-20,Centro,Almacén,Yerba 1 kg,4,4800,19200,QR,Habitual
+V0888,2025-06-20,Centro,Bebidas,"Gaseosa 1,5 L",4,2100,8400,QR,Habitual
+V0889,2025-06-20,Norte,Almacén,Fideos 500 g,6,1300,7800,QR,Habitual
+V0890,2025-06-20,Sur,Almacén,Yerba 1 kg,1,4800,4800,Débito,Habitual
+V0891,2025-06-20,Sur,Bebidas,"Gaseosa 1,5 L",1,2100,2100,Débito,Habitual
+V0892,2025-06-21,Centro,Frescos,Queso cremoso kg,2,9800,19600,QR,Habitual
+V0893,2025-06-21,Centro,Limpieza,Lavandina 1 L,1,1100,1100,QR,Habitual
+V0894,2025-06-21,Norte,Almacén,Fideos 500 g,3,1300,3900,QR,Habitual
+V0895,2025-06-21,Norte,Limpieza,Lavandina 1 L,2,1100,2200,Crédito,Habitual
+V0896,2025-06-21,Norte,Frescos,Huevos x12,6,3400,20400,Crédito,Habitual
+V0897,2025-06-21,Sur,Frescos,Leche 1 L,6,1400,8400,Débito,Habitual
+V0898,2025-06-21,Sur,Bebidas,Cerveza lata,6,1600,9600,QR,Habitual
+V0899,2025-06-22,Centro,Bebidas,Jugo en polvo,2,450,900,QR,Nuevo
+V0900,2025-06-22,Centro,Bebidas,Cerveza lata,6,1600,9600,QR,Habitual
+V0901,2025-06-22,Norte,Bebidas,Jugo en polvo,2,450,900,Débito,Habitual
+V0902,2025-06-22,Norte,Almacén,Aceite 900 ml,6,3200,19200,Efectivo,Habitual
+V0903,2025-06-22,Norte,Bebidas,Cerveza lata,1,1600,1600,Débito,Habitual
+V0904,2025-06-22,Sur,Frescos,Queso cremoso kg,2,9800,19600,Crédito,Habitual
+V0905,2025-06-22,Sur,Bebidas,Jugo en polvo,6,450,2700,QR,Habitual
+V0906,2025-06-23,Centro,Bebidas,Agua 2 L,1,900,900,QR,Habitual
+V0907,2025-06-23,Centro,Frescos,Huevos x12,1,3400,3400,QR,Nuevo
+V0908,2025-06-23,Norte,Bebidas,Agua 2 L,1,900,900,Crédito,Habitual
+V0909,2025-06-23,Norte,Frescos,Leche 1 L,1,1400,1400,QR,Habitual
+V0910,2025-06-23,SUR,Bebidas,"Gaseosa 1,5 L",1,2100,2100,QR,Nuevo
+V0911,2025-06-23,Sur,Limpieza,Detergente 750 ml,1,1900,1900,QR,Nuevo
+V0912,2025-06-24,Centro,Almacén,Aceite 900 ml,1,3200,3200,Débito,Nuevo
+V0913,2025-06-24,Centro,Bebidas,Jugo en polvo,1,450,450,QR,Habitual
+V0914,2025-06-24,Norte,Almacén,Arroz 1 kg,6,1700,10200,QR,Nuevo
+V0915,2025-06-24,Sur,Bebidas,Cerveza lata,1,1600,1600,Crédito,Habitual
+V0916,2025-06-25,Centro,Almacén,Fideos 500 g,,1300,,QR,Habitual
+V0917,2025-06-25,Centro,Bebidas,Agua 2 L,3,900,2700,Débito,Nuevo
+V0918,2025-06-25,Norte,Almacén,Yerba 1 kg,4,4800,19200,Débito,Habitual
+V0919,2025-06-25,Norte,Limpieza,Papel higiénico x4,2,2600,5200,QR,Habitual
+V0920,2025-06-25,Sur,Almacén,Arroz 1 kg,2,1700,3400,QR,Habitual
+V0921,2025-06-26,Centro,Almacén,Aceite 900 ml,6,3200,19200,Crédito,Habitual
+V0922,2025-06-26,Centro,Frescos,Huevos x12,1,3400,3400,Débito,Habitual
+V0923,2025-06-26,Norte,Frescos,Pan kg,6,2900,17400,Efectivo,Habitual
+V0924,2025-06-26,Norte,Bebidas,"Gaseosa 1,5 L",2,2100,4200,Crédito,Habitual
+V0925,2025-06-26,Sur,Bebidas,"Gaseosa 1,5 L",6,2100,12600,Débito,Nuevo
+V0926,2025-06-26,Sur,Almacén,Arroz 1 kg,1,1700,1700,Efectivo,Habitual
+V0927,2025-06-27,Centro,Limpieza,Papel higiénico x4,1,2600,2600,Efectivo,Nuevo
+V0928,2025-06-27,Centro,Almacén,Yerba 1 kg,1,4800,4800,Débito,Habitual
+V0929,2025-06-27,Norte,Limpieza,Papel higiénico x4,4,2600,10400,Crédito,Habitual
+V0930,2025-06-27,Norte,Almacén,Fideos 500 g,3,1300,3900,QR,Habitual
+V0931,2025-06-27,Norte,Frescos,Queso cremoso kg,1,9800,9800,Débito,Habitual
+V0932,2025-06-27,Sur,Bebidas,Jugo en polvo,6,450,2700,Débito,Habitual
+V0933,2025-06-27,Sur,Frescos,Huevos x12,6,3400,20400,Crédito,Habitual
+V0934,2025-06-28,Centro,Bebidas,"Gaseosa 1,5 L",2,2100,4200,QR,Habitual
+V0935,2025-06-28,Centro,Bebidas,Jugo en polvo,1,450,450,QR,Nuevo
+V0936,2025-06-28,Centro,Bebidas,Agua 2 L,1,900,900,Efectivo,Habitual
+V0937,2025-06-28,Norte,Almacén,Yerba 1 kg,1,4800,4800,Crédito,Habitual
+V0938,2025-06-28,Norte,Almacén,Yerba 1 kg,6,4800,28800,QR,Habitual
+V0939,2025-06-28,Norte,Almacén,Aceite 900 ml,1,3200,3200,Efectivo,Habitual
+V0940,2025-06-28,Sur,Bebidas,"Gaseosa 1,5 L",6,2100,12600,Crédito,Habitual
+V0941,2025-06-28,Sur,Almacén,Arroz 1 kg,6,1700,10200,QR,Habitual
+V0942,2025-06-28,Sur,Almacén,Fideos 500 g,1,1300,1300,Efectivo,Habitual
+V0943,2025-06-29,Centro,Almacén,Yerba 1 kg,6,4800,28800,Débito,Habitual
+V0944,2025-06-29,Centro,Limpieza,Lavandina 1 L,2,1100,2200,QR,Habitual
+V0945,2025-06-29,Norte,Bebidas,Agua 2 L,1,900,900,Débito,Habitual
+V0946,2025-06-29,Norte,Bebidas,Jugo en polvo,6,450,2700,QR,Nuevo
+V0947,2025-06-29,Sur,Frescos,Huevos x12,2,3400,6800,Débito,Habitual
+V0948,2025-06-29,Sur,Frescos,Huevos x12,6,3400,20400,Débito,Habitual
+V0949,2025-06-30,Centro,Bebidas,Jugo en polvo,3,450,1350,QR,Habitual
+V0950,2025-06-30,Centro,Almacén,Fideos 500 g,1,1300,1300,QR,Habitual
+V0951,2025-06-30,Norte,Frescos,Huevos x12,6,3400,20400,Débito,Habitual
+V0952,2025-06-30,Sur,Almacén,Yerba 1 kg,2,4800,9600,Crédito,Habitual

@@ -1,7 +1,8 @@
-// Valida public/contenido.js y public/glosario.js. Uso: node tools/validar.js  (sale con código 1 si hay errores)
+// Valida el contenido y el glosario de un curso. Uso: node tools/validar.js [carpeta]  (sin carpeta: el curso principal; datos: el de análisis de datos). Sale con código 1 si hay errores.
 const fs = require('fs'), path = require('path'), vm = require('vm');
 const ctx = { window: {} };
-for (const f of ['contenido.js', 'glosario.js']) vm.runInNewContext(fs.readFileSync(path.join(__dirname, '..', 'public', f), 'utf8'), ctx);
+const carpeta = path.join(__dirname, '..', 'public', process.argv[2] || '');
+for (const f of ['contenido.js', 'glosario.js']) vm.runInNewContext(fs.readFileSync(path.join(carpeta, f), 'utf8'), ctx);
 const T = ctx.window.TEMARIO, errores = [], ids = new Set();
 
 for (const m of T) {

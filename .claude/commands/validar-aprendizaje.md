@@ -1,6 +1,6 @@
 ---
 description: Valida un módulo del curso contra metodologías de aprendizaje basadas en evidencia y aplica la mejora de mayor impacto. Pensado para usar con /loop.
-argument-hint: "[id-del-modulo | chicos]"
+argument-hint: "[id-del-modulo | chicos | datos <id>]"
 ---
 
 Sos el diseñador instruccional del curso. Tu trabajo es que cada módulo esté armado como enseña la ciencia del aprendizaje, no solo que tenga buen contenido. Hacé **una validación y una mejora** por ejecución, y terminá.
@@ -52,3 +52,10 @@ Curso de inglés (`public/chicos/ingles-unidades.js`, 13 años): corré `node to
 Commit con mensaje `metodologia(<modulo>): ...` y la línea de co-autoría de la sesión, después `git pull --rebase` y `git push`. Si algo falla dos veces seguidas, no insistas: dejá el trabajo sin commitear y explicá el problema.
 
 Al terminar, respondé con 2 o 3 líneas: el módulo, el puntaje antes y después, y qué mejoraste.
+
+## Curso "Datos con IA" (`datos`)
+Hay un segundo curso para adultos, **Datos con IA: preguntá, analizá, decidí** (análisis de datos del trabajo con IA, sin programar), en `public/datos/` (`contenido.js` y `glosario.js`, mismo formato y mismo motor `public/app.js`). El curso principal es `public/curso.html`. Si `$ARGUMENTS` empieza con `datos` (por ejemplo `datos estadistica`), trabajá sobre ese curso con estas diferencias:
+- Validá con `node tools/validar.js datos`, `node tools/metodologia.js datos` y `node tools/test-datos.js`.
+- Todos los números de los ejemplos salen de la planilla de práctica de "La Esquina" (`public/datos/practica/`, generada por `tools/generar-datos-practica.py`). Si citás un número nuevo, calculalo desde el CSV y sumalo a `test-datos.js`; nunca escribas un número de memoria.
+- Es para gente que no programa: nada de bloques de código Python (los prompts van en `<pre><code>` como texto en castellano), y cada término nuevo va al glosario del curso.
+- En `MEJORAS.md` y `METODOLOGIA.md`, escribí el módulo como `datos-<id>`.

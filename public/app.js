@@ -1,9 +1,12 @@
 const T = window.TEMARIO;
+// El mismo motor sirve a más de un curso: cada página puede definir window.CURSO antes de cargar app.js.
+// Sin eso es el curso de AI Engineering de siempre. La clave separa el progreso de cada curso en el navegador.
+const CURSO = { clave: 'progreso', nombre: 'AI Engineering', archivo: 'ai-engineering', titular: 'Convertite en <span class="degradado">AI Engineer</span>', bajada: 'de los fundamentos a producción', chicos: true, sw: 'sw.js', ...window.CURSO };
 const app = document.getElementById('app');
 const APROBADO = 80;
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-const cargar = () => ({ leidas: {}, notas: {}, falladas: {}, apuntes: {}, agenda: {}, dias: {}, tarjetas: {}, aciertos: {}, practicas: {}, conocidas: {}, minutos: {}, metaSemanal: 120, intentos: {}, historial: {}, ...JSON.parse(localStorage.getItem('progreso') || '{}') });
-const guardar = p => localStorage.setItem('progreso', JSON.stringify(p));
+const cargar = () => ({ leidas: {}, notas: {}, falladas: {}, apuntes: {}, agenda: {}, dias: {}, tarjetas: {}, aciertos: {}, practicas: {}, conocidas: {}, minutos: {}, metaSemanal: 120, intentos: {}, historial: {}, ...JSON.parse(localStorage.getItem(CURSO.clave) || '{}') });
+const guardar = p => localStorage.setItem(CURSO.clave, JSON.stringify(p));
 const mezclar = a => a.map(x => [Math.random(), x]).sort((x, y) => x[0] - y[0]).map(x => x[1]);
 // La clave de una pregunta es su texto: sobrevive a reordenar o insertar preguntas.
 const preguntasDe = m => m.quiz.map(q => ({ ...q, m: m.id }));
@@ -141,7 +144,7 @@ const novedades = p => todasLasLecciones().filter(x => !p.conocidas[claveLeccion
 function marcarConocidas(p, lista) { lista.forEach(x => { p.conocidas[claveLeccion(x.m, x.l)] = true; }); }
 // La primera vez que se usa esta función, todo lo que ya existe cuenta como conocido (si no, todo sería "nuevo").
 function iniciarNovedades() {
-  const crudo = JSON.parse(localStorage.getItem('progreso') || '{}');
+  const crudo = JSON.parse(localStorage.getItem(CURSO.clave) || '{}');
   if (crudo.conocidas) return;
   const p = cargar();
   marcarConocidas(p, todasLasLecciones());
@@ -155,7 +158,7 @@ function novedadesPagina() {
       <ol class="plan">${lista.map(x => `<li><a href="#/m/${x.m.id}/${x.n}">${icono(x.m)} ${esc(x.l.titulo)} <small class="suave">(${esc(x.m.titulo)})</small></a></li>`).join('')}</ol>
       <button class="secundario" id="vistas">✔ Marcar todas como vistas</button>`
     : '<section class="card"><p>No hay lecciones nuevas desde tu última visita. 🎉</p></section>'}
-    <p class="suave">🧒 También hay una <a href="chicos/">versión para chicos de 10 a 13 años</a>, con misiones cortas para aprender qué es la IA.</p>`;
+    ${CURSO.chicos ? '<p class="suave">🧒 También hay una <a href="chicos/">versión para chicos de 10 a 13 años</a>, con misiones cortas para aprender qué es la IA.</p>' : ''}`;
   const boton = app.querySelector('#vistas');
   if (boton) boton.onclick = () => { const p = cargar(); marcarConocidas(p, novedades(p)); guardar(p); novedadesPagina(); };
 }
@@ -167,8 +170,8 @@ function inicio() {
   const siguiente = T.find(m => !aprobado(m, p)) || T[T.length - 1];
   app.innerHTML = `
     <section class="hero">
-      <h1>Convertite en <span class="degradado">AI Engineer</span></h1>
-      <p>${T.length} módulos, de los fundamentos a producción. Leé, practicá, explicalo con tus palabras y aprobá cada quiz con ${APROBADO}%.</p>
+      <h1>${CURSO.titular}</h1>
+      <p>${T.length} módulos, ${CURSO.bajada}. Leé, practicá, explicalo con tus palabras y aprobá cada quiz con ${APROBADO}%.</p>
       ${barra(Math.round(100 * aprobados / T.length))}
       <div class="stats">
         <div class="stat"><strong>${aprobados}/${T.length}</strong><span>módulos aprobados</span></div>
@@ -214,13 +217,13 @@ function descargar(nombre, texto, tipo) {
   a.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
-const exportar = () => descargar('progreso-ai-engineering.json', JSON.stringify(cargar(), null, 2), 'application/json');
+const exportar = () => descargar(`progreso-${CURSO.archivo}.json`, JSON.stringify(cargar(), null, 2), 'application/json');
 
 // Apuntes "Explicalo con tus palabras" de todos los módulos, en el orden del temario. null si no hay ninguno.
 function apuntesMarkdown(p) {
   const con = T.filter(m => (p.apuntes[m.id] || '').trim());
   if (!con.length) return null;
-  return `# Mis apuntes de AI Engineering\n\n_Descargado el ${dia()}_\n` +
+  return `# Mis apuntes de ${CURSO.nombre}\n\n_Descargado el ${dia()}_\n` +
     con.map(m => `\n## ${icono(m)} ${m.titulo}\n\n${p.apuntes[m.id].trim()}\n`).join('');
 }
 function descargarApuntes() {
@@ -431,7 +434,7 @@ function modulo(id, abrir = null) {
 }
 
 function promptTutor(m, apunte) {
-  return `Sos mi tutor de AI Engineering. Tomame un examen oral sobre el módulo "${m.titulo}".
+  return `Sos mi tutor de ${CURSO.nombre}. Tomame un examen oral sobre el módulo "${m.titulo}".
 
 Objetivos del módulo:
 ${m.objetivos.map(o => '- ' + o).join('\n')}
@@ -594,10 +597,10 @@ function certificado() {
     <p class="no-imprimir"><label>Tu nombre para el certificado: <input id="nombre" class="buscador" value="${esc(p.nombre || '')}" maxlength="100"></label></p>
     <section class="certificado">
       <p class="suave">Certificado de finalización</p>
-      <h1>AI Engineering</h1>
+      <h1>${esc(CURSO.nombre)}</h1>
       <p>Se deja constancia de que</p>
       <h2 id="nombre-cert">${esc(p.nombre || 'Tu nombre')}</h2>
-      <p>completó el curso de autoaprendizaje de AI Engineering y aprobó el examen final con <strong>${p.examen}%</strong>${p.examenFecha ? ' el ' + p.examenFecha : ''}.</p>
+      <p>completó el curso de autoaprendizaje de ${esc(CURSO.nombre)} y aprobó el examen final con <strong>${p.examen}%</strong>${p.examenFecha ? ' el ' + p.examenFecha : ''}.</p>
       <p>Módulos aprobados: ${aprobados} de ${T.length}.</p>
       <p class="suave">Curso de autoaprendizaje: no es una certificación oficial.</p>
     </section>
@@ -720,7 +723,7 @@ async function pasarProgreso() {
     catch { prompt('Copiá este enlace:', enlace); }
   };
   const compartir = app.querySelector('#compartir-enlace');
-  if (compartir) compartir.onclick = () => navigator.share({ title: 'Mi progreso de AI Engineering', url: enlace }).catch(() => {});
+  if (compartir) compartir.onclick = () => navigator.share({ title: 'Mi progreso de ' + CURSO.nombre, url: enlace }).catch(() => {});
 }
 
 async function traerProgreso(datos) {
@@ -756,7 +759,7 @@ function compararIntentos(anterior, ahora, preguntadas) {
     nuevas: [...hoy].filter(i => !antes.has(i)).length,
   };
 }
-const textoLogro = (que, pct, url) => `Aprobé ${que} del curso de AI Engineering con ${pct}% 🎉 Estudio con este curso abierto de autoaprendizaje: ${url}`;
+const textoLogro = (que, pct, url) => `Aprobé ${que} del curso de ${CURSO.nombre} con ${pct}% 🎉 Estudio con este curso abierto de autoaprendizaje: ${url}`;
 // Voz: algunos navegadores cortan los textos largos, así que se lee en trozos de una o pocas oraciones.
 function trozosParaVoz(texto, max = 220) {
   const oraciones = texto.replace(/\s+/g, ' ').trim().match(/[^.!?:]+[.!?:]*/g) || [];
@@ -950,7 +953,7 @@ document.getElementById('letra-mas').onclick = () => cambiarLetra(0.1);
 
 // Sin conexión: el service worker solo funciona servido por http(s), no abriendo el archivo local.
 if (window.navigator?.serviceWorker && location.protocol.startsWith('http')) {
-  navigator.serviceWorker.register('sw.js');
+  navigator.serviceWorker.register(CURSO.sw);
   navigator.serviceWorker.addEventListener('message', e => { if (e.data === 'contenido-nuevo') avisarContenidoNuevo(); });
 }
 function avisarContenidoNuevo() {

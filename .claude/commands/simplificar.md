@@ -40,3 +40,10 @@ Leé la lección como si no supieras nada y anotá:
 4. Respondé en 2 o 3 líneas, sin palabras técnicas: qué lección cambiaste y un ejemplo de antes y después.
 
 Si algo falla dos veces seguidas, no insistas: dejá el trabajo sin commitear y explicá el problema en una línea.
+
+## Curso "Datos con IA" (`datos`)
+Hay un segundo curso para adultos, **Datos con IA: preguntá, analizá, decidí** (análisis de datos del trabajo con IA, sin programar), en `public/datos/` (`contenido.js` y `glosario.js`, mismo formato y mismo motor `public/app.js`). El curso principal es `public/curso.html`. Si `$ARGUMENTS` empieza con `datos` (por ejemplo `datos estadistica`), trabajá sobre ese curso con estas diferencias:
+- Validá con `node tools/validar.js datos`, `node tools/metodologia.js datos` y `node tools/test-datos.js`.
+- Todos los números de los ejemplos salen de la planilla de práctica de "La Esquina" (`public/datos/practica/`, generada por `tools/generar-datos-practica.py`). Si citás un número nuevo, calculalo desde el CSV y sumalo a `test-datos.js`; nunca escribas un número de memoria.
+- Es para gente que no programa: nada de bloques de código Python (los prompts van en `<pre><code>` como texto en castellano), y cada término nuevo va al glosario del curso.
+- En `MEJORAS.md` y `METODOLOGIA.md`, escribí el módulo como `datos-<id>`.

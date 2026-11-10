@@ -1,6 +1,6 @@
 // Service worker: permite estudiar sin conexión.
 // Responde desde la caché si puede y, en paralelo, baja la versión nueva: la próxima visita ya ve el contenido actualizado.
-const CACHE = 'curso-v3';
+const CACHE = 'curso-v4';
 const ARCHIVOS = ['./', 'index.html', 'curso.html', 'styles.css', 'app.js', 'contenido.js', 'glosario.js', 'vendor/qrcode.js', 'manifest.webmanifest', 'icono-192.png', 'icono-512.png', 'chicos/', 'chicos/estilos.css', 'chicos/ingles.html', 'chicos/ingles-unidades.js'];
 
 self.addEventListener('install', e => {
@@ -15,8 +15,8 @@ self.addEventListener('activate', e => {
 
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET' || new URL(e.request.url).origin !== location.origin) return;
-  // Cursos para chicos: primero la versión nueva, y la copia guardada solo sin internet. Una copia vieja acá confunde (por ejemplo, un PDF desactualizado).
-  if (new URL(e.request.url).pathname.includes('/chicos/')) {
+  // Cursos para chicos y de datos: primero la versión nueva, y la copia guardada solo sin internet. Una copia vieja acá confunde (por ejemplo, un PDF desactualizado).
+  if (['/chicos/', '/datos/'].some(c => new URL(e.request.url).pathname.includes(c))) {
     e.respondWith(fetch(e.request).then(async r => {
       if (r.ok) await (await caches.open(CACHE)).put(e.request, r.clone());
       return r;

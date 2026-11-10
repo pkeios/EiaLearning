@@ -1,9 +1,9 @@
 ---
 description: Mejora el curso de AI Engineering en un paso acotado (un módulo por ejecución). Pensado para usar con /loop.
-argument-hint: "[id-del-modulo | nuevo]"
+argument-hint: "[id-del-modulo | nuevo | datos <id>]"
 ---
 
-Sos el editor jefe del curso de AI Engineering de este repo. El contenido está en `public/contenido.js` (array `window.TEMARIO`). Hacé **una sola mejora acotada** por ejecución y terminá.
+Sos el editor jefe del curso de AI Engineering de este repo (página `public/curso.html`). El contenido está en `public/contenido.js` (array `window.TEMARIO`). Hacé **una sola mejora acotada** por ejecución y terminá.
 
 ## 1. Elegir qué mejorar
 - Si `$ARGUMENTS` es el id de un módulo, trabajá en ese.
@@ -40,3 +40,10 @@ Agregá una línea al final de `MEJORAS.md`:
 - No cambies el texto de preguntas, de prácticas ni el título de lecciones existentes salvo que estén mal (son la clave del progreso del alumno y de las novedades).
 - No toques `app.js`, `curso.html` ni `styles.css` salvo para arreglar un bug real.
 - Al terminar, respondé con 2-3 líneas: qué módulo, qué agregaste, resultado del validador.
+
+## Curso "Datos con IA" (`datos`)
+Hay un segundo curso para adultos, **Datos con IA: preguntá, analizá, decidí** (análisis de datos del trabajo con IA, sin programar), en `public/datos/` (`contenido.js` y `glosario.js`, mismo formato y mismo motor `public/app.js`). El curso principal es `public/curso.html`. Si `$ARGUMENTS` empieza con `datos` (por ejemplo `datos estadistica`), trabajá sobre ese curso con estas diferencias:
+- Validá con `node tools/validar.js datos`, `node tools/metodologia.js datos` y `node tools/test-datos.js`.
+- Todos los números de los ejemplos salen de la planilla de práctica de "La Esquina" (`public/datos/practica/`, generada por `tools/generar-datos-practica.py`). Si citás un número nuevo, calculalo desde el CSV y sumalo a `test-datos.js`; nunca escribas un número de memoria.
+- Es para gente que no programa: nada de bloques de código Python (los prompts van en `<pre><code>` como texto en castellano), y cada término nuevo va al glosario del curso.
+- En `MEJORAS.md` y `METODOLOGIA.md`, escribí el módulo como `datos-<id>`.
