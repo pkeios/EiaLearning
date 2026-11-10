@@ -10,6 +10,7 @@
 <header><h1><a href="#/">🎒 Para chicos</a></h1></header>
 <main id="app"></main>
 <footer>Para adultos: cursos para chicos y chicas de 10 a 13 años. El progreso se guarda solo en este navegador.<br><a href="../">Todos los cursos</a></footer>
+<script src="../mapa.js"></script>
 <script>
 // Pasos: idea (emoji + frase corta), elegir (una correcta) y clasificar (cada ítem en su grupo).
 // Cada misión tiene 3 ejercicios: una estrella por cada uno resuelto al primer intento.
@@ -90,6 +91,17 @@ function preguntaRepaso(p, azar = Math.random) {
   return preguntas.length ? preguntas[Math.floor(azar() * preguntas.length)] : null;
 }
 
+// Diagrama del recorrido: cada misión, la pregunta que vas a poder responder y su actividad del taller.
+const mapaIA = p => window.mapaFlujo ? mapaFlujo({
+  titulo: 'El camino de las misiones',
+  intro: 'Hacé las misiones en orden. Al terminar cada una vas a poder responder su pregunta, y en el taller lo probás vos.',
+  etapas: MISIONES.map((m, i) => ({
+    nombre: `${m.emoji} ${m.titulo}${p[i] != null ? ' ' + '⭐'.repeat(p[i]) : ''}`, href: '#/' + i, texto: m.reflexion,
+    items: m.pasos.filter(s => s.taller).map(s => { const t = TALLER.find(x => x.id === s.taller); return { icono: t.emoji, titulo: 'Taller: ' + t.titulo, href: '#/taller/' + t.id, hecho: !!cargarTaller()[t.id] }; }),
+  })),
+  cierre: 'Lo de las misiones que terminaste vuelve en el repaso rápido, para que no se olvide.',
+}) : '';
+
 function inicio() {
   const p = cargar(), total = Object.values(p).reduce((a, b) => a + b, 0);
   app.innerHTML = `<a class="volver" href="#/">← Elegir curso</a>
@@ -101,7 +113,8 @@ function inicio() {
     <div id="repaso"></div>
     <h2 class="seccion">🛠️ Taller: ¡ahora hacelo vos!</h2>
     <div class="misiones">${TALLER.map(t => `<button class="mision" style="--c:${t.color}" data-t="${t.id}">
-      <span class="emoji">${t.emoji}</span><strong>${t.titulo}</strong><small>${cargarTaller()[t.id] ? '✅ Hecho' : '🛠️ Probar'}</small></button>`).join('')}</div>`;
+      <span class="emoji">${t.emoji}</span><strong>${t.titulo}</strong><small>${cargarTaller()[t.id] ? '✅ Hecho' : '🛠️ Probar'}</small></button>`).join('')}</div>
+    ${mapaIA(p)}`;
   app.querySelectorAll('.mision').forEach(b => b.onclick = () => { location.hash = b.dataset.t ? '#/taller/' + b.dataset.t : '#/' + b.dataset.i; });
   const r = preguntaRepaso(p);
   if (!r) return;

@@ -163,6 +163,12 @@ function novedadesPagina() {
   if (boton) boton.onclick = () => { const p = cargar(); marcarConocidas(p, novedades(p)); guardar(p); novedadesPagina(); };
 }
 
+// Diagrama de flujo del curso (window.MAPA en contenido.js, dibujado por mapa.js): cada etapa con sus módulos.
+const mapaDelCurso = p => window.MAPA && window.mapaFlujo ? mapaFlujo({ ...MAPA, etapas: MAPA.etapas.map(e => ({ ...e, items: e.modulos.map(id => {
+  const i = T.findIndex(m => m.id === id), m = T[i];
+  return m && { icono: icono(m), titulo: m.titulo, href: '#/m/' + id, num: 'Módulo ' + (i + 1), hecho: aprobado(m, p) };
+}).filter(Boolean) })) }) : '';
+
 function inicio() {
   const p = cargar();
   const aprobados = T.filter(m => aprobado(m, p)).length;
@@ -195,6 +201,7 @@ function inicio() {
         <input type="file" id="archivo" accept=".json,application/json" hidden>
       </div>
     </section>
+    ${mapaDelCurso(p)}
     <div class="grilla">${T.map((m, i) => {
       const a = avance(m, p), nota = p.notas[m.id];
       return `<a class="tarjeta ${aprobado(m, p) ? 'aprobada' : ''}" href="#/m/${m.id}">

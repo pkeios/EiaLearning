@@ -11,6 +11,7 @@
 <main id="app"></main>
 <footer>Para adultos: 10 unidades de unos 20 minutos, para chicos de 13 años. Presente simple, presente continuo y pasado simple. El progreso y las respuestas se guardan solo en este navegador.<br><a href="../">Todos los cursos</a></footer>
 <script src="ingles-unidades.js"></script>
+<script src="../mapa.js"></script>
 <script>
 // ---------- Lógica sin pantalla (la prueba tools/test-ingles.js) ----------
 // Compara respuestas sin que importen mayúsculas, puntos ni formas cortas: "I don't" vale igual que "I do not".
@@ -235,7 +236,7 @@ const hojaVerbos = () => `<section class="hoja" style="--c:#c2572b">
   <div class="columnas">${GRUPOS_VERBOS.map(g => `<div class="bloque"><h3>${esc(g.titulo)}</h3><p class="nota">💡 ${esc(g.truco)}</p><table class="regla"><thead><tr><th>Presente</th><th>Pasado</th><th>Significa</th></tr></thead><tbody>${g.verbos.map(([a, b, c]) => `<tr><td lang="en">${esc(a)}</td><td lang="en"><strong>${esc(b)}</strong></td><td>${esc(c)}</td></tr>`).join('')}</tbody></table></div>`).join('')}</div></section>`;
 // que: número de unidad, 'verbos' o 'todo'. Las unidades con irregulares suman la tabla, para tenerla a mano en papel.
 function imprimir(que) {
-  document.documentElement.style.setProperty('--color', '#ff7a59');
+  document.documentElement.style.setProperty('--color', '#e0582f');
   const i = Number(que), una = UNIDADES[i];
   const hojas = que === 'verbos' ? hojaVerbos()
     : que === 'todo' ? UNIDADES.map(hojaUnidad).join('') + hojaVerbos()
@@ -251,12 +252,15 @@ function imprimir(que) {
 function inicio() {
   const p = cargar(), hechas = Object.keys(p.u).length, repasar = paraRepasar(p).length;
   const total = Object.values(p.u).reduce((a, b) => a + b, 0);
-  document.documentElement.style.setProperty('--color', '#ff7a59');
+  document.documentElement.style.setProperty('--color', '#e0582f');
   app.innerHTML = `<a class="volver" href="../">← Todos los cursos</a>
     <p class="estrellas">⭐ <strong>${total}</strong> de ${UNIDADES.length * 3} estrellas · ✅ ${hechas} de ${UNIDADES.length} unidades</p>
     ${repasar ? `<p style="text-align:center"><a class="boton" href="#/repaso">🔁 Repaso de hoy: ${repasar} ${repasar === 1 ? 'ejercicio' : 'ejercicios'}</a></p><p class="seguro" style="text-align:center">Recordar lo de días pasados es lo que hace que no te olvides. Empezá por acá.</p>` : ''}
     <div class="misiones">${UNIDADES.map((u, i) => `<a class="mision" style="--c:${u.color};color:inherit;text-decoration:none" href="#/u/${i}">
       <span class="emoji">${u.emoji}</span><strong>${i + 1}. ${esc(u.titulo)}</strong><small>${p.u[i] != null ? '⭐'.repeat(p.u[i]) + '☆'.repeat(3 - p.u[i]) : p.enCurso[i] ? '⏸️ Seguir' : '▶️ Empezar'}</small></a>`).join('')}</div>
+    ${window.mapaFlujo ? mapaFlujo({ titulo: 'El camino del curso', intro: 'Cada etapa usa lo que aprendiste en la anterior. Tocá una unidad para ir directo.',
+      etapas: MAPA_INGLES.map(e => ({ ...e, items: e.unidades.map(i => ({ icono: UNIDADES[i].emoji, num: String(i + 1), titulo: UNIDADES[i].titulo, href: '#/u/' + i, hecho: p.u[i] != null })) })),
+      cierre: 'Lo que ya aprendiste vuelve en el repaso de cada día, para que no se olvide.' }) : ''}
     <h2 class="seccion">🧰 Tus herramientas</h2>
     <div class="misiones">
       <a class="mision" style="--c:#c2572b;color:inherit;text-decoration:none" href="#/verbos"><span class="emoji">📘</span><strong>Verbos irregulares</strong><small>Tabla y práctica</small></a>
@@ -400,7 +404,7 @@ function tanda(titulo, volver, items, registrar) {
 }
 
 function repaso() {
-  document.documentElement.style.setProperty('--color', '#ff7a59');
+  document.documentElement.style.setProperty('--color', '#e0582f');
   const p = cargar(), m = repasables(), claves = mezclar(paraRepasar(p)).slice(0, 10);
   if (!claves.length) {
     app.innerHTML = `<a class="volver" href="#/">← Unidades</a><section class="tarjeta"><div class="grande">🌱</div><p class="texto">Hoy no hay nada para repasar.</p><p>Hacé una unidad o practicá verbos: los ejercicios vuelven solos otro día.</p></section>`;

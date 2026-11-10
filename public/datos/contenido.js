@@ -893,3 +893,21 @@ Sur cerró del 7 al 20 de abril.</code></pre>
   ],
 },
 ];
+
+// Mapa del curso (diagrama de flujo en el inicio). Cada módulo va en una sola etapa, en el orden del temario:
+// lo controla tools/test-mapas.js.
+window.MAPA = {
+  titulo: 'El camino de un análisis con IA',
+  intro: 'Es el mismo camino que vas a seguir en el proyecto final. Tocá un módulo para ir directo.',
+  etapas: [
+    { nombre: 'Conocé la herramienta', texto: 'Qué hace bien la IA, dónde falla y qué datos no subir.', modulos: ['ia-y-datos'] },
+    { nombre: 'Prepará los datos', texto: 'Planilla ordenada, limpia y con su diccionario de datos: si no, todo lo demás sale mal.', modulos: ['preparar'] },
+    { nombre: 'Preguntá', texto: 'Partí de la decisión que hay que tomar y pedile el análisis a la IA con la plantilla de 5 partes.', modulos: ['preguntar'] },
+    { nombre: 'Analizá', texto: 'Agrupá, mirá cómo cambia en el tiempo y compará sin que los números te engañen.', modulos: ['estadistica', 'analizar'] },
+    { nombre: 'Verificá', texto: 'Pasá los controles rápidos antes de creerle a un número.', modulos: ['verificar'], vuelta: '¿Un control no cierra? Volvé a analizar, o a preparar los datos si el error está en la planilla.' },
+    { nombre: 'Mostrá', texto: 'Un gráfico claro, con un título que dice la conclusión.', modulos: ['graficos'] },
+    { nombre: 'Decidí', texto: 'Primero la conclusión y la recomendación, con lo que sabés y lo que no.', modulos: ['decidir'] },
+    { nombre: 'Proyecto final', texto: 'Todo el camino de punta a punta: primero con La Esquina y después con tu planilla real.', modulos: ['proyecto'] },
+  ],
+  cierre: 'Un mes después, medís si la decisión funcionó. Eso trae la próxima pregunta, y el camino empieza otra vez.',
+};

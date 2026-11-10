@@ -336,3 +336,12 @@ const UNIDADES = [
     { personal: "Write your story: something you always do, something you are doing now and something you did last year.", es: "Escribí tu historia: algo que hacés siempre, algo que estás haciendo ahora y algo que hiciste el año pasado.", modelo: "I always listen to music. Right now I am studying English. Last year I went to Córdoba with my family.", clave: "historia", patron: "\\b(am|is|are) \\w+ing\\b", pista: "Tiene que tener los tres tiempos, incluido uno con am + -ing." },
   ] },
 ];
+
+// Mapa del curso (diagrama en el inicio): cada unidad en una sola etapa, en orden. Lo controla tools/test-mapas.js.
+const MAPA_INGLES = [
+  { nombre: 'Presente: quién sos y qué hacés siempre', texto: "am, is, are; tu rutina con don't y doesn't; preguntas con do y does.", unidades: [0, 1, 2, 3] },
+  { nombre: 'Presente continuo: lo que pasa ahora', texto: 'am, is, are + verbo con -ing.', unidades: [4] },
+  { nombre: '¿Todos los días o ahora mismo?', texto: 'Elegir entre los dos presentes leyendo las pistas de la frase.', unidades: [5] },
+  { nombre: 'Pasado: lo que ya pasó', texto: "Verbos con -ed, verbos irregulares, y negativas y preguntas con didn't, did, was y were.", unidades: [6, 7, 8] },
+  { nombre: 'Misión final', texto: 'Contar tu historia en los tres tiempos.', unidades: [9] },
+];

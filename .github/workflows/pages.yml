@@ -17,7 +17,7 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
-      - run: node tools/validar.js && node tools/test-app.js && node tools/test-chicos.js && node tools/test-ingles.js && node tools/validar.js datos && node tools/test-datos.js
+      - run: node tools/validar.js && node tools/test-app.js && node tools/test-chicos.js && node tools/test-ingles.js && node tools/validar.js datos && node tools/test-datos.js && node tools/test-mapas.js
       - uses: actions/upload-pages-artifact@v3
         with:
           path: public
