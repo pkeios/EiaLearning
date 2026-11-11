@@ -1,6 +1,6 @@
 ---
 description: Mejora el curso de AI Engineering en un paso acotado (un módulo por ejecución). Pensado para usar con /loop.
-argument-hint: "[id-del-modulo | nuevo | datos <id> | data-engineering <id>]"
+argument-hint: "[id-del-modulo | nuevo | datos <id> | data-engineering <id> | prompts <id>]"
 ---
 
 Sos el editor jefe del curso de AI Engineering de este repo (página `public/curso.html`). El contenido está en `public/contenido.js` (array `window.TEMARIO`). Hacé **una sola mejora acotada** por ejecución y terminá.
@@ -55,3 +55,10 @@ Tercer curso para adultos, para quien quiere aprender a programar: Python, SQL y
 - Los números con separador de miles del texto tienen que salir de algún código o salida (test-de lo controla). Los datos de práctica son los de La Esquina (`public/datos/practica/`); el laboratorio los copia solo cuando el código nombra el archivo.
 - Usá `astype("int64")` y no `astype(int)`, y listas en vez de sets cuando el orden se imprime: si no, la salida cambia entre la computadora y el navegador, o entre una corrida y otra.
 - En `MEJORAS.md` y `METODOLOGIA.md`, escribí el módulo como `de-<id>`.
+
+## Curso "Prompts desde cero" (`prompts`)
+Cuarto curso para adultos, para quien no sabe absolutamente nada de IA: escribir pedidos en ChatGPT, Claude o Gemini, sin programar, en `public/prompts/` (mismo formato y mismo motor). Si `$ARGUMENTS` empieza con `prompts` (por ejemplo `prompts verificar`), trabajá sobre ese curso con estas diferencias:
+- Validá con `node tools/validar.js prompts` y `node tools/metodologia.js prompts`.
+- No repite el módulo `prompting` del curso principal (que es para programadores): acá todo se practica en la versión gratis de una IA de chat, con ejemplos de la vida diaria (estudio, casa, búsqueda de trabajo, un emprendimiento). No supongas que la persona tiene trabajo.
+- Las bases del curso son el tutorial interactivo de Anthropic, Google Prompting Essentials (método de 5 pasos), AI Fluency de Anthropic (las 4 habilidades) y el curso de DeepLearning.AI y OpenAI. Los nombres de funciones de las herramientas (Proyectos, Gems, instrucciones personalizadas) cambian seguido: si los nombrás, aclará que pueden cambiar.
+- En `MEJORAS.md` y `METODOLOGIA.md`, escribí el módulo como `prompts-<id>`.

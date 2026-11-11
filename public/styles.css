@@ -14,6 +14,8 @@
 :root[data-curso="datos"] { --acento: #1f9e8f; --acento2: #6fdc9b; --boton-fin: #14808f; --brillo: #0d4a43; --brillo2: #1d4a2a; }
 :root[data-curso="de"] { --acento: #c2417a; --acento2: #f2a65a; --boton-fin: #9b3f9e; --brillo: #4a1238; --brillo2: #4a2a0e; }
 :root[data-curso="de"][data-tema="claro"] { --acento: #a8336a; --acento2: #b0561a; --boton-fin: #85348a; }
+:root[data-curso="prompts"] { --acento: #b8741a; --acento2: #ffc857; --boton-fin: #a35a12; --brillo: #4a3208; --brillo2: #3a2a10; }
+:root[data-curso="prompts"][data-tema="claro"] { --acento: #8f5a0f; --acento2: #8a4f00; --boton-fin: #7a4a0a; }
 :root[data-curso="datos"][data-tema="claro"] { --acento: #157a6e; --acento2: #1d7a45; --boton-fin: #0f6b78; }
 :root[data-tema="claro"] body { background: var(--bg); }
 * { box-sizing: border-box; }
