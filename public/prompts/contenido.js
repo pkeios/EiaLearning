@@ -70,6 +70,7 @@ Pedido con detalles: Escribime 3 oraciones sobre por qué hay que
     { t: "OpenAI: buenas prácticas de prompts para ChatGPT (en inglés)", url: "https://help.openai.com/en/articles/10032626-prompt-engineering-best-practices-for-chatgpt" },
     { t: "Anthropic: curso gratis AI Fluency (en inglés)", url: "https://anthropic.skilljar.com/ai-fluency-framework-foundations" },
     { t: "Learn Prompting: curso introductorio gratis (en inglés)", url: "https://learnprompting.org/docs/introduction" },
+    { t: "Libro: La inteligencia artificial explicada a los humanos, de Jordi Torres (Plataforma Editorial, 2023)", url: "https://www.marcialpons.es/libros/la-inteligencia-artificial-explicada-a-los-humanos/9788419655561/" },
   ],
   quiz: [
     { q: "Tu tía te pregunta cómo hace ChatGPT para contestar. ¿Qué le explicás?", opciones: ["Que busca cada respuesta en una enciclopedia","Que hay una persona contestando del otro lado","Que escribe adivinando, palabra por palabra, qué es lo más probable que siga","Que copia la respuesta de una página web siempre"], correcta: 2, explicacion: "Un LLM escribe lo más probable según lo que leyó y lo que le escribiste. Lo de la enciclopedia tienta porque contesta como si supiera todo, pero no busca: arma el texto." },
@@ -163,6 +164,7 @@ Claro:  Explicame qué es el monotributo en Argentina,
     { t: "Anthropic: tutorial interactivo de prompts (en inglés), capítulos 1 y 2", url: "https://github.com/anthropics/prompt-eng-interactive-tutorial" },
     { t: "Google Prompting Essentials: el método de 5 pasos (en inglés)", url: "https://www.coursera.org/learn/google-prompting-essentials" },
     { t: "Claude: buenas prácticas de prompts (en inglés)", url: "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices" },
+    { t: "Libro: Writing AI Prompts For Dummies, de Stephanie Diamond y Jeffrey Allan (Wiley, 2024, en inglés)", url: "https://www.dummies.com/book/technology/information-technology/ai/writing-ai-prompts-for-dummies-301809/" },
   ],
   quiz: [
     { q: "Escribís \"Mi CV\" y la IA te da consejos generales sobre currículums. ¿Qué te faltó?", opciones: ["Escribirlo en mayúsculas","Usar otra IA más nueva","La tarea: qué querés que haga con tu CV, por ejemplo \"marcame 3 cosas para mejorar\"","Saludar a la IA antes de pedir"], correcta: 2, explicacion: "Sin un verbo y un resultado, la IA adivina lo más común. Cambiar de IA tienta, pero cualquiera adivina igual si no le decís qué hacer." },
@@ -635,6 +637,7 @@ Resultado:            el precio cambió y ahora hay que sacar turno
     { t: "Anthropic: tutorial interactivo de prompts (en inglés), capítulo 8, evitar alucinaciones", url: "https://github.com/anthropics/prompt-eng-interactive-tutorial" },
     { t: "Claude: buenas prácticas de prompts (en inglés)", url: "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices" },
     { t: "Anthropic: curso AI Fluency, discernimiento (en inglés)", url: "https://anthropic.skilljar.com/ai-fluency-framework-foundations" },
+    { t: "Libro: Inteligencia artificial. Guía para seres pensantes, de Melanie Mitchell (Capitán Swing, 2024)", url: "https://latam.casadellibro.com/libro-inteligencia-artificial/9788412779875/15962134" },
   ],
   quiz: [
     { q: "Le pedís a la IA un porcentaje exacto para un trabajo práctico. ¿Qué hacés con el número?", opciones: ["Lo usás: los números siempre los sabe","Lo redondeás y listo","Lo buscás en una fuente confiable antes de usarlo","Le preguntás \"¿estás segura?\" y si dice que sí, lo usás"], correcta: 2, explicacion: "Los números precisos están entre lo que más inventa. Preguntarle si está segura tienta, pero suele decir que sí aunque esté mal." },
@@ -1112,6 +1115,7 @@ Prueba:   Funciona bien con pedidos de 1 a 3 productos.</code></pre>
     { t: "Google Prompting Essentials: guardar, reusar y versionar prompts (en inglés)", url: "https://www.coursera.org/learn/google-prompting-essentials" },
     { t: "Anthropic: tutorial interactivo de prompts (en inglés), capítulo 9, prompts complejos", url: "https://github.com/anthropics/prompt-eng-interactive-tutorial" },
     { t: "Claude: guía de prompt engineering, con un generador de prompts (en inglés)", url: "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/overview" },
+    { t: "Libro: Writing AI Prompts For Dummies, de Stephanie Diamond y Jeffrey Allan (Wiley, 2024, en inglés)", url: "https://www.dummies.com/book/technology/information-technology/ai/writing-ai-prompts-for-dummies-301809/" },
   ],
   quiz: [
     { q: "Escribiste un prompt que te dio un mensaje perfecto para un cliente. ¿Qué hacés para la próxima?", opciones: ["Nada: la próxima lo escribís de nuevo","Le pedís a la IA que se lo acuerde para siempre","Lo convertís en plantilla, con huecos para lo que cambia","Copiás la respuesta y la mandás igual a todos"], correcta: 2, explicacion: "Una plantilla te ahorra pensar el pedido desde cero. Pedirle a la IA que se lo acuerde tienta, pero en una conversación nueva no lo tiene." },
@@ -1206,6 +1210,7 @@ a mi médico. No me des un diagnóstico.</code></pre>` },
     { t: "Anthropic: curso AI Fluency, las 4 habilidades (en inglés)", url: "https://anthropic.skilljar.com/ai-fluency-framework-foundations" },
     { t: "OpenAI Academy: cursos gratis de uso de IA (en inglés)", url: "https://academy.openai.com/" },
     { t: "Google Prompting Essentials: uso responsable (en inglés)", url: "https://www.coursera.org/learn/google-prompting-essentials" },
+    { t: "Libro: Cointeligencia, de Ethan Mollick (Conecta, 2024)", url: "https://latam.casadellibro.com/libro-cointeligencia/9788418053214/16155367" },
   ],
   quiz: [
     { q: "Tenés que decidir si le dejás a la IA una tarea. ¿Qué te preguntás primero?", opciones: ["¿Cuál es la IA más nueva?","¿Cuánto tarda en contestar?","¿Puedo revisar el resultado, qué pasa si sale mal y quiero aprender a hacerlo yo?","¿La IA tiene ganas?"], correcta: 2, explicacion: "Las 3 preguntas de la delegación deciden si conviene. Pensar en la IA más nueva tienta, pero ninguna versión resuelve que no puedas revisar el resultado." },
@@ -1294,7 +1299,7 @@ Versión 2: 9/10. Probada con 3 avisos.</code></pre>
         <tr><td>Guardar y mejorar con versiones</td><td>11</td></tr>
         <tr><td>Delegar y usarla con responsabilidad</td><td>12</td></tr>
       </table>
-      <p><strong>Para seguir aprendiendo:</strong> los recursos de cada módulo, sobre todo el curso de Google Prompting Essentials, el tutorial interactivo de Anthropic y el curso AI Fluency, que son las bases de este curso. Las herramientas cambian rápido, pero lo que aprendiste (pedir claro, revisar y ser responsable) sigue sirviendo. Por ejemplo, revisá tu biblioteca cada 3 meses: probá las plantillas de nuevo, porque una IA nueva puede responder distinto.</p>` },
+      <p><strong>Para seguir aprendiendo:</strong> los recursos de cada módulo, sobre todo el curso de Google Prompting Essentials, el tutorial interactivo de Anthropic y el curso AI Fluency, que son las bases de este curso. Y tres libros: <em>Cointeligencia</em>, de Ethan Mollick, para trabajar con la IA como compañera; <em>La inteligencia artificial explicada a los humanos</em>, de Jordi Torres, para entender cómo funciona; y <em>Writing AI Prompts For Dummies</em>, en inglés, con muchos más ejemplos de pedidos. Las herramientas cambian rápido, pero lo que aprendiste (pedir claro, revisar y ser responsable) sigue sirviendo. Por ejemplo, revisá tu biblioteca cada 3 meses: probá las plantillas de nuevo, porque una IA nueva puede responder distinto.</p>` },
   ],
   practica: [
     "Elegí tus 5 tareas y escribí las 5 plantillas, revisando cada una con la lista de verificación de la primera lección. Anotá qué casillas marcaste en cada una.",
@@ -1307,6 +1312,9 @@ Versión 2: 9/10. Probada con 3 avisos.</code></pre>
     { t: "Anthropic: tutorial interactivo de prompts (en inglés)", url: "https://github.com/anthropics/prompt-eng-interactive-tutorial" },
     { t: "Anthropic: curso AI Fluency (en inglés)", url: "https://anthropic.skilljar.com/ai-fluency-framework-foundations" },
     { t: "DeepLearning.AI y OpenAI: ChatGPT Prompt Engineering (en inglés)", url: "https://www.deeplearning.ai/short-courses/chatgpt-prompt-engineering-for-developers/" },
+    { t: "Libro: Cointeligencia, de Ethan Mollick (Conecta, 2024)", url: "https://latam.casadellibro.com/libro-cointeligencia/9788418053214/16155367" },
+    { t: "Libro: Writing AI Prompts For Dummies, de Stephanie Diamond y Jeffrey Allan (Wiley, 2024, en inglés)", url: "https://www.dummies.com/book/technology/information-technology/ai/writing-ai-prompts-for-dummies-301809/" },
+    { t: "Libro: La inteligencia artificial explicada a los humanos, de Jordi Torres (Plataforma Editorial, 2023)", url: "https://www.marcialpons.es/libros/la-inteligencia-artificial-explicada-a-los-humanos/9788419655561/" },
   ],
   quiz: [
     { q: "No tenés trabajo y querés hacer el proyecto final. ¿De qué pueden ser tus plantillas?", opciones: ["Solo de un trabajo","No podés hacer el proyecto","De estudio, de tu casa, de un emprendimiento o de tu búsqueda de trabajo","De cualquier cosa que no vayas a usar"], correcta: 2, explicacion: "Lo importante es que sean tareas reales que se repiten. Pensar que tienen que ser del trabajo tienta por la palabra \"plantilla\", pero sirven para cualquier parte de tu vida." },
