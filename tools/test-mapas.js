@@ -8,7 +8,7 @@ global.window = win; // mapa.js usa window.mapaFlujo
 const dibujar = m => { const h = win.mapaFlujo(m); assert(h.includes('class="mapa"') && !h.includes('undefined'), 'el mapa no se dibuja bien'); return h; };
 const enOrden = (nombre, lista, esperado) => assert.deepStrictEqual(lista, esperado, `${nombre}: el mapa tiene que tener cada parte una vez y en el orden del curso`);
 
-for (const [carpeta, nombre] of [['', 'AI Engineering'], ['datos/', 'Datos con IA'], ['data-engineering/', 'Data Engineering'], ['prompts/', 'Prompts desde cero']]) {
+for (const [carpeta, nombre] of [['', 'AI Engineering'], ['datos/', 'Datos con IA'], ['prompts/', 'Prompts desde cero']]) {
   const w = {}; new Function('window', fs.readFileSync(P + carpeta + 'contenido.js', 'utf8'))(w);
   assert(w.MAPA && w.MAPA.etapas.length >= 3, nombre + ': falta window.MAPA');
   enOrden(nombre, w.MAPA.etapas.flatMap(e => e.modulos), w.TEMARIO.map(m => m.id));
@@ -31,4 +31,4 @@ const talleres = MISIONES.map(m => m.pasos.filter(s => s.taller).map(s => s.tall
 talleres.forEach((t, i) => assert.equal(t.length, 1, `misión ${i + 1}: tiene que tener una actividad del taller`));
 assert.deepStrictEqual([...talleres.flat()].sort(), TALLER.map(t => t.id).sort(), 'cada actividad del taller está en una misión');
 assert(h.includes('${mapaIA(p)}') && h.includes('../mapa.js'), 'el inicio de IA para chicos muestra el mapa');
-console.log('test-mapas OK (6 cursos)');
+console.log('test-mapas OK (5 cursos; Data Engineering va sin mapa, a pedido del usuario)');
