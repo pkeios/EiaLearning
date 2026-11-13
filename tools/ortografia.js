@@ -1,5 +1,5 @@
 // Pasa el texto de un curso (lecciones sin código, preguntas, opciones, explicaciones y glosario) por el corrector LanguageTool en español.
-// Uso: node tools/ortografia.js <carpeta>. Manda el texto del curso a la API pública de LanguageTool (es contenido público del sitio). Los avisos son sugerencias: corregí solo los errores reales.
+// Uso: node tools/ortografia.js <carpeta> (si falla con "self-signed certificate", corré node --use-system-ca tools/ortografia.js <carpeta>). Manda el texto del curso a la API pública de LanguageTool (es contenido público del sitio). Los avisos son sugerencias: corregí solo los errores reales.
 const fs = require('fs');
 const D = require('path').join(__dirname, '..', 'public', process.argv[2] || '') + '/';
 const T = new Function('window', fs.readFileSync(D + 'contenido.js', 'utf8') + ';return window.TEMARIO')({});
