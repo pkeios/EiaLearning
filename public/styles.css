@@ -16,6 +16,21 @@
 :root[data-curso="de"][data-tema="claro"] { --acento: #a8336a; --acento2: #b0561a; --boton-fin: #85348a; }
 :root[data-curso="prompts"] { --acento: #b8741a; --acento2: #ffc857; --boton-fin: #a35a12; --brillo: #4a3208; --brillo2: #3a2a10; }
 :root[data-curso="prompts"][data-tema="claro"] { --acento: #8f5a0f; --acento2: #8a4f00; --boton-fin: #7a4a0a; }
+/* Cursos nuevos: un color por categoría del inicio (data-curso="cat-<categoría>"), así no hace falta inventar un color por curso */
+:root[data-curso="cat-trabajo"] { --acento: #4f6bed; --acento2: #9fb4ff; --boton-fin: #3b55c9; --brillo: #18224a; --brillo2: #1a2a3e; }
+:root[data-curso="cat-trabajo"][data-tema="claro"] { --acento: #3048c2; --acento2: #2a3fa8; --boton-fin: #2a3fa8; }
+:root[data-curso="cat-vida"] { --acento: #2e9e5b; --acento2: #8fe0a8; --boton-fin: #23804a; --brillo: #103a22; --brillo2: #1a3a2a; }
+:root[data-curso="cat-vida"][data-tema="claro"] { --acento: #1f7a43; --acento2: #1a6b3a; --boton-fin: #1a6b3a; }
+:root[data-curso="cat-oficios"] { --acento: #b5651d; --acento2: #f0b27a; --boton-fin: #8f4f16; --brillo: #3e2410; --brillo2: #3a2e12; }
+:root[data-curso="cat-oficios"][data-tema="claro"] { --acento: #8f4f16; --acento2: #7a4312; --boton-fin: #7a4312; }
+:root[data-curso="cat-emprender"] { --acento: #d6406f; --acento2: #ff9ab8; --boton-fin: #b03059; --brillo: #4a1426; --brillo2: #3a1a2e; }
+:root[data-curso="cat-emprender"][data-tema="claro"] { --acento: #a8284f; --acento2: #962345; --boton-fin: #962345; }
+:root[data-curso="cat-tecnologia"] { --acento: #7a5af8; --acento2: #6fd6ff; --boton-fin: #5d3fd6; --brillo: #2a1a5e; --brillo2: #0d3a4a; }
+:root[data-curso="cat-tecnologia"][data-tema="claro"] { --acento: #5b3fd0; --acento2: #0b6b8f; --boton-fin: #4a30b0; }
+:root[data-curso="cat-datos-ia"] { --acento: #1f9e8f; --acento2: #6fdc9b; --boton-fin: #14808f; --brillo: #0d4a43; --brillo2: #1d4a2a; }
+:root[data-curso="cat-datos-ia"][data-tema="claro"] { --acento: #157a6e; --acento2: #1d7a45; --boton-fin: #0f6b78; }
+:root[data-curso="cat-chicos"] { --acento: #2f6fe4; --acento2: #ffcf4a; --boton-fin: #2457b8; --brillo: #12285a; --brillo2: #3a3010; }
+:root[data-curso="cat-chicos"][data-tema="claro"] { --acento: #2457b8; --acento2: #8a6200; --boton-fin: #1f4a9e; }
 :root[data-curso="datos"][data-tema="claro"] { --acento: #157a6e; --acento2: #1d7a45; --boton-fin: #0f6b78; }
 :root[data-tema="claro"] body { background: var(--bg); }
 * { box-sizing: border-box; }
