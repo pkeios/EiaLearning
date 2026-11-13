@@ -37,7 +37,7 @@ Mismo formato y mismo motor que `public/prompts/`. Usalo de modelo: copiá su `i
 3. **Releé el curso entero como lo leería un principiante.** Revisá datos, cuentas, nombres de herramientas, que no falte ningún término por definir, que las preguntas no pregunten nada que no se haya enseñado y que no haya consejos peligrosos. Corregí lo que encuentres.
 4. `node tools/ortografia.js <carpeta>` y corregí los errores reales.
 5. Prueba en Edge: `node tools/edge-curso.js <carpeta>` con `NODE_PATH` apuntando a una carpeta temporal que tenga `playwright-core` instalado (`npm i playwright-core`). Revisa todas las lecciones, el quiz, el progreso guardado aparte, el tutor, el certificado y el celular a 320 y 360 px. Mirá las capturas que deja en la carpeta temporal del sistema.
-6. `node tools/validar.js`, `node tools/test-app.js` y `node tools/test-mapas.js` siguen en OK.
+6. Todas las pruebas del CI siguen en OK: corré localmente cada comando del paso `run` de `.github/workflows/pages.yml` (test-de necesita `PYTHON=python` y pandas 2.3.2). Si una prueba vieja choca con un cambio general tuyo, actualizala para que controle la regla nueva; no la borres.
 
 ## 6. Registrar y publicar
 - Marcá el curso con `- [x]` en `CURSOS.md` y agregale al final de la línea el nombre final entre comillas.

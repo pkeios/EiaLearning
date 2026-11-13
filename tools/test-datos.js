@@ -159,5 +159,5 @@ assert(vctx.X.promptTutor(T[0], '').includes('Sos mi tutor de Datos con IA'), 'e
 assert(vctx.X.textoLogro('el módulo 1', 90, 'u').includes('Datos con IA'));
 // El home enlaza el curso y el service worker no sirve copias viejas de este curso si hay internet
 assert(leer('index.html').includes('href="datos/"'), 'el home no enlaza el curso');
-assert(leer('sw.js').includes("'/datos/'"), 'el service worker tiene que ir primero a la red en /datos/');
+assert(leer('sw.js').includes("registration.scope).pathname.length).includes('/')"), 'el service worker tiene que ir primero a la red en /datos/ (como en toda carpeta de curso)');
 console.log(`test-datos OK (${T.length} módulos, ${T.reduce((s, m) => s + m.quiz.length, 0)} preguntas, ${G.length} términos, ${Object.keys(hechos).length} números verificados contra la planilla)`);

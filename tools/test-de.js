@@ -76,7 +76,7 @@ assert.equal(CURSO.clave, 'progreso-de');
 for (const url of Object.values(CURSO.archivos)) assert(fs.existsSync(path.join(R, 'data-engineering', url)), 'no existe ' + url);
 assert(/mapa\.js"><\/script>\s*<script src="\.\.\/app\.js"/.test(html), 'carga mapa.js antes de app.js');
 assert(leer('index.html').includes('href="data-engineering/"'), 'el inicio tiene la tarjeta del curso');
-assert(leer('sw.js').includes("'/data-engineering/'"), 'el service worker va primero a la red en /data-engineering/');
+assert(leer('sw.js').includes("registration.scope).pathname.length).includes('/')"), 'el service worker va primero a la red en /data-engineering/ (como en toda carpeta de curso)');
 assert(app.includes('CURSO.archivos'), 'el laboratorio copia las planillas de práctica');
 
 if (errores.length) { console.error(errores.join('\n\n')); process.exit(1); }

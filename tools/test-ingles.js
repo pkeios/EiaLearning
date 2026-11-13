@@ -159,7 +159,8 @@ assert.equal(fs.readFileSync(dir + 'ingles-teoria.huella', 'utf8').trim(), requi
 
 // Los cursos para chicos no pueden mostrar una copia vieja si hay internet (por ejemplo, un PDF desactualizado).
 const sw = fs.readFileSync(dir + '../sw.js', 'utf8');
-assert(sw.includes("'/chicos/'") && sw.indexOf("'/chicos/'") < sw.indexOf('caches.match(e.request).then(enCache => enCache || red)'), 'chicos tiene que ir primero a la red');
+// Cualquier carpeta de curso (chicos/ incluida) va primero a la red, antes de la regla general que responde desde la caché
+assert(sw.includes("registration.scope).pathname.length).includes('/')") && sw.indexOf('registration.scope') < sw.indexOf('caches.match(e.request).then(enCache => enCache || red)'), 'chicos tiene que ir primero a la red');
 
 // Lecturas: las preguntas que siguen a un texto se responden con el texto a la vista, también en el repaso de otro día.
 U.forEach((u, i) => u.pasos.forEach((s, n) => {
