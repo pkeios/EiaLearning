@@ -14,7 +14,7 @@ Para cambiar el orden, mové las líneas. Para agregar un curso, sumá una líne
 - [x] `finanzas-personales` · Finanzas personales con números · adultos · Vida diaria · "Finanzas personales con números"
 
 ## Trabajo y oficina
-- [ ] `word-docs` · Documentos con Word y Google Docs · adultos · Trabajo
+- [x] `word-docs` · Documentos con Word y Google Docs · adultos · Trabajo · "Documentos con Word y Google Docs: prolijos, claros y para todos"
 - [ ] `presentaciones` · Presentaciones que se entienden (PowerPoint, Google Slides, Canva) · adultos · Trabajo
 - [ ] `mail-profesional` · Escribir mails y mensajes de trabajo · adultos · Trabajo
 - [ ] `atencion-cliente` · Atención al cliente, en persona y por chat · adultos que buscan su primer trabajo · Trabajo
