@@ -6,7 +6,7 @@ Formato de cada línea: `carpeta` · Nombre de trabajo · para quién · categor
 Para cambiar el orden, mové las líneas. Para agregar un curso, sumá una línea con el mismo formato.
 
 ## Primero (los recomendados)
-- [ ] `observabilidad-datos` · Observabilidad de datos y modelos con ClickHouse: CUSUM, gráficos de control, calidad de datos, drift (PSI, KS) y alertas · quien analiza datos o trabaja con machine learning y usa ClickHouse (pedido por el usuario el 2026-11-13 para su trabajo) · Datos e IA
+- [x] `analisis-secuencial` · Análisis secuencial para observabilidad de datos y ML: Shewhart, CUSUM, EWMA, SPRT, estacionalidad, drift (PSI, KS, DDM, ADWIN), experimentos secuenciales y muchas series a la vez · nivel avanzado, para quien ya analiza datos o trabaja con ML (pedido por el usuario el 2026-11-13 para su trabajo: no quiere ClickHouse desde cero, quiere las técnicas, aunque sean avanzadas; usa ClickHouse solo para el módulo de producción) · Datos e IA · "Análisis secuencial: detectar cambios en datos y modelos"
 - [x] `excel` · Excel y Google Sheets desde cero · adultos que buscan trabajo o quieren ordenarse · Trabajo · "Excel y Google Sheets desde cero"
 - [x] `seguridad-digital` · Seguridad digital y estafas · todo el mundo, también adultos mayores · Vida diaria · "Seguridad digital y estafas: que no te engañen"
 - [x] `buscar-trabajo` · Buscar trabajo con IA: CV, carta y entrevistas · adultos sin trabajo o que quieren cambiar · Trabajo · "Buscar trabajo con IA: CV, carta y entrevistas"

@@ -1,4 +1,5 @@
-// Prueba el curso "Data Engineering desde cero". Uso: node tools/test-de.js
+// Prueba un curso con código Python que se corre de verdad. Uso: node tools/test-de.js [carpeta]  (sin carpeta: data-engineering;
+// también: analisis-secuencial). Las comprobaciones de configuración propias de Data Engineering solo corren para ese curso.
 // Lo más importante: corre de verdad cada código Python de las lecciones (el mismo que el alumno prueba en el laboratorio),
 // cada uno solo, en una carpeta con las planillas de práctica. Si después del código hay un bloque que empieza con "Salida:",
 // lo que imprime tiene que ser exactamente eso; si empieza con "Error:", el código tiene que fallar con ese error.
@@ -8,7 +9,8 @@ const { spawnSync } = require('child_process');
 const R = path.join(__dirname, '..', 'public');
 const leer = f => fs.readFileSync(path.join(R, f), 'utf8');
 const ctx = { window: {} };
-for (const f of ['contenido.js', 'glosario.js']) vm.runInNewContext(leer('data-engineering/' + f), ctx);
+const CARPETA = process.argv[2] || 'data-engineering';
+for (const f of ['contenido.js', 'glosario.js']) vm.runInNewContext(leer(CARPETA + '/' + f), ctx);
 const T = ctx.window.TEMARIO, G = ctx.window.GLOSARIO;
 const PY = process.env.PYTHON || (process.platform === 'win32' ? 'py' : 'python3');
 
@@ -70,14 +72,14 @@ const textoLecciones = T.flatMap(m => m.lecciones.map(l => decodificar(l.html.re
 for (const g of G) if (!textoLecciones.some(t => reTermino(g.t).test(t))) errores.push(`glosario: "${g.t}" no aparece en ninguna lección`);
 
 // Configuración del curso: progreso aparte, planillas que existen, inicio y service worker
-const html = leer('data-engineering/index.html');
+const html = leer(CARPETA + '/index.html');
 const CURSO = vm.runInNewContext('(' + html.match(/<script>window\.CURSO = ([\s\S]*?);?<\/script>/)[1] + ')');
-assert.equal(CURSO.clave, 'progreso-de');
-for (const url of Object.values(CURSO.archivos)) assert(fs.existsSync(path.join(R, 'data-engineering', url)), 'no existe ' + url);
-assert(/mapa\.js"><\/script>\s*<script src="\.\.\/app\.js"/.test(html), 'carga mapa.js antes de app.js');
-assert(leer('index.html').includes('href="data-engineering/"'), 'el inicio tiene la tarjeta del curso');
+assert.equal(CURSO.clave, CARPETA === 'data-engineering' ? 'progreso-de' : 'progreso-' + CARPETA);
+for (const url of Object.values(CURSO.archivos || {})) assert(fs.existsSync(path.join(R, CARPETA, url)), 'no existe ' + url);
+if (CARPETA === 'data-engineering') assert(/mapa\.js"><\/script>\s*<script src="\.\.\/app\.js"/.test(html), 'carga mapa.js antes de app.js');
+assert(leer('index.html').includes(`href="${CARPETA}/"`), 'el inicio tiene la tarjeta del curso');
 assert(leer('sw.js').includes("registration.scope).pathname.length).includes('/')"), 'el service worker va primero a la red en /data-engineering/ (como en toda carpeta de curso)');
 assert(app.includes('CURSO.archivos'), 'el laboratorio copia las planillas de práctica');
 
 if (errores.length) { console.error(errores.join('\n\n')); process.exit(1); }
-console.log(`test-de OK (${T.length} módulos, ${T.reduce((s, m) => s + m.quiz.length, 0)} preguntas, ${G.length} términos, ${corridos} códigos corridos, ${salidas} salidas comparadas, ${fallasEsperadas} errores a propósito)`);
+console.log(`test-de OK: ${CARPETA} (${T.length} módulos, ${T.reduce((s, m) => s + m.quiz.length, 0)} preguntas, ${G.length} términos, ${corridos} códigos corridos, ${salidas} salidas comparadas, ${fallasEsperadas} errores a propósito)`);

@@ -290,7 +290,7 @@ async function importar(archivo) {
 // Laboratorio de Python con Pyodide (Python compilado para el navegador): se descarga recién al primer uso.
 const PYODIDE = 'https://cdn.jsdelivr.net/pyodide/v0.29.3/full/';
 // Librerías que no corren en el navegador (PyTorch y compañía) o que necesitan una clave de API: esos fragmentos no llevan laboratorio.
-const NO_NAVEGADOR = /\b(anthropic|openai|torch|transformers|trl|peft|dspy|opentelemetry|vllm|safetensors)\b/;
+const NO_NAVEGADOR = /\b(anthropic|openai|torch|transformers|trl|peft|dspy|opentelemetry|vllm|safetensors|clickhouse_connect)\b/;
 // Tampoco los que llaman a un modelo de embeddings o a un LLM sin definirlo: son ejemplos a escala real.
 const usaModelo = codigo => /\b(embed|llm)\(/.test(codigo) && !/def (embed|llm)\(/.test(codigo);
 const esPython = codigo => /^\s*(import |from \S+ import |def |class |print\(|async def )/m.test(codigo) && !/[→↗]/.test(codigo) && !NO_NAVEGADOR.test(codigo) && !usaModelo(codigo);
