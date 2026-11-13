@@ -7,7 +7,7 @@ Para cambiar el orden, mové las líneas. Para agregar un curso, sumá una líne
 
 ## Primero (los recomendados)
 - [x] `excel` · Excel y Google Sheets desde cero · adultos que buscan trabajo o quieren ordenarse · Trabajo · "Excel y Google Sheets desde cero"
-- [ ] `seguridad-digital` · Seguridad digital y estafas · todo el mundo, también adultos mayores · Vida diaria
+- [x] `seguridad-digital` · Seguridad digital y estafas · todo el mundo, también adultos mayores · Vida diaria · "Seguridad digital y estafas: que no te engañen"
 - [ ] `buscar-trabajo` · Buscar trabajo con IA: CV, carta y entrevistas · adultos sin trabajo o que quieren cambiar · Trabajo
 - [ ] `carpinteria` · Carpintería básica: de la medida al primer mueble · adultos sin experiencia · Oficios
 - [ ] `finanzas-personales` · Finanzas personales con números · adultos · Vida diaria
