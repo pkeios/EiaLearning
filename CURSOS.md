@@ -11,7 +11,7 @@ Para cambiar el orden, mové las líneas. Para agregar un curso, sumá una líne
 - [x] `seguridad-digital` · Seguridad digital y estafas · todo el mundo, también adultos mayores · Vida diaria · "Seguridad digital y estafas: que no te engañen"
 - [x] `buscar-trabajo` · Buscar trabajo con IA: CV, carta y entrevistas · adultos sin trabajo o que quieren cambiar · Trabajo · "Buscar trabajo con IA: CV, carta y entrevistas"
 - [x] `carpinteria` · Carpintería básica: de la medida al primer mueble · adultos sin experiencia · Oficios · "Carpintería básica: de la medida al primer mueble"
-- [ ] `finanzas-personales` · Finanzas personales con números · adultos · Vida diaria
+- [x] `finanzas-personales` · Finanzas personales con números · adultos · Vida diaria · "Finanzas personales con números"
 
 ## Trabajo y oficina
 - [ ] `word-docs` · Documentos con Word y Google Docs · adultos · Trabajo
