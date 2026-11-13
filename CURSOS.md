@@ -6,9 +6,10 @@ Formato de cada línea: `carpeta` · Nombre de trabajo · para quién · categor
 Para cambiar el orden, mové las líneas. Para agregar un curso, sumá una línea con el mismo formato.
 
 ## Primero (los recomendados)
+- [ ] `observabilidad-datos` · Observabilidad de datos y modelos con ClickHouse: CUSUM, gráficos de control, calidad de datos, drift (PSI, KS) y alertas · quien analiza datos o trabaja con machine learning y usa ClickHouse (pedido por el usuario el 2026-11-13 para su trabajo) · Datos e IA
 - [x] `excel` · Excel y Google Sheets desde cero · adultos que buscan trabajo o quieren ordenarse · Trabajo · "Excel y Google Sheets desde cero"
 - [x] `seguridad-digital` · Seguridad digital y estafas · todo el mundo, también adultos mayores · Vida diaria · "Seguridad digital y estafas: que no te engañen"
-- [ ] `buscar-trabajo` · Buscar trabajo con IA: CV, carta y entrevistas · adultos sin trabajo o que quieren cambiar · Trabajo
+- [x] `buscar-trabajo` · Buscar trabajo con IA: CV, carta y entrevistas · adultos sin trabajo o que quieren cambiar · Trabajo · "Buscar trabajo con IA: CV, carta y entrevistas"
 - [ ] `carpinteria` · Carpintería básica: de la medida al primer mueble · adultos sin experiencia · Oficios
 - [ ] `finanzas-personales` · Finanzas personales con números · adultos · Vida diaria
 
