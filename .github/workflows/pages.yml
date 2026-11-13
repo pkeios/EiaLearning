@@ -25,7 +25,10 @@ jobs:
       - run: pip install pandas==2.3.2
       - run: node tools/validar.js && node tools/test-app.js && node tools/test-chicos.js && node tools/test-ingles.js && node tools/validar.js datos && node tools/test-datos.js && node tools/test-mapas.js && node tools/validar.js data-engineering && PYTHON=python node tools/test-de.js
       # Cada curso nuevo (una carpeta de public/ con contenido.js) se valida solo, sin tener que agregarlo acá
-      - run: for d in public/*/; do if [ -f "$d/contenido.js" ]; then node tools/validar.js "$(basename "$d")" > /dev/null || { echo "falla: $d"; node tools/validar.js "$(basename "$d")"; exit 1; }; fi; done
+      - run: |
+          for d in public/*/; do
+            if [ -f "$d/contenido.js" ]; then node tools/validar.js "$(basename "$d")" > /dev/null || { echo "falla en $d"; node tools/validar.js "$(basename "$d")"; exit 1; }; fi
+          done
       - uses: actions/upload-pages-artifact@v3
         with:
           path: public
