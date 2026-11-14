@@ -21,7 +21,7 @@ Para cambiar el orden, mové las líneas. Para agregar un curso, sumá una líne
 - [x] `ventas` · Vender sin ser pesado: técnicas de venta · adultos · Trabajo · "Vender sin ser pesado"
 - [x] `administracion` · Administración básica de una oficina · adultos · Trabajo · "Administración básica de una oficina"
 - [x] `organizar-tiempo` · Organizar el tiempo y las tareas · adultos · Trabajo · "Organizar el tiempo y las tareas"
-- [ ] `trabajo-equipo` · Trabajar en equipo y resolver conflictos · adultos · Trabajo
+- [x] `trabajo-equipo` · Trabajar en equipo y resolver conflictos · adultos · Trabajo · "Trabajar en equipo y resolver conflictos"
 - [ ] `oratoria` · Hablar en público sin miedo · adultos · Trabajo
 - [ ] `escritura-clara` · Escribir claro: textos que se entienden a la primera · adultos · Trabajo
 - [ ] `entrevistas` · Entrevistas de trabajo: prepararse y practicar · adultos · Trabajo
