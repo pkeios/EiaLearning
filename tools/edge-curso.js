@@ -37,6 +37,13 @@ const fallas = [], ok = (c, m) => { if (!c) fallas.push(m); };
     terminos += await pag.$$eval('.contenido .termino', b => b.length);
   }
   ok(terminos >= 10, 'términos del glosario marcados: ' + terminos);
+  // Videos: cada lección con video muestra su iframe de youtube-nocookie, que no se sale del ancho
+  const conVideo = await pag.evaluate(() => TEMARIO.reduce((a, m) => a + m.lecciones.filter(l => l.video).length, 0));
+  if (conVideo) {
+    let vistos = 0;
+    for (const [id] of mods) { await pag.goto(B + `${C}/#/m/${id}`); await pag.waitForTimeout(120); vistos += await pag.$$eval('.video iframe[src^="https://www.youtube-nocookie.com/embed/"]', f => f.filter(x => x.getBoundingClientRect().width <= document.documentElement.clientWidth).length); }
+    ok(vistos === conVideo, `videos visibles: ${vistos} de ${conVideo}`);
+  }
 
   // Tocar un término muestra su definición
   await pag.goto(B + `${C}/#/m/${mods[Math.min(2, mods.length - 1)][0]}/1`); await pag.waitForTimeout(150);

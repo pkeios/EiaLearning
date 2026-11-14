@@ -114,6 +114,7 @@ Para cambiar el orden, mové las líneas. Para agregar un curso, sumá una líne
 - [ ] `ahorro-energia` · Ahorrar luz, gas y agua en casa · adultos · Vida diaria
 - [ ] `alimentacion` · Comer mejor con información confiable · adultos · Vida diaria
 - [ ] `primeros-auxilios` · Primeros auxilios: qué hacer mientras llega la ayuda · adultos (no reemplaza un curso presencial) · Vida diaria
+- [ ] `primeros-auxilios-combate` · Primeros auxilios en deportes de combate (boxeo, artes marciales, judo, jiu-jitsu, MMA): golpes en la cabeza, cortes, sangrado de nariz, torceduras, estrangulaciones y cuándo parar · practicantes, profes y entrenadores (no reemplaza un curso presencial ni al médico del evento) · Vida diaria
 - [ ] `noticias-falsas` · Noticias falsas: cómo darse cuenta · adultos · Vida diaria
 - [ ] `ingles-cero` · Inglés desde cero para adultos · adultos · Vida diaria
 - [ ] `historia-argentina` · Historia argentina en pocas horas · adultos · Vida diaria

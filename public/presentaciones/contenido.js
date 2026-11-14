@@ -12,7 +12,7 @@ window.TEMARIO = [
     "Elegir un tema simple y mantenerlo en toda la presentación",
   ],
   lecciones: [
-    { titulo: "Las herramientas", html: `
+    { titulo: "Las herramientas", video: {"id":"g7poEm0DClg","t":"¿Cómo crear una presentación en Google Slides? · LearnFree en Español (1:45)"}, html: `
       <p class="idea">Una presentación es una serie de <strong>diapositivas</strong> (pantallas) que acompañan lo que decís. Las tres herramientas más usadas son gratis y funcionan parecido.</p>
       <table>
         <tr><th>Herramienta</th><th>Cuenta</th><th>Punto fuerte</th></tr>
@@ -23,7 +23,7 @@ window.TEMARIO = [
       <p>Lo que aprendas en este curso sirve en las tres: el problema casi nunca es la herramienta, sino qué ponés en cada diapositiva.</p>
       <p><strong>Una advertencia antes de empezar:</strong> la presentación acompaña a la persona que habla, no la reemplaza. Si todo lo que vas a decir está escrito en las diapositivas, el público lee en vez de escucharte. Por eso este curso insiste en diapositivas con poco texto.</p>
       <p>Por ejemplo, una presentación para una entrevista de trabajo, para una reunión de la cooperadora o para un trabajo práctico tienen el mismo objetivo: que el público entienda y recuerde una idea.</p>` },
-    { titulo: "Diapositivas y diseños", html: `
+    { titulo: "Diapositivas y diseños", video: {"id":"YMzDHZmCncQ","t":"Cómo crear una diapositiva sencilla · LearnFree en Español (2:09)"}, html: `
       <p class="idea">Cada diapositiva nueva se crea con un <strong>diseño</strong> (o disposición): un modelo con cajas para título, texto o imagen. Usar los diseños hace que todo quede alineado y parejo.</p>
       <table>
         <tr><th>Diseño</th><th>Para</th></tr>
@@ -166,7 +166,7 @@ window.TEMARIO = [
     "Elegir imágenes que expliquen, alineadas y sin distraer",
   ],
   lecciones: [
-    { titulo: "Menos texto", html: `
+    { titulo: "Menos texto", video: {"id":"faHDKtwZkHc","t":"Tips para presentaciones llamativas · LearnFree en Español (2:16)"}, html: `
       <p class="idea">Una diapositiva tiene que entenderse en pocos segundos. Si tiene un párrafo, el público lo lee en vez de escucharte. Poné en la diapositiva lo que se ve, y decí vos lo que se explica.</p>
       <table>
         <tr><th>Diapositiva llena</th><th>Diapositiva clara</th></tr>
@@ -248,7 +248,7 @@ window.TEMARIO = [
     "Simplificar tablas y números para que se entiendan en segundos",
   ],
   lecciones: [
-    { titulo: "Un gráfico, una idea", html: `
+    { titulo: "Un gráfico, una idea", video: {"id":"Uj2C9Hu0or4","t":"Diagrama de barras · LearnFree en Español (4:29)"}, html: `
       <p class="idea">En una presentación, cada gráfico tiene que demostrar una sola idea, y el título dice cuál. El público no va a estudiar el gráfico como en un informe: tiene unos segundos.</p>
       <table>
         <tr><th>Querés mostrar</th><th>Gráfico</th></tr>
@@ -359,7 +359,7 @@ Corto: una viñeta por diapositiva
 Ensayo 3: 8 min 30 s  → listo</code></pre>
       <p><strong>Muletillas:</strong> son palabras que se repiten sin aportar, como "eh", "o sea", "digamos", "¿no?". Una pausa en silencio queda mejor que una muletilla.</p>
       <p>Por ejemplo, grabarte con el celular y escucharte una vez es la forma más rápida de notar que dijiste "o sea" doce veces.</p>` },
-    { titulo: "Nervios, voz y preguntas", html: `
+    { titulo: "Nervios, voz y preguntas", video: {"id":"W5F1GyhM-pk","t":"Todos podemos hablar en público · Marcos Mazzocco, TEDxUTN (15:15)"}, html: `
       <p class="idea">Los nervios son normales y casi siempre se notan menos de lo que sentís. Lo que más ayuda es la preparación: conocer bien el principio y tener un plan para las preguntas.</p>
       <ul>
         <li><strong>Sabete de memoria el principio:</strong> los primeros 30 segundos son los de más nervios. Si los tenés firmes, el resto arranca solo.</li>

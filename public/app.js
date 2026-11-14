@@ -375,7 +375,9 @@ function modulo(id, abrir = null) {
     <h2>📖 Lecciones</h2>${m.lecciones.map((l, n) => `
       <details class="leccion ${leida(n) ? 'leida' : ''}" ${leida(n) && n !== abrir ? '' : 'open'}>
         <summary><span class="num">${leida(n) ? '✔' : n + 1}</span>${esc(l.titulo)}</summary>
-        <div class="contenido">${l.html}</div>
+        <div class="contenido">${l.html}</div>${l.video ? `
+        <figure class="video"><iframe src="https://www.youtube-nocookie.com/embed/${l.video.id}" title="${esc(l.video.t)}" loading="lazy" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>
+          <figcaption>🎬 ${esc(l.video.t)} · <a href="https://www.youtube.com/watch?v=${l.video.id}" target="_blank" rel="noopener">ver en YouTube</a></figcaption></figure>` : ''}
         <div class="acciones-leccion">${leida(n) ? '' : `<button data-leida="${n}">✔ Marcar como leída</button>`}${window.speechSynthesis ? `<button class="secundario" data-escuchar="${n}">🔊 Escuchar</button>` : ''}</div>
       </details>`).join('')}
     <h2>🛠️ Práctica</h2><ol class="practica">${m.practica.map((x, n) => `<li class="${p.practicas[clavePractica(m, x)] ? 'hecha' : ''}"><label><input type="checkbox" data-practica="${n}" ${p.practicas[clavePractica(m, x)] ? 'checked' : ''}> <span>${esc(x)}</span></label></li>`).join('')}</ol>

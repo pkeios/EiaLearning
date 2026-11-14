@@ -227,3 +227,6 @@ mark { background: rgba(250, 204, 21, .4); color: inherit; border-radius: 3px; p
 button.termino { background: none; color: inherit; font: inherit; font-weight: inherit; padding: 0; border: 0; border-radius: 0; border-bottom: 2px dotted var(--acento2); cursor: help; display: inline; }
 button.termino:hover { transform: none; box-shadow: none; color: var(--acento2); }
 .contenido .def { display: block; background: var(--card2); border: 1px solid var(--acento2); border-radius: 8px; padding: .5rem .8rem; margin: .4rem 0; font-size: .92em; }
+.video { margin: 1rem 0; }
+.video iframe { display: block; width: 100%; aspect-ratio: 16 / 9; border: 0; border-radius: 10px; background: var(--card2); }
+.video figcaption { font-size: .88em; color: var(--suave, inherit); margin-top: .35rem; }

@@ -9,7 +9,8 @@ for (const m of T) {
   if (!m.id || ids.has(m.id)) errores.push(`id vacío o duplicado: ${m.id}`);
   ids.add(m.id);
   for (const k of ['titulo', 'nivel', 'objetivos', 'lecciones', 'practica', 'recursos', 'quiz']) if (!m[k]) errores.push(`${m.id}: falta "${k}"`);
-  (m.lecciones || []).forEach((l, i) => { if (!l.titulo || !l.html) errores.push(`${m.id} lección ${i + 1}: falta titulo o html`); });
+  (m.lecciones || []).forEach((l, i) => { if (!l.titulo || !l.html) errores.push(`${m.id} lección ${i + 1}: falta titulo o html`);
+    if (l.video && !(/^[\w-]{11}$/.test(l.video.id) && l.video.t)) errores.push(`${m.id} lección ${i + 1}: video inválido (id de YouTube de 11 caracteres y t con título y canal)`); });
   (m.recursos || []).forEach(r => { if (!r.t || !/^https:\/\//.test(r.url)) errores.push(`${m.id}: recurso inválido ${JSON.stringify(r)}`); });
   const textos = new Set();
   (m.quiz || []).forEach((q, i) => {
