@@ -1332,21 +1332,3 @@ Versión 2: 9/10. Probada con 3 avisos.</code></pre>
   ],
 },
 ];
-
-// Mapa del curso (diagrama de flujo en el inicio). Cada módulo va en una sola etapa, en el orden del temario:
-// lo controla tools/test-mapas.js.
-window.MAPA = {
-  titulo: 'El camino de un buen pedido',
-  intro: 'Es el mismo camino que vas a seguir cada vez que le pidas algo a la IA. Tocá un módulo para ir directo.',
-  etapas: [
-    { nombre: 'Entendé la herramienta', texto: 'Cómo escribe la IA, por qué a veces inventa y qué no escribirle nunca.', modulos: ['que-es'] },
-    { nombre: 'Armá el pedido', texto: 'La tarea, el contexto, los ejemplos y el formato: lo que necesita para hacerlo bien.', modulos: ['claro', 'contexto', 'ejemplos', 'formato'] },
-    { nombre: 'Revisá y mejorá', texto: 'Evaluá la respuesta, pedí cambios concretos y verificá los datos importantes.', modulos: ['conversar', 'verificar'], vuelta: '¿La respuesta no sirve? Volvé a armar el pedido con lo que aprendiste.' },
-    { nombre: 'Pedidos grandes', texto: 'Paso a paso y en partes, revisando el razonamiento.', modulos: ['partes'] },
-    { nombre: 'Usalo en tu vida', texto: 'Resumir, sacar datos, estudiar, tener ideas, leer archivos y buscar con fuentes.', modulos: ['tareas', 'estudiar', 'archivos'] },
-    { nombre: 'Guardalo', texto: 'Lo que funcionó se convierte en una plantilla con versiones.', modulos: ['plantillas'] },
-    { nombre: 'Con responsabilidad', texto: 'Qué le das a la IA, cómo contarlo con honestidad y dónde no reemplaza a un profesional.', modulos: ['responsable'] },
-    { nombre: 'Proyecto final', texto: 'Tu biblioteca de 5 plantillas, probadas, evaluadas con la rúbrica y lista para mostrar.', modulos: ['proyecto'] },
-  ],
-  cierre: 'Cada pedido nuevo que te funciona va a tu biblioteca, y el camino empieza otra vez.',
-};

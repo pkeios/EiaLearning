@@ -3997,19 +3997,3 @@ Dudas y supuestos:
   ],
 },
 ];
-
-// Mapa del curso (diagrama de flujo en el inicio). Cada módulo va en una sola etapa, en el orden del temario:
-// lo controla tools/test-mapas.js. Si agregás un módulo, sumalo a la etapa que corresponda.
-window.MAPA = {
-  titulo: 'El camino del curso',
-  intro: 'Cada etapa usa lo de la anterior. Tocá un módulo para ir directo.',
-  etapas: [
-    { nombre: 'Las bases', texto: 'Python, la matemática justa y cómo aprende una máquina a partir de datos.', modulos: ['fundamentos', 'ml-clasico', 'deep-learning'] },
-    { nombre: 'Cómo funciona un LLM', texto: 'Qué hay adentro de un modelo como Claude o ChatGPT.', modulos: ['llms'] },
-    { nombre: 'Usarlo desde tu código', texto: 'Pedirle bien las cosas y llamarlo desde un programa.', modulos: ['prompting', 'apis'] },
-    { nombre: 'Darle conocimiento y herramientas', texto: 'Que responda con tus documentos y que pueda hacer acciones.', modulos: ['rag', 'agentes'] },
-    { nombre: 'Medir y mejorar', texto: 'Saber con números si funciona bien y, si hace falta, ajustar el modelo.', modulos: ['evals', 'fine-tuning'] },
-    { nombre: 'Llevarlo al mundo real', texto: 'Publicarlo, protegerlo de ataques y errores, y sumarle voz.', modulos: ['produccion', 'seguridad', 'voz'], vuelta: 'Cerrá el ciclo: cada error que aparece con usuarios reales pasa a ser un caso nuevo de tus evals. Medís, mejorás y volvés a medir.' },
-    { nombre: 'Tu proyecto', texto: 'Construir algo tuyo de punta a punta, mostrarlo y seguir aprendiendo.', modulos: ['proyecto'] },
-  ],
-};
