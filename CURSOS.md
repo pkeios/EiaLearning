@@ -20,7 +20,7 @@ Para cambiar el orden, mové las líneas. Para agregar un curso, sumá una líne
 - [x] `atencion-cliente` · Atención al cliente, en persona y por chat · adultos que buscan su primer trabajo · Trabajo · "Atención al cliente, en persona y por chat"
 - [x] `ventas` · Vender sin ser pesado: técnicas de venta · adultos · Trabajo · "Vender sin ser pesado"
 - [x] `administracion` · Administración básica de una oficina · adultos · Trabajo · "Administración básica de una oficina"
-- [ ] `organizar-tiempo` · Organizar el tiempo y las tareas · adultos · Trabajo
+- [x] `organizar-tiempo` · Organizar el tiempo y las tareas · adultos · Trabajo · "Organizar el tiempo y las tareas"
 - [ ] `trabajo-equipo` · Trabajar en equipo y resolver conflictos · adultos · Trabajo
 - [ ] `oratoria` · Hablar en público sin miedo · adultos · Trabajo
 - [ ] `escritura-clara` · Escribir claro: textos que se entienden a la primera · adultos · Trabajo

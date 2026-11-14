@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="es" data-curso="cat-trabajo">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Organizar el tiempo</title>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="icon" href="../icono-192.png">
+  <meta name="theme-color" content="#0b1020">
+  <script>document.documentElement.style.fontSize = Math.round((Number(localStorage.getItem('letra')) || 1) * 100) + '%'; document.documentElement.dataset.tema = localStorage.getItem('tema') || (matchMedia('(prefers-color-scheme: light)').matches ? 'claro' : 'oscuro');</script>
+  <!-- Mismo motor que el curso principal (../app.js), con su propio contenido y su propio progreso guardado aparte. -->
+  <script>window.CURSO = { clave: 'progreso-organizar-tiempo', nombre: 'Organizar el tiempo y las tareas', archivo: 'organizar-el-tiempo', titular: 'Organizar el tiempo y las tareas: <span class="degradado">elegir, enfocarte y descansar</span>', bajada: 'para estudiar, trabajar y cumplir con lo tuyo sin vivir apagando incendios, desde cero', chicos: false, sw: '../sw.js' };</script>
+</head>
+<body>
+  <header>
+    <a href="#/" class="marca">⏱️ Organizar el tiempo</a>
+    <nav><a href="../">🏠 Inicio</a><a href="#/buscar">🔎 Buscar</a><a href="#/glosario">📖 Glosario</a><a href="#/repaso">Repaso</a><a href="#/examen">Examen final</a><button id="letra-menos" class="tema" aria-label="Achicar la letra">A−</button><button id="letra-mas" class="tema" aria-label="Agrandar la letra">A+</button><button id="tema" class="tema" aria-label="Cambiar entre modo claro y oscuro"></button></nav>
+  </header>
+  <main id="app"></main>
+  <script src="contenido.js"></script>
+  <script src="glosario.js"></script>
+  <script src="../vendor/qrcode.js"></script>
+  <script src="../app.js"></script>
+</body>
+</html>
