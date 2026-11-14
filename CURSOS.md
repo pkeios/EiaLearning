@@ -18,7 +18,7 @@ Para cambiar el orden, mové las líneas. Para agregar un curso, sumá una líne
 - [x] `presentaciones` · Presentaciones que se entienden (PowerPoint, Google Slides, Canva) · adultos · Trabajo · "Presentaciones que se entienden"
 - [x] `mail-profesional` · Escribir mails y mensajes de trabajo · adultos · Trabajo · "Mails y mensajes de trabajo"
 - [x] `atencion-cliente` · Atención al cliente, en persona y por chat · adultos que buscan su primer trabajo · Trabajo · "Atención al cliente, en persona y por chat"
-- [ ] `ventas` · Vender sin ser pesado: técnicas de venta · adultos · Trabajo
+- [x] `ventas` · Vender sin ser pesado: técnicas de venta · adultos · Trabajo · "Vender sin ser pesado"
 - [ ] `administracion` · Administración básica de una oficina · adultos · Trabajo
 - [ ] `organizar-tiempo` · Organizar el tiempo y las tareas · adultos · Trabajo
 - [ ] `trabajo-equipo` · Trabajar en equipo y resolver conflictos · adultos · Trabajo
