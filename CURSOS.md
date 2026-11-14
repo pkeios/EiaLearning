@@ -19,7 +19,7 @@ Para cambiar el orden, mové las líneas. Para agregar un curso, sumá una líne
 - [x] `mail-profesional` · Escribir mails y mensajes de trabajo · adultos · Trabajo · "Mails y mensajes de trabajo"
 - [x] `atencion-cliente` · Atención al cliente, en persona y por chat · adultos que buscan su primer trabajo · Trabajo · "Atención al cliente, en persona y por chat"
 - [x] `ventas` · Vender sin ser pesado: técnicas de venta · adultos · Trabajo · "Vender sin ser pesado"
-- [ ] `administracion` · Administración básica de una oficina · adultos · Trabajo
+- [x] `administracion` · Administración básica de una oficina · adultos · Trabajo · "Administración básica de una oficina"
 - [ ] `organizar-tiempo` · Organizar el tiempo y las tareas · adultos · Trabajo
 - [ ] `trabajo-equipo` · Trabajar en equipo y resolver conflictos · adultos · Trabajo
 - [ ] `oratoria` · Hablar en público sin miedo · adultos · Trabajo
