@@ -22,7 +22,7 @@ Para cambiar el orden, mové las líneas. Para agregar un curso, sumá una líne
 - [x] `administracion` · Administración básica de una oficina · adultos · Trabajo · "Administración básica de una oficina"
 - [x] `organizar-tiempo` · Organizar el tiempo y las tareas · adultos · Trabajo · "Organizar el tiempo y las tareas"
 - [x] `trabajo-equipo` · Trabajar en equipo y resolver conflictos · adultos · Trabajo · "Trabajar en equipo y resolver conflictos"
-- [ ] `oratoria` · Hablar en público sin miedo · adultos · Trabajo
+- [x] `oratoria` · Hablar en público sin miedo · adultos · Trabajo · "Hablar en público sin miedo"
 - [ ] `escritura-clara` · Escribir claro: textos que se entienden a la primera · adultos · Trabajo
 - [ ] `entrevistas` · Entrevistas de trabajo: prepararse y practicar · adultos · Trabajo
 - [ ] `linkedin` · Tu perfil profesional en LinkedIn · adultos · Trabajo
