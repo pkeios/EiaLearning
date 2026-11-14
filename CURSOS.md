@@ -24,7 +24,7 @@ Para cambiar el orden, mové las líneas. Para agregar un curso, sumá una líne
 - [x] `trabajo-equipo` · Trabajar en equipo y resolver conflictos · adultos · Trabajo · "Trabajar en equipo y resolver conflictos"
 - [x] `oratoria` · Hablar en público sin miedo · adultos · Trabajo · "Hablar en público sin miedo"
 - [x] `escritura-clara` · Escribir claro: textos que se entienden a la primera · adultos · Trabajo · "Escribir claro"
-- [ ] `entrevistas` · Entrevistas de trabajo: prepararse y practicar · adultos · Trabajo
+- [x] `entrevistas` · Entrevistas de trabajo: prepararse y practicar · adultos · Trabajo · "Entrevistas de trabajo"
 - [ ] `linkedin` · Tu perfil profesional en LinkedIn · adultos · Trabajo
 - [ ] `trabajo-remoto` · Trabajar a distancia: herramientas y hábitos · adultos · Trabajo
 - [ ] `logistica` · Logística y depósito: stock, pedidos y envíos · adultos · Trabajo
