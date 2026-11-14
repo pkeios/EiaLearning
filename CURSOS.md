@@ -17,7 +17,7 @@ Para cambiar el orden, mové las líneas. Para agregar un curso, sumá una líne
 - [x] `word-docs` · Documentos con Word y Google Docs · adultos · Trabajo · "Documentos con Word y Google Docs: prolijos, claros y para todos"
 - [x] `presentaciones` · Presentaciones que se entienden (PowerPoint, Google Slides, Canva) · adultos · Trabajo · "Presentaciones que se entienden"
 - [x] `mail-profesional` · Escribir mails y mensajes de trabajo · adultos · Trabajo · "Mails y mensajes de trabajo"
-- [ ] `atencion-cliente` · Atención al cliente, en persona y por chat · adultos que buscan su primer trabajo · Trabajo
+- [x] `atencion-cliente` · Atención al cliente, en persona y por chat · adultos que buscan su primer trabajo · Trabajo · "Atención al cliente, en persona y por chat"
 - [ ] `ventas` · Vender sin ser pesado: técnicas de venta · adultos · Trabajo
 - [ ] `administracion` · Administración básica de una oficina · adultos · Trabajo
 - [ ] `organizar-tiempo` · Organizar el tiempo y las tareas · adultos · Trabajo
