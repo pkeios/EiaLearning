@@ -33,7 +33,7 @@ Para cambiar el orden, mové las líneas. Para agregar un curso, sumá una líne
 - [x] `portugues` · Portugués básico · adultos · Trabajo · "Portugués básico"
 - [x] `liderar` · Liderar un equipo por primera vez · adultos · Trabajo · "Liderar un equipo por primera vez"
 - [x] `inversiones` · Invertir desde cero en Argentina: plazo fijo, fondos comunes, bonos, CEDEAR y acciones, riesgo y diversificación · adultos que ya ordenaron sus finanzas (educativo, no es asesoramiento financiero) · Vida diaria · "Invertir desde cero en Argentina"
-- [ ] `impuestos-independientes` · Monotributo, facturación e impuestos para independientes · adultos que trabajan por su cuenta (no reemplaza a un contador) · Trabajo
+- [x] `impuestos-independientes` · Monotributo, facturación e impuestos para independientes · adultos que trabajan por su cuenta (no reemplaza a un contador) · Trabajo · "Monotributo, facturación e impuestos para independientes"
 - [ ] `finanzas-negocio` · Números de un pequeño negocio: costos, precios, margen, punto de equilibrio y flujo de caja · emprendedores · Trabajo
 - [ ] `gestion-proyectos` · Gestión de proyectos desde cero · adultos · Trabajo
 - [ ] `soporte-tecnico` · Soporte técnico: ayudar con computadoras y celulares · adultos · Trabajo

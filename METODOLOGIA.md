@@ -94,3 +94,4 @@
 - 2026-11-15 · portugues (curso nuevo) · puntaje 7/7 en los 7 módulos · fallas encontradas al revisar: 6 módulos con menos del 60 % de preguntas planteadas como casos (números con 25 %), una práctica sin resultado para anotar y un título que se salía a 320 px ("hispanohablantes") · mejora: 41 preguntas reescritas como casos, práctica con resultado anotado y título acortado
 - 2026-11-15 · liderar · puntaje 7/7 en los 7 módulos · 15 preguntas pasadas a casos ("Si…, ¿…?")
 - 2026-11-15 · inversiones · puntaje 7/7 en los 7 módulos desde la primera versión (preguntas escritas como casos desde el inicio)
+- 2026-11-15 · impuestos-independientes · puntaje 7/7 en los 7 módulos desde la primera versión
