@@ -25,7 +25,7 @@ Para cambiar el orden, mové las líneas. Para agregar un curso, sumá una líne
 - [x] `oratoria` · Hablar en público sin miedo · adultos · Trabajo · "Hablar en público sin miedo"
 - [x] `escritura-clara` · Escribir claro: textos que se entienden a la primera · adultos · Trabajo · "Escribir claro"
 - [x] `entrevistas` · Entrevistas de trabajo: prepararse y practicar · adultos · Trabajo · "Entrevistas de trabajo"
-- [ ] `linkedin` · Tu perfil profesional en LinkedIn · adultos · Trabajo
+- [x] `linkedin` · Tu perfil profesional en LinkedIn · adultos · Trabajo · "Tu perfil profesional en LinkedIn"
 - [ ] `trabajo-remoto` · Trabajar a distancia: herramientas y hábitos · adultos · Trabajo
 - [ ] `logistica` · Logística y depósito: stock, pedidos y envíos · adultos · Trabajo
 - [ ] `recepcion` · Recepción y secretariado · adultos que buscan su primer trabajo · Trabajo
