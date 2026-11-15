@@ -36,7 +36,7 @@ Para cambiar el orden, mové las líneas. Para agregar un curso, sumá una líne
 - [x] `impuestos-independientes` · Monotributo, facturación e impuestos para independientes · adultos que trabajan por su cuenta (no reemplaza a un contador) · Trabajo · "Monotributo, facturación e impuestos para independientes"
 - [x] `finanzas-negocio` · Números de un pequeño negocio: resultados, margen de contribución, punto de equilibrio, flujo de caja, precios con inflación y créditos · emprendedores que ya venden (lo básico va en costos-precios y cuentas-emprendimiento) · Emprender · "Números de un pequeño negocio"
 - [x] `gestion-proyectos` · Gestión de proyectos desde cero · adultos · Trabajo · "Gestión de proyectos desde cero"
-- [ ] `soporte-tecnico` · Soporte técnico: ayudar con computadoras y celulares · adultos · Trabajo
+- [x] `soporte-tecnico` · Soporte técnico: ayudar con computadoras y celulares · adultos · Trabajo · "Soporte técnico: ayudar con computadoras y celulares"
 
 ## Tecnología y programación
 - [ ] `git` · Git y GitHub desde cero · quien empieza a programar · Tecnología
