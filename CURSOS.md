@@ -29,7 +29,7 @@ Para cambiar el orden, mové las líneas. Para agregar un curso, sumá una líne
 - [x] `trabajo-remoto` · Trabajar a distancia: herramientas y hábitos · adultos · Trabajo · "Trabajar a distancia"
 - [x] `logistica` · Logística y depósito: stock, pedidos y envíos · adultos · Trabajo · "Logística y depósito"
 - [x] `recepcion` · Recepción y secretariado · adultos que buscan su primer trabajo · Trabajo · "Recepción y secretariado"
-- [ ] `ingles-trabajo` · Inglés para el trabajo · adultos con inglés básico · Trabajo
+- [x] `ingles-trabajo` · Inglés para el trabajo · adultos con inglés básico · Trabajo · "Inglés para el trabajo"
 - [ ] `portugues` · Portugués básico · adultos · Trabajo
 - [ ] `liderar` · Liderar un equipo por primera vez · adultos · Trabajo
 - [ ] `gestion-proyectos` · Gestión de proyectos desde cero · adultos · Trabajo
