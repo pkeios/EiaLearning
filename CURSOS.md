@@ -28,7 +28,7 @@ Para cambiar el orden, mové las líneas. Para agregar un curso, sumá una líne
 - [x] `linkedin` · Tu perfil profesional en LinkedIn · adultos · Trabajo · "Tu perfil profesional en LinkedIn"
 - [x] `trabajo-remoto` · Trabajar a distancia: herramientas y hábitos · adultos · Trabajo · "Trabajar a distancia"
 - [x] `logistica` · Logística y depósito: stock, pedidos y envíos · adultos · Trabajo · "Logística y depósito"
-- [ ] `recepcion` · Recepción y secretariado · adultos que buscan su primer trabajo · Trabajo
+- [x] `recepcion` · Recepción y secretariado · adultos que buscan su primer trabajo · Trabajo · "Recepción y secretariado"
 - [ ] `ingles-trabajo` · Inglés para el trabajo · adultos con inglés básico · Trabajo
 - [ ] `portugues` · Portugués básico · adultos · Trabajo
 - [ ] `liderar` · Liderar un equipo por primera vez · adultos · Trabajo
