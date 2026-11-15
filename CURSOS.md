@@ -30,7 +30,7 @@ Para cambiar el orden, mové las líneas. Para agregar un curso, sumá una líne
 - [x] `logistica` · Logística y depósito: stock, pedidos y envíos · adultos · Trabajo · "Logística y depósito"
 - [x] `recepcion` · Recepción y secretariado · adultos que buscan su primer trabajo · Trabajo · "Recepción y secretariado"
 - [x] `ingles-trabajo` · Inglés para el trabajo · adultos con inglés básico · Trabajo · "Inglés para el trabajo"
-- [ ] `portugues` · Portugués básico · adultos · Trabajo
+- [x] `portugues` · Portugués básico · adultos · Trabajo · "Portugués básico"
 - [ ] `liderar` · Liderar un equipo por primera vez · adultos · Trabajo
 - [ ] `gestion-proyectos` · Gestión de proyectos desde cero · adultos · Trabajo
 - [ ] `soporte-tecnico` · Soporte técnico: ayudar con computadoras y celulares · adultos · Trabajo
