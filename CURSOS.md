@@ -35,7 +35,7 @@ Para cambiar el orden, mové las líneas. Para agregar un curso, sumá una líne
 - [x] `inversiones` · Invertir desde cero en Argentina: plazo fijo, fondos comunes, bonos, CEDEAR y acciones, riesgo y diversificación · adultos que ya ordenaron sus finanzas (educativo, no es asesoramiento financiero) · Vida diaria · "Invertir desde cero en Argentina"
 - [x] `impuestos-independientes` · Monotributo, facturación e impuestos para independientes · adultos que trabajan por su cuenta (no reemplaza a un contador) · Trabajo · "Monotributo, facturación e impuestos para independientes"
 - [x] `finanzas-negocio` · Números de un pequeño negocio: resultados, margen de contribución, punto de equilibrio, flujo de caja, precios con inflación y créditos · emprendedores que ya venden (lo básico va en costos-precios y cuentas-emprendimiento) · Emprender · "Números de un pequeño negocio"
-- [ ] `gestion-proyectos` · Gestión de proyectos desde cero · adultos · Trabajo
+- [x] `gestion-proyectos` · Gestión de proyectos desde cero · adultos · Trabajo · "Gestión de proyectos desde cero"
 - [ ] `soporte-tecnico` · Soporte técnico: ayudar con computadoras y celulares · adultos · Trabajo
 
 ## Tecnología y programación

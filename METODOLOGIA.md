@@ -96,3 +96,4 @@
 - 2026-11-15 · inversiones · puntaje 7/7 en los 7 módulos desde la primera versión (preguntas escritas como casos desde el inicio)
 - 2026-11-15 · impuestos-independientes · puntaje 7/7 en los 7 módulos desde la primera versión
 - 2026-11-15 · finanzas-negocio · puntaje 7/7 en los 7 módulos desde la primera versión
+- 2026-11-15 · gestion-proyectos · puntaje 7/7 en los 7 módulos desde la primera versión
