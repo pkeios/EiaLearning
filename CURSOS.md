@@ -26,7 +26,7 @@ Para cambiar el orden, mové las líneas. Para agregar un curso, sumá una líne
 - [x] `escritura-clara` · Escribir claro: textos que se entienden a la primera · adultos · Trabajo · "Escribir claro"
 - [x] `entrevistas` · Entrevistas de trabajo: prepararse y practicar · adultos · Trabajo · "Entrevistas de trabajo"
 - [x] `linkedin` · Tu perfil profesional en LinkedIn · adultos · Trabajo · "Tu perfil profesional en LinkedIn"
-- [ ] `trabajo-remoto` · Trabajar a distancia: herramientas y hábitos · adultos · Trabajo
+- [x] `trabajo-remoto` · Trabajar a distancia: herramientas y hábitos · adultos · Trabajo · "Trabajar a distancia"
 - [ ] `logistica` · Logística y depósito: stock, pedidos y envíos · adultos · Trabajo
 - [ ] `recepcion` · Recepción y secretariado · adultos que buscan su primer trabajo · Trabajo
 - [ ] `ingles-trabajo` · Inglés para el trabajo · adultos con inglés básico · Trabajo
