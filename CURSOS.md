@@ -39,9 +39,10 @@ Para cambiar el orden, mové las líneas. Para agregar un curso, sumá una líne
 - [x] `soporte-tecnico` · Soporte técnico: ayudar con computadoras y celulares · adultos · Trabajo · "Soporte técnico: ayudar con computadoras y celulares"
 
 ## Tecnología y programación
-- [ ] `git` · Git y GitHub desde cero · quien empieza a programar · Tecnología
+- [x] `git` · Git y GitHub desde cero · quien empieza a programar · Tecnología · "Git y GitHub desde cero"
 - [ ] `python-automatizar` · Python para automatizar tareas · adultos que no programan · Tecnología
 - [ ] `web` · Desarrollo web desde cero: HTML, CSS y JavaScript · quien quiere programar · Tecnología
+- [ ] `cpp` · C++ para principiantes: variables, decisiones, bucles, funciones, vectores y tu primer programa completo · quien nunca programó · Tecnología
 - [ ] `javascript` · JavaScript desde cero · quien hizo el curso de web · Tecnología
 - [ ] `sql` · SQL para hacer preguntas a los datos · adultos · Tecnología
 - [ ] `terminal` · La terminal y Linux sin miedo · quien empieza a programar · Tecnología
