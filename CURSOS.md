@@ -70,7 +70,7 @@ Para cambiar el orden, mové las líneas. Para agregar un curso, sumá una líne
 
 ## Oficios y manualidades
 - [x] `arreglos-hogar` · Arreglos de la casa: pintar, colgar, ajustar · adultos · Oficios · "Arreglos de la casa"
-- [ ] `pintura` · Pintura de interiores · adultos · Oficios
+- [x] `pintura` · Pintura de interiores · adultos · Oficios · "Pintura de interiores"
 - [ ] `huerta` · Huerta en casa o en el balcón · adultos · Oficios
 - [ ] `jardineria` · Jardinería y cuidado de plantas · adultos · Oficios
 - [ ] `costura` · Costura a mano y a máquina · adultos · Oficios
