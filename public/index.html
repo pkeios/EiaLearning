@@ -30,6 +30,24 @@
   .categoria:not(:has(.curso:not([hidden]))) { display: none; }
   #buscar { display: block; width: 100%; max-width: 520px; margin: 0 auto 1rem; padding: .7rem 1rem; font: inherit; border-radius: 999px; border: 2px solid var(--suave); background: var(--tarjeta); color: var(--texto); }
   #nada { text-align: center; color: var(--suave); }
+  /* Filtros por categoría: un botón por sección, con la cantidad de cursos */
+  .filtros { display: flex; flex-wrap: wrap; justify-content: center; gap: .5rem; margin: 0 0 1rem; }
+  .filtros button { font: inherit; font-size: .95rem; padding: .35rem .8rem; border-radius: 999px; border: 2px solid var(--suave); background: var(--tarjeta); color: var(--texto); cursor: pointer; }
+  .filtros button span { color: var(--suave); }
+  .filtros button[aria-pressed="true"] { border-color: var(--texto); font-weight: 700; }
+  .curso[hidden], .categoria[hidden], .grupo:not(:has(.curso:not([hidden]))) { display: none; }
+  .titulo-grupo { font-size: 1.05rem; color: var(--suave); margin: 1.2rem 0 .6rem; }
+  /* Tarjetas más compactas para que entren más en pantalla */
+  .curso { padding: 1rem 1.1rem; }
+  .curso span { font-size: 2.4rem; }
+  .curso h2 { font-size: 1.15rem; }
+  .curso p { font-size: .95rem; }
+  @media (max-width: 600px) {
+    .curso { display: grid; grid-template-columns: 3rem 1fr; column-gap: .8rem; text-align: left; padding: .9rem; }
+    .curso span { grid-row: span 3; font-size: 2.2rem; align-self: center; }
+    .curso h2 { margin-top: 0; }
+    .curso p { margin-top: .3rem; }
+  }
 </style>
 </head>
 <body>
@@ -45,77 +63,120 @@
   <p class="intro">Cursos gratis, desde cero. Elegí uno: tu progreso se guarda en este navegador.</p>
   <input id="buscar" type="search" placeholder="🔎 Buscar un curso (por ejemplo: excel, madera, chicos)" aria-label="Buscar un curso">
   <p id="nada" hidden>No hay cursos con esa palabra todavía.</p>
-  <section class="categoria">
+  <nav class="filtros" aria-label="Categorías">
+    <button type="button" data-cat="" aria-pressed="true">Todos</button>
+    <button type="button" data-cat="trabajo" aria-pressed="false">💼 Trabajo <span>22</span></button>
+    <button type="button" data-cat="vida" aria-pressed="false">🏠 Vida diaria <span>3</span></button>
+    <button type="button" data-cat="oficios" aria-pressed="false">🔨 Oficios <span>1</span></button>
+    <button type="button" data-cat="emprender" aria-pressed="false">🚀 Emprender <span>1</span></button>
+    <button type="button" data-cat="tecnologia" aria-pressed="false">💻 Tecnología <span>4</span></button>
+    <button type="button" data-cat="datos-ia" aria-pressed="false">🤖 Datos e IA <span>3</span></button>
+    <button type="button" data-cat="chicos" aria-pressed="false">🎒 Chicos <span>2</span></button>
+  </nav>
+  <section class="categoria" id="trabajo">
     <h2 class="titulo-categoria">💼 Trabajo</h2>
+    <div class="grupo">
+    <h3 class="titulo-grupo">🔎 Conseguir trabajo</h3>
     <div class="cursos">
-    <a class="curso" style="--c:#4f6bed" href="soporte-tecnico/"><span>🧰</span><h2>Soporte técnico: ayudar con computadoras y celulares</h2><small>Para quien quiere ayudar o trabajar en soporte</small><p>Diagnosticar con método, compu, celular, wifi, copias de seguridad y tickets.</p></a>
-    <a class="curso" style="--c:#4f6bed" href="gestion-proyectos/"><span>📆</span><h2>Gestión de proyectos desde cero</h2><small>Para quien tiene que organizar algo con fecha</small><p>Acta de inicio, alcance, camino crítico, Gantt, RACI, riesgos, Kanban, Scrum y cierre.</p></a>
-    <a class="curso" style="--c:#4f6bed" href="impuestos-independientes/"><span>🧾</span><h2>Monotributo, facturación e impuestos para independientes</h2><small>Para quien trabaja por su cuenta</small><p>Clave fiscal, categorías, factura C, recategorización, Ingresos Brutos y tus precios. No reemplaza a un contador.</p></a>
-    <a class="curso" style="--c:#4f6bed" href="liderar/"><span>🧭</span><h2>Liderar un equipo por primera vez</h2><small>Para quien empieza a coordinar personas</small><p>Objetivos, delegar, reuniones 1 a 1, feedback, conflictos y tu plan de 90 días.</p></a>
-    <a class="curso" style="--c:#4f6bed" href="portugues/"><span>🇧🇷</span><h2>Portugués básico</h2><small>Para adultos, desde cero</small><p>Pronunciá bien, evitá los falsos amigos, atendé turistas y escribí mensajes en portugués de Brasil.</p></a>
-    <a class="curso" style="--c:#4f6bed" href="ingles-trabajo/"><span>💬</span><h2>Inglés para el trabajo</h2><small>Para adultos con inglés básico</small><p>Presentate, escribí mails, participá en reuniones, atendé el teléfono y a clientes, y preparate para una entrevista en inglés.</p></a>
-    <a class="curso" style="--c:#4f6bed" href="recepcion/"><span>🛎️</span><h2>Recepción y secretariado</h2><small>Para adultos, también primer empleo</small><p>Recibí visitas, atendé el teléfono, manejá turnos, correspondencia y cobros, y cuidá los datos de las personas.</p></a>
-    <a class="curso" style="--c:#4f6bed" href="logistica/"><span>📦</span><h2>Logística y depósito</h2><small>Para adultos, también primer empleo</small><p>Recibí mercadería, ubicá con códigos y FIFO, prepará pedidos sin errores, enviá y trabajá seguro.</p></a>
-    <a class="curso" style="--c:#4f6bed" href="trabajo-remoto/"><span>🏠</span><h2>Trabajar a distancia</h2><small>Para adultos, empleados e independientes</small><p>Armá tu espacio, usá videollamadas y chats, organizá tu día, desconectate y conocé la Ley de Teletrabajo.</p></a>
-    <a class="curso" style="--c:#4f6bed" href="linkedin/"><span>🔗</span><h2>Tu perfil profesional en LinkedIn</h2><small>Para adultos, también primer empleo</small><p>Armá un perfil que aparezca en las búsquedas, sumá contactos y recomendaciones, y postulate sin caer en estafas.</p></a>
-    <a class="curso" style="--c:#4f6bed" href="entrevistas/"><span>🤝</span><h2>Entrevistas de trabajo</h2><small>Para adultos, también primer empleo</small><p>Prepará tus historias, respondé preguntas difíciles y la pretensión salarial, y conocé tus derechos.</p></a>
-    <a class="curso" style="--c:#4f6bed" href="escritura-clara/"><span>✍️</span><h2>Escribir claro</h2><small>Para adultos, desde cero</small><p>Escribí avisos, instrucciones, informes y resúmenes que se entienden a la primera, con lenguaje claro.</p></a>
-    <a class="curso" style="--c:#4f6bed" href="oratoria/"><span>🎤</span><h2>Hablar en público sin miedo</h2><small>Para adultos y estudiantes</small><p>Prepará qué decir, usá la voz y el cuerpo, contá historias, manejá los nervios e improvisá con orden.</p></a>
-    <a class="curso" style="--c:#4f6bed" href="trabajo-equipo/"><span>👥</span><h2>Trabajar en equipo y resolver conflictos</h2><small>Para adultos, también primer empleo</small><p>Comunicate claro, manejá el enojo, dá devoluciones, resolvé conflictos y reconocé la violencia laboral.</p></a>
-    <a class="curso" style="--c:#4f6bed" href="organizar-tiempo/"><span>⏱️</span><h2>Organizar el tiempo y las tareas</h2><small>Para adultos y estudiantes</small><p>Sacá todo de la cabeza, elegí lo importante, planificá la semana, enfocate con pomodoros y descansá sin culpa.</p></a>
-    <a class="curso" style="--c:#4f6bed" href="administracion/"><span>🗂️</span><h2>Administración básica de una oficina</h2><small>Para adultos, desde cero</small><p>Archivá, llevá la agenda, controlá facturas y remitos, manejá la caja chica, el banco y el stock.</p></a>
-    <a class="curso" style="--c:#4f6bed" href="ventas/"><span>🤝</span><h2>Vender sin ser pesado</h2><small>Para adultos y emprendedores</small><p>Preguntá antes de ofrecer, respondé "Está caro" sin bajar el precio, cerrá sin presionar y medí tus ventas.</p></a>
-    <a class="curso" style="--c:#4f6bed" href="atencion-cliente/"><span>🛎️</span><h2>Atención al cliente, en persona y por chat</h2><small>Para adultos, también primer empleo</small><p>Escuchá, explicá claro, resolvé reclamos y manejá clientes enojados en el mostrador, por teléfono o por WhatsApp.</p></a>
-    <a class="curso" style="--c:#4f6bed" href="mail-profesional/"><span>📧</span><h2>Mails y mensajes de trabajo</h2><small>Para adultos, desde cero</small><p>Escribí mails y WhatsApp de trabajo claros y amables: asunto, pedido, tono, adjuntos, seguimiento y reclamos.</p></a>
-    <a class="curso" style="--c:#4f6bed" href="presentaciones/"><span>📽️</span><h2>Presentaciones que se entienden</h2><small>Para adultos, desde cero</small><p>Armá diapositivas claras en PowerPoint, Google Slides o Canva, ensayá y presentá sin leer, en persona o por videollamada.</p></a>
-    <a class="curso" style="--c:#4f6bed" href="word-docs/"><span>📄</span><h2>Documentos con Word y Google Docs</h2><small>Para adultos, desde cero</small><p>Escribí CV, cartas, informes y trabajos prolijos, con estilos, índice, tablas y revisión en equipo.</p></a>
-    <a class="curso" style="--c:#4f6bed" href="buscar-trabajo/"><span>💼</span><h2>Buscar trabajo con IA</h2><small>Para adultos, también primer empleo</small><p>Armá tu CV, adaptalo a cada aviso, escribí la carta y practicá la entrevista con la IA, sin inventar nada.</p></a>
-    <a class="curso" style="--c:#4f6bed" href="excel/"><span>🟩</span><h2>Excel y Google Sheets</h2><small>Para adultos, desde cero</small><p>Hacé cuentas, ordená datos y armá informes con tablas dinámicas y gráficos. Lo piden en casi todos los trabajos.</p></a>
-
+      <a class="curso" style="--c:#4f6bed" href="buscar-trabajo/"><span>💼</span><h2>Buscar trabajo con IA</h2><small>Para adultos, también primer empleo</small><p>Armá tu CV, adaptalo a cada aviso, escribí la carta y practicá la entrevista con la IA, sin inventar nada.</p></a>
+      <a class="curso" style="--c:#4f6bed" href="entrevistas/"><span>🤝</span><h2>Entrevistas de trabajo</h2><small>Para adultos, también primer empleo</small><p>Prepará tus historias, respondé preguntas difíciles y la pretensión salarial, y conocé tus derechos.</p></a>
+      <a class="curso" style="--c:#4f6bed" href="linkedin/"><span>🔗</span><h2>Tu perfil profesional en LinkedIn</h2><small>Para adultos, también primer empleo</small><p>Armá un perfil que aparezca en las búsquedas, sumá contactos y recomendaciones, y postulate sin caer en estafas.</p></a>
+    </div>
+    </div>
+    <div class="grupo">
+    <h3 class="titulo-grupo">🗣️ Comunicación e idiomas</h3>
+    <div class="cursos">
+      <a class="curso" style="--c:#4f6bed" href="escritura-clara/"><span>✍️</span><h2>Escribir claro</h2><small>Para adultos, desde cero</small><p>Escribí avisos, instrucciones, informes y resúmenes que se entienden a la primera, con lenguaje claro.</p></a>
+      <a class="curso" style="--c:#4f6bed" href="mail-profesional/"><span>📧</span><h2>Mails y mensajes de trabajo</h2><small>Para adultos, desde cero</small><p>Escribí mails y WhatsApp de trabajo claros y amables: asunto, pedido, tono, adjuntos, seguimiento y reclamos.</p></a>
+      <a class="curso" style="--c:#4f6bed" href="oratoria/"><span>🎤</span><h2>Hablar en público sin miedo</h2><small>Para adultos y estudiantes</small><p>Prepará qué decir, usá la voz y el cuerpo, contá historias, manejá los nervios e improvisá con orden.</p></a>
+      <a class="curso" style="--c:#4f6bed" href="presentaciones/"><span>📽️</span><h2>Presentaciones que se entienden</h2><small>Para adultos, desde cero</small><p>Armá diapositivas claras en PowerPoint, Google Slides o Canva, ensayá y presentá sin leer, en persona o por videollamada.</p></a>
+      <a class="curso" style="--c:#4f6bed" href="ingles-trabajo/"><span>💬</span><h2>Inglés para el trabajo</h2><small>Para adultos con inglés básico</small><p>Presentate, escribí mails, participá en reuniones, atendé el teléfono y a clientes, y preparate para una entrevista en inglés.</p></a>
+      <a class="curso" style="--c:#4f6bed" href="portugues/"><span>🇧🇷</span><h2>Portugués básico</h2><small>Para adultos, desde cero</small><p>Pronunciá bien, evitá los falsos amigos, atendé turistas y escribí mensajes en portugués de Brasil.</p></a>
+    </div>
+    </div>
+    <div class="grupo">
+    <h3 class="titulo-grupo">🗂️ Oficina y organización</h3>
+    <div class="cursos">
+      <a class="curso" style="--c:#4f6bed" href="excel/"><span>🟩</span><h2>Excel y Google Sheets</h2><small>Para adultos, desde cero</small><p>Hacé cuentas, ordená datos y armá informes con tablas dinámicas y gráficos. Lo piden en casi todos los trabajos.</p></a>
+      <a class="curso" style="--c:#4f6bed" href="word-docs/"><span>📄</span><h2>Documentos con Word y Google Docs</h2><small>Para adultos, desde cero</small><p>Escribí CV, cartas, informes y trabajos prolijos, con estilos, índice, tablas y revisión en equipo.</p></a>
+      <a class="curso" style="--c:#4f6bed" href="administracion/"><span>🗂️</span><h2>Administración básica de una oficina</h2><small>Para adultos, desde cero</small><p>Archivá, llevá la agenda, controlá facturas y remitos, manejá la caja chica, el banco y el stock.</p></a>
+      <a class="curso" style="--c:#4f6bed" href="organizar-tiempo/"><span>⏱️</span><h2>Organizar el tiempo y las tareas</h2><small>Para adultos y estudiantes</small><p>Sacá todo de la cabeza, elegí lo importante, planificá la semana, enfocate con pomodoros y descansá sin culpa.</p></a>
+      <a class="curso" style="--c:#4f6bed" href="recepcion/"><span>🛎️</span><h2>Recepción y secretariado</h2><small>Para adultos, también primer empleo</small><p>Recibí visitas, atendé el teléfono, manejá turnos, correspondencia y cobros, y cuidá los datos de las personas.</p></a>
+      <a class="curso" style="--c:#4f6bed" href="logistica/"><span>📦</span><h2>Logística y depósito</h2><small>Para adultos, también primer empleo</small><p>Recibí mercadería, ubicá con códigos y FIFO, prepará pedidos sin errores, enviá y trabajá seguro.</p></a>
+    </div>
+    </div>
+    <div class="grupo">
+    <h3 class="titulo-grupo">👥 Equipos y proyectos</h3>
+    <div class="cursos">
+      <a class="curso" style="--c:#4f6bed" href="trabajo-equipo/"><span>👥</span><h2>Trabajar en equipo y resolver conflictos</h2><small>Para adultos, también primer empleo</small><p>Comunicate claro, manejá el enojo, dá devoluciones, resolvé conflictos y reconocé la violencia laboral.</p></a>
+      <a class="curso" style="--c:#4f6bed" href="liderar/"><span>🧭</span><h2>Liderar un equipo por primera vez</h2><small>Para quien empieza a coordinar personas</small><p>Objetivos, delegar, reuniones 1 a 1, feedback, conflictos y tu plan de 90 días.</p></a>
+      <a class="curso" style="--c:#4f6bed" href="gestion-proyectos/"><span>📆</span><h2>Gestión de proyectos desde cero</h2><small>Para quien tiene que organizar algo con fecha</small><p>Acta de inicio, alcance, camino crítico, Gantt, RACI, riesgos, Kanban, Scrum y cierre.</p></a>
+      <a class="curso" style="--c:#4f6bed" href="trabajo-remoto/"><span>🏠</span><h2>Trabajar a distancia</h2><small>Para adultos, empleados e independientes</small><p>Armá tu espacio, usá videollamadas y chats, organizá tu día, desconectate y conocé la Ley de Teletrabajo.</p></a>
+    </div>
+    </div>
+    <div class="grupo">
+    <h3 class="titulo-grupo">🤝 Clientes y trabajo por tu cuenta</h3>
+    <div class="cursos">
+      <a class="curso" style="--c:#4f6bed" href="atencion-cliente/"><span>🛎️</span><h2>Atención al cliente, en persona y por chat</h2><small>Para adultos, también primer empleo</small><p>Escuchá, explicá claro, resolvé reclamos y manejá clientes enojados en el mostrador, por teléfono o por WhatsApp.</p></a>
+      <a class="curso" style="--c:#4f6bed" href="ventas/"><span>🤝</span><h2>Vender sin ser pesado</h2><small>Para adultos y emprendedores</small><p>Preguntá antes de ofrecer, respondé "Está caro" sin bajar el precio, cerrá sin presionar y medí tus ventas.</p></a>
+      <a class="curso" style="--c:#4f6bed" href="impuestos-independientes/"><span>🧾</span><h2>Monotributo, facturación e impuestos para independientes</h2><small>Para quien trabaja por su cuenta</small><p>Clave fiscal, categorías, factura C, recategorización, Ingresos Brutos y tus precios. No reemplaza a un contador.</p></a>
+    </div>
     </div>
   </section>
-  <section class="categoria">
+  <section class="categoria" id="vida">
     <h2 class="titulo-categoria">🏠 Vida diaria</h2>
+    <div class="grupo">
     <div class="cursos">
-    <a class="curso" style="--c:#2e9e5b" href="finanzas-personales/"><span>💵</span><h2>Finanzas personales con números</h2><small>Para adultos, cualquier ingreso</small><p>Presupuesto, inflación, ahorro, tarjetas, deudas e inversiones, con cuentas claras y sin vueltas.</p></a>
-    <a class="curso" style="--c:#2e9e5b" href="inversiones/"><span>📈</span><h2>Invertir desde cero en Argentina</h2><small>Para quien ya ordenó sus finanzas</small><p>Plazo fijo, fondos, bonos, acciones y CEDEAR, riesgo, costos y estafas. Educativo, no es asesoramiento.</p></a>
-    <a class="curso" style="--c:#2e9e5b" href="seguridad-digital/"><span>🛡️</span><h2>Seguridad digital y estafas</h2><small>Para todo el mundo, también adultos mayores</small><p>Reconocé los engaños por WhatsApp, mail y teléfono, protegé tus cuentas y ayudá a tu familia a no caer.</p></a>
-
+      <a class="curso" style="--c:#2e9e5b" href="finanzas-personales/"><span>💵</span><h2>Finanzas personales con números</h2><small>Para adultos, cualquier ingreso</small><p>Presupuesto, inflación, ahorro, tarjetas, deudas e inversiones, con cuentas claras y sin vueltas.</p></a>
+      <a class="curso" style="--c:#2e9e5b" href="inversiones/"><span>📈</span><h2>Invertir desde cero en Argentina</h2><small>Para quien ya ordenó sus finanzas</small><p>Plazo fijo, fondos, bonos, acciones y CEDEAR, riesgo, costos y estafas. Educativo, no es asesoramiento.</p></a>
+      <a class="curso" style="--c:#2e9e5b" href="seguridad-digital/"><span>🛡️</span><h2>Seguridad digital y estafas</h2><small>Para todo el mundo, también adultos mayores</small><p>Reconocé los engaños por WhatsApp, mail y teléfono, protegé tus cuentas y ayudá a tu familia a no caer.</p></a>
+    </div>
     </div>
   </section>
-  <section class="categoria">
+  <section class="categoria" id="oficios">
     <h2 class="titulo-categoria">🔨 Oficios</h2>
+    <div class="grupo">
     <div class="cursos">
-    <a class="curso" style="--c:#b5651d" href="carpinteria/"><span>🪚</span><h2>Carpintería básica</h2><small>Para adultos, sin experiencia</small><p>De la medida al primer mueble: trabajá seguro, cortá derecho, uní, terminá y aprendé a cobrar tu trabajo.</p></a>
-
+      <a class="curso" style="--c:#b5651d" href="carpinteria/"><span>🪚</span><h2>Carpintería básica</h2><small>Para adultos, sin experiencia</small><p>De la medida al primer mueble: trabajá seguro, cortá derecho, uní, terminá y aprendé a cobrar tu trabajo.</p></a>
+    </div>
     </div>
   </section>
-  <section class="categoria">
+  <section class="categoria" id="emprender">
     <h2 class="titulo-categoria">🚀 Emprender</h2>
+    <div class="grupo">
     <div class="cursos">
-    <a class="curso" style="--c:#e07b39" href="finanzas-negocio/"><span>📊</span><h2>Números de un pequeño negocio</h2><small>Para quien ya vende</small><p>Resultados, margen, punto de equilibrio, flujo de caja, precios con inflación y créditos.</p></a>
+      <a class="curso" style="--c:#d6406f" href="finanzas-negocio/"><span>📊</span><h2>Números de un pequeño negocio</h2><small>Para quien ya vende</small><p>Resultados, margen, punto de equilibrio, flujo de caja, precios con inflación y créditos.</p></a>
+    </div>
     </div>
   </section>
-  <section class="categoria">
+  <section class="categoria" id="tecnologia">
     <h2 class="titulo-categoria">💻 Tecnología</h2>
+    <div class="grupo">
     <div class="cursos">
-    <a class="curso" style="--c:#8b7cff" href="curso.html"><span>🧠</span><h2>AI Engineering</h2><small>Para adultos</small><p>De Python y matemática a construir, evaluar y publicar sistemas con IA.</p></a>
-    <a class="curso" style="--c:#c2417a" href="data-engineering/"><span>🚰</span><h2>Data Engineering</h2><small>Para adultos, desde cero</small><p>De la planilla al pipeline: aprendé Python y SQL programando en la página y armá el sistema que mueve y limpia los datos.</p></a>
+      <a class="curso" style="--c:#7a5af8" href="git/"><span>🌿</span><h2>Git y GitHub desde cero</h2><small>Para quien empieza a programar</small><p>Guardar versiones, ramas, GitHub, pull requests y tu página publicada.</p></a>
+      <a class="curso" style="--c:#7a5af8" href="soporte-tecnico/"><span>🧰</span><h2>Soporte técnico: ayudar con computadoras y celulares</h2><small>Para quien quiere ayudar o trabajar en soporte</small><p>Diagnosticar con método, compu, celular, wifi, copias de seguridad y tickets.</p></a>
+      <a class="curso" style="--c:#8b7cff" href="curso.html"><span>🧠</span><h2>AI Engineering</h2><small>Para adultos</small><p>De Python y matemática a construir, evaluar y publicar sistemas con IA.</p></a>
+      <a class="curso" style="--c:#c2417a" href="data-engineering/"><span>🚰</span><h2>Data Engineering</h2><small>Para adultos, desde cero</small><p>De la planilla al pipeline: aprendé Python y SQL programando en la página y armá el sistema que mueve y limpia los datos.</p></a>
+    </div>
     </div>
   </section>
-  <section class="categoria">
+  <section class="categoria" id="datos-ia">
     <h2 class="titulo-categoria">🤖 Datos e IA</h2>
+    <div class="grupo">
     <div class="cursos">
-    <a class="curso" style="--c:#1f9e8f" href="analisis-secuencial/"><span>📉</span><h2>Análisis secuencial</h2><small>Avanzado: para quien ya analiza datos o trabaja con ML</small><p>Detectá cambios en métricas y modelos con CUSUM, EWMA, SPRT, PSI y experimentos secuenciales, con código que se corre en la página.</p></a>
-    <a class="curso" style="--c:#2a9d8f" href="datos/"><span>📈</span><h2>Datos con IA</h2><small>Para adultos, sin programar</small><p>Preguntá, analizá y decidí: usá la IA para analizar datos sin que te invente números. Sirve para el trabajo que tenés o para conseguir uno.</p></a>
-    <a class="curso" style="--c:#d99a1e" href="prompts/"><span>✍️</span><h2>Prompts desde cero</h2><small>Para adultos, sin saber nada de antes</small><p>Cómo pedirle bien las cosas a la IA: escribí pedidos claros en ChatGPT, Claude o Gemini, revisá lo que te contesta y usala con responsabilidad.</p></a>
+      <a class="curso" style="--c:#2a9d8f" href="datos/"><span>📈</span><h2>Datos con IA</h2><small>Para adultos, sin programar</small><p>Preguntá, analizá y decidí: usá la IA para analizar datos sin que te invente números. Sirve para el trabajo que tenés o para conseguir uno.</p></a>
+      <a class="curso" style="--c:#d99a1e" href="prompts/"><span>✍️</span><h2>Prompts desde cero</h2><small>Para adultos, sin saber nada de antes</small><p>Cómo pedirle bien las cosas a la IA: escribí pedidos claros en ChatGPT, Claude o Gemini, revisá lo que te contesta y usala con responsabilidad.</p></a>
+      <a class="curso" style="--c:#1f9e8f" href="analisis-secuencial/"><span>📉</span><h2>Análisis secuencial</h2><small>Avanzado: para quien ya analiza datos o trabaja con ML</small><p>Detectá cambios en métricas y modelos con CUSUM, EWMA, SPRT, PSI y experimentos secuenciales, con código que se corre en la página.</p></a>
+    </div>
     </div>
   </section>
-  <section class="categoria">
+  <section class="categoria" id="chicos">
     <h2 class="titulo-categoria">🎒 Chicos</h2>
+    <div class="grupo">
     <div class="cursos">
-    <a class="curso" style="--c:#2f6fe4" href="chicos/#/ia"><span>🤖</span><h2>IA para chicos</h2><small>De 10 a 13 años</small><p>6 misiones y un taller para entender cómo funciona la IA y usarla bien.</p></a>
-    <a class="curso" style="--c:#e0582f" href="chicos/ingles.html"><span>🗣️</span><h2>Inglés con el PIPI</h2><small>Para 13 años</small><p>10 unidades: presente simple, presente continuo y pasado, con preguntas personales y ejercicios.</p></a>
+      <a class="curso" style="--c:#2f6fe4" href="chicos/#/ia"><span>🤖</span><h2>IA para chicos</h2><small>De 10 a 13 años</small><p>6 misiones y un taller para entender cómo funciona la IA y usarla bien.</p></a>
+      <a class="curso" style="--c:#e0582f" href="chicos/ingles.html"><span>🗣️</span><h2>Inglés con el PIPI</h2><small>Para 13 años</small><p>10 unidades: presente simple, presente continuo y pasado, con preguntas personales y ejercicios.</p></a>
+    </div>
     </div>
   </section>
 </main>
@@ -123,6 +184,14 @@
   // Buscador: deja visibles solo los cursos que tienen todas las palabras (sin importar tildes ni mayúsculas).
   const normal = t => t.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
   const tarjetas = [...document.querySelectorAll('.curso')], nada = document.getElementById('nada');
+  // Filtros: muestran una sola categoría; buscar vuelve a "Todos" para no esconder resultados.
+  const secciones = [...document.querySelectorAll('.categoria')], filtros = [...document.querySelectorAll('.filtros button')];
+  const filtrar = cat => {
+    filtros.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.cat === cat)));
+    secciones.forEach(s => { s.hidden = !!cat && s.id !== cat; });
+  };
+  filtros.forEach(b => { b.onclick = () => { document.getElementById('buscar').value = ''; tarjetas.forEach(t => { t.hidden = false; }); nada.hidden = true; filtrar(b.dataset.cat); }; });
+  document.getElementById('buscar').addEventListener('input', () => filtrar(''));
   document.getElementById('buscar').oninput = e => {
     const palabras = normal(e.target.value).split(/\s+/).filter(Boolean);
     tarjetas.forEach(t => { t.hidden = !palabras.every(p => normal(t.textContent + ' ' + t.closest('.categoria').querySelector('h2').textContent).includes(p)); });

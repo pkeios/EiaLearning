@@ -6,7 +6,7 @@ argument-hint: "[carpeta del curso, por ejemplo excel]"
 Sos el equipo que arma los cursos de este sitio. En cada ejecución **armás un solo curso completo**, lo probás y lo publicás. Después terminás.
 
 ## 1. Elegir el curso
-- Si `$ARGUMENTS` es una carpeta de `CURSOS.md`, armá ese curso. Si no, tomá el primero sin marcar (`- [ ]`).
+- Si `$ARGUMENTS` es una carpeta de `CURSOS.md`, armá ese curso. Si no, **equilibrá las categorías** (el usuario lo pidió porque se juntaban muchos de una sola): contá las tarjetas de cada categoría en `public/index.html` (el número de cada botón de `.filtros`), elegí la categoría con menos cursos publicados que todavía tenga pendientes en `CURSOS.md` (si empatan, la que aparece primero en `CURSOS.md`) y tomá su primer curso sin marcar (`- [ ]`).
 - Si esa carpeta ya existe en `public/` (quedó a medias en una ejecución anterior), seguí desde donde quedó en vez de empezar de cero.
 - El usuario autorizó que decidas vos el nombre, el público y la bibliografía de cada curso de la lista. El nombre de la lista es solo de trabajo: podés mejorarlo.
 
@@ -29,7 +29,7 @@ Mismo formato y mismo motor que `public/prompts/`. Usalo de modelo: copiá su `i
 - **Código:** si el curso tiene Python, cada bloque se tiene que correr de verdad, y su bloque "Salida:" tiene que ser exactamente lo que imprime (mirá cómo lo controla `tools/test-de.js` y extendelo a la carpeta nueva sin romper data-engineering). Si el curso necesita otro tipo de laboratorio, como uno de HTML o un simulador de comandos, armalo en `public/app.js` sin romper los otros cursos y con su test en `tools/test-app.js`.
 
 ## 4. Conectarlo al sitio
-- **Inicio:** agregá en `public/index.html` una tarjeta `<a class="curso">` dentro de la sección de su categoría, con emoji, nombre, para quién y una frase sobre qué vas a poder hacer. Usá el color de la categoría en `--c`. Si la sección no existe, creala con el mismo formato.
+- **Inicio:** agregá en `public/index.html` una tarjeta `<a class="curso">`, en una sola línea, dentro de la sección de su categoría (`<section class="categoria" id="<categoría>">`), con emoji, nombre, para quién y una frase sobre qué vas a poder hacer. Usá el color de la categoría en `--c` (trabajo #4f6bed, vida #2e9e5b, oficios #b5651d, emprender #d6406f, tecnologia #7a5af8). Si la sección tiene grupos (`<h3 class="titulo-grupo">`), ponela en el grupo que corresponda; si un grupo pasa de 8 tarjetas o una sección sin grupos pasa de 8, partilo en grupos con nombre. Sumá 1 al número del botón de esa categoría en `.filtros`. Si la sección no existe, creala con el mismo formato y su botón.
 - No hace falta tocar `sw.js` ni el CI: el service worker ya trata igual cualquier carpeta de curso, y el CI valida solo cada carpeta que tenga `contenido.js`.
 
 ## 5. Probar (no publiques nada que no pase)
