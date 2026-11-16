@@ -126,7 +126,7 @@ Para cambiar el orden, mové las líneas. Para agregar un curso, sumá una líne
 
 ## Para chicos (10 a 13 años)
 - [x] `chicos-internet` · Cuidarse en internet · chicos de 10 a 13 · Chicos · "Cuidarse en internet"
-- [ ] `chicos-programar` · Pensar como programador · chicos de 10 a 13 · Chicos
+- [x] `chicos-programar` · Pensar como programador · chicos de 10 a 13 · Chicos · "Pensar como programador"
 - [ ] `chicos-plata` · Plata para chicos: ahorrar y comparar precios · chicos de 10 a 13 · Chicos
 - [ ] `chicos-ciencia` · Ciencia en casa: experimentos seguros · chicos de 10 a 13 · Chicos
 - [ ] `chicos-matematica` · Matemática con desafíos · chicos de 10 a 13 · Chicos
