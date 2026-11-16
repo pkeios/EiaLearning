@@ -69,7 +69,7 @@ Para cambiar el orden, mové las líneas. Para agregar un curso, sumá una líne
 - [ ] `ia-etica` · IA y sociedad: qué cambia y qué cuidar · adultos · Datos e IA
 
 ## Oficios y manualidades
-- [ ] `arreglos-hogar` · Arreglos de la casa: pintar, colgar, ajustar · adultos · Oficios
+- [x] `arreglos-hogar` · Arreglos de la casa: pintar, colgar, ajustar · adultos · Oficios · "Arreglos de la casa"
 - [ ] `pintura` · Pintura de interiores · adultos · Oficios
 - [ ] `huerta` · Huerta en casa o en el balcón · adultos · Oficios
 - [ ] `jardineria` · Jardinería y cuidado de plantas · adultos · Oficios
