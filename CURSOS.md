@@ -98,7 +98,7 @@ Para cambiar el orden, mové las líneas. Para agregar un curso, sumá una líne
 ## Emprender
 - [x] `emprender` · Emprender desde cero: de la idea a la primera venta · adultos · Emprender · "Emprender desde cero"
 - [x] `costos-precios` · Costos y precios: cuánto cobrar · emprendedores · Emprender · "Costos y precios: cuánto cobrar"
-- [ ] `vender-online` · Vender por internet · emprendedores · Emprender
+- [x] `vender-online` · Vender por internet · emprendedores · Emprender · "Vender por internet"
 - [ ] `redes-sociales` · Redes sociales para tu emprendimiento · emprendedores · Emprender
 - [ ] `fotos-producto` · Fotos de producto con el celular · emprendedores · Emprender
 - [ ] `whatsapp-negocio` · Atender clientes por WhatsApp · emprendedores · Emprender
