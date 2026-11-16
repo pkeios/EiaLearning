@@ -96,7 +96,7 @@ Para cambiar el orden, mové las líneas. Para agregar un curso, sumá una líne
 - [ ] `macrame` · Macramé y tejidos decorativos · adultos · Oficios
 
 ## Emprender
-- [ ] `emprender` · Emprender desde cero: de la idea a la primera venta · adultos · Emprender
+- [x] `emprender` · Emprender desde cero: de la idea a la primera venta · adultos · Emprender · "Emprender desde cero"
 - [ ] `costos-precios` · Costos y precios: cuánto cobrar · emprendedores · Emprender
 - [ ] `vender-online` · Vender por internet · emprendedores · Emprender
 - [ ] `redes-sociales` · Redes sociales para tu emprendimiento · emprendedores · Emprender
