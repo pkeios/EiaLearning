@@ -37,6 +37,14 @@
   .filtros button[aria-pressed="true"] { border-color: var(--texto); font-weight: 700; }
   .curso[hidden], .categoria[hidden], .grupo:not(:has(.curso:not([hidden]))) { display: none; }
   .titulo-grupo { font-size: 1.05rem; color: var(--suave); margin: 1.2rem 0 .6rem; }
+  /* Al entrar se ven solo las categorías, como fichas grandes; al tocar una aparecen sus cursos. Buscar muestra cursos de todas. */
+  .filtros [data-cat="trabajo"] { --c: #4f6bed; } .filtros [data-cat="comunicacion"] { --c: #c99a06; } .filtros [data-cat="vida"] { --c: #2e9e5b; } .filtros [data-cat="oficios"] { --c: #b5651d; }
+  .filtros [data-cat="emprender"] { --c: #d6406f; } .filtros [data-cat="tecnologia"] { --c: #7a5af8; } .filtros [data-cat="datos-ia"] { --c: #1f9e8f; } .filtros [data-cat="chicos"] { --c: #2f6fe4; }
+  main[data-vista="inicio"] .categoria, main[data-vista="inicio"] .filtros [data-cat=""] { display: none; }
+  main[data-vista="inicio"] .filtros { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; }
+  main[data-vista="inicio"] .filtros button { font-size: 1.2rem; font-weight: 700; padding: 1.3rem .8rem; border: 3px solid var(--c); border-radius: 20px; }
+  main[data-vista="inicio"] .filtros button span { display: block; font-size: .95rem; font-weight: 400; }
+  main[data-vista="inicio"] .filtros button span::after { content: " cursos"; }
   /* Tarjetas más compactas para que entren más en pantalla */
   .curso { padding: 1rem 1.1rem; }
   .curso span { font-size: 2.4rem; }
@@ -64,12 +72,13 @@
   <input id="buscar" type="search" placeholder="🔎 Buscar un curso (por ejemplo: excel, madera, chicos)" aria-label="Buscar un curso">
   <p id="nada" hidden>No hay cursos con esa palabra todavía.</p>
   <nav class="filtros" aria-label="Categorías">
-    <button type="button" data-cat="" aria-pressed="true">Todos</button>
-    <button type="button" data-cat="trabajo" aria-pressed="false">💼 Trabajo <span>22</span></button>
+    <button type="button" data-cat="" aria-pressed="false">← Todas las categorías</button>
+    <button type="button" data-cat="trabajo" aria-pressed="false">💼 Trabajo <span>12</span></button>
+    <button type="button" data-cat="comunicacion" aria-pressed="false">🗣️ Comunicación <span>6</span></button>
     <button type="button" data-cat="vida" aria-pressed="false">🏠 Vida diaria <span>4</span></button>
     <button type="button" data-cat="oficios" aria-pressed="false">🔨 Oficios <span>4</span></button>
-    <button type="button" data-cat="emprender" aria-pressed="false">🚀 Emprender <span>4</span></button>
-    <button type="button" data-cat="tecnologia" aria-pressed="false">💻 Tecnología <span>4</span></button>
+    <button type="button" data-cat="emprender" aria-pressed="false">🚀 Emprender <span>6</span></button>
+    <button type="button" data-cat="tecnologia" aria-pressed="false">💻 Tecnología <span>6</span></button>
     <button type="button" data-cat="datos-ia" aria-pressed="false">🤖 Datos e IA <span>4</span></button>
     <button type="button" data-cat="chicos" aria-pressed="false">🎒 Chicos <span>4</span></button>
   </nav>
@@ -84,21 +93,8 @@
     </div>
     </div>
     <div class="grupo">
-    <h3 class="titulo-grupo">🗣️ Comunicación e idiomas</h3>
-    <div class="cursos">
-      <a class="curso" style="--c:#4f6bed" href="escritura-clara/"><span>✍️</span><h2>Escribir claro</h2><small>Para adultos, desde cero</small><p>Escribí avisos, instrucciones, informes y resúmenes que se entienden a la primera, con lenguaje claro.</p></a>
-      <a class="curso" style="--c:#4f6bed" href="mail-profesional/"><span>📧</span><h2>Mails y mensajes de trabajo</h2><small>Para adultos, desde cero</small><p>Escribí mails y WhatsApp de trabajo claros y amables: asunto, pedido, tono, adjuntos, seguimiento y reclamos.</p></a>
-      <a class="curso" style="--c:#4f6bed" href="oratoria/"><span>🎤</span><h2>Hablar en público sin miedo</h2><small>Para adultos y estudiantes</small><p>Prepará qué decir, usá la voz y el cuerpo, contá historias, manejá los nervios e improvisá con orden.</p></a>
-      <a class="curso" style="--c:#4f6bed" href="presentaciones/"><span>📽️</span><h2>Presentaciones que se entienden</h2><small>Para adultos, desde cero</small><p>Armá diapositivas claras en PowerPoint, Google Slides o Canva, ensayá y presentá sin leer, en persona o por videollamada.</p></a>
-      <a class="curso" style="--c:#4f6bed" href="ingles-trabajo/"><span>💬</span><h2>Inglés para el trabajo</h2><small>Para adultos con inglés básico</small><p>Presentate, escribí mails, participá en reuniones, atendé el teléfono y a clientes, y preparate para una entrevista en inglés.</p></a>
-      <a class="curso" style="--c:#4f6bed" href="portugues/"><span>🇧🇷</span><h2>Portugués básico</h2><small>Para adultos, desde cero</small><p>Pronunciá bien, evitá los falsos amigos, atendé turistas y escribí mensajes en portugués de Brasil.</p></a>
-    </div>
-    </div>
-    <div class="grupo">
     <h3 class="titulo-grupo">🗂️ Oficina y organización</h3>
     <div class="cursos">
-      <a class="curso" style="--c:#4f6bed" href="excel/"><span>🟩</span><h2>Excel y Google Sheets</h2><small>Para adultos, desde cero</small><p>Hacé cuentas, ordená datos y armá informes con tablas dinámicas y gráficos. Lo piden en casi todos los trabajos.</p></a>
-      <a class="curso" style="--c:#4f6bed" href="word-docs/"><span>📄</span><h2>Documentos con Word y Google Docs</h2><small>Para adultos, desde cero</small><p>Escribí CV, cartas, informes y trabajos prolijos, con estilos, índice, tablas y revisión en equipo.</p></a>
       <a class="curso" style="--c:#4f6bed" href="administracion/"><span>🗂️</span><h2>Administración básica de una oficina</h2><small>Para adultos, desde cero</small><p>Archivá, llevá la agenda, controlá facturas y remitos, manejá la caja chica, el banco y el stock.</p></a>
       <a class="curso" style="--c:#4f6bed" href="organizar-tiempo/"><span>⏱️</span><h2>Organizar el tiempo y las tareas</h2><small>Para adultos y estudiantes</small><p>Sacá todo de la cabeza, elegí lo importante, planificá la semana, enfocate con pomodoros y descansá sin culpa.</p></a>
       <a class="curso" style="--c:#4f6bed" href="recepcion/"><span>🛎️</span><h2>Recepción y secretariado</h2><small>Para adultos, también primer empleo</small><p>Recibí visitas, atendé el teléfono, manejá turnos, correspondencia y cobros, y cuidá los datos de las personas.</p></a>
@@ -118,8 +114,19 @@
     <h3 class="titulo-grupo">🤝 Clientes y trabajo por tu cuenta</h3>
     <div class="cursos">
       <a class="curso" style="--c:#4f6bed" href="atencion-cliente/"><span>🛎️</span><h2>Atención al cliente, en persona y por chat</h2><small>Para adultos, también primer empleo</small><p>Escuchá, explicá claro, resolvé reclamos y manejá clientes enojados en el mostrador, por teléfono o por WhatsApp.</p></a>
-      <a class="curso" style="--c:#4f6bed" href="ventas/"><span>🤝</span><h2>Vender sin ser pesado</h2><small>Para adultos y emprendedores</small><p>Preguntá antes de ofrecer, respondé "Está caro" sin bajar el precio, cerrá sin presionar y medí tus ventas.</p></a>
-      <a class="curso" style="--c:#4f6bed" href="impuestos-independientes/"><span>🧾</span><h2>Monotributo, facturación e impuestos para independientes</h2><small>Para quien trabaja por su cuenta</small><p>Clave fiscal, categorías, factura C, recategorización, Ingresos Brutos y tus precios. No reemplaza a un contador.</p></a>
+    </div>
+    </div>
+  </section>
+  <section class="categoria" id="comunicacion">
+    <h2 class="titulo-categoria">🗣️ Comunicación</h2>
+    <div class="grupo">
+    <div class="cursos">
+      <a class="curso" style="--c:#c99a06" href="escritura-clara/"><span>✍️</span><h2>Escribir claro</h2><small>Para adultos, desde cero</small><p>Escribí avisos, instrucciones, informes y resúmenes que se entienden a la primera, con lenguaje claro.</p></a>
+      <a class="curso" style="--c:#c99a06" href="mail-profesional/"><span>📧</span><h2>Mails y mensajes de trabajo</h2><small>Para adultos, desde cero</small><p>Escribí mails y WhatsApp de trabajo claros y amables: asunto, pedido, tono, adjuntos, seguimiento y reclamos.</p></a>
+      <a class="curso" style="--c:#c99a06" href="oratoria/"><span>🎤</span><h2>Hablar en público sin miedo</h2><small>Para adultos y estudiantes</small><p>Prepará qué decir, usá la voz y el cuerpo, contá historias, manejá los nervios e improvisá con orden.</p></a>
+      <a class="curso" style="--c:#c99a06" href="presentaciones/"><span>📽️</span><h2>Presentaciones que se entienden</h2><small>Para adultos, desde cero</small><p>Armá diapositivas claras en PowerPoint, Google Slides o Canva, ensayá y presentá sin leer, en persona o por videollamada.</p></a>
+      <a class="curso" style="--c:#c99a06" href="ingles-trabajo/"><span>💬</span><h2>Inglés para el trabajo</h2><small>Para adultos con inglés básico</small><p>Presentate, escribí mails, participá en reuniones, atendé el teléfono y a clientes, y preparate para una entrevista en inglés.</p></a>
+      <a class="curso" style="--c:#c99a06" href="portugues/"><span>🇧🇷</span><h2>Portugués básico</h2><small>Para adultos, desde cero</small><p>Pronunciá bien, evitá los falsos amigos, atendé turistas y escribí mensajes en portugués de Brasil.</p></a>
     </div>
     </div>
   </section>
@@ -153,6 +160,8 @@
       <a class="curso" style="--c:#d6406f" href="costos-precios/"><span>🏷️</span><h2>Costos y precios: cuánto cobrar</h2><small>Para emprendedores e independientes</small><p>Calculá cuánto te cuesta cada producto, poné un precio que cubra todo y actualizalo con la inflación.</p></a>
       <a class="curso" style="--c:#d6406f" href="vender-online/"><span>🛒</span><h2>Vender por internet</h2><small>Para emprendedores</small><p>Dónde vender, publicaciones que venden, cobros seguros, envíos y derechos del consumidor.</p></a>
       <a class="curso" style="--c:#d6406f" href="finanzas-negocio/"><span>📊</span><h2>Números de un pequeño negocio</h2><small>Para quien ya vende</small><p>Resultados, margen, punto de equilibrio, flujo de caja, precios con inflación y créditos.</p></a>
+      <a class="curso" style="--c:#d6406f" href="ventas/"><span>🤝</span><h2>Vender sin ser pesado</h2><small>Para adultos y emprendedores</small><p>Preguntá antes de ofrecer, respondé "Está caro" sin bajar el precio, cerrá sin presionar y medí tus ventas.</p></a>
+      <a class="curso" style="--c:#d6406f" href="impuestos-independientes/"><span>🧾</span><h2>Monotributo, facturación e impuestos para independientes</h2><small>Para quien trabaja por su cuenta</small><p>Clave fiscal, categorías, factura C, recategorización, Ingresos Brutos y tus precios. No reemplaza a un contador.</p></a>
     </div>
     </div>
   </section>
@@ -164,6 +173,8 @@
       <a class="curso" style="--c:#7a5af8" href="soporte-tecnico/"><span>🧰</span><h2>Soporte técnico: ayudar con computadoras y celulares</h2><small>Para quien quiere ayudar o trabajar en soporte</small><p>Diagnosticar con método, compu, celular, wifi, copias de seguridad y tickets.</p></a>
       <a class="curso" style="--c:#8b7cff" href="curso.html"><span>🧠</span><h2>AI Engineering</h2><small>Para adultos</small><p>De Python y matemática a construir, evaluar y publicar sistemas con IA.</p></a>
       <a class="curso" style="--c:#c2417a" href="data-engineering/"><span>🚰</span><h2>Data Engineering</h2><small>Para adultos, desde cero</small><p>De la planilla al pipeline: aprendé Python y SQL programando en la página y armá el sistema que mueve y limpia los datos.</p></a>
+      <a class="curso" style="--c:#7a5af8" href="excel/"><span>🟩</span><h2>Excel y Google Sheets</h2><small>Para adultos, desde cero</small><p>Hacé cuentas, ordená datos y armá informes con tablas dinámicas y gráficos. Lo piden en casi todos los trabajos.</p></a>
+      <a class="curso" style="--c:#7a5af8" href="word-docs/"><span>📄</span><h2>Documentos con Word y Google Docs</h2><small>Para adultos, desde cero</small><p>Escribí CV, cartas, informes y trabajos prolijos, con estilos, índice, tablas y revisión en equipo.</p></a>
     </div>
     </div>
   </section>
@@ -196,16 +207,22 @@
   const tarjetas = [...document.querySelectorAll('.curso')], nada = document.getElementById('nada');
   // Filtros: muestran una sola categoría; buscar vuelve a "Todos" para no esconder resultados.
   const secciones = [...document.querySelectorAll('.categoria')], filtros = [...document.querySelectorAll('.filtros button')];
+  const main = document.querySelector('main');
   const filtrar = cat => {
-    filtros.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.cat === cat)));
+    filtros.forEach(b => b.setAttribute('aria-pressed', String(!!cat && b.dataset.cat === cat)));
     secciones.forEach(s => { s.hidden = !!cat && s.id !== cat; });
+    main.dataset.vista = cat ? 'cat' : 'inicio';
+    try { sessionStorage.setItem('categoria', cat); } catch {} // al volver de un curso, sigue en la misma categoría
   };
+  let guardada = ''; try { guardada = sessionStorage.getItem('categoria') || ''; } catch {}
+  filtrar(secciones.some(s => s.id === guardada) ? guardada : '');
   filtros.forEach(b => { b.onclick = () => { document.getElementById('buscar').value = ''; tarjetas.forEach(t => { t.hidden = false; }); nada.hidden = true; filtrar(b.dataset.cat); }; });
   document.getElementById('buscar').addEventListener('input', () => filtrar(''));
   document.getElementById('buscar').oninput = e => {
     const palabras = normal(e.target.value).split(/\s+/).filter(Boolean);
     tarjetas.forEach(t => { t.hidden = !palabras.every(p => normal(t.textContent + ' ' + t.closest('.categoria').querySelector('h2').textContent).includes(p)); });
     nada.hidden = tarjetas.some(t => !t.hidden);
+    if (palabras.length) main.dataset.vista = 'buscar';
   };
 </script>
 </body>

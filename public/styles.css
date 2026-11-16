@@ -31,6 +31,8 @@
 :root[data-curso="cat-datos-ia"][data-tema="claro"] { --acento: #157a6e; --acento2: #1d7a45; --boton-fin: #0f6b78; }
 :root[data-curso="cat-chicos"] { --acento: #2f6fe4; --acento2: #ffcf4a; --boton-fin: #2457b8; --brillo: #12285a; --brillo2: #3a3010; }
 :root[data-curso="cat-chicos"][data-tema="claro"] { --acento: #2457b8; --acento2: #8a6200; --boton-fin: #1f4a9e; }
+:root[data-curso="cat-comunicacion"] { --acento: #c99a06; --acento2: #ffd866; --boton-fin: #9c7704; --brillo: #3e3006; --brillo2: #3a2a12; }
+:root[data-curso="cat-comunicacion"][data-tema="claro"] { --acento: #8a6a00; --acento2: #7a5c00; --boton-fin: #7a5c00; }
 :root[data-curso="datos"][data-tema="claro"] { --acento: #157a6e; --acento2: #1d7a45; --boton-fin: #0f6b78; }
 :root[data-tema="claro"] body { background: var(--bg); }
 * { box-sizing: border-box; }

@@ -21,8 +21,10 @@ const fallas = [], ok = (c, m) => { if (!c) fallas.push(m); };
   const errores = []; pag.on('pageerror', e => errores.push(e.message)); pag.on('console', m => { if (m.type() === 'error' && !/404/.test(m.text())) errores.push(m.text()); });
   const r404 = []; pag.on('response', r => { if (r.status() >= 400) r404.push(r.status() + ' ' + r.url()); });
 
-  // Home → curso
-  await pag.goto(B); await pag.click(`a[href="${C}/"]`); await pag.waitForSelector('h1');
+  // Home → categoría → curso (al entrar, el inicio muestra solo las categorías)
+  await pag.goto(B);
+  const cat = await pag.evaluate(c => document.querySelector(`a[href="${c}/"]`).closest('.categoria').id, C);
+  await pag.click(`.filtros button[data-cat="${cat}"]`); await pag.click(`a[href="${C}/"]`); await pag.waitForSelector('h1');
   ok((await pag.textContent('h1')).includes(NOMBRE), 'titular del curso');
   const mods = await pag.evaluate(() => TEMARIO.map(m => [m.id, m.lecciones.length]));
   ok(mods.length >= 3, 'el curso tiene módulos');
