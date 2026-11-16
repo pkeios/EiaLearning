@@ -125,7 +125,7 @@ Para cambiar el orden, mové las líneas. Para agregar un curso, sumá una líne
 - [ ] `ciudadania` · Cómo funciona el Estado: derechos y participación · adultos · Vida diaria
 
 ## Para chicos (10 a 13 años)
-- [ ] `chicos-internet` · Cuidarse en internet · chicos de 10 a 13 · Chicos
+- [x] `chicos-internet` · Cuidarse en internet · chicos de 10 a 13 · Chicos · "Cuidarse en internet"
 - [ ] `chicos-programar` · Pensar como programador · chicos de 10 a 13 · Chicos
 - [ ] `chicos-plata` · Plata para chicos: ahorrar y comparar precios · chicos de 10 a 13 · Chicos
 - [ ] `chicos-ciencia` · Ciencia en casa: experimentos seguros · chicos de 10 a 13 · Chicos
