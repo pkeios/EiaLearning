@@ -59,7 +59,7 @@ Para cambiar el orden, mové las líneas. Para agregar un curso, sumá una líne
 - [ ] `apps-sin-codigo` · Crear una app sin programar · adultos · Tecnología
 
 ## Datos e IA
-- [ ] `estadistica` · Estadística sin miedo · adultos · Datos e IA
+- [x] `estadistica` · Estadística sin miedo · adultos · Datos e IA · "Estadística sin miedo"
 - [ ] `graficos` · Gráficos que cuentan algo · adultos · Datos e IA
 - [ ] `power-bi` · Tableros con Power BI y Looker Studio · adultos que usan planillas · Datos e IA
 - [ ] `ia-docentes` · IA para docentes · docentes · Datos e IA
