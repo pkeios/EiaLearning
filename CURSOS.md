@@ -125,8 +125,8 @@ Para cambiar el orden, mové las líneas. Para agregar un curso, sumá una líne
 - [ ] `ciudadania` · Cómo funciona el Estado: derechos y participación · adultos · Vida diaria
 
 ## Para chicos (10 a 13 años)
-- [x] `chicos-internet` · Cuidarse en internet · chicos de 10 a 13 · Chicos · "Cuidarse en internet"
-- [x] `chicos-programar` · Pensar como programador · chicos de 10 a 13 · Chicos · "Pensar como programador"
+- [x] `chicos/internet.html` · Cuidarse en internet (formato de misiones) · chicos de 10 a 13 · Chicos · "Cuidarse en internet"
+- [x] `chicos/programar.html` · Pensar como programador (nivel 1, formato de misiones) · chicos de 10 a 13 · Chicos · "Pensar como programador"
 - [x] `chicos/web.html` · Programá tu web: HTML, CSS y JavaScript con editor (nivel 2 de programación, formato de misiones) · chicos de 12 a 14 · Chicos · "Programá tu web"
 - [ ] `chicos-plata` · Plata para chicos: ahorrar y comparar precios · chicos de 10 a 13 · Chicos
 - [ ] `chicos-ciencia` · Ciencia en casa: experimentos seguros · chicos de 10 a 13 · Chicos

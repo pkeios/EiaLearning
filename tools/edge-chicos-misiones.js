@@ -1,6 +1,6 @@
-// Prueba "Programá tu web" en Edge real: juega las 12 misiones de punta a punta. En cada desafío de código comprueba que
+// Prueba los cursos para chicos en formato de misiones (web, internet y programar) en Edge real: juega todas las misiones. En cada desafío de código comprueba que
 // el código inicial NO pase y que una solución SÍ pase. También la consola con errores en castellano, el laboratorio libre,
-// el progreso guardado y el celular a 360 px. Uso: NODE_PATH=<carpeta con playwright-core>/node_modules node tools/edge-chicos-web.js
+// el progreso guardado y el celular a 360 px. Uso: NODE_PATH=<carpeta con playwright-core>/node_modules node tools/edge-chicos-misiones.js
 const http = require('http'), fs = require('fs'), path = require('path');
 const { chromium } = require('playwright-core');
 const RAIZ = path.join(__dirname, '..', 'public');
@@ -39,28 +39,42 @@ const fallas = [], ok = (c, m) => { if (!c) fallas.push(m); };
   pag.on('dialog', d => d.accept());
   const errores = []; pag.on('pageerror', e => errores.push(e.message));
 
-  // Entrada de los cursos para chicos → este curso
-  await pag.goto(B + 'chicos/');
-  await pag.click('a[href="web.html"]');
-  await pag.waitForSelector('.mision[data-i]');
-  const total = await pag.$$eval('.mision[data-i]', x => x.length);
-  ok(total === 12, 'tendrían que ser 12 misiones y hay ' + total);
-
   const aviso = () => pag.textContent('#aviso-mision');
   const esperarAviso = () => pag.waitForFunction(() => /🎉|🤔/.test(document.querySelector('#aviso-mision').textContent), null, { timeout: 8000 });
+  for (const [html, clave, cuantas] of [['web.html', 'chicos-web', 12], ['internet.html', 'chicos-internet', 7], ['programar.html', 'chicos-programar', 7]]) {
+  // Entrada de los cursos para chicos → este curso
+  await pag.goto(B + 'chicos/');
+  await pag.click(`a[href="${html}"]`);
+  await pag.waitForSelector('.mision[data-i]');
+  const total = await pag.$$eval('.mision[data-i]', x => x.length);
+  ok(total === cuantas, `${html}: tendrían que ser ${cuantas} misiones y hay ${total}`);
+  let videos = 0;
   for (let i = 0; i < total; i++) {
-    await pag.goto(B + 'chicos/web.html#/' + i); await pag.waitForSelector('#seguir');
+    await pag.goto(B + 'chicos/' + html + '#/' + i); await pag.waitForSelector('#seguir');
     let codigo = 0;
     for (let paso = 0; paso < 40; paso++) {
       if (await pag.$('.fiesta')) break;
-      const tipo = await pag.evaluate(() => document.querySelector('#comprobar') ? 'codigo' : document.querySelector('[data-t]') ? 'tarea' : document.querySelector('.opcion[data-j]') ? 'q' : document.querySelector('.chip[data-k]') ? 'clasificar' : 'idea');
-      const s = await pag.evaluate(([i, paso]) => { const s = window.MISIONES_WEB[i].pasos[paso]; return { c: s.c, items: s.items }; }, [i, paso]);
+      const tipo = await pag.evaluate(() => document.querySelector('#comprobar') ? 'codigo' : document.querySelector('[data-t]') ? 'tarea' : document.querySelector('.opcion[data-j]') ? 'q' : document.querySelector('.chip[data-k]') ? 'clasificar' : document.querySelector('[data-o]') ? 'ordenar' : 'idea');
+      const s = await pag.evaluate(([i, paso]) => { const s = window.CURSO_CHICOS.misiones[i].pasos[paso]; return { c: s.c, items: s.items }; }, [i, paso]);
+      if (await pag.$('details.video')) {
+        videos++;
+        await pag.click('details.video summary');
+        ok(/youtube-nocookie\.com\/embed\/[\w-]{11}$/.test(await pag.getAttribute('details.video iframe', 'src')), `${html}, misión ${i + 1}: video mal armado`);
+      }
+      if (tipo === 'codigo') ok(await pag.$('.tarjeta > pre.consola, .tarjeta pre.consola'), `${html}, misión ${i + 1}: el desafío no muestra el ejemplo`);
       if (tipo === 'q') await pag.click(`.opcion[data-j="${s.c}"]`);
       if (tipo === 'clasificar') for (let k = 0; k < s.items.length; k++) await pag.click(`.chip[data-k="${k}"] button[data-g="${s.items[k][1]}"]`);
+      if (tipo === 'ordenar') {
+        const orden = await pag.$$eval('[data-o]', b => b.map(x => Number(x.dataset.o)));
+        ok(orden.some((x, k) => x !== k), `${html}, misión ${i + 1}: los pasos para ordenar ya vienen ordenados`);
+        if (orden[0] !== 0) { await pag.click(`[data-o="${orden[0]}"]`); ok((await aviso()).includes('🤔'), `${html}: ordenar acepta un paso fuera de orden`); }
+        for (let k = 0; k < s.items.length; k++) await pag.click(`[data-o="${k}"]`);
+        ok(await pag.$$eval('.ordenados li', l => l.length) === s.items.length, `${html}, misión ${i + 1}: no quedaron todos los pasos ordenados`);
+      }
       if (tipo === 'tarea') { ok(await pag.isDisabled('#seguir'), `misión ${i + 1}: la tarea deja seguir sin marcar`); for (const c of await pag.$$('[data-t]')) await c.check(); }
       if (tipo === 'codigo') {
         const sol = SOLUCIONES[i]?.[codigo++];
-        ok(sol, `misión ${i + 1}: falta la solución del desafío ${codigo}`);
+        ok(html === 'web.html' && sol, `${html}, misión ${i + 1}: falta la solución del desafío ${codigo}`);
         await pag.waitForTimeout(300);
         await pag.click('#comprobar'); await esperarAviso();
         ok((await aviso()).includes('🤔'), `misión ${i + 1}, desafío ${codigo}: el código inicial ya pasa (${await aviso()})`);
@@ -70,17 +84,30 @@ const fallas = [], ok = (c, m) => { if (!c) fallas.push(m); };
         await pag.evaluate(() => { document.querySelector('#aviso-mision').textContent = ''; });
         await pag.click('#comprobar'); await esperarAviso();
         ok((await aviso()).includes('🎉'), `misión ${i + 1}, desafío ${codigo}: la solución no pasa (${await aviso()})`);
-        if (i === 10 && codigo === 1) await pag.screenshot({ path: path.join(FOTOS, 'chicos-web-editor.png'), fullPage: true });
+        if (html === 'web.html' && i === 5 && codigo === 1) await pag.screenshot({ path: path.join(FOTOS, 'chicos-web-editor.png'), fullPage: true });
       }
-      ok(!(await pag.isDisabled('#seguir')), `misión ${i + 1}, paso ${paso + 1}: no habilita Seguir`);
+      ok(!(await pag.isDisabled('#seguir')), `${html}, misión ${i + 1}, paso ${paso + 1}: no habilita Seguir`);
       await pag.click('#seguir');
     }
-    ok(await pag.$('.fiesta'), `misión ${i + 1}: no llega al final`);
-    ok(codigo === (SOLUCIONES[i] || []).length, `misión ${i + 1}: sobran soluciones`);
+    ok(await pag.$('.fiesta'), `${html}, misión ${i + 1}: no llega al final`);
+    if (html === 'web.html') ok(codigo === (SOLUCIONES[i] || []).length, `misión ${i + 1}: sobran soluciones`);
   }
-  const prog = await pag.evaluate(() => JSON.parse(localStorage.getItem('chicos-web')));
-  ok(Object.keys(prog.m).length === 12 && Object.values(prog.m).every(e => e === 3), 'progreso: 3 estrellas en las 12 misiones');
+  ok(videos >= 4, `${html}: tiene ${videos} videos`);
+  const prog = await pag.evaluate(c => JSON.parse(localStorage.getItem(c)), clave);
+  // Sin errores, 3 estrellas. La prueba erra a propósito un paso en cada "ordenar" (para ver que lo rechace), y eso cuesta esa estrella.
+  const errados = await pag.evaluate(() => window.CURSO_CHICOS.misiones.map(m => m.pasos.filter(s => s.ordenar).length));
+  ok(Object.keys(prog.m).length === cuantas && errados.every((n, i) => prog.m[i] >= 3 - n), `${html}: progreso guardado en las ${cuantas} misiones: ` + JSON.stringify(prog.m));
+  await pag.goto(B + 'chicos/' + html); await pag.screenshot({ path: path.join(FOTOS, 'chicos-' + html.replace('.html', '') + '-inicio.png'), fullPage: true });
+  }
   ok(await pag.evaluate(() => localStorage.getItem('chicos') === null), 'no tiene que tocar el progreso de las misiones de IA');
+  // Las direcciones viejas (formato para adultos) mandan a las misiones.
+  for (const [viejo, nuevo] of [['chicos-internet/', 'internet.html'], ['chicos-programar/', 'programar.html']]) {
+    await pag.goto(B + viejo); await pag.waitForURL('**/chicos/' + nuevo, { timeout: 5000 }).catch(() => {});
+    ok(pag.url().endsWith('/chicos/' + nuevo), viejo + ' no redirige a ' + nuevo);
+  }
+  // El inicio del sitio lleva a los tres cursos.
+  await pag.goto(B);
+  for (const h of ['chicos/web.html', 'chicos/internet.html', 'chicos/programar.html']) ok(await pag.$(`a[href="${h}"]`), 'el inicio no enlaza ' + h);
 
   // Consola: el error sale en castellano y con el número de línea del código del chico.
   await pag.goto(B + 'chicos/web.html#/libre'); await pag.waitForSelector('.editor textarea');
@@ -97,10 +124,10 @@ const fallas = [], ok = (c, m) => { if (!c) fallas.push(m); };
   await cel.click('#seguir'); await cel.waitForSelector('.editor textarea');
   ok(await cel.evaluate(() => document.documentElement.scrollWidth <= 361), 'en el celular la página se sale de la pantalla');
   await cel.screenshot({ path: path.join(FOTOS, 'chicos-web-celu.png'), fullPage: true });
-  await pag.goto(B + 'chicos/web.html'); await pag.screenshot({ path: path.join(FOTOS, 'chicos-web-inicio.png'), fullPage: true });
+
 
   ok(!errores.length, 'errores en la página: ' + errores.join(' | '));
   await nav.close(); srv.close();
   if (fallas.length) { console.log('FALLAS:\n' + fallas.join('\n')); process.exit(1); }
-  console.log('EDGE OK: chicos/web.html (12 misiones, todas las soluciones pasan y los códigos iniciales no)');
+  console.log('EDGE OK: web.html, internet.html y programar.html (todas las misiones; en web, cada solución pasa y ningún código inicial pasa)');
 })().catch(e => { console.error(e); process.exit(1); });

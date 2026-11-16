@@ -142,3 +142,27 @@ textarea { font-size: 1rem; }
   .hoja .columnas { columns: 3; column-gap: .6cm; }
   .hoja h3 { break-after: avoid; }
 }
+
+/* Cursos en formato de misiones (misiones.js): editor de código, tareas para marcar y pasos para ordenar. */
+:root[data-curso="web"] { --color: #2f6fe4; --cabeza: linear-gradient(135deg, #2f6fe4, #7a5af8); }
+:root[data-curso="internet"] { --color: #2f6fe4; --cabeza: linear-gradient(135deg, #2f6fe4, #1f9d55); }
+:root[data-curso="programar"] { --color: #2f6fe4; --cabeza: linear-gradient(135deg, #2f6fe4, #e0a100); }
+.ordenados { text-align: left; font-size: 1.15rem; margin: .6rem 0; padding-left: 1.6rem; }
+.ordenados li { background: #e7f7ee; border-radius: 12px; padding: .3rem .6rem; margin: .3rem 0; }
+
+  .editor { display: grid; gap: .6rem; text-align: left; margin-top: .8rem; }
+  .editor textarea { font: 15px/1.5 Consolas, "Cascadia Mono", Menlo, monospace; min-height: 13rem; tab-size: 2; white-space: pre; overflow-x: auto; background: #1e1b2e; color: #f3f0ff; border-color: #3b3554; margin: 0; }
+  .editor iframe { width: 100%; min-height: 11rem; border: 3px solid #e4dcf7; border-radius: 14px; background: #fff; }
+  .rotulo { font-size: .95rem; font-weight: 700; color: var(--suave); margin: 0; }
+  .consola { font: 14px/1.4 Consolas, Menlo, monospace; background: #f4f1fb; border-radius: 12px; padding: .5rem .7rem; min-height: 2rem; white-space: pre-wrap; margin: 0; }
+  .consola .err { color: var(--mal); font-weight: 700; }
+  .pista { font-size: 1rem; text-align: left; }
+  .lista-tarea { text-align: left; display: grid; gap: .5rem; margin: .8rem 0; }
+  .lista-tarea label { display: flex; gap: .6rem; align-items: flex-start; background: #fbf9ff; border: 3px solid #e4dcf7; border-radius: 16px; padding: .6rem .8rem; font-size: 1.05rem; }
+  .lista-tarea input { width: 1.4rem; height: 1.4rem; flex: none; margin-top: .15rem; }
+  .lista-tarea label:has(input:checked) { border-color: var(--bien); background: #e7f7ee; }
+  code { background: #f1ecff; border-radius: 6px; padding: 0 .3rem; font-size: .95em; }
+  @media (min-width: 900px) { main.ancho { max-width: 1000px; } .editor.lado { grid-template-columns: 1fr 1fr; } }
+.video { text-align: left; margin: .8rem 0; }
+.video summary { cursor: pointer; font-weight: 700; color: var(--color); }
+.video iframe { width: 100%; aspect-ratio: 16 / 9; border: 0; border-radius: 14px; margin-top: .5rem; }
