@@ -109,3 +109,4 @@
 - 2026-11-16 · vender-online · puntaje 7/7 en los 7 módulos desde la primera versión; un video reemplazado porque no dejaba insertarse
 - 2026-11-16 · tramites-online · puntaje 7/7 en los 6 módulos desde la primera versión
 - 2026-11-16 · chicos-programar · puntaje 7/7 en los 7 módulos; 2 frases partidas para no pasar de 22 palabras
+- 2026-11-16 · python-automatizar · puntaje 7/7 en los 7 módulos; las 17 salidas de código salen de correr Python de verdad (script que reemplaza cada marca por la salida real)

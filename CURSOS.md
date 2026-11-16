@@ -40,7 +40,7 @@ Para cambiar el orden, mové las líneas. Para agregar un curso, sumá una líne
 
 ## Tecnología y programación
 - [x] `git` · Git y GitHub desde cero · quien empieza a programar · Tecnología · "Git y GitHub desde cero"
-- [ ] `python-automatizar` · Python para automatizar tareas · adultos que no programan · Tecnología
+- [x] `python-automatizar` · Python para automatizar tareas · adultos que no programan · Tecnología · "Python para automatizar tareas"
 - [ ] `web` · Desarrollo web desde cero: HTML, CSS y JavaScript · quien quiere programar · Tecnología
 - [ ] `cpp` · C++ para principiantes: variables, decisiones, bucles, funciones, vectores y tu primer programa completo · quien nunca programó · Tecnología
 - [ ] `javascript` · JavaScript desde cero · quien hizo el curso de web · Tecnología
