@@ -1,6 +1,6 @@
 // Service worker: permite estudiar sin conexión.
 // Responde desde la caché si puede y, en paralelo, baja la versión nueva: la próxima visita ya ve el contenido actualizado.
-const CACHE = 'curso-v13';
+const CACHE = 'curso-v14';
 const ARCHIVOS = ['./', 'index.html', 'curso.html', 'styles.css', 'app.js', 'contenido.js', 'glosario.js', 'vendor/qrcode.js', 'mapa.js', 'manifest.webmanifest', 'icono-192.png', 'icono-512.png', 'chicos/', 'chicos/estilos.css', 'chicos/ingles.html', 'chicos/ingles-unidades.js', 'chicos/web.html', 'chicos/web-misiones.js'];
 
 self.addEventListener('install', e => {
@@ -17,7 +17,8 @@ self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET' || new URL(e.request.url).origin !== location.origin) return;
   // Los cursos en su propia carpeta (chicos/, datos/, prompts/ y todos los nuevos): primero la versión nueva, y la copia guardada solo sin internet.
   // Una copia vieja acá confunde (por ejemplo, un PDF desactualizado).
-  if (new URL(e.request.url).pathname.slice(new URL(self.registration.scope).pathname.length).includes('/')) {
+  // Las páginas (el inicio, sobre todo) también van primero a la red: si no, la tarjeta de un curso nuevo aparece recién en la visita siguiente.
+  if (e.request.mode === 'navigate' || new URL(e.request.url).pathname.slice(new URL(self.registration.scope).pathname.length).includes('/')) {
     e.respondWith(fetch(e.request).then(async r => {
       if (r.ok) await (await caches.open(CACHE)).put(e.request, r.clone());
       return r;
