@@ -110,3 +110,4 @@
 - 2026-11-16 · tramites-online · puntaje 7/7 en los 6 módulos desde la primera versión
 - 2026-11-16 · chicos-programar · puntaje 7/7 en los 7 módulos; 2 frases partidas para no pasar de 22 palabras
 - 2026-11-16 · python-automatizar · puntaje 7/7 en los 7 módulos; las 17 salidas de código salen de correr Python de verdad (script que reemplaza cada marca por la salida real)
+- 2026-11-16 · graficos (curso nuevo) · puntaje 7/7 en los 7 módulos · fallas encontradas al revisar: 2 módulos con menos de 60 % de preguntas de aplicación, 2 gráficos de texto con valores mal dibujados, tabla de 7 columnas cortada en el celular · mejora: 10 preguntas reescritas como caso, gráficos corregidos y tabla de meses en 2 columnas
