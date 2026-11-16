@@ -105,3 +105,4 @@
 - 2026-11-16 · costos-precios · puntaje 7/7 en los 7 módulos (una práctica reescrita; un video reemplazado porque no dejaba insertarse)
 - 2026-11-16 · chicos-internet · puntaje 7/7 en los 7 módulos; 10 frases partidas para que ninguna pase de 22 palabras
 - 2026-11-16 · estadistica · puntaje 7/7 en los 7 módulos desde la primera versión
+- 2026-11-16 · huerta · puntaje 7/7 en los 7 módulos desde la primera versión
