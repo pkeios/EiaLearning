@@ -108,7 +108,7 @@ Para cambiar el orden, mové las líneas. Para agregar un curso, sumá una líne
 - [ ] `servicios` · Ofrecer servicios: presupuestos y clientes · trabajadores independientes · Emprender
 
 ## Vida diaria
-- [ ] `tramites-online` · Trámites por internet sin perderse · adultos · Vida diaria
+- [x] `tramites-online` · Trámites por internet sin perderse · adultos · Vida diaria · "Trámites por internet sin perderse"
 - [ ] `adultos-mayores-digital` · Internet para adultos mayores · adultos mayores · Vida diaria
 - [ ] `estudiar-mejor` · Aprender a aprender: estudiar mejor · estudiantes y adultos · Vida diaria
 - [ ] `matematica-vida` · Matemática para la vida diaria · adultos · Vida diaria
