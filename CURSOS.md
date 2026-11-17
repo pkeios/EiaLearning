@@ -62,7 +62,7 @@ Para cambiar el orden, mové las líneas. Para agregar un curso, sumá una líne
 - [x] `estadistica` · Estadística sin miedo · adultos · Datos e IA · "Estadística sin miedo"
 - [x] `graficos` · Gráficos que cuentan algo · adultos · Datos e IA · "Gráficos que cuentan algo"
 - [x] `power-bi` · Tableros con Power BI y Looker Studio · adultos que usan planillas · Datos e IA · "Tableros con Power BI y Data Studio"
-- [ ] `ia-docentes` · IA para docentes · docentes · Datos e IA
+- [x] `ia-docentes` · IA para docentes · docentes · Datos e IA · "IA para docentes"
 - [ ] `ia-pymes` · IA para tu negocio o emprendimiento · emprendedores · Datos e IA
 - [ ] `ia-imagenes` · Crear imágenes con IA, con responsabilidad · adultos · Datos e IA
 - [ ] `ia-estudiar` · Estudiar con IA sin hacer trampa · estudiantes secundarios y universitarios · Datos e IA
