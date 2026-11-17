@@ -73,7 +73,7 @@ Para cambiar el orden, mové las líneas. Para agregar un curso, sumá una líne
 - [x] `pintura` · Pintura de interiores · adultos · Oficios · "Pintura de interiores"
 - [x] `huerta` · Huerta en casa o en el balcón · adultos · Oficios · "Huerta en casa o en el balcón"
 - [x] `jardineria` · Jardinería y cuidado de plantas · adultos · Oficios · "Jardinería y cuidado de plantas"
-- [ ] `costura` · Costura a mano y a máquina · adultos · Oficios
+- [x] `costura` · Costura a mano y a máquina · adultos · Oficios · "Costura a mano y a máquina"
 - [ ] `arreglos-ropa` · Arreglos de ropa: ruedos, cierres y botones · adultos · Oficios
 - [ ] `tejido` · Tejido con agujas y crochet · adultos · Oficios
 - [ ] `panaderia` · Panadería casera para vender · adultos · Oficios
