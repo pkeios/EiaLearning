@@ -13,8 +13,8 @@ const S = (js, html = '') => `${html}<script>\n${js}\n</script>\n`;
 const SOLUCIONES = {
   0: ['<h1>Sofi</h1>\n<p>Esta es mi primera página.</p>'],
   2: ['<h1>Mi página</h1>\n<h2>Mis cosas favoritas</h2>\n<p>Me encanta dibujar.</p>', '<p>Esto es <strong>importante</strong>: guardá seguido.</p>'],
-  3: ['<ul>\n  <li>Fútbol</li>\n  <li>Dibujar</li>\n  <li>Leer</li>\n</ul>', '<a href="contacto.html">Escribime</a>', '<img src="gato.png" alt="Mi gato durmiendo">'],
-  4: ['<style>\nh1 { color: tomato; }\n</style>\n<h1>Mi página</h1>', '<style>\nbody { background-color: lightyellow; }\np { font-size: 22px; }\n</style>\n<p>Hola</p>'],
+  3: ['<h2>Me gusta</h2>\n<ul>\n  <li>Fútbol</li>\n  <li>Dibujar</li>\n  <li>Leer</li>\n</ul>', '<h1>Mi página</h1>\n<a href="contacto.html">Escribime</a>', '<h2>Mi mascota</h2>\n<img src="gato.png" alt="Mi gato durmiendo">'],
+  4: ['<style>\nh1 { color: tomato; }\n</style>\n<h1>Mi página</h1>', '<style>\nbody { background-color: lightyellow; }\np { font-size: 22px; }\n</style>\n<h1>Mi página</h1>\n<p>Hola</p>'],
   5: ['<style>\n.tarjeta { border: 3px solid purple; padding: 20px; border-radius: 12px; }\n</style>\n<p class="tarjeta">Soy una tarjeta</p>',
     '<style>\n.fila { display: flex; gap: 10px; }\n</style>\n<div class="fila"><div>Uno</div><div>Dos</div><div>Tres</div></div>'],
   6: [S('console.log("Sofi");'), S('let edad = 13;\nconsole.log(edad + 10);')],
@@ -80,6 +80,15 @@ const fallas = [], ok = (c, m) => { if (!c) fallas.push(m); };
         ok((await aviso()).includes('🤔'), `misión ${i + 1}, desafío ${codigo}: el código inicial ya pasa (${await aviso()})`);
         ok(!/&lt;|&gt;/.test(await aviso()), `misión ${i + 1}: la pista muestra &lt; en vez de <`);
         ok(await pag.isDisabled('#seguir'), `misión ${i + 1}: deja seguir sin resolver el código`);
+        // El caso que encontró el usuario: regla bien escrita, pero borró el <h1> que venía hecho.
+        if (html === 'web.html' && i === 4 && codigo === 1) {
+          ok(await pag.$('text=El código ya trae una parte hecha'), 'no avisa que el código ya trae una parte hecha');
+          await pag.fill('.editor textarea', '<style>\nh1 { color: tomato; }\n</style>');
+          await pag.evaluate(() => { document.querySelector('#aviso-mision').textContent = ''; });
+          await pag.click('#comprobar'); await esperarAviso();
+          const a = await aviso();
+          ok(a.includes('Falta <h1>') && a.includes('Empezar de nuevo'), 'si borró el h1, el aviso tiene que decirlo: ' + a);
+        }
         await pag.fill('.editor textarea', sol || '');
         await pag.evaluate(() => { document.querySelector('#aviso-mision').textContent = ''; });
         await pag.click('#comprobar'); await esperarAviso();
@@ -130,4 +139,4 @@ const fallas = [], ok = (c, m) => { if (!c) fallas.push(m); };
   await nav.close(); srv.close();
   if (fallas.length) { console.log('FALLAS:\n' + fallas.join('\n')); process.exit(1); }
   console.log('EDGE OK: web.html, internet.html y programar.html (todas las misiones; en web, cada solución pasa y ningún código inicial pasa)');
-})().catch(e => { console.error(e); process.exit(1); });
+})().catch(e => { console.error(e.message.split('\n')[0]); if (fallas.length) console.log('FALLAS ANTES DEL CORTE:\n' + fallas.join('\n')); process.exit(1); });

@@ -6,6 +6,7 @@
 //   clasificar cada ítem en su grupo                ├ los 3 ejercicios con estrella
 //   ordenar    tocar los pasos en el orden correcto ┘
 //   codigo     editor con vista previa y consola; ej: un ejemplo parecido (no la solución) que se muestra arriba;
+//              necesita: lo que el código inicial ya trae y no se puede borrar (selectores, como 'h1' o '#boton');
 //              chequeo(doc, codigo, consola) devuelve '' si está bien o una pista
 //   tarea      pasos para hacer fuera de la página (en la compu, en papel o con un adulto), que el chico marca
 // Los textos se muestran como HTML (< y > van escritos &lt; y &gt;). Las opciones, los ítems y ej se escapan solos.
@@ -44,6 +45,10 @@ function errorAmigable(msg) {
 // y después del DOCTYPE, para no romperlo) un script que manda console.log y los errores a la consola de abajo.
 const ESPIA = '<script>(function(){var P=parent;console.log=function(){var a=[].slice.call(arguments).map(function(x){return typeof x==="object"?JSON.stringify(x):String(x)});P.__consola&&P.__consola(a.join(" "))};window.onerror=function(m,s,l){P.__error&&P.__error(m,l);return true}})()<\/script>';
 const armarDoc = src => { const d = src.match(/^\s*<!doctype[^>]*>/i); return d ? d[0] + ESPIA + src.slice(d[0].length) : ESPIA + src; };
+// Nombre entendible de lo que se borró: 'h1' → <h1>, '#mensaje' → el elemento con id="mensaje".
+const nombreSel = s => s[0] === '#' ? `el elemento con id="${s.slice(1)}"` : s[0] === '.' ? `el elemento con class="${s.slice(1)}"` : `<${s}>`;
+// Antes del chequeo de cada desafío: si falta algo que el código inicial ya traía, avisa eso (y no "todavía no es rojo").
+const faltaLoHecho = (d, necesita = []) => { const f = necesita.find(x => !d.querySelector(x)); return f ? `Falta ${nombreSel(f)}, que ya venía hecho en el código. Tocá ↩️ Empezar de nuevo y agregá lo tuyo sin borrarlo.` : ''; };
 // Las pistas del chequeo usan &lt; y &gt; (como el resto de los textos): para mostrarlas como texto, las volvemos a < y >.
 const sinEntidades = t => String(t).replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
 
@@ -145,7 +150,8 @@ function mision(i) {
         ${s.ordenar ? `<p class="texto">${s.ordenar}</p><p class="suave">Tocá los pasos en orden, del primero al último.</p>
           <ol class="ordenados"></ol><div class="opciones">${orden.map(k => `<button class="opcion" data-o="${k}">${esc(s.items[k])}</button>`).join('')}</div>` : ''}
         ${s.codigo ? `<div class="grande" style="font-size:3rem">⌨️</div><p class="texto">${s.codigo}</p>
-          ${s.ej ? `<p class="rotulo" style="text-align:left">📖 Así se escribe (un ejemplo parecido, no igual):</p><pre class="consola" style="text-align:left">${esc(s.ej)}</pre>` : ''}<div id="ed"></div>
+          ${s.ej ? `<p class="rotulo" style="text-align:left">📖 Así se escribe (un ejemplo parecido, no igual):</p><pre class="consola" style="text-align:left">${esc(s.ej)}</pre>` : ''}
+          ${s.inicial.trim() ? '<p class="chip" style="display:block;text-align:left">🧩 <strong>El código ya trae una parte hecha.</strong> Agregá lo tuyo donde dice la consigna, sin borrar lo que ya está.</p>' : ''}<div id="ed"></div>
           <details class="pista"><summary>💡 Pista</summary><p>${s.pista}</p></details>
           <button class="boton" id="comprobar">✅ Comprobar</button>` : ''}
         ${s.tarea ? `<div class="grande" style="font-size:3rem">${s.emoji || '🖥️'}</div><p class="texto">${s.tarea}</p><div class="lista-tarea">${s.pasos.map((x, k) => `<label><input type="checkbox" data-t="${k}"> <span>${x}</span></label>`).join('')}</div>` : ''}
@@ -198,7 +204,7 @@ function mision(i) {
       const ed = montarEditor(app.querySelector('#ed'), i + '-' + paso, s.inicial);
       aviso.textContent = '⌨️ Escribí el código y tocá Comprobar.';
       app.querySelector('#comprobar').onclick = async () => {
-        const falta = await ed.comprobar(s.chequeo);
+        const falta = await ed.comprobar((d, src, con) => faltaLoHecho(d, s.necesita) || s.chequeo(d, src, con));
         if (falta) { aviso.className = 'aviso mal'; aviso.textContent = '🤔 ' + sinEntidades(falta); return; }
         aviso.className = 'aviso bien'; aviso.textContent = '🎉 ¡Funciona! ' + (s.bien || 'Lo programaste vos.');
         listo(false);

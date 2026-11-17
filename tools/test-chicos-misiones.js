@@ -44,6 +44,10 @@ for (const C of CURSOS) {
     m.pasos.forEach((s, k) => {
       if (!s.codigo) return;
       assert(s.ej && s.ej.trim() !== s.inicial.trim(), nombre + ': el desafío "' + s.codigo + '" no muestra un ejemplo');
+      // Consigna clara: si el código ya trae algo, la consigna dice dónde escribir (y no deja adivinar).
+      if (s.inicial.trim()) assert(/debajo|adentro|entre|donde|en la línea|cambiá|en el párrafo|ya tiene|arregl|complet/i.test(s.codigo), nombre + ': la consigna no dice dónde escribir: ' + s.codigo);
+      // Lo que no se puede borrar tiene que estar de verdad en el código inicial.
+      (s.necesita || []).forEach(x => assert(x[0] === '#' ? s.inicial.includes(`id="${x.slice(1)}"`) : x[0] === '.' ? s.inicial.includes(`class="${x.slice(1)}"`) : s.inicial.includes('<' + x), nombre + ': necesita ' + x + ' y el código inicial no lo trae'));
       const desde = m.pasos.slice(0, k).map(x => !!x.codigo).lastIndexOf(true) + 1;
       assert(m.pasos.slice(desde, k).some(x => x.idea && x.ej), nombre + ': antes del desafío "' + s.codigo + '" falta una idea con ejemplo');
     });
