@@ -41,7 +41,7 @@ const fallas = [], ok = (c, m) => { if (!c) fallas.push(m); };
 
   const aviso = () => pag.textContent('#aviso-mision');
   const esperarAviso = () => pag.waitForFunction(() => /🎉|🤔/.test(document.querySelector('#aviso-mision').textContent), null, { timeout: 8000 });
-  for (const [html, clave, cuantas] of [['web.html', 'chicos-web', 12], ['internet.html', 'chicos-internet', 7], ['programar.html', 'chicos-programar', 7]]) {
+  for (const [html, clave, cuantas] of [['web.html', 'chicos-web', 12], ['internet.html', 'chicos-internet', 7], ['programar.html', 'chicos-programar', 7], ['plata.html', 'chicos-plata', 8]]) {
   // Entrada de los cursos para chicos → este curso
   await pag.goto(B + 'chicos/');
   await pag.click(`a[href="${html}"]`);
@@ -116,7 +116,7 @@ const fallas = [], ok = (c, m) => { if (!c) fallas.push(m); };
   }
   // El inicio del sitio lleva a los tres cursos.
   await pag.goto(B);
-  for (const h of ['chicos/web.html', 'chicos/internet.html', 'chicos/programar.html']) ok(await pag.$(`a[href="${h}"]`), 'el inicio no enlaza ' + h);
+  for (const h of ['chicos/web.html', 'chicos/internet.html', 'chicos/programar.html', 'chicos/plata.html']) ok(await pag.$(`a[href="${h}"]`), 'el inicio no enlaza ' + h);
 
   // Consola: el error sale en castellano y con el número de línea del código del chico.
   await pag.goto(B + 'chicos/web.html#/libre'); await pag.waitForSelector('.editor textarea');
@@ -138,5 +138,5 @@ const fallas = [], ok = (c, m) => { if (!c) fallas.push(m); };
   ok(!errores.length, 'errores en la página: ' + errores.join(' | '));
   await nav.close(); srv.close();
   if (fallas.length) { console.log('FALLAS:\n' + fallas.join('\n')); process.exit(1); }
-  console.log('EDGE OK: web.html, internet.html y programar.html (todas las misiones; en web, cada solución pasa y ningún código inicial pasa)');
+  console.log('EDGE OK: todos los cursos de misiones (todas las misiones; en web, cada solución pasa y ningún código inicial pasa)');
 })().catch(e => { console.error(e.message.split('\n')[0]); if (fallas.length) console.log('FALLAS ANTES DEL CORTE:\n' + fallas.join('\n')); process.exit(1); });
