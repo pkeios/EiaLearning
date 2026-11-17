@@ -64,7 +64,7 @@ Balcón de ejemplo: sol de 10 a 16 → 6 horas</code></pre>
     "Hacé la lista de herramientas y anotá cuáles vas a reciclar y cuáles tenés que comprar.",
   ],
   recursos: [
-    { t: "FAO: alimentación urbana y huertas en la ciudad", url: "https://www.fao.org/urban-food-actions/es/" },
+    { t: "FAUBA, Escuela de Floricultura y Jardinería: programa \"Tus primeros pasos de huerta\" (PDF)", url: "https://agro.uba.ar/sites/default/files/documentos/floryjar/tus-primeros-pasos-de-huerta.pdf" },
     { t: "INTA: información agroclimática (heladas y clima de tu zona)", url: "https://www.argentina.gob.ar/inta/informacion-agroclimatica" },
   ],
   quiz: [
@@ -402,7 +402,7 @@ Si hay muchos secos   → no se descompone.</code></pre>
     "Si aparece un problema, anotá cuál fue, la causa que creés y qué hiciste para arreglarlo.",
   ],
   recursos: [
-    { t: "FAO: alimentación urbana y huertas en la ciudad", url: "https://www.fao.org/urban-food-actions/es/" },
+    { t: "FAUBA, Escuela de Floricultura y Jardinería: programa \"Tus primeros pasos de huerta\" (PDF)", url: "https://agro.uba.ar/sites/default/files/documentos/floryjar/tus-primeros-pasos-de-huerta.pdf" },
     { t: "Penn State Extension: huerta de hortalizas (en inglés)", url: "https://extension.psu.edu/vegetable-gardening" },
   ],
   quiz: [
@@ -481,7 +481,7 @@ Si hay muchos secos   → no se descompone.</code></pre>
   ],
   recursos: [
     { t: "Royal Horticultural Society: guía de hortalizas (en inglés)", url: "https://rhs.org.uk/vegetables" },
-    { t: "FAO: alimentación urbana y huertas en la ciudad", url: "https://www.fao.org/urban-food-actions/es/" },
+    { t: "FAUBA, Escuela de Floricultura y Jardinería: programa \"Tus primeros pasos de huerta\" (PDF)", url: "https://agro.uba.ar/sites/default/files/documentos/floryjar/tus-primeros-pasos-de-huerta.pdf" },
   ],
   quiz: [
     { q: "Si querés tener menos plagas, ¿qué es lo primero?", opciones: ["Insecticida todas las semanas","Plantar una sola especie","Plantas sanas y diversidad: mezclar hortalizas, aromáticas y flores","Regar las hojas"], correcta: 2, explicacion: "La prevención es la mejor defensa. El insecticida tienta por rápido, pero mata también a los bichos que ayudan." },
@@ -567,7 +567,7 @@ Regla: si "Seguridad" tiene 0, la huerta no está bien hecha,
   ],
   recursos: [
     { t: "INTA: información agroclimática (heladas y clima de tu zona)", url: "https://www.argentina.gob.ar/inta/informacion-agroclimatica" },
-    { t: "FAO: alimentación urbana y huertas en la ciudad", url: "https://www.fao.org/urban-food-actions/es/" },
+    { t: "FAUBA, Escuela de Floricultura y Jardinería: programa \"Tus primeros pasos de huerta\" (PDF)", url: "https://agro.uba.ar/sites/default/files/documentos/floryjar/tus-primeros-pasos-de-huerta.pdf" },
     { t: "Royal Horticultural Society: guía de hortalizas (en inglés)", url: "https://rhs.org.uk/vegetables" },
   ],
   quiz: [

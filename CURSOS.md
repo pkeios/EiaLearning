@@ -109,7 +109,7 @@ Para cambiar el orden, mové las líneas. Para agregar un curso, sumá una líne
 
 ## Vida diaria
 - [x] `tramites-online` · Trámites por internet sin perderse · adultos · Vida diaria · "Trámites por internet sin perderse"
-- [ ] `adultos-mayores-digital` · Internet para adultos mayores · adultos mayores · Vida diaria
+- [x] `adultos-mayores-digital` · Internet para adultos mayores · adultos mayores · Vida diaria · "Internet para adultos mayores"
 - [ ] `estudiar-mejor` · Aprender a aprender: estudiar mejor · estudiantes y adultos · Vida diaria
 - [ ] `matematica-vida` · Matemática para la vida diaria · adultos · Vida diaria
 - [ ] `lectura` · Leer mejor y entender lo que leés · adultos · Vida diaria
