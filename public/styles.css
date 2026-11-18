@@ -29,6 +29,8 @@
 :root[data-curso="cat-tecnologia"][data-tema="claro"] { --acento: #5b3fd0; --acento2: #0b6b8f; --boton-fin: #4a30b0; }
 :root[data-curso="cat-datos-ia"] { --acento: #1f9e8f; --acento2: #6fdc9b; --boton-fin: #14808f; --brillo: #0d4a43; --brillo2: #1d4a2a; }
 :root[data-curso="cat-datos-ia"][data-tema="claro"] { --acento: #157a6e; --acento2: #1d7a45; --boton-fin: #0f6b78; }
+:root[data-curso="cat-gaming"] { --acento: #e5484d; --acento2: #ffb347; --boton-fin: #c0353a; --brillo: #4a1214; --brillo2: #4a3010; }
+:root[data-curso="cat-gaming"][data-tema="claro"] { --acento: #b8282d; --acento2: #9a5200; --boton-fin: #a32a2f; }
 :root[data-curso="cat-chicos"] { --acento: #2f6fe4; --acento2: #ffcf4a; --boton-fin: #2457b8; --brillo: #12285a; --brillo2: #3a3010; }
 :root[data-curso="cat-chicos"][data-tema="claro"] { --acento: #2457b8; --acento2: #8a6200; --boton-fin: #1f4a9e; }
 :root[data-curso="cat-comunicacion"] { --acento: #c99a06; --acento2: #ffd866; --boton-fin: #9c7704; --brillo: #3e3006; --brillo2: #3a2a12; }

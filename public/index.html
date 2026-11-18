@@ -39,7 +39,7 @@
   .titulo-grupo { font-size: 1.05rem; color: var(--suave); margin: 1.2rem 0 .6rem; }
   /* Al entrar se ven solo las categorías, como fichas grandes; al tocar una aparecen sus cursos. Buscar muestra cursos de todas. */
   .filtros [data-cat="trabajo"] { --c: #4f6bed; } .filtros [data-cat="comunicacion"] { --c: #c99a06; } .filtros [data-cat="vida"] { --c: #2e9e5b; } .filtros [data-cat="oficios"] { --c: #b5651d; }
-  .filtros [data-cat="emprender"] { --c: #d6406f; } .filtros [data-cat="tecnologia"] { --c: #7a5af8; } .filtros [data-cat="datos-ia"] { --c: #1f9e8f; } .filtros [data-cat="chicos"] { --c: #2f6fe4; }
+  .filtros [data-cat="emprender"] { --c: #d6406f; } .filtros [data-cat="tecnologia"] { --c: #7a5af8; } .filtros [data-cat="datos-ia"] { --c: #1f9e8f; } .filtros [data-cat="chicos"] { --c: #2f6fe4; } .filtros [data-cat="gaming"] { --c: #e5484d; }
   main[data-vista="inicio"] .categoria, main[data-vista="inicio"] .filtros [data-cat=""] { display: none; }
   main[data-vista="inicio"] .filtros { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; }
   main[data-vista="inicio"] .filtros button { font-size: 1.2rem; font-weight: 700; padding: 1.3rem .8rem; border: 3px solid var(--c); border-radius: 20px; }
@@ -81,6 +81,7 @@
     <button type="button" data-cat="tecnologia" aria-pressed="false">💻 Tecnología <span>7</span></button>
     <button type="button" data-cat="datos-ia" aria-pressed="false">🤖 Datos e IA <span>7</span></button>
     <button type="button" data-cat="chicos" aria-pressed="false">🎒 Chicos <span>6</span></button>
+    <button type="button" data-cat="gaming" aria-pressed="false">🎮 Gaming <span>2</span></button>
   </nav>
   <section class="categoria" id="trabajo">
     <h2 class="titulo-categoria">💼 Trabajo</h2>
@@ -207,6 +208,15 @@
       <a class="curso" style="--c:#2f6fe4" href="chicos/web.html"><span>💻</span><h2>Programá tu web</h2><small>De 12 a 14 años · nivel 2</small><p>12 misiones con editor de código: HTML, CSS y JavaScript, y tu propia página hecha en la compu.</p></a>
       <a class="curso" style="--c:#2f6fe4" href="chicos/plata.html"><span>💰</span><h2>Plata para chicos</h2><small>De 10 a 13 años</small><p>8 misiones para ahorrar con una meta, comparar precios, no caer en la publicidad y entender los bancos.</p></a>
       <a class="curso" style="--c:#e0582f" href="chicos/ingles.html"><span>🗣️</span><h2>Inglés con el PIPI</h2><small>Para 13 años</small><p>10 unidades: presente simple, presente continuo y pasado, con preguntas personales y ejercicios.</p></a>
+    </div>
+    </div>
+  </section>
+  <section class="categoria" id="gaming">
+    <h2 class="titulo-categoria">🎮 Gaming</h2>
+    <div class="grupo">
+    <div class="cursos">
+      <a class="curso" style="--c:#e5484d" href="cs2-calls/"><span>🎯</span><h2>Counter-Strike 2: mapas y calls de Premier</h2><small>Para jugadores de CS2</small><p>Los 7 mapas del pool con cada callout en español y dónde está, y calls claras que ganan rondas.</p></a>
+      <a class="curso" style="--c:#e5484d" href="lol-diamante/"><span>⚔️</span><h2>League of Legends: de Hierro a Diamante</h2><small>Para jugadores de LoL</small><p>Subí con método: farmeo, oleadas, visión, objetivos de 2026, mental y un plan de 30 días.</p></a>
     </div>
     </div>
   </section>
