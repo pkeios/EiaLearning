@@ -90,10 +90,10 @@ Call: "Dos Banana, uno AWP, el de adelante a 40."</code></pre>
 {
   id: "humos",
   icono: "💨",
-  titulo: "Humos: para qué sirven y cómo practicarlos",
+  titulo: "Granadas: humos, flashes y molotovs, y cómo practicarlas",
   nivel: "Básico",
   objetivos: [
-    "Explicar qué tapa un humo y por qué se tiran varios juntos",
+    "Explicar qué hace cada granada (humo, flash y molotov) y por qué se tiran juntas",
     "Reconocer los 4 tipos de tiro y hacer un jump throw",
     "Armar tu servidor de práctica y usar las líneas setpos para aprender un humo",
   ],
@@ -108,6 +108,13 @@ Call: "Dos Banana, uno AWP, el de adelante a 40."</code></pre>
         <tr><td>Balas</td><td>Hacen agujeritos por donde se ve un poco</td></tr>
         <tr><td>Molotov</td><td>El humo apaga el fuego que cae adentro</td></tr>
       </table>
+      <p><strong>Las otras dos granadas</strong> que vas a ver en cada mapa:</p>
+      <table>
+        <tr><th>Granada</th><th>Qué hace</th><th>Cuándo se usa</th></tr>
+        <tr><td>⚡ Flash ($200)</td><td>Ciega unos segundos a quien la está mirando</td><td>Justo antes de asomarte o entrar a un sitio</td></tr>
+        <tr><td>🔥 Molotov (T) o incendiaria (CT)</td><td>Prende fuego el piso unos segundos</td><td>Para sacar a alguien de un escondite o cortar un paso</td></tr>
+      </table>
+      <p><strong>Si te tiran una flash, dale la espalda:</strong> si no la mirás, te ciega mucho menos.</p>
       <p>Cada mapa tiene humos que todo el mundo usa, porque tapan siempre los mismos lugares desde donde defienden los CT. Aprenderlos es como aprenderse las calls: el equipo los nombra igual ("tiro CT", "tiro Window").</p>
       <pre><code>Una ejecución (entrar a un sitio con utilidad):
 1. Cada uno sabe qué humo tira.
@@ -197,6 +204,7 @@ bind n sv_rethrow_last_grenade</code></pre>
     "Nombrar los callouts de B: Apartments, Short (Cat), Market, Van, Bench y Kitchen",
     "Nombrar Mid y sus conexiones: Top Mid, Window, Connector, Underpass y Ladder Room",
     "Tirar los humos esenciales de Mirage y saber qué tapa cada uno",
+    "Usar las flashes y molotovs principales de Mirage",
   ],
   lecciones: [
     { titulo: "A: Palacio, Rampa y el sitio", video: {"id":"4I9E1rhuAD4","t":"Callouts de Mirage en español · Fer NS (4:31)"}, html: `
@@ -260,12 +268,48 @@ B → A: Market → Kitchen → Window → Connector → Jungle</code></pre>
       <pre><code>setpos -2031.972656 -1764.757935 -226.729340;setang -28.193851 -10.925070 0.000000</code></pre>
       <p>Los humos van <strong>juntos</strong>: un humo solo tapa un rincón, pero tres al mismo tiempo cortan un sitio entero. Por eso están agrupados por zona.</p>
       <p>Por ejemplo, para ejecutar A, tres compañeros tiran CT, Stairs y Jungle desde A Ramp a la vez; cuando caen, entran por Ramp y Palace sin que nadie los vea desde atrás.</p>` },
+    { titulo: "Flashes y molotovs de Mirage", html: `
+      <p class="idea">Las <strong>flashes</strong> ciegan a quien te espera y las <strong>molotovs</strong> lo sacan de un escondite o le cortan el paso. Estas son las de Mirage que más se usan, con su video y su línea de consola.</p>
+      <table>
+        <tr><th>Granada</th><th>Adónde va</th></tr>
+        <tr><td>⚡ Flash</td><td><strong>B</strong><br><small>Lado T</small></td></tr>
+        <tr><td>⚡ Flash</td><td><strong>Ramp</strong><br><small>Lado T</small></td></tr>
+        <tr><td>⚡ Flash</td><td><strong>Window</strong><br><small>Lado CT</small></td></tr>
+        <tr><td>🔥 Molotov</td><td><strong>Van</strong><br><small>Lado T</small></td></tr>
+        <tr><td>🔥 Molotov</td><td><strong>Window</strong><br><small>Lado T</small></td></tr>
+        <tr><td>🔥 Molotov</td><td><strong>Apartments</strong><br><small>Lado CT</small></td></tr>
+        <tr><td>🔥 Molotov</td><td><strong>Ramp</strong><br><small>Lado CT</small></td></tr>
+      </table>
+      <p><strong>Flashes:</strong> entrá <strong>justo cuando explota</strong>. Si esperás, el rival ya recuperó la vista; si te adelantás, te ciega a vos también.</p>
+      <p><strong>⚡ Flash a B</strong> <small>(lado T · desde Back Alley)</small><br>Ciega a los CT del sitio B justo cuando entrás desde Apartments. <em>Corriendo, salto y soltás.</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/mirage-flashbang-KBVOguqRaI/lq.mp4" poster="https://assets.csnades.gg/nades/mirage-flashbang-KBVOguqRaI/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/mirage/flashbangs/b-site-from-back-alley" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos -161.027649 575.501038 -7.400757;setang -16.745499 -179.421509 0.000000</code></pre>
+      <p><strong>⚡ Flash de Ramp</strong> <small>(lado T · desde A Ramp)</small><br>Explota apenas pasa la esquina de Ramp y ciega a quien te espera en A. <em>Quieto, clic izquierdo.</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/mirage-flashbang-xMEDBlgTNj/lq.mp4" poster="https://assets.csnades.gg/nades/mirage-flashbang-xMEDBlgTNj/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/mirage/flashbangs/a-ramp-from-a-ramp" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos 836.155396 -1036.029785 -194.101837;setang -39.119064 -148.335022 0.000000</code></pre>
+      <p><strong>⚡ Flash para Window</strong> <small>(lado CT · desde Jungle)</small><br>Ciega a los T de Mid para que tu AWP se asome por Window. <em>Quieto, clic izquierdo.</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/mirage-flashbang-fIl9Flydas/lq.mp4" poster="https://assets.csnades.gg/nades/mirage-flashbang-fIl9Flydas/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/mirage/flashbangs/mid-window-from-jungle" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos -1247.968750 -924.031250 -103.968750;setang -35.794769 58.191368 0.000000</code></pre>
+      <p><strong>Molotovs:</strong> el fuego dura unos segundos. Sirve para sacar a un CT de un escondite antes de entrar, o, del lado CT, para demorar a los T. Un humo encima lo apaga.</p>
+      <p><strong>🔥 Molotov a Van</strong> <small>(lado T · desde B Apts)</small><br>Quema Van, el escondite de los CT en B, antes de entrar. <em>Corriendo, clic izquierdo.</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/mirage-molotov-vDmQZouxb7/lq.mp4" poster="https://assets.csnades.gg/nades/mirage-molotov-vDmQZouxb7/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/mirage/molotovs/van-from-b-apts" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos -1042.112915 641.823303 -15.939156;setang -6.914647 172.807480 0.000000</code></pre>
+      <p><strong>🔥 Molotov a Window</strong> <small>(lado T · desde Top Mid Boxes)</small><br>Saca al AWP de Window para poder cruzar Mid. <em>Corriendo, clic izquierdo.</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/mirage-molotov-Ss3bxBr2bu/lq.mp4" poster="https://assets.csnades.gg/nades/mirage-molotov-Ss3bxBr2bu/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/mirage/molotovs/window-from-top-mid-boxes" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos 502.968750 -629.504150 -96.517273;setang -13.770969 179.751511 0.000000</code></pre>
+      <p><strong>🔥 Molotov a Apartments</strong> <small>(lado CT · desde B Site)</small><br>Frena a los T que salen de Apartments hacia B. <em>Quieto, clic izquierdo.</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/mirage-molotov-m50JGuV379/lq.mp4" poster="https://assets.csnades.gg/nades/mirage-molotov-m50JGuV379/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/mirage/molotovs/b-apts-from-b-site" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos -2037.233643 439.579254 -95.968750;setang -11.591716 28.368635 0.000000</code></pre>
+      <p><strong>🔥 Molotov a Ramp</strong> <small>(lado CT · desde Triple Box)</small><br>Frena a los T que suben por Ramp hacia A. <em>Corriendo, clic izquierdo.</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/mirage-molotov-wEIQIthxov/lq.mp4" poster="https://assets.csnades.gg/nades/mirage-molotov-wEIQIthxov/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/mirage/molotovs/a-ramp-from-triple-box" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos -897.986023 -2331.135498 -104.993301;setang -16.469255 43.683067 0.000000</code></pre>
+      <p>Por ejemplo, la combinación clásica para entrar a un sitio es: humos para tapar las llegadas, una molotov al escondite más peligroso y una flash justo antes de entrar.</p>` },
   ],
   practica: [
     "Abrí Mirage en una partida privada, recorré A diciendo en voz alta cada callout de la tabla y anotá cuántos recordaste sin mirar.",
     "Repetí el recorrido en B y en Mid, y anotá los 3 callouts que más te costaron.",
     "Mirá el radar interactivo de Mirage en csdb.gg y anotá 3 callouts de la comunidad que no conocías.",
-    "Practicá en tu servidor los humos de Mirage con las líneas setpos de la lección: tirá cada uno 5 veces y anotá cuántas veces cayó en el lugar.",
+    "Practicá en tu servidor los humos, flashes y molotovs de Mirage con sus líneas setpos: tirá cada uno 5 veces y anotá cuántas veces cayó donde muestra el video.",
   ],
   recursos: [
     { t: "csdb.gg: radar interactivo de Mirage con todos los callouts", url: "https://csdb.gg/maps/mirage/" },
@@ -289,6 +333,10 @@ B → A: Market → Kitchen → Window → Connector → Jungle</code></pre>
     { q: "Si el AWP de los CT no te deja cruzar Mid en Mirage, ¿qué humo tirás?", opciones: ["Window","Stairs","Market Door","Palace"], correcta: 0, explicacion: "Window es el nido del AWP que mira Mid. Stairs tienta, pero tapa A." },
     { q: "Si vas a entrar a B en Mirage desde Apartments, ¿qué dos humos tapan a los CT del Mercado?", opciones: ["CT y Jungle","Top Mid y Window","Stairs y Palace","Market Window y Market Door"], correcta: 3, explicacion: "Los dos son del Mercado, al lado de B. CT y Jungle tientan, pero son de A." },
     { q: "Tenés la línea setpos de Stairs. ¿Qué hacés con ella?", opciones: ["La escribís en el chat de una partida de Premier","La pegás en la consola del servidor de práctica y tirás como dice la tabla","La pegás en la consola de una partida oficial","No sirve para nada"], correcta: 1, explicacion: "setpos solo funciona en tu servidor de práctica con trucos activados. En Premier tienta probarlo, pero no funciona y no corresponde." },
+    { q: "Si vas a entrar a B en Mirage y un CT suele esconderse en Van, ¿qué granada tirás antes?", opciones: ["Una flash a Ramp","Un humo a Stairs","Una molotov a Van","Una molotov a Window"], correcta: 2, explicacion: "La molotov lo saca del escondite. La flash tienta, pero no lo saca: solo lo ciega un momento." },
+    { q: "Si sos CT en Mirage y los T suben por Ramp hacia A, ¿qué granada los demora?", opciones: ["Una molotov a Ramp","Una flash a B","Un humo a Market Window","Una molotov a Van"], correcta: 0, explicacion: "El fuego en Ramp les corta el paso. Market Window tienta, pero está en B." },
+    { q: "Tirás la flash de Ramp en Mirage. ¿Cuándo salís?", opciones: ["Antes de tirarla","Cinco segundos después","Nunca, solo la tirás","Justo cuando explota"], correcta: 3, explicacion: "Al explotar el rival está ciego. Esperar tienta para ir seguro, pero en segundos recupera la vista." },
+    { q: "Si el AWP de Window no te deja cruzar Mid en Mirage y no tenés humo, ¿qué granada lo saca de ahí?", opciones: ["Una molotov a Van","Una molotov a Window","Una flash a B","Una molotov a Apartments"], correcta: 1, explicacion: "La molotov lo obliga a moverse. Van tienta, pero está en B." },
   ],
 },
 {
@@ -301,6 +349,7 @@ B → A: Market → Kitchen → Window → Connector → Jungle</code></pre>
     "Nombrar los callouts de A: Apartments, Balcony, Short, Long, Pit, Library y Arch",
     "Nombrar Mid y las rutas de los CT: Second Mid, Top Mid, Speedway y CT Spawn",
     "Tirar los humos esenciales de Inferno y saber qué tapa cada uno",
+    "Usar las flashes y molotovs principales de Inferno",
   ],
   lecciones: [
     { titulo: "B: Banana y el sitio", video: {"id":"dqcx7dHS1Xg","t":"Inferno: callouts y posiciones básicos · Pitu Herranz (8:48)"}, html: `
@@ -357,12 +406,44 @@ B → A: Market → Kitchen → Window → Connector → Jungle</code></pre>
       <pre><code>setpos 2552.343018 2193.372559 200.897049;setang -25.738585 -125.363625 0.000000</code></pre>
       <p>Los humos van <strong>juntos</strong>: un humo solo tapa un rincón, pero tres al mismo tiempo cortan un sitio entero. Por eso están agrupados por zona.</p>
       <p>Por ejemplo, para ejecutar B, desde Banana tiran CT y Coffins; con esos dos humos solo queda un rincón por limpiar al entrar al sitio.</p>` },
+    { titulo: "Flashes y molotovs de Inferno", html: `
+      <p class="idea">Las <strong>flashes</strong> ciegan a quien te espera y las <strong>molotovs</strong> lo sacan de un escondite o le cortan el paso. Estas son las de Inferno que más se usan, con su video y su línea de consola.</p>
+      <table>
+        <tr><th>Granada</th><th>Adónde va</th></tr>
+        <tr><td>⚡ Flash</td><td><strong>Balcony</strong><br><small>Lado T</small></td></tr>
+        <tr><td>⚡ Flash</td><td><strong>Top Mid</strong><br><small>Lado T</small></td></tr>
+        <tr><td>⚡ Flash</td><td><strong>Banana</strong><br><small>Lado CT</small></td></tr>
+        <tr><td>🔥 Molotov</td><td><strong>New Box</strong><br><small>Lado T</small></td></tr>
+        <tr><td>🔥 Molotov</td><td><strong>Coffins</strong><br><small>Lado T</small></td></tr>
+        <tr><td>🔥 Molotov</td><td><strong>Banana</strong><br><small>Lado CT</small></td></tr>
+      </table>
+      <p><strong>Flashes:</strong> entrá <strong>justo cuando explota</strong>. Si esperás, el rival ya recuperó la vista; si te adelantás, te ciega a vos también.</p>
+      <p><strong>⚡ Flash a Balcony</strong> <small>(lado T · desde Apts)</small><br>Ciega a los CT de Balcony y A cuando salís de Apartments. <em>Quieto, clic izquierdo.</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/inferno-flashbang-pEiJokiX7m/lq.mp4" poster="https://assets.csnades.gg/nades/inferno-flashbang-pEiJokiX7m/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/inferno/flashbangs/balcony-from-apts" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos 1579.335571 -377.968750 320.031250;setang -24.480705 -30.092890 0.000000</code></pre>
+      <p><strong>⚡ Flash a Top Mid</strong> <small>(lado T · desde Underpass)</small><br>Ciega a los CT de Top Mid para avanzar por Mid. <em>Quieto, clic izquierdo.</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/inferno-flashbang-DbbgaLj8Fy/lq.mp4" poster="https://assets.csnades.gg/nades/inferno-flashbang-DbbgaLj8Fy/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/inferno/flashbangs/top-mid-from-underpass" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos 292.988708 648.044922 75.770920;setang -18.219749 -8.623450 0.000000</code></pre>
+      <p><strong>⚡ Flash a Banana</strong> <small>(lado CT · desde CT)</small><br>Ciega a los T de Banana para que un CT se asome y los frene. <em>Quieto, clic izquierdo.</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/inferno-flashbang-WKlPfFPtJo/lq.mp4" poster="https://assets.csnades.gg/nades/inferno-flashbang-WKlPfFPtJo/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/inferno/flashbangs/top-banana-from-ct" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos 1148.031250 2798.269043 189.269714;setang -29.862030 -146.876907 0.000000</code></pre>
+      <p><strong>Molotovs:</strong> el fuego dura unos segundos. Sirve para sacar a un CT de un escondite antes de entrar, o, del lado CT, para demorar a los T. Un humo encima lo apaga.</p>
+      <p><strong>🔥 Molotov a New Box</strong> <small>(lado T · desde Car)</small><br>Quema New Box, la caja donde se esconde un CT en B. <em>Quieto, salto y soltás (jump throw).</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/inferno-molotov-0WL2z5ksjl/lq.mp4" poster="https://assets.csnades.gg/nades/inferno-molotov-0WL2z5ksjl/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/inferno/molotovs/new-box-from-car" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos 479.274414 2017.968750 200.031311;setang -10.588449 123.033058 0.000000</code></pre>
+      <p><strong>🔥 Molotov a Coffins</strong> <small>(lado T · desde Half Wall)</small><br>Quema Coffins (los ataúdes), el escondite del fondo de B. <em>Quieto, salto y soltás (jump throw).</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/inferno-molotov-SjUDRqOtwN/lq.mp4" poster="https://assets.csnades.gg/nades/inferno-molotov-SjUDRqOtwN/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/inferno/molotovs/coffins-from-half-wall-b" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos 457.270874 1833.310913 200.031250;setang 0.787578 84.974136 0.000000</code></pre>
+      <p><strong>🔥 Molotov a Banana</strong> <small>(lado CT · desde Top Banana)</small><br>Frena el avance de los T por Banana. <em>Corriendo, clic izquierdo.</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/inferno-molotov-MlqSqIhKzZ/lq.mp4" poster="https://assets.csnades.gg/nades/inferno-molotov-MlqSqIhKzZ/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/inferno/molotovs/banana-from-top-banana" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos 772.065491 2129.185547 200.031311;setang -5.238741 -144.064240 0.000000</code></pre>
+      <p>Por ejemplo, la combinación clásica para entrar a un sitio es: humos para tapar las llegadas, una molotov al escondite más peligroso y una flash justo antes de entrar.</p>` },
   ],
   practica: [
     "Abrí Inferno en una partida privada, caminá Banana de punta a punta diciendo los callouts y anotá cuántos recordaste sin mirar.",
     "Hacé lo mismo en A, entrando por Apartments, por Short y por Long, y anotá los 3 que más te costaron.",
     "Mirá el radar interactivo de Inferno en csdb.gg y anotá qué diferencia hay entre Apartments y CT Apartments.",
-    "Practicá en tu servidor los humos de Inferno con las líneas setpos de la lección: tirá cada uno 5 veces y anotá cuántas veces cayó en el lugar.",
+    "Practicá en tu servidor los humos, flashes y molotovs de Inferno con sus líneas setpos: tirá cada uno 5 veces y anotá cuántas veces cayó donde muestra el video.",
   ],
   recursos: [
     { t: "csdb.gg: radar interactivo de Inferno con todos los callouts", url: "https://csdb.gg/maps/inferno/" },
@@ -386,6 +467,10 @@ B → A: Market → Kitchen → Window → Connector → Jungle</code></pre>
     { q: "Si querés cortar la rotación de los CT que llegan a A desde CT spawn en Inferno, ¿qué humo tirás?", opciones: ["Arch","Coffins","CT (B)","Banana"], correcta: 0, explicacion: "Arch es el arco por donde llegan desde CT spawn. Coffins tienta, pero está en B." },
     { q: "Si en Inferno un CT suele esperar en el pozo al borde de A, ¿qué humo lo tapa?", opciones: ["Library","Boiler","Coffins","Pit"], correcta: 3, explicacion: "Pit es el pozo de A. Library tienta porque también es de A, pero es el cuarto que mira Long." },
     { q: "Si sos CT en Inferno y los T vienen por Banana, ¿qué humo los frena?", opciones: ["Top Mid","El de la entrada de B desde Banana","Pit","Arch"], correcta: 1, explicacion: "Tapa la salida de Banana y los demora. Top Mid tienta porque también es de los CT, pero tapa Mid." },
+    { q: "Si vas a entrar a B en Inferno y un CT se esconde en New Box, ¿qué tirás antes?", opciones: ["Una flash a Top Mid","Una molotov a Banana","Una molotov a New Box","Un humo a Library"], correcta: 2, explicacion: "La molotov lo saca de la caja. Banana tienta, pero es por donde venís vos." },
+    { q: "Si sos CT en Inferno y los T empujan Banana, ¿qué granada los demora?", opciones: ["Una molotov a Banana","Una molotov a Coffins","Una flash a Balcony","Un humo a Pit"], correcta: 0, explicacion: "El fuego en Banana les corta el paso. Coffins tienta, pero está detrás tuyo, en B." },
+    { q: "Vas a salir de Apartments hacia A en Inferno. ¿Qué flash te ayuda?", opciones: ["La flash a Banana","Una molotov a New Box","Ninguna","La flash a Balcony"], correcta: 3, explicacion: "Ciega a los CT de Balcony y A. La de Banana tienta, pero es de los CT y está en B." },
+    { q: "Si en Inferno ya tiraste humo a CT y Coffins sigue ocupado, ¿qué granada tirás?", opciones: ["Otra flash","Una molotov a Coffins","Una molotov a Banana","Un humo a Top Mid"], correcta: 1, explicacion: "La molotov saca al CT de los ataúdes. Otra flash tienta, pero no lo saca de ahí." },
   ],
 },
 {
@@ -398,6 +483,7 @@ B → A: Market → Kitchen → Window → Connector → Jungle</code></pre>
     "Nombrar los callouts de B: Upper y Lower Tunnels, Car, Closet, Back Plat, Window y B Doors",
     "Nombrar Mid y las zonas CT: Suicide, Xbox, Mid Doors, CT Mid y CT Spawn",
     "Tirar los humos esenciales de Dust II y saber qué tapa cada uno",
+    "Usar las flashes y molotovs principales de Dust II",
   ],
   lecciones: [
     { titulo: "A: Long, Short y el sitio", video: {"id":"sYwJLWuvowY","t":"Callouts de Dust 2 en español · Fer NS (3:05)"}, html: `
@@ -456,12 +542,44 @@ B → A: B Doors → CT Mid → CT Spawn → A</code></pre>
       <pre><code>setpos 1783.865845 2080.022705 67.510422;setang -7.305259 -132.512497 0.000000</code></pre>
       <p>Los humos van <strong>juntos</strong>: un humo solo tapa un rincón, pero tres al mismo tiempo cortan un sitio entero. Por eso están agrupados por zona.</p>
       <p>Por ejemplo, para entrar a B desde Túneles, un compañero tira B Doors y otro B Window; los CT que rotan y el que mira desde la ventana quedan ciegos.</p>` },
+    { titulo: "Flashes y molotovs de Dust II", html: `
+      <p class="idea">Las <strong>flashes</strong> ciegan a quien te espera y las <strong>molotovs</strong> lo sacan de un escondite o le cortan el paso. Estas son las de Dust II que más se usan, con su video y su línea de consola.</p>
+      <table>
+        <tr><th>Granada</th><th>Adónde va</th></tr>
+        <tr><td>⚡ Flash</td><td><strong>B</strong><br><small>Lado T</small></td></tr>
+        <tr><td>⚡ Flash</td><td><strong>Long</strong><br><small>Lado T</small></td></tr>
+        <tr><td>⚡ Flash</td><td><strong>Long Doors</strong><br><small>Lado CT</small></td></tr>
+        <tr><td>🔥 Molotov</td><td><strong>Car</strong><br><small>Lado T</small></td></tr>
+        <tr><td>🔥 Molotov</td><td><strong>Back Plat</strong><br><small>Lado T</small></td></tr>
+        <tr><td>🔥 Molotov</td><td><strong>B Window</strong><br><small>Lado CT</small></td></tr>
+      </table>
+      <p><strong>Flashes:</strong> entrá <strong>justo cuando explota</strong>. Si esperás, el rival ya recuperó la vista; si te adelantás, te ciega a vos también.</p>
+      <p><strong>⚡ Flash a B</strong> <small>(lado T · desde Upper Tunnels)</small><br>Ciega a los CT del sitio B al salir de Túneles. <em>Corriendo, clic izquierdo.</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/dust2-flashbang-la4c2Ujuhf/lq.mp4" poster="https://assets.csnades.gg/nades/dust2-flashbang-la4c2Ujuhf/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/dust2/flashbangs/b-site-from-upper-tunnels-b" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos -1755.888306 1064.031250 96.814697;setang -19.773165 117.607086 0.000000</code></pre>
+      <p><strong>⚡ Flash a Long</strong> <small>(lado T · desde Outside Long)</small><br>Ciega al CT que mira Long cuando salís por Long Doors. <em>Quieto, salto y soltás (jump throw).</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/dust2-flashbang-fxo3zoHNk1/lq.mp4" poster="https://assets.csnades.gg/nades/dust2-flashbang-fxo3zoHNk1/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/dust2/flashbangs/a-long-from-outside-long" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos 363.968750 -383.960327 66.726570;setang -7.039104 49.579628 0.000000</code></pre>
+      <p><strong>⚡ Flash a Long Doors</strong> <small>(lado CT · desde CT Cross)</small><br>Ciega a los T que pasan Long Doors para que un CT los frene. <em>Quieto, clic izquierdo.</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/dust2-flashbang-QdybwmCUCl/lq.mp4" poster="https://assets.csnades.gg/nades/dust2-flashbang-QdybwmCUCl/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/dust2/flashbangs/long-doors-from-ct-cross" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos 1249.811523 2038.031250 65.386116;setang -42.117085 -81.232803 0.000000</code></pre>
+      <p><strong>Molotovs:</strong> el fuego dura unos segundos. Sirve para sacar a un CT de un escondite antes de entrar, o, del lado CT, para demorar a los T. Un humo encima lo apaga.</p>
+      <p><strong>🔥 Molotov a Car</strong> <small>(lado T · desde Long Doors)</small><br>Quema Car, el escondite de los CT al final de Long. <em>Quieto, salto y soltás (jump throw).</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/dust2-molotov-5DagGMIZVm/lq.mp4" poster="https://assets.csnades.gg/nades/dust2-molotov-5DagGMIZVm/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/dust2/molotovs/car-from-long-doors" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos 847.597229 790.031250 111.035896;setang 5.790187 54.692131 0.000000</code></pre>
+      <p><strong>🔥 Molotov a Back Plat</strong> <small>(lado T · desde Upper Tunnels)</small><br>Quema Back Plat, el escondite del fondo de B. <em>Corriendo, clic izquierdo.</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/dust2-molotov-kPIvLos51d/lq.mp4" poster="https://assets.csnades.gg/nades/dust2-molotov-kPIvLos51d/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/dust2/molotovs/back-plat-from-upper-tunnels" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos -1936.968750 1042.031250 97.756500;setang -15.877525 94.012520 0.000000</code></pre>
+      <p><strong>🔥 Molotov bajo B Window</strong> <small>(lado CT · desde Scaffolding)</small><br>Frena a los T que salen de Túneles hacia B. <em>Quieto, salto y soltás (jump throw).</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/dust2-molotov-LqvfCjoIgj/lq.mp4" poster="https://assets.csnades.gg/nades/dust2-molotov-LqvfCjoIgj/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/dust2/molotovs/under-b-window-from-scaffolding" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos -1273.968750 2575.968750 128.820557;setang 0.807917 10.789516 0.000000</code></pre>
+      <p>Por ejemplo, la combinación clásica para entrar a un sitio es: humos para tapar las llegadas, una molotov al escondite más peligroso y una flash justo antes de entrar.</p>` },
   ],
   practica: [
     "Abrí Dust II en una partida privada, recorré Long y Short hasta A diciendo los callouts y anotá cuántos recordaste sin mirar.",
     "Recorré los túneles hasta B y anotá la diferencia entre Upper y Lower Tunnels con tus palabras.",
     "Mirá el radar interactivo de Dust II en csdb.gg y anotá dónde están Goose, Closet y Xbox.",
-    "Practicá en tu servidor los humos de Dust II con las líneas setpos de la lección: tirá cada uno 5 veces y anotá cuántas veces cayó en el lugar.",
+    "Practicá en tu servidor los humos, flashes y molotovs de Dust II con sus líneas setpos: tirá cada uno 5 veces y anotá cuántas veces cayó donde muestra el video.",
   ],
   recursos: [
     { t: "csdb.gg: radar interactivo de Dust2 con todos los callouts", url: "https://csdb.gg/maps/dust2/" },
@@ -485,6 +603,10 @@ B → A: B Doors → CT Mid → CT Spawn → A</code></pre>
     { q: "Si vas a entrar a B en Dust II desde Túneles, ¿qué dos humos tiran?", opciones: ["B Doors y B Window","A Cross y CT Spawn","Xbox y Mid Doors","Long Corner y Long Doors"], correcta: 0, explicacion: "Tapan la rotación y la ventana de B. A Cross tienta, pero es de A." },
     { q: "Si vas a cruzar de Long hacia A en Dust II y te ven desde el sitio, ¿qué humo tirás?", opciones: ["B Doors","Mid Doors","Xbox","A Cross"], correcta: 3, explicacion: "A Cross tapa el cruce de Long a A. Mid Doors tienta, pero tapa Mid." },
     { q: "Si sos CT en Dust II y los T empujan Long, ¿qué humo los demora?", opciones: ["B Window","Long Doors","Xbox","Top Mid"], correcta: 1, explicacion: "Tapa las puertas de Long y frena el avance. Xbox tienta porque los CT la usan, pero es de Mid." },
+    { q: "Si vas a salir por Long Doors en Dust II y un CT mira Long, ¿qué tirás?", opciones: ["Una molotov bajo B Window","La flash a B","La flash a Long","Un humo a B Doors"], correcta: 2, explicacion: "La flash lo ciega cuando salís. B Window tienta, pero es del otro lado del mapa." },
+    { q: "Si en Dust II un CT se esconde en Car, al final de Long, ¿qué granada lo saca?", opciones: ["Una molotov a Car","Una flash a Long Doors","Una molotov a Back Plat","Un humo a Xbox"], correcta: 0, explicacion: "La molotov lo saca del escondite. Back Plat tienta, pero está en B." },
+    { q: "Si sos CT en Dust II y los T salen de Túneles hacia B, ¿qué granada los frena?", opciones: ["Una molotov a Car","Una flash a Long","Un humo a Mid Doors","Una molotov bajo B Window"], correcta: 3, explicacion: "El fuego les corta la salida de Túneles. Car tienta, pero está en A." },
+    { q: "Si vas a entrar a B en Dust II y un CT espera en el fondo de la plataforma, ¿qué tirás?", opciones: ["Una flash a Long","Una molotov a Back Plat","Una molotov a Car","Un humo a CT Spawn"], correcta: 1, explicacion: "Back Plat es ese escondite. Car tienta porque también es un escondite, pero está en A." },
   ],
 },
 {
@@ -497,6 +619,7 @@ B → A: B Doors → CT Mid → CT Spawn → A</code></pre>
     "Nombrar los callouts de A: Hut, Heaven, Hell, Rafters, Squeaky, Mustang y Main",
     "Nombrar los callouts de B y del exterior: Ramp, Secret, Vents, Decon, Outside, Garage y Silo",
     "Tirar los humos esenciales de Nuke y saber qué tapa cada uno",
+    "Usar las flashes y molotovs principales de Nuke",
   ],
   lecciones: [
     { titulo: "Un mapa de dos pisos", video: {"id":"_R00VoaWzvw","t":"Callouts de Nuke en español · Fer NS (3:06)"}, html: `
@@ -550,12 +673,44 @@ B → A: B Doors → CT Mid → CT Spawn → A</code></pre>
       <pre><code>setpos 1011.644836 -457.968750 -63.968750;setang -8.194401 -120.156166 0.000000</code></pre>
       <p>Los humos van <strong>juntos</strong>: un humo solo tapa un rincón, pero tres al mismo tiempo cortan un sitio entero. Por eso están agrupados por zona.</p>
       <p>Por ejemplo, para cruzar Outside, desde Under Silo tiran Garage, CT Red y Secret; así el patio queda tapado del lado de los CT.</p>` },
+    { titulo: "Flashes y molotovs de Nuke", html: `
+      <p class="idea">Las <strong>flashes</strong> ciegan a quien te espera y las <strong>molotovs</strong> lo sacan de un escondite o le cortan el paso. Estas son las de Nuke que más se usan, con su video y su línea de consola.</p>
+      <table>
+        <tr><th>Granada</th><th>Adónde va</th></tr>
+        <tr><td>⚡ Flash</td><td><strong>Hut</strong><br><small>Lado T</small></td></tr>
+        <tr><td>⚡ Flash</td><td><strong>A</strong><br><small>Lado T</small></td></tr>
+        <tr><td>⚡ Flash</td><td><strong>A (desde Heaven)</strong><br><small>Lado CT</small></td></tr>
+        <tr><td>🔥 Molotov</td><td><strong>techo de Hut</strong><br><small>Lado T</small></td></tr>
+        <tr><td>🔥 Molotov</td><td><strong>Heaven</strong><br><small>Lado T</small></td></tr>
+        <tr><td>🔥 Molotov</td><td><strong>Squeaky</strong><br><small>Lado CT</small></td></tr>
+      </table>
+      <p><strong>Flashes:</strong> entrá <strong>justo cuando explota</strong>. Si esperás, el rival ya recuperó la vista; si te adelantás, te ciega a vos también.</p>
+      <p><strong>⚡ Flash a Hut</strong> <small>(lado T · desde Lobby)</small><br>Ciega a los CT de A cuando entrás por Hut. <em>Corriendo, clic izquierdo.</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/nuke-flashbang-76fv0beqvt/lq.mp4" poster="https://assets.csnades.gg/nades/nuke-flashbang-76fv0beqvt/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/nuke/flashbangs/hut-from-lobby-a" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos 85.491196 -793.829590 -351.968750;setang -2.916612 -61.275227 0.000000</code></pre>
+      <p><strong>⚡ Flash a A</strong> <small>(lado T · desde T Roof)</small><br>Ciega a los CT del sitio A desde afuera. <em>Quieto, salto y soltás (jump throw).</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/nuke-flashbang-cho7PEwNEj/lq.mp4" poster="https://assets.csnades.gg/nades/nuke-flashbang-cho7PEwNEj/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/nuke/flashbangs/a-site-from-t-roof-a" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos 1.293061 -769.648621 -30.726929;setang 3.702358 13.680260 0.000000</code></pre>
+      <p><strong>⚡ Flash a A (desde Heaven)</strong> <small>(lado CT · desde Heaven)</small><br>Ciega a los T que entraron a A para retomar el sitio. <em>Quieto, clic izquierdo.</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/nuke-flashbang-mhpJ9kzQys/lq.mp4" poster="https://assets.csnades.gg/nades/nuke-flashbang-mhpJ9kzQys/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/nuke/flashbangs/a-site-from-heaven" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos 1269.968750 -459.968750 -63.960037;setang 12.714302 165.669373 0.000000</code></pre>
+      <p><strong>Molotovs:</strong> el fuego dura unos segundos. Sirve para sacar a un CT de un escondite antes de entrar, o, del lado CT, para demorar a los T. Un humo encima lo apaga.</p>
+      <p><strong>🔥 Molotov al techo de Hut</strong> <small>(lado T · desde Silo)</small><br>Quema el techo de Hut y saca a quien espera ahí. <em>Quieto, clic izquierdo.</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/nuke-molotov-eHZ28JYnl1/lq.mp4" poster="https://assets.csnades.gg/nades/nuke-molotov-eHZ28JYnl1/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/nuke/molotovs/hut-roof-from-silo" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos -19.397888 -1461.603760 17.179848;setang -11.131254 29.823231 0.000000</code></pre>
+      <p><strong>🔥 Molotov a Heaven</strong> <small>(lado T · desde T Roof)</small><br>Saca al CT de Heaven, la pasarela alta sobre A. <em>Agachado caminando, clic izquierdo.</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/nuke-molotov-mUn1lJ2406/lq.mp4" poster="https://assets.csnades.gg/nades/nuke-molotov-mUn1lJ2406/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/nuke/molotovs/heaven-from-t-roof" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos 1.729591 -1008.001221 17.031250;setang -17.678331 26.685207 0.000000</code></pre>
+      <p><strong>🔥 Molotov a Squeaky</strong> <small>(lado CT · desde Heaven)</small><br>Frena a los T que entran a A por Squeaky. <em>Quieto, clic izquierdo.</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/nuke-molotov-HW6ILrNXaY/lq.mp4" poster="https://assets.csnades.gg/nades/nuke-molotov-HW6ILrNXaY/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/nuke/molotovs/squeaky-from-heaven" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos 1008.136841 -457.968750 -63.968750;setang -1.044459 -120.541222 0.000000</code></pre>
+      <p>Por ejemplo, la combinación clásica para entrar a un sitio es: humos para tapar las llegadas, una molotov al escondite más peligroso y una flash justo antes de entrar.</p>` },
   ],
   practica: [
     "Abrí Nuke en una partida privada, caminá de A a B por adentro (por Vents o Hell) y anotá cuántos segundos tardás.",
     "Recorré A y B diciendo los callouts y anotá cuántos recordaste sin mirar.",
     "En el radar interactivo de Nuke de csdb.gg, anotá qué une Vents y qué une Secret.",
-    "Practicá en tu servidor los humos de Nuke con las líneas setpos de la lección: tirá cada uno 5 veces y anotá cuántas veces cayó en el lugar.",
+    "Practicá en tu servidor los humos, flashes y molotovs de Nuke con sus líneas setpos: tirá cada uno 5 veces y anotá cuántas veces cayó donde muestra el video.",
   ],
   recursos: [
     { t: "csdb.gg: radar interactivo de Nuke con todos los callouts", url: "https://csdb.gg/maps/nuke/" },
@@ -579,6 +734,10 @@ B → A: B Doors → CT Mid → CT Spawn → A</code></pre>
     { q: "Si atacás A en Nuke y el CT de la pasarela alta te mata siempre, ¿qué humo tirás?", opciones: ["Heaven","Garage","Ramp","CT Red"], correcta: 0, explicacion: "Heaven es la pasarela alta sobre A. Garage tienta, pero está afuera." },
     { q: "Si en Nuke vas a bajar por Ramp hacia B, ¿qué humo te cubre?", opciones: ["Heaven","Squeaky","Garage","Ramp, tirado desde Trophy"], correcta: 3, explicacion: "Tapa la rampa para que no te vean desde abajo. Squeaky tienta, pero es de A." },
     { q: "Si sos CT en Nuke y escuchás la puerta de Squeaky, ¿qué humo podés tirar desde Heaven?", opciones: ["Ramp","Squeaky","Secret","Garage"], correcta: 1, explicacion: "Tapa esa entrada a A. Ramp tienta, pero lleva a B." },
+    { q: "Si en Nuke el CT de Heaven te mata siempre al entrar a A, ¿qué granada lo saca?", opciones: ["Una molotov a Squeaky","Una flash a Hut","Una molotov a Heaven","Un humo a Garage"], correcta: 2, explicacion: "El fuego lo obliga a salir de Heaven. Squeaky tienta, pero es una entrada de los T." },
+    { q: "Vas a entrar a A por Hut en Nuke. ¿Qué flash usás?", opciones: ["La flash a Hut","La flash a A desde Heaven","Una molotov a Squeaky","Un humo a Ramp"], correcta: 0, explicacion: "Ciega a los CT de A cuando entrás. La de Heaven tienta, pero la tira un CT." },
+    { q: "Si sos CT en Nuke y escuchás la puerta de Squeaky, ¿qué molotov tirás desde Heaven?", opciones: ["Una molotov a Heaven","Una molotov al techo de Hut","Una flash a Hut","Una molotov a Squeaky"], correcta: 3, explicacion: "Frena a los T en esa entrada. Heaven tienta, pero es donde estás vos." },
+    { q: "Los T ya entraron a A en Nuke y vas a retomar el sitio desde Heaven. ¿Qué granada te ayuda?", opciones: ["Una molotov al techo de Hut","La flash a A desde Heaven","La flash a Hut","Un humo a Garage"], correcta: 1, explicacion: "Los ciega mientras bajás a retomar. La de Hut tienta, pero es de los T." },
   ],
 },
 {
@@ -591,6 +750,7 @@ B → A: B Doors → CT Mid → CT Spawn → A</code></pre>
     "Nombrar los callouts de B: Ramp, Cave (Dark y Lamp Room), House, Pillar y Back Halls",
     "Nombrar Mid y el lado T: Elbow, Snipers Nest, Tunnels, Water, Ruins y Split",
     "Tirar los humos esenciales de Ancient y saber qué tapa cada uno",
+    "Usar las flashes y molotovs principales de Ancient",
   ],
   lecciones: [
     { titulo: "A: Main, Donut y el sitio", video: {"id":"Vx4XyrmGcJg","t":"Callouts de Ancient en español · Fer NS (5:43)"}, html: `
@@ -647,12 +807,44 @@ B → A: B Doors → CT Mid → CT Spawn → A</code></pre>
       <pre><code>setpos -1599.031250 1187.968750 116.031250;setang -13.472486 -120.882263 0.000000</code></pre>
       <p>Los humos van <strong>juntos</strong>: un humo solo tapa un rincón, pero tres al mismo tiempo cortan un sitio entero. Por eso están agrupados por zona.</p>
       <p>Por ejemplo, para ejecutar A, desde Outside A tiran CT, Temple y Donut; el sitio queda cortado de las tres llegadas de los CT.</p>` },
+    { titulo: "Flashes y molotovs de Ancient", html: `
+      <p class="idea">Las <strong>flashes</strong> ciegan a quien te espera y las <strong>molotovs</strong> lo sacan de un escondite o le cortan el paso. Estas son las de Ancient que más se usan, con su video y su línea de consola.</p>
+      <table>
+        <tr><th>Granada</th><th>Adónde va</th></tr>
+        <tr><td>⚡ Flash</td><td><strong>Mid</strong><br><small>Lado T</small></td></tr>
+        <tr><td>⚡ Flash</td><td><strong>A</strong><br><small>Lado T</small></td></tr>
+        <tr><td>⚡ Flash</td><td><strong>Catwalk</strong><br><small>Lado CT</small></td></tr>
+        <tr><td>🔥 Molotov</td><td><strong>default de A</strong><br><small>Lado T</small></td></tr>
+        <tr><td>🔥 Molotov</td><td><strong>Wood</strong><br><small>Lado T</small></td></tr>
+        <tr><td>🔥 Molotov</td><td><strong>Elbow</strong><br><small>Lado CT</small></td></tr>
+      </table>
+      <p><strong>Flashes:</strong> entrá <strong>justo cuando explota</strong>. Si esperás, el rival ya recuperó la vista; si te adelantás, te ciega a vos también.</p>
+      <p><strong>⚡ Flash a Mid</strong> <small>(lado T · desde T Mid)</small><br>Ciega a los CT de Mid para avanzar. <em>Quieto, clic izquierdo.</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/ancient-flashbang-iBj71pjghV/lq.mp4" poster="https://assets.csnades.gg/nades/ancient-flashbang-iBj71pjghV/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/ancient/flashbangs/mid-from-t-mid" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos -1230.565552 -1044.031250 72.256172;setang -32.674026 52.203629 0.000000</code></pre>
+      <p><strong>⚡ Flash a A</strong> <small>(lado T · desde A Main)</small><br>Ciega a los CT del sitio A cuando entrás por A Main. <em>Agachado y quieto, clic izquierdo.</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/ancient-flashbang-JkGrag9qfy/lq.mp4" poster="https://assets.csnades.gg/nades/ancient-flashbang-JkGrag9qfy/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/ancient/flashbangs/a-site-from-a-main" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos -2167.655762 -442.969238 138.859863;setang -9.330126 76.477852 0.000000</code></pre>
+      <p><strong>⚡ Flash a Catwalk</strong> <small>(lado CT · desde Jaguar)</small><br>Ciega a los T de Catwalk para que un CT se asome. <em>Quieto, los dos clics.</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/ancient-flashbang-Xlcd9EZcP3/lq.mp4" poster="https://assets.csnades.gg/nades/ancient-flashbang-Xlcd9EZcP3/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/ancient/flashbangs/catwalk-from-jaguar" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos 519.968750 -413.031250 249.323669;setang -15.722957 -139.540604 0.000000</code></pre>
+      <p><strong>Molotovs:</strong> el fuego dura unos segundos. Sirve para sacar a un CT de un escondite antes de entrar, o, del lado CT, para demorar a los T. Un humo encima lo apaga.</p>
+      <p><strong>🔥 Molotov al default de A</strong> <small>(lado T · desde A Main)</small><br>Quema el lugar de plantar de A y saca al CT que espera ahí. <em>Caminando, clic izquierdo.</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/ancient-molotov-YyXKTfxCYJ/lq.mp4" poster="https://assets.csnades.gg/nades/ancient-molotov-YyXKTfxCYJ/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/ancient/molotovs/a-default-from-a-main" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos -1963.893555 340.027344 152.031250;setang -17.625898 41.281429 0.000000</code></pre>
+      <p><strong>🔥 Molotov a Wood</strong> <small>(lado T · desde B Door)</small><br>Quema Wood, el escondite de madera de B. <em>Quieto, clic izquierdo.</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/ancient-molotov-PvGJh1kYQe/lq.mp4" poster="https://assets.csnades.gg/nades/ancient-molotov-PvGJh1kYQe/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/ancient/molotovs/wood-from-b-door" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos 1159.968750 -919.187805 70.161575;setang -30.126890 137.418716 0.000000</code></pre>
+      <p><strong>🔥 Molotov a Elbow</strong> <small>(lado CT · desde Top Mid)</small><br>Frena a los T que avanzan por Elbow hacia Mid. <em>Quieto, salto y soltás (jump throw).</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/ancient-molotov-lTsgPwzQK4/lq.mp4" poster="https://assets.csnades.gg/nades/ancient-molotov-lTsgPwzQK4/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/ancient/molotovs/elbow-from-top-mid" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos -476.031250 219.289505 231.593201;setang 11.243010 -117.693893 0.000000</code></pre>
+      <p>Por ejemplo, la combinación clásica para entrar a un sitio es: humos para tapar las llegadas, una molotov al escondite más peligroso y una flash justo antes de entrar.</p>` },
   ],
   practica: [
     "Abrí Ancient en una partida privada, recorré A por Main y por Short diciendo los callouts y anotá cuántos recordaste sin mirar.",
     "Recorré B por Ramp y por Lamp Room, Dark y House, y anotá cuántos segundos tarda cada camino.",
     "En el radar interactivo de Ancient de csdb.gg, anotá la diferencia entre Tunnels y Tunnel.",
-    "Practicá en tu servidor los humos de Ancient con las líneas setpos de la lección: tirá cada uno 5 veces y anotá cuántas veces cayó en el lugar.",
+    "Practicá en tu servidor los humos, flashes y molotovs de Ancient con sus líneas setpos: tirá cada uno 5 veces y anotá cuántas veces cayó donde muestra el video.",
   ],
   recursos: [
     { t: "csdb.gg: radar interactivo de Ancient con todos los callouts", url: "https://csdb.gg/maps/ancient/" },
@@ -676,6 +868,10 @@ B → A: B Doors → CT Mid → CT Spawn → A</code></pre>
     { q: "Si en Ancient querés avanzar por Mid, ¿qué humo tirás desde Elbow?", opciones: ["Top Mid","Temple","Cave","Donut"], correcta: 0, explicacion: "Top Mid tapa la parte alta de Mid. Donut tienta porque está cerca, pero es de A." },
     { q: "Si atacás B en Ancient desde Ruins, ¿qué humos tirás?", opciones: ["CT y Temple","Donut y Top Mid","A Main y Big Box","Cave y Back Alley"], correcta: 3, explicacion: "Tapan los ángulos de los CT del lado de B. Temple tienta, pero es de A." },
     { q: "Si sos CT en Ancient y los T vienen a B por la rampa, ¿qué humo los frena?", opciones: ["A Main","B Ramp","Temple","Donut"], correcta: 1, explicacion: "B Ramp es la entrada principal a B. A Main tienta porque también es de los CT, pero es de A." },
+    { q: "Si vas a entrar a A en Ancient y un CT espera en el lugar de plantar, ¿qué tirás?", opciones: ["Una molotov a Elbow","La flash a Catwalk","Una molotov al default de A","Un humo a B Ramp"], correcta: 2, explicacion: "La molotov lo saca del default. Elbow tienta, pero es de Mid y la tiran los CT." },
+    { q: "Si sos CT en Ancient y los T avanzan por Elbow, ¿qué granada los demora?", opciones: ["Una molotov a Elbow","Una molotov a Wood","La flash a A","Un humo a Temple"], correcta: 0, explicacion: "El fuego les corta Elbow. Wood tienta, pero está en B." },
+    { q: "Si en Ancient un CT se esconde en la madera de B, ¿qué granada lo saca?", opciones: ["Una molotov a Elbow","La flash a Mid","Un humo a CT","Una molotov a Wood"], correcta: 3, explicacion: "Wood es ese escondite de B. Elbow tienta, pero es de Mid." },
+    { q: "Vas a entrar a A por A Main en Ancient. ¿Qué flash te ayuda?", opciones: ["La flash a Catwalk","La flash a A","La flash a Mid","Una molotov a Wood"], correcta: 1, explicacion: "Ciega a los CT del sitio A. La de Catwalk tienta, pero es de los CT." },
   ],
 },
 {
@@ -688,6 +884,7 @@ B → A: B Doors → CT Mid → CT Spawn → A</code></pre>
     "Nombrar los callouts de B: B Long, Gate, Snipers Nest, Bricks, Pillar, Corner y Ninja",
     "Nombrar Mid: Bridge, Water, Canal, Double Doors, Boat y Palace",
     "Tirar los humos esenciales de Anubis y saber qué tapa cada uno",
+    "Usar las flashes y molotovs principales de Anubis",
   ],
   lecciones: [
     { titulo: "A: Main, Fuente y Connector", video: {"id":"9wCUJBHRfMc","t":"Callouts de Anubis en español · Fer NS (4:03)"}, html: `
@@ -735,12 +932,44 @@ B → A: B Doors → CT Mid → CT Spawn → A</code></pre>
       <pre><code>setpos -368.945068 2360.894531 88.031494;setang -31.763067 -82.266800 0.000000</code></pre>
       <p>Los humos van <strong>juntos</strong>: un humo solo tapa un rincón, pero tres al mismo tiempo cortan un sitio entero. Por eso están agrupados por zona.</p>
       <p>Por ejemplo, para ejecutar A, desde T Upper tiran Connector y Heaven; los CT de Mid y el de la plataforma alta quedan sin vista.</p>` },
+    { titulo: "Flashes y molotovs de Anubis", html: `
+      <p class="idea">Las <strong>flashes</strong> ciegan a quien te espera y las <strong>molotovs</strong> lo sacan de un escondite o le cortan el paso. Estas son las de Anubis que más se usan, con su video y su línea de consola.</p>
+      <table>
+        <tr><th>Granada</th><th>Adónde va</th></tr>
+        <tr><td>⚡ Flash</td><td><strong>A</strong><br><small>Lado T</small></td></tr>
+        <tr><td>⚡ Flash</td><td><strong>B</strong><br><small>Lado T</small></td></tr>
+        <tr><td>⚡ Flash</td><td><strong>Bridge</strong><br><small>Lado CT</small></td></tr>
+        <tr><td>🔥 Molotov</td><td><strong>Plat</strong><br><small>Lado T</small></td></tr>
+        <tr><td>🔥 Molotov</td><td><strong>pilar de B</strong><br><small>Lado T</small></td></tr>
+        <tr><td>🔥 Molotov</td><td><strong>default de B</strong><br><small>Lado CT</small></td></tr>
+      </table>
+      <p><strong>Flashes:</strong> entrá <strong>justo cuando explota</strong>. Si esperás, el rival ya recuperó la vista; si te adelantás, te ciega a vos también.</p>
+      <p><strong>⚡ Flash a A</strong> <small>(lado T · desde Water)</small><br>Ciega a los CT del sitio A cuando salís de Water. <em>Quieto, salto y soltás (jump throw).</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/anubis-flashbang-8KStAVU76C/lq.mp4" poster="https://assets.csnades.gg/nades/anubis-flashbang-8KStAVU76C/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/anubis/flashbangs/a-site-from-water" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos 867.635498 678.730530 -124.821838;setang -6.906279 61.995499 0.000000</code></pre>
+      <p><strong>⚡ Flash a B</strong> <small>(lado T · desde Ruins)</small><br>Ciega a los CT del sitio B cuando entrás desde Ruins. <em>Quieto, clic izquierdo.</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/anubis-flashbang-7tUUJ7tcuY/lq.mp4" poster="https://assets.csnades.gg/nades/anubis-flashbang-7tUUJ7tcuY/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/anubis/flashbangs/b-site-from-ruins" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos -1016.032288 -200.749329 64.031250;setang -48.450230 122.507690 0.000000</code></pre>
+      <p><strong>⚡ Flash a Bridge</strong> <small>(lado CT · desde Connector)</small><br>Ciega a los T que cruzan Bridge para que un CT los frene. <em>Quieto, salto y soltás (jump throw).</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/anubis-flashbang-BH8dveFz2t/lq.mp4" poster="https://assets.csnades.gg/nades/anubis-flashbang-BH8dveFz2t/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/anubis/flashbangs/bridge-from-connector" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos 379.972473 1199.472168 43.547852;setang -20.326710 -118.338989 0.000000</code></pre>
+      <p><strong>Molotovs:</strong> el fuego dura unos segundos. Sirve para sacar a un CT de un escondite antes de entrar, o, del lado CT, para demorar a los T. Un humo encima lo apaga.</p>
+      <p><strong>🔥 Molotov a Plat</strong> <small>(lado T · desde Water)</small><br>Quema la plataforma de A donde espera un CT. <em>Quieto, clic izquierdo.</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/anubis-molotov-z7jkEYnzy7/lq.mp4" poster="https://assets.csnades.gg/nades/anubis-molotov-z7jkEYnzy7/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/anubis/molotovs/plat-from-water" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos 1069.971558 424.183197 -124.807922;setang -25.912531 105.622406 0.000000</code></pre>
+      <p><strong>🔥 Molotov al pilar de B</strong> <small>(lado T · desde Ruins)</small><br>Quema el pilar de B, donde se esconde un CT. <em>Quieto, salto y soltás (jump throw).</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/anubis-molotov-Q7MyO6eFxS/lq.mp4" poster="https://assets.csnades.gg/nades/anubis-molotov-Q7MyO6eFxS/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/anubis/molotovs/b-pillar-from-ruins-b" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos -1016.031250 -49.245483 64.031250;setang -54.588818 103.195366 0.000000</code></pre>
+      <p><strong>🔥 Molotov al default de B</strong> <small>(lado CT · desde Sniper)</small><br>Quema el lugar de plantar de B para que los T no puedan plantar. <em>Quieto, clic izquierdo.</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/anubis-molotov-ut2lTA4iP7/lq.mp4" poster="https://assets.csnades.gg/nades/anubis-molotov-ut2lTA4iP7/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/anubis/molotovs/b-default-from-sniper" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos -1146.139038 1759.905029 112.031250;setang -8.399689 -92.140213 0.000000</code></pre>
+      <p>Por ejemplo, la combinación clásica para entrar a un sitio es: humos para tapar las llegadas, una molotov al escondite más peligroso y una flash justo antes de entrar.</p>` },
   ],
   practica: [
     "Abrí Anubis en una partida privada, recorré A por Main y por Connector diciendo los callouts y anotá cuántos recordaste sin mirar.",
     "Recorré B Long hasta Gate y anotá desde dónde te podría ver un CT en Sniper.",
     "En el radar interactivo de Anubis de csdb.gg, anotá dónde están los dos Heaven del mapa.",
-    "Practicá en tu servidor los humos de Anubis con las líneas setpos de la lección: tirá cada uno 5 veces y anotá cuántas veces cayó en el lugar.",
+    "Practicá en tu servidor los humos, flashes y molotovs de Anubis con sus líneas setpos: tirá cada uno 5 veces y anotá cuántas veces cayó donde muestra el video.",
   ],
   recursos: [
     { t: "csdb.gg: radar interactivo de Anubis con todos los callouts", url: "https://csdb.gg/maps/anubis/" },
@@ -764,6 +993,10 @@ B → A: B Doors → CT Mid → CT Spawn → A</code></pre>
     { q: "Si en Anubis querés salir de spawn hacia Mid sin que te vean, ¿qué humo tirás?", opciones: ["Top Mid","Heaven","CT (B)","Connector"], correcta: 0, explicacion: "Top Mid es la entrada de Mid de los T. Connector tienta, pero está más adelante, hacia A." },
     { q: "Si atacás B en Anubis desde Ruins, ¿qué humos tirás?", opciones: ["Heaven y Connector","Bridge y Top Mid","Solo Heaven","E-Box y CT"], correcta: 3, explicacion: "Tapan el corte desde Mid y la llegada de los CT a B. Heaven tienta, pero mira A." },
     { q: "Si sos CT en Anubis y querés frenar a los T que cruzan Mid por arriba, ¿qué humo tirás?", opciones: ["Heaven","Bridge","E-Box","Connector"], correcta: 1, explicacion: "Bridge es el puente de Mid. Heaven tienta porque es de los CT, pero mira A." },
+    { q: "Si vas a entrar a A en Anubis y un CT espera en la plataforma, ¿qué tirás?", opciones: ["Una molotov al default de B","La flash a Bridge","Una molotov a Plat","Un humo a E-Box"], correcta: 2, explicacion: "La molotov lo saca de la plataforma. El default de B tienta, pero está en el otro sitio." },
+    { q: "Si sos CT en Anubis y los T ya están por plantar en B, ¿qué granada lo impide?", opciones: ["Una molotov al default de B","Una molotov a Plat","La flash a A","Un humo a Top Mid"], correcta: 0, explicacion: "Con fuego en el default no pueden plantar ahí. Plat tienta, pero está en A." },
+    { q: "Si sos CT en Anubis y los T cruzan Bridge, ¿qué flash los frena?", opciones: ["La flash a B","La flash a A","Una molotov a Plat","La flash a Bridge"], correcta: 3, explicacion: "Los ciega mientras un compañero se asoma. La flash a B tienta, pero la tiran los T." },
+    { q: "Si vas a entrar a B en Anubis y un CT se esconde detrás del pilar, ¿qué tirás?", opciones: ["Una molotov a Plat","Una molotov al pilar de B","La flash a Bridge","Un humo a Connector"], correcta: 1, explicacion: "El fuego lo saca del pilar. Plat tienta, pero está en A." },
   ],
 },
 {
@@ -776,6 +1009,7 @@ B → A: B Doors → CT Mid → CT Spawn → A</code></pre>
     "Nombrar los callouts de B: B Main, Checkers, Heaven, Hell, Rafters, Sun Room y Tree Room",
     "Nombrar Mid y las rotaciones: Vents, White Box, Connector, Garage y CT Halls",
     "Tirar los humos esenciales de Cache y saber qué tapa cada uno",
+    "Usar las flashes y molotovs principales de Cache",
   ],
   lecciones: [
     { titulo: "A: Main, Squeaky y Highway", video: {"id":"TDA4FpJiOVA","t":"Aprendé todos los callouts de Cache en 4 minutos · ZOlky CS2 (4:13)"}, html: `
@@ -836,12 +1070,32 @@ A ↔ B por CT Halls (o por Connector)</code></pre>
       <pre><code>setpos -916.031250 1082.854248 1751.368164;setang -21.871262 22.539627 0.000000</code></pre>
       <p>Los humos van <strong>juntos</strong>: un humo solo tapa un rincón, pero tres al mismo tiempo cortan un sitio entero. Por eso están agrupados por zona.</p>
       <p>Por ejemplo, para ejecutar A, desde Outside Squeaky tiran Forklift y el fondo de A, y otro tira Highway desde Truck; quedan pocos rincones abiertos.</p>` },
+    { titulo: "Flashes y molotovs de Cache", html: `
+      <p class="idea">Las <strong>flashes</strong> ciegan a quien te espera y las <strong>molotovs</strong> lo sacan de un escondite o le cortan el paso. Estas son las de Cache que más se usan, con su video y su línea de consola.</p>
+      <table>
+        <tr><th>Granada</th><th>Adónde va</th></tr>
+        <tr><td>⚡ Flash</td><td><strong>A Main</strong><br><small>Lado T</small></td></tr>
+        <tr><td>🔥 Molotov</td><td><strong>Forklift</strong><br><small>Lado T</small></td></tr>
+        <tr><td>🔥 Molotov</td><td><strong>Headshot</strong><br><small>Lado T</small></td></tr>
+      </table>
+      <p><strong>Flashes:</strong> entrá <strong>justo cuando explota</strong>. Si esperás, el rival ya recuperó la vista; si te adelantás, te ciega a vos también.</p>
+      <p><strong>⚡ Flash de A Main</strong> <small>(lado T · desde A Main)</small><br>Ciega a los CT de A cuando salís por A Main. <em>Quieto, los dos clics.</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/cache-flashbang-o4olV7R8Ht/lq.mp4" poster="https://assets.csnades.gg/nades/cache-flashbang-o4olV7R8Ht/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/cache/flashbangs/a-main-from-a-main" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos 791.918762 1125.982544 1764.000000;setang -31.201448 118.884308 0.000000</code></pre>
+      <p><strong>Molotovs:</strong> el fuego dura unos segundos. Sirve para sacar a un CT de un escondite antes de entrar, o, del lado CT, para demorar a los T. Un humo encima lo apaga.</p>
+      <p><strong>🔥 Molotov a Forklift</strong> <small>(lado T · desde A Main)</small><br>Quema el autoelevador, la primera cobertura de los CT en A. <em>Corriendo, clic izquierdo.</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/cache-molotov-g13t86vkmg/lq.mp4" poster="https://assets.csnades.gg/nades/cache-molotov-g13t86vkmg/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/cache/molotovs/forklift-from-a-main" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos 556.878601 1427.987549 1764.031250;setang -2.751751 100.879852 0.000000</code></pre>
+      <p><strong>🔥 Molotov a Headshot</strong> <small>(lado T · desde Sun Room)</small><br>Quema Headshot, un rincón de los CT en B. <em>Quieto, salto y soltás (jump throw).</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/cache-molotov-T3MXIDeQHH/lq.mp4" poster="https://assets.csnades.gg/nades/cache-molotov-T3MXIDeQHH/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/cache/molotovs/headshot-from-sun-room" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos 1074.631348 -1449.968750 1712.000000;setang 5.453262 172.243515 0.000000</code></pre>
+      <p>Por ejemplo, la combinación clásica para entrar a un sitio es: humos para tapar las llegadas, una molotov al escondite más peligroso y una flash justo antes de entrar.</p>` },
   ],
   practica: [
     "Abrí Cache en una partida privada, recorré A y B diciendo los callouts y anotá cuántos recordaste sin mirar.",
     "Cronometrá cuánto tarda un CT en ir de A a B por CT Halls y anotá los segundos.",
     "En el radar interactivo de Cache de csdb.gg, anotá qué une Vents y qué une Highway.",
-    "Practicá en tu servidor los humos de Cache con las líneas setpos de la lección: tirá cada uno 5 veces y anotá cuántas veces cayó en el lugar.",
+    "Practicá en tu servidor los humos, flashes y molotovs de Cache con sus líneas setpos: tirá cada uno 5 veces y anotá cuántas veces cayó donde muestra el video.",
   ],
   recursos: [
     { t: "csdb.gg: radar interactivo de Cache con todos los callouts", url: "https://csdb.gg/maps/cache/" },
@@ -865,6 +1119,10 @@ A ↔ B por CT Halls (o por Connector)</code></pre>
     { q: "Si en Cache querés cortar la rotación de los CT de Mid a A, ¿qué humo tirás?", opciones: ["Highway","Heaven (B)","CT (B)","Forklift"], correcta: 0, explicacion: "Highway es la subida de Mid a A. Forklift tienta, pero está en el sitio." },
     { q: "Si atacás B en Cache y el CT de la plataforma de madera te mata, ¿qué humo tirás?", opciones: ["Highway","NBK","Forklift","Heaven (B)"], correcta: 3, explicacion: "Heaven es la plataforma alta de B. NBK tienta, pero es un rincón de A." },
     { q: "Si sos CT en Cache y los T empujan por la entrada principal de A, ¿qué humo los demora?", opciones: ["Heaven (B)","A Main","Highway","Mid"], correcta: 1, explicacion: "Tapa la entrada principal de A. Highway tienta porque es de los CT, pero es la rotación desde Mid." },
+    { q: "Si vas a entrar a A en Cache y un CT espera detrás del autoelevador, ¿qué tirás?", opciones: ["Una molotov a Headshot","Un humo a Heaven (B)","Una molotov a Forklift","Nada"], correcta: 2, explicacion: "La molotov lo saca de esa cobertura. Headshot tienta, pero está en B." },
+    { q: "Si vas a salir por A Main en Cache, ¿qué flash te ayuda?", opciones: ["La flash de A Main","Una molotov a Headshot","Un humo a CT (B)","Ninguna"], correcta: 0, explicacion: "Ciega a los CT de A cuando salís. El humo a CT tienta, pero es de B." },
+    { q: "Si vas a entrar a B en Cache desde Sun Room y un CT espera en Headshot, ¿qué tirás?", opciones: ["Una molotov a Forklift","La flash de A Main","Un humo a Highway","Una molotov a Headshot"], correcta: 3, explicacion: "Headshot es ese rincón de B. Forklift tienta, pero está en A." },
+    { q: "Tirás la flash de A Main en Cache. ¿Cuándo salís?", opciones: ["Antes de tirarla","Justo cuando explota","Cuando se apaga el sonido del todo","Diez segundos después"], correcta: 1, explicacion: "Al explotar el rival no ve. Esperar tienta, pero recupera la vista enseguida." },
   ],
 },
 {

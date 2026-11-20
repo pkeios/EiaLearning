@@ -43,6 +43,8 @@ window.GLOSARIO = [
   { t: 'Demo', d: 'La grabación de una partida, que se ve desde los ojos de cualquier jugador.', m: 'proyecto' },
   { t: 'Rúbrica', d: 'Una lista de criterios con puntaje para saber si algo está listo.', m: 'proyecto' },
   { t: 'Humo', d: 'Granada que larga una nube que tapa la vista. En inglés, smoke. Cuesta $300.', m: 'humos' },
+  { t: 'Flash', d: 'Granada que ciega unos segundos a quien la mira. Cuesta $200.', m: 'humos' },
+  { t: 'Molotov', d: 'Granada de los T que prende fuego el piso unos segundos. La de los CT se llama incendiaria.', m: 'humos' },
   { t: 'Ejecución', d: 'Entrar a un sitio tirando la utilidad junta y al mismo tiempo.', m: 'humos' },
   { t: 'Lineup', d: 'La combinación de dónde te parás, adónde apuntás y cómo tirás para que una granada caiga siempre igual.', m: 'humos' },
   { t: 'Jump throw', d: 'Tiro en el que saltás y soltás el clic en el mismo momento.', m: 'humos' },
