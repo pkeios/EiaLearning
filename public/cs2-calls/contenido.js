@@ -1,4 +1,4 @@
-// Temario del curso "Counter-Strike 2: mapas y calls de Premier". Mismo formato que public/contenido.js.
+// Temario del curso "Counter-Strike 2: mapas, calls y humos de Premier". Mismo formato que public/contenido.js.
 // Validar con: node tools/validar.js cs2-calls y node tools/metodologia.js cs2-calls
 window.TEMARIO = [
 {
@@ -88,6 +88,106 @@ Call: "Dos Banana, uno AWP, el de adelante a 40."</code></pre>
   ],
 },
 {
+  id: "humos",
+  icono: "💨",
+  titulo: "Humos: para qué sirven y cómo practicarlos",
+  nivel: "Básico",
+  objetivos: [
+    "Explicar qué tapa un humo y por qué se tiran varios juntos",
+    "Reconocer los 4 tipos de tiro y hacer un jump throw",
+    "Armar tu servidor de práctica y usar las líneas setpos para aprender un humo",
+  ],
+  lecciones: [
+    { titulo: "Para qué sirve un humo", html: `
+      <p class="idea">Un <strong>humo</strong> (smoke) es una granada que larga una nube que no deja ver a través. Sirve para <strong>tapar la vista</strong> de un rival: si no te ve, no te puede disparar.</p>
+      <table>
+        <tr><th>Dato</th><th>Qué saber</th></tr>
+        <tr><td>Precio</td><td>$300</td></tr>
+        <tr><td>Cuánto dura</td><td>Unos 20 segundos: alcanza para cruzar o entrar, no para quedarte</td></tr>
+        <tr><td>Granada HE</td><td>Abre un hueco en el humo por un momento</td></tr>
+        <tr><td>Balas</td><td>Hacen agujeritos por donde se ve un poco</td></tr>
+        <tr><td>Molotov</td><td>El humo apaga el fuego que cae adentro</td></tr>
+      </table>
+      <p>Cada mapa tiene humos que todo el mundo usa, porque tapan siempre los mismos lugares desde donde defienden los CT. Aprenderlos es como aprenderse las calls: el equipo los nombra igual ("tiro CT", "tiro Window").</p>
+      <pre><code>Una ejecución (entrar a un sitio con utilidad):
+1. Cada uno sabe qué humo tira.
+2. Se tiran juntos, al mismo tiempo.
+3. Se espera a que caigan (un par de segundos).
+4. Se entra al sitio por los lugares que quedaron tapados.</code></pre>
+      <p><strong>Un humo solo tapa un rincón; tres juntos cortan un sitio.</strong> Por eso en cada mapa vas a ver los humos agrupados: los de A, los de B y los de Mid.</p>
+      <p><strong>Del lado CT</strong> los humos se usan al revés: para demorar a los T que avanzan y ganar tiempo hasta que lleguen tus compañeros.</p>
+      <p>Por ejemplo, en Mirage los T que entran a A sin humos reciben disparos desde tres lugares a la vez. Con tres humos bien tirados, quedan con un solo rincón para limpiar.</p>` },
+    { titulo: "Cómo se tira: los tipos de tiro", html: `
+      <p class="idea">Un humo cae siempre en el mismo lugar si repetís tres cosas: <strong>dónde estás parado</strong>, <strong>adónde apuntás</strong> y <strong>cómo lo tirás</strong>. A esa combinación se la llama <strong>lineup</strong>.</p>
+      <table>
+        <tr><th>Tiro</th><th>Cómo</th><th>Para qué</th></tr>
+        <tr><td>Clic izquierdo</td><td>Soltás el clic izquierdo</td><td>Tiro largo y fuerte</td></tr>
+        <tr><td>Clic derecho</td><td>Soltás el clic derecho</td><td>Tiro corto y suave</td></tr>
+        <tr><td>Los dos clics</td><td>Soltás los dos juntos</td><td>Tiro de distancia media</td></tr>
+        <tr><td>Jump throw</td><td>Saltás y soltás el clic en el mismo momento</td><td>Más alto y más lejos: muchos humos lo necesitan</td></tr>
+      </table>
+      <p>Además, el tiro cambia si estás <strong>quieto</strong>, <strong>caminando</strong> o <strong>corriendo</strong>. En las tablas de cada mapa dice cuál es.</p>
+      <pre><code>Para que el humo caiga siempre igual:
+1. Parate en el punto exacto (una esquina, el borde de un escalón).
+2. Poné la mira en el punto exacto (el borde de una antena, una grieta).
+3. Hacé el tiro que pide, sin moverte antes de tiempo.</code></pre>
+      <p><strong>El jump throw</strong> es el que más cuesta. Practicalo saltando y soltando el clic a la vez, con dos teclas. Hay "binds" que lo hacen con una sola tecla, pero Valve puede no permitirlos en servidores oficiales: no te arriesgues.</p>
+      <p><strong>La referencia visual</strong> es lo que tenés que memorizar: "parado en la esquina del cartel, apunto a la punta de la antena". Los videos de cada humo te la muestran.</p>
+      <p>Por ejemplo, el humo de Stairs en Mirage se tira quieto, con clic izquierdo, parado en el borde del escalón de A Ramp y apuntando al centro de un hueco en el andamio.</p>` },
+    { titulo: "Tu servidor de práctica", html: `
+      <p class="idea">Los humos se aprenden repitiendo en un <strong>servidor de práctica</strong>: una partida tuya, sin rivales, donde podés tirar granadas sin límite y ver dónde caen.</p>
+      <pre><code>1. Activá la consola: Configuración → Juego →
+   Habilitar consola de desarrollador (~): Sí
+2. Jugar → Práctica → elegí el mapa → empezá.
+3. Abrí la consola con la tecla ~ (a la izquierda del 1).
+4. Pegá estos comandos, uno por línea:</code></pre>
+      <pre><code>sv_cheats 1
+mp_warmup_end
+mp_freezetime 0
+mp_roundtime_defuse 60
+mp_buy_anywhere 1
+mp_maxmoney 65535
+mp_startmoney 65535
+sv_infinite_ammo 1
+ammo_grenade_limit_total 5
+sv_grenade_trajectory_prac_pipreview 1
+bind n sv_rethrow_last_grenade</code></pre>
+      <table>
+        <tr><th>Comando</th><th>Qué hace</th></tr>
+        <tr><td>sv_cheats 1</td><td>Activa los comandos de práctica (solo en tu servidor)</td></tr>
+        <tr><td>sv_infinite_ammo 1</td><td>Granadas sin fin</td></tr>
+        <tr><td>sv_grenade_trajectory_prac_pipreview 1</td><td>Muestra en un recuadro dónde va a caer la granada</td></tr>
+        <tr><td>bind n sv_rethrow_last_grenade</td><td>Con la tecla N se repite el último tiro, para ver cómo cae</td></tr>
+      </table>
+      <p><strong>Las líneas setpos:</strong> en cada mapa del curso hay una línea por humo, que empieza con <em>setpos</em> y sigue con <em>setang</em>. Pegala en la consola: te deja parado y apuntando exacto. Tirás como dice la tabla y mirás dónde cae. Después intentá encontrar ese mismo lugar caminando, sin el comando: ese es el aprendizaje de verdad.</p>
+      <p>Todo esto funciona <strong>solo en tu servidor</strong>. En Premier o en una partida oficial no hay trucos.</p>
+      <p>Por ejemplo, para aprender el humo de Window en Mirage: pegás su línea setpos, tirás 5 veces con la tecla N para repetir, y después lo buscás vos solo desde T spawn hasta que te sale 3 veces seguidas.</p>` },
+  ],
+  practica: [
+    "Activá la consola, armá tu servidor de práctica en Mirage con los comandos de la lección y anotá cuánto tardaste en tenerlo listo.",
+    "Hacé 10 jump throws seguidos en tu servidor y anotá cuántos salieron como salto y tiro a la vez.",
+    "Elegí un humo de cualquier mapa del curso, pegá su línea setpos, tiralo 5 veces y después encontrá el lugar sin el comando: anotá cuántos intentos te llevó.",
+  ],
+  recursos: [
+    { t: "CSNADES.gg: humos de todos los mapas con video, en un mapa interactivo (en inglés)", url: "https://csnades.gg/" },
+    { t: "csdb.gg: cómo practicar humos en CS2, configuración del servidor (en español)", url: "https://csdb.gg/es/guides/how-to-practice-smokes-cs2/" },
+  ],
+  quiz: [
+    { q: "Si un CT te mata siempre desde el mismo rincón al entrar a un sitio, ¿qué hace un humo bien tirado?", opciones: ["Le saca vida","Lo deja ciego como una flash","Le tapa la vista y no te puede disparar mientras cruzás","Lo empuja"], correcta: 2, explicacion: "El humo tapa la vista, no hace daño. Que ciega como una flash tienta, pero la flash es otra granada." },
+    { q: "Tirás un humo y te quedás parado adentro esperando. ¿Qué problema tenés?", opciones: ["Dura unos 20 segundos: sirve para cruzar o entrar, no para quedarte","Ninguno, dura toda la ronda","Te saca vida","Hace ruido"], correcta: 0, explicacion: "El humo se va enseguida. \"Dura toda la ronda\" tienta si nunca lo cronometraste." },
+    { q: "Si los CT tiran una granada HE a tu humo, ¿qué pasa?", opciones: ["No pasa nada","El humo dura el doble","Se apaga para siempre","Se abre un hueco en el humo por un momento"], correcta: 3, explicacion: "En CS2 la HE abre el humo un rato. \"No pasa nada\" tienta por costumbre de juegos viejos, pero ya no es así." },
+    { q: "Si van a entrar a un sitio con tres humos, ¿cómo los tiran?", opciones: ["De a uno, cada 10 segundos","Juntos, al mismo tiempo, y entran cuando caen","Uno solo y el resto guarda","Después de entrar"], correcta: 1, explicacion: "Juntos cortan el sitio entero. De a uno tienta para no gastar, pero el primero se va antes de que caiga el último." },
+    { q: "Sos CT y los T avanzan hacia tu sitio. ¿Para qué te sirve un humo?", opciones: ["No sirve para los CT","Para hacerles daño","Para demorarlos hasta que lleguen tus compañeros","Para cegar a tu equipo"], correcta: 2, explicacion: "Del lado CT el humo gana tiempo. \"No sirve para los CT\" tienta, pero se usa mucho." },
+    { q: "¿Qué tres cosas tenés que repetir para que un humo caiga siempre en el mismo lugar?", opciones: ["Dónde estás parado, adónde apuntás y cómo lo tirás","La hora, el mapa y el arma","Solo adónde apuntás","La velocidad del mouse y el volumen"], correcta: 0, explicacion: "Eso es un lineup. Solo apuntar tienta, pero si te parás en otro lugar cae en otro lado." },
+    { q: "Si un humo necesita un tiro de distancia media, ¿cómo lo soltás?", opciones: ["Solo clic derecho","Solo clic izquierdo","Saltando siempre","Con los dos clics a la vez"], correcta: 3, explicacion: "Los dos clics dan tiro medio. Clic derecho tienta, pero es el tiro corto." },
+    { q: "La tabla dice \"salto y soltás\". ¿Qué hacés?", opciones: ["Soltás y después saltás","Saltás y soltás el clic en el mismo momento","Saltás dos veces","Te agachás y tirás"], correcta: 1, explicacion: "El jump throw es al mismo tiempo. Soltar después tienta, pero el humo sale con otra altura." },
+    { q: "Te ofrecen un \"bind\" que hace el jump throw con una sola tecla. ¿Qué tenés en cuenta?", opciones: ["Que es obligatorio","Que no hay ningún riesgo","Que Valve puede no permitirlo en servidores oficiales: mejor con dos teclas","Que solo sirve en Premier"], correcta: 2, explicacion: "Las acciones automáticas pueden ir contra las reglas. \"No hay riesgo\" tienta, pero no vale la pena arriesgar la cuenta." },
+    { q: "Querés practicar humos sin rivales. ¿Dónde lo hacés?", opciones: ["En un servidor de práctica: Jugar → Práctica, con la consola activada","En una partida de Premier","En una partida competitiva con amigos desconocidos","Mirando videos nada más"], correcta: 0, explicacion: "En tu servidor podés tirar sin límite. Premier tienta para \"practicar en serio\", pero no hay comandos y molestás a tu equipo." },
+    { q: "Si en tu servidor de práctica querés repetir el último humo con una tecla, ¿qué comando usás?", opciones: ["sv_infinite_ammo 1","mp_freezetime 0","sv_cheats 0","bind n sv_rethrow_last_grenade"], correcta: 3, explicacion: "Ese bind repite el último tiro con la N. sv_infinite_ammo tienta porque es de granadas, pero solo da granadas sin fin." },
+    { q: "Pegaste la línea setpos de un humo y te salió bien. ¿Qué hacés después?", opciones: ["Nada, ya lo sabés","Buscás el mismo lugar caminando, sin el comando, hasta que te sale solo","Usás setpos en Premier","Pasás a otro mapa"], correcta: 1, explicacion: "En partida no hay setpos: tenés que encontrar la referencia vos. \"Ya lo sabés\" tienta, pero todavía no lo hiciste sin ayuda." },
+  ],
+},
+{
   id: "mirage",
   icono: "🏜️",
   titulo: "Mirage",
@@ -96,6 +196,7 @@ Call: "Dos Banana, uno AWP, el de adelante a 40."</code></pre>
     "Nombrar los callouts de A: Palace, Ramp, Stairs, Jungle, Tetris, Firebox, Ticket Booth y más",
     "Nombrar los callouts de B: Apartments, Short (Cat), Market, Van, Bench y Kitchen",
     "Nombrar Mid y sus conexiones: Top Mid, Window, Connector, Underpass y Ladder Room",
+    "Tirar los humos esenciales de Mirage y saber qué tapa cada uno",
   ],
   lecciones: [
     { titulo: "A: Palacio, Rampa y el sitio", video: {"id":"4I9E1rhuAD4","t":"Callouts de Mirage en español · Fer NS (4:31)"}, html: `
@@ -115,15 +216,60 @@ A → B: Jungle → Connector → Short, o CT Spawn → Market → B
 B → A: Market → Kitchen → Window → Connector → Jungle</code></pre>
       <p><strong>Tomar Mid</strong> les da a los T el control de Connector y Short: pueden dividir el ataque entre los dos sitios (un <strong>split</strong>).</p>
       <p>Por ejemplo, el AWP de los CT está en Window y no deja cruzar Mid. Los T tiran una smoke a Window y recién ahí cruzan a Connector.</p>` },
+    { titulo: "Los humos de Mirage", video: {"id":"o4jfU01yVUk","t":"Todos los humos de Mirage en CS2 · bubu (3:42)"}, html: `
+      <p class="idea">Estos son los humos (smokes) esenciales de Mirage. Tocá el nombre de cada uno y se abre su video: ahí ves dónde pararte, adónde apuntar y cómo tirarlo.</p>
+      <table>
+        <tr><th>Humo y desde dónde</th><th>Para qué sirve y cómo se tira</th></tr>
+        <tr><td><strong><a href="https://csnades.gg/mirage/smokes/ticket-booth-from-a-ramp" target="_blank" rel="noopener">CT (Ticket Booth)</a></strong><br><small>A · desde A Ramp</small></td><td>Tapa la vista desde CT y la cabina hacia el sitio A. <em>Quieto, salto y soltás (jump throw)</em></td></tr>
+        <tr><td><strong><a href="https://csnades.gg/mirage/smokes/stairs-from-a-ramp" target="_blank" rel="noopener">Stairs</a></strong><br><small>A · desde A Ramp</small></td><td>Tapa la escalera del fondo de A, desde donde un CT mira Ramp. <em>Quieto, clic izquierdo</em></td></tr>
+        <tr><td><strong><a href="https://csnades.gg/mirage/smokes/jungle-from-a-ramp" target="_blank" rel="noopener">Jungle</a></strong><br><small>A · desde A Ramp</small></td><td>Tapa Jungle y la salida de Connector hacia A. <em>Quieto, salto y soltás (jump throw)</em></td></tr>
+        <tr><td><strong><a href="https://csnades.gg/mirage/smokes/mid-window-from-t-roof" target="_blank" rel="noopener">Window</a></strong><br><small>Mid · desde T Roof</small></td><td>Ciega al AWP de Window para poder cruzar Mid. <em>Quieto, salto y soltás (jump throw)</em></td></tr>
+        <tr><td><strong><a href="https://csnades.gg/mirage/smokes/top-mid-from-t-spawn" target="_blank" rel="noopener">Top Mid</a></strong><br><small>Mid · desde T Spawn</small></td><td>Tapa la entrada de Mid de los T para salir de spawn sin que te vean. <em>Quieto, clic izquierdo</em></td></tr>
+        <tr><td><strong><a href="https://csnades.gg/mirage/smokes/market-window-from-back-alley" target="_blank" rel="noopener">Market Window</a></strong><br><small>B · desde Back Alley</small></td><td>Tapa la ventana del Mercado, desde donde los CT ven el sitio B. <em>Quieto, salto y soltás (jump throw)</em></td></tr>
+        <tr><td><strong><a href="https://csnades.gg/mirage/smokes/market-door-from-back-alley" target="_blank" rel="noopener">Market Door</a></strong><br><small>B · desde Back Alley</small></td><td>Tapa la puerta del Mercado, por donde vuelven los CT a B. <em>Quieto, salto y soltás (jump throw)</em></td></tr>
+        <tr><td><strong><a href="https://csnades.gg/mirage/smokes/b-short-from-back-alley" target="_blank" rel="noopener">Short (B)</a></strong><br><small>B · desde Back Alley</small></td><td>Tapa Short (Cat) para que un CT de ahí no vea el sitio B. <em>Quieto, clic izquierdo</em></td></tr>
+        <tr><td><strong><a href="https://csnades.gg/mirage/smokes/palace-from-ct-spawn" target="_blank" rel="noopener">Palace</a></strong><br><small>Lado CT · desde CT Spawn</small></td><td>Para los CT: demora a los T que salen de Palace hacia A. <em>Quieto, salto y soltás (jump throw)</em></td></tr>
+      </table>
+      <p><strong>Para practicarlo sin buscar el lugar:</strong> en tu servidor de práctica (lo armás con el módulo de humos), copiá la línea del humo y pegala en la consola. Te deja parado y apuntando justo; solo tenés que tirar como dice la tabla.</p>
+      <pre><code>CT (Ticket Booth):
+setpos 872.438599 -1036.029541 -194.964050;setang -13.902396 -142.189148 0.000000
+
+Stairs:
+setpos 1148.765991 -1183.968262 -143.171799;setang -41.636101 -165.239334 0.000000
+
+Jungle:
+setpos 907.886047 -1036.031250 -194.619080;setang -56.234268 -161.656998 0.000000
+
+Window:
+setpos 1127.970581 -1208.217041 -44.968750;setang -21.300035 166.887238 0.000000
+
+Top Mid:
+setpos 1422.970337 70.968750 -55.699707;setang -33.431511 -160.986145 0.000000
+
+Market Window:
+setpos -160.031250 887.968750 -71.647980;setang -50.280293 -146.488480 0.000000
+
+Market Door:
+setpos -161.031006 450.875763 -10.753876;setang -11.539766 -161.965912 0.000000
+
+Short (B):
+setpos -160.031250 887.970276 -71.648178;setang -45.790627 -134.498291 0.000000
+
+Palace:
+setpos -2031.972656 -1764.757935 -226.729340;setang -28.193851 -10.925070 0.000000</code></pre>
+      <p>Los humos van <strong>juntos</strong>: un humo solo tapa un rincón, pero tres al mismo tiempo cortan un sitio entero. Por eso en la tabla están agrupados por zona.</p>
+      <p>Por ejemplo, para ejecutar A, tres compañeros tiran CT, Stairs y Jungle desde A Ramp a la vez; cuando caen, entran por Ramp y Palace sin que nadie los vea desde atrás.</p>` },
   ],
   practica: [
     "Abrí Mirage en una partida privada, recorré A diciendo en voz alta cada callout de la tabla y anotá cuántos recordaste sin mirar.",
     "Repetí el recorrido en B y en Mid, y anotá los 3 callouts que más te costaron.",
     "Mirá el radar interactivo de Mirage en csdb.gg y anotá 3 callouts de la comunidad que no conocías.",
+    "Practicá en tu servidor los humos de Mirage con las líneas setpos de la lección: tirá cada uno 5 veces y anotá cuántas veces cayó en el lugar.",
   ],
   recursos: [
     { t: "csdb.gg: radar interactivo de Mirage con todos los callouts", url: "https://csdb.gg/maps/mirage/" },
     { t: "Wikipedia: lista de mapas competitivos de Counter-Strike (pool actual)", url: "https://en.wikipedia.org/wiki/List_of_competitive_Counter-Strike_maps" },
+    { t: "CSNADES.gg: todos los humos de Mirage en un mapa interactivo, con video de cada uno (en inglés)", url: "https://csnades.gg/mirage/smokes" },
   ],
   quiz: [
     { q: "Si entrás por Ramp en Mirage y te matan desde la escalera del fondo de A, ¿qué cantás?", opciones: ["\"Uno Palace\"","\"Uno Jungle\"","\"Uno Stairs\"","\"Uno al fondo arriba\""], correcta: 2, explicacion: "Stairs es la escalera del fondo de A. Palace tienta porque también está arriba, pero es el edificio de los T." },
@@ -138,6 +284,10 @@ B → A: Market → Kitchen → Window → Connector → Jungle</code></pre>
     { q: "Querés cruzar del lado de Apartments hacia Mid por abajo. ¿Por dónde vas?", opciones: ["Underpass","Connector","Palace","Short"], correcta: 0, explicacion: "Underpass es el túnel bajo Mid. Connector tienta, pero une Mid con Jungle." },
     { q: "Si un CT rota de B a A por adentro, ¿por dónde suele pasar?", opciones: ["Por Apartments","Por Palace","Por T spawn","Market, Kitchen, Window, Connector y Jungle"], correcta: 3, explicacion: "Es el camino interno de los CT. Apartments tienta, pero es del lado de los T." },
     { q: "Si los T toman Mid, ¿qué ganan?", opciones: ["Nada","Control de Connector y Short para dividir el ataque","La bomba plantada","Ver todo el mapa"], correcta: 1, explicacion: "Mid abre los dos sitios. \"Nada\" tienta si solo pensás en matar, pero es posición." },
+    { q: "Si vas a ejecutar A en Mirage desde A Ramp, ¿qué tres humos tiran?", opciones: ["Window, Top Mid y Short","Market Window, Market Door y Short","CT, Stairs y Jungle","Palace, Ramp y Tetris"], correcta: 2, explicacion: "Esos tres cortan las tres llegadas de los CT a A. Market Window tienta porque es famoso, pero es de B." },
+    { q: "Si el AWP de los CT no te deja cruzar Mid en Mirage, ¿qué humo tirás?", opciones: ["Window","Stairs","Market Door","Palace"], correcta: 0, explicacion: "Window es el nido del AWP que mira Mid. Stairs tienta, pero tapa A." },
+    { q: "Si vas a entrar a B en Mirage desde Apartments, ¿qué dos humos tapan a los CT del Mercado?", opciones: ["CT y Jungle","Top Mid y Window","Stairs y Palace","Market Window y Market Door"], correcta: 3, explicacion: "Los dos son del Mercado, al lado de B. CT y Jungle tientan, pero son de A." },
+    { q: "Tenés la línea setpos de Stairs. ¿Qué hacés con ella?", opciones: ["La escribís en el chat de una partida de Premier","La pegás en la consola del servidor de práctica y tirás como dice la tabla","La pegás en la consola de una partida oficial","No sirve para nada"], correcta: 1, explicacion: "setpos solo funciona en tu servidor de práctica con trucos activados. En Premier tienta probarlo, pero no funciona y no corresponde." },
   ],
 },
 {
@@ -149,6 +299,7 @@ B → A: Market → Kitchen → Window → Connector → Jungle</code></pre>
     "Nombrar los callouts de B: Banana, Car, Sandbags, Logs, New Box, Fountain, Coffins, Construction y más",
     "Nombrar los callouts de A: Apartments, Balcony, Short, Long, Pit, Library y Arch",
     "Nombrar Mid y las rutas de los CT: Second Mid, Top Mid, Speedway y CT Spawn",
+    "Tirar los humos esenciales de Inferno y saber qué tapa cada uno",
   ],
   lecciones: [
     { titulo: "B: Banana y el sitio", video: {"id":"dqcx7dHS1Xg","t":"Inferno: callouts y posiciones básicos · Pitu Herranz (8:48)"}, html: `
@@ -165,15 +316,56 @@ B → A: Market → Kitchen → Window → Connector → Jungle</code></pre>
       <p><strong>Dos "Apartments":</strong> los de los T (los que llevan a Balcony) y los CT Apartments (sobre Second Mid). En la call, aclará cuál.</p>
       <p><strong>Para rotar,</strong> CT Spawn está en el medio: un CT llega rápido a los dos sitios, pero tiene que cruzar zonas abiertas.</p>
       <p>Por ejemplo, un T aparece en el carril paralelo que sale de los apartamentos de los T. La call es "uno Second Mid".</p>` },
+    { titulo: "Los humos de Inferno", video: {"id":"uKeuOnAl-S4","t":"Inferno: toda la utilidad que tenés que saber · Lecho (9:46)"}, html: `
+      <p class="idea">Estos son los humos (smokes) esenciales de Inferno. Tocá el nombre de cada uno y se abre su video: ahí ves dónde pararte, adónde apuntar y cómo tirarlo.</p>
+      <table>
+        <tr><th>Humo y desde dónde</th><th>Para qué sirve y cómo se tira</th></tr>
+        <tr><td><strong><a href="https://csnades.gg/inferno/smokes/boiler-from-alt-mid" target="_blank" rel="noopener">Boiler</a></strong><br><small>A · desde Alt Mid</small></td><td>Tapa Boiler, el cuarto por donde los CT rotan entre Mid y A. <em>Quieto, clic izquierdo</em></td></tr>
+        <tr><td><strong><a href="https://csnades.gg/inferno/smokes/arch-from-alt-mid" target="_blank" rel="noopener">Arch</a></strong><br><small>A · desde Alt Mid</small></td><td>Tapa Arch, el arco por donde llegan los CT a A desde CT spawn. <em>Quieto, salto y soltás (jump throw)</em></td></tr>
+        <tr><td><strong><a href="https://csnades.gg/inferno/smokes/library-from-alt-mid" target="_blank" rel="noopener">Library</a></strong><br><small>A · desde Alt Mid</small></td><td>Tapa Library, el cuarto de los CT que mira Long y A. <em>Quieto, salto y soltás (jump throw)</em></td></tr>
+        <tr><td><strong><a href="https://csnades.gg/inferno/smokes/pit-from-alt-mid" target="_blank" rel="noopener">Pit</a></strong><br><small>A · desde Alt Mid</small></td><td>Tapa Pit, el pozo al borde de A donde suele esperar un CT. <em>Quieto, salto y soltás (jump throw)</em></td></tr>
+        <tr><td><strong><a href="https://csnades.gg/inferno/smokes/ct-from-banana-b" target="_blank" rel="noopener">CT (B)</a></strong><br><small>B · desde Banana</small></td><td>Tapa la llegada de los CT al sitio B cuando entrás por Banana. <em>Quieto, clic izquierdo</em></td></tr>
+        <tr><td><strong><a href="https://csnades.gg/inferno/smokes/coffins-from-banana-b" target="_blank" rel="noopener">Coffins</a></strong><br><small>B · desde Banana</small></td><td>Tapa Coffins (los ataúdes), el escondite del fondo de B. <em>Quieto, salto y soltás (jump throw)</em></td></tr>
+        <tr><td><strong><a href="https://csnades.gg/inferno/smokes/b-entrance-from-ct" target="_blank" rel="noopener">Banana (entrada de B)</a></strong><br><small>Lado CT · desde CT</small></td><td>Para los CT: tapa la salida de Banana para frenar un ataque a B. <em>Quieto, clic izquierdo</em></td></tr>
+        <tr><td><strong><a href="https://csnades.gg/inferno/smokes/top-mid-from-ct-spawn" target="_blank" rel="noopener">Top Mid</a></strong><br><small>Lado CT · desde CT Spawn</small></td><td>Para los CT: tapa Mid para que los T no avancen viéndote. <em>Quieto, salto y soltás (jump throw)</em></td></tr>
+      </table>
+      <p><strong>Para practicarlo sin buscar el lugar:</strong> en tu servidor de práctica (lo armás con el módulo de humos), copiá la línea del humo y pegala en la consola. Te deja parado y apuntando justo; solo tenés que tirar como dice la tabla.</p>
+      <pre><code>Boiler:
+setpos 729.031494 243.912567 155.573914;setang -19.713053 41.695580 0.000000
+
+Arch:
+setpos 807.031250 -290.968750 153.034042;setang -55.324913 56.475582 0.000000
+
+Library:
+setpos 807.031250 -290.968750 153.031250;setang -48.684139 40.793961 0.000000
+
+Pit:
+setpos 187.968750 -197.968750 131.306793;setang -22.096590 3.939515 0.000000
+
+CT (B):
+setpos 371.229248 1661.555420 198.031311;setang -32.234665 64.704498 0.000000
+
+Coffins:
+setpos 369.498260 1664.064087 196.596329;setang -1.258356 82.267311 0.000000
+
+Banana (entrada de B):
+setpos 1441.968628 2983.968750 192.032013;setang -16.613552 -148.700287 0.000000
+
+Top Mid:
+setpos 2552.343018 2193.372559 200.897049;setang -25.738585 -125.363625 0.000000</code></pre>
+      <p>Los humos van <strong>juntos</strong>: un humo solo tapa un rincón, pero tres al mismo tiempo cortan un sitio entero. Por eso en la tabla están agrupados por zona.</p>
+      <p>Por ejemplo, para ejecutar B, desde Banana tiran CT y Coffins; con esos dos humos solo queda un rincón por limpiar al entrar al sitio.</p>` },
   ],
   practica: [
     "Abrí Inferno en una partida privada, caminá Banana de punta a punta diciendo los callouts y anotá cuántos recordaste sin mirar.",
     "Hacé lo mismo en A, entrando por Apartments, por Short y por Long, y anotá los 3 que más te costaron.",
     "Mirá el radar interactivo de Inferno en csdb.gg y anotá qué diferencia hay entre Apartments y CT Apartments.",
+    "Practicá en tu servidor los humos de Inferno con las líneas setpos de la lección: tirá cada uno 5 veces y anotá cuántas veces cayó en el lugar.",
   ],
   recursos: [
     { t: "csdb.gg: radar interactivo de Inferno con todos los callouts", url: "https://csdb.gg/maps/inferno/" },
     { t: "Wikipedia: lista de mapas competitivos de Counter-Strike (pool actual)", url: "https://en.wikipedia.org/wiki/List_of_competitive_Counter-Strike_maps" },
+    { t: "CSNADES.gg: todos los humos de Inferno en un mapa interactivo, con video de cada uno (en inglés)", url: "https://csnades.gg/inferno/smokes" },
   ],
   quiz: [
     { q: "Desde B de Inferno ves a un T detrás del auto quemado de arriba de Banana. ¿Qué cantás?", opciones: ["\"Uno Logs\"","\"Uno Sandbags\"","\"Uno Car\"","\"Uno Fountain\""], correcta: 2, explicacion: "Car está arriba de Banana. Logs tienta, pero está abajo, del lado T." },
@@ -188,6 +380,10 @@ B → A: Market → Kitchen → Window → Connector → Jungle</code></pre>
     { q: "Si un T aparece en el carril paralelo a Mid que sale de los apartamentos de los T, ¿dónde está?", opciones: ["Second Mid","Top Mid","Speedway","Arch"], correcta: 0, explicacion: "Second Mid es ese carril. Top Mid tienta, pero es la punta de Mid del lado CT." },
     { q: "Si un CT rota desde Arch hacia B y Construction, ¿por dónde va?", opciones: ["Banana","Apartments","Underpass","Speedway"], correcta: 3, explicacion: "Speedway lleva de Arch a B. Banana tienta porque llega a B, pero es del lado T." },
     { q: "Tu compañero dice \"uno Apartments\" y no sabés cuáles. ¿Qué le preguntás?", opciones: ["Nada, son los mismos","Si son los de los T (hacia Balcony) o los CT Apartments (sobre Second Mid)","Si es en Mirage","Si es Banana"], correcta: 1, explicacion: "Inferno tiene dos. \"Son los mismos\" tienta por el nombre, pero están en lugares distintos." },
+    { q: "Si vas a ejecutar B en Inferno desde Banana, ¿qué dos humos tiran primero?", opciones: ["Arch y Library","Pit y Boiler","CT y Coffins","Top Mid y Arch"], correcta: 2, explicacion: "CT y Coffins cortan las llegadas y el escondite de B. Arch tienta, pero es de A." },
+    { q: "Si querés cortar la rotación de los CT que llegan a A desde CT spawn en Inferno, ¿qué humo tirás?", opciones: ["Arch","Coffins","CT (B)","Banana"], correcta: 0, explicacion: "Arch es el arco por donde llegan desde CT spawn. Coffins tienta, pero está en B." },
+    { q: "Si en Inferno un CT suele esperar en el pozo al borde de A, ¿qué humo lo tapa?", opciones: ["Library","Boiler","Coffins","Pit"], correcta: 3, explicacion: "Pit es el pozo de A. Library tienta porque también es de A, pero es el cuarto que mira Long." },
+    { q: "Si sos CT en Inferno y los T vienen por Banana, ¿qué humo los frena?", opciones: ["Top Mid","El de la entrada de B desde Banana","Pit","Arch"], correcta: 1, explicacion: "Tapa la salida de Banana y los demora. Top Mid tienta porque también es de los CT, pero tapa Mid." },
   ],
 },
 {
@@ -199,6 +395,7 @@ B → A: Market → Kitchen → Window → Connector → Jungle</code></pre>
     "Nombrar los callouts de A: Long Doors, A Long, Pit, Car, Goose, Short (Catwalk) y Ramp",
     "Nombrar los callouts de B: Upper y Lower Tunnels, Car, Closet, Back Plat, Window y B Doors",
     "Nombrar Mid y las zonas CT: Suicide, Xbox, Mid Doors, CT Mid y CT Spawn",
+    "Tirar los humos esenciales de Dust II y saber qué tapa cada uno",
   ],
   lecciones: [
     { titulo: "A: Long, Short y el sitio", video: {"id":"sYwJLWuvowY","t":"Callouts de Dust 2 en español · Fer NS (3:05)"}, html: `
@@ -217,15 +414,56 @@ A → B: CT Spawn → CT Mid → B Doors (o B Window)
 B → A: B Doors → CT Mid → CT Spawn → A</code></pre>
       <p><strong>Ojo con "Cat":</strong> en Dust II es Short de A. En Mirage, Cat es Short de B.</p>
       <p>Por ejemplo, al empezar la ronda un CT con AWP mira por el hueco de las puertas del medio. Los T cruzan con una smoke en "Mid Doors" para no regalarle el tiro.</p>` },
+    { titulo: "Los humos de Dust II", video: {"id":"SC6N2RcDQh4","t":"Granadas de Dust 2 que tenés que saber · juanch1 (16:26)"}, html: `
+      <p class="idea">Estos son los humos (smokes) esenciales de Dust II. Tocá el nombre de cada uno y se abre su video: ahí ves dónde pararte, adónde apuntar y cómo tirarlo.</p>
+      <table>
+        <tr><th>Humo y desde dónde</th><th>Para qué sirve y cómo se tira</th></tr>
+        <tr><td><strong><a href="https://csnades.gg/dust2/smokes/a-cross-from-long-doors" target="_blank" rel="noopener">A Cross</a></strong><br><small>A · desde Long Doors</small></td><td>Tapa el cruce de Long hacia A para pasar sin que te vean desde el sitio. <em>Corriendo, clic izquierdo</em></td></tr>
+        <tr><td><strong><a href="https://csnades.gg/dust2/smokes/ct-spawn-from-xbox" target="_blank" rel="noopener">CT Spawn (A)</a></strong><br><small>A · desde XBox</small></td><td>Tapa la vista desde CT hacia A cuando entrás por Short. <em>Quieto, clic izquierdo</em></td></tr>
+        <tr><td><strong><a href="https://csnades.gg/dust2/smokes/long-corner-from-outside-a-long" target="_blank" rel="noopener">Long Corner</a></strong><br><small>A · desde Outside A Long</small></td><td>Tapa la esquina de Long donde espera un CT. <em>Quieto, clic izquierdo</em></td></tr>
+        <tr><td><strong><a href="https://csnades.gg/dust2/smokes/xbox-from-t-spawn" target="_blank" rel="noopener">Xbox (Mid)</a></strong><br><small>Mid · desde T Spawn</small></td><td>Tapa Mid a la altura de Xbox para cruzar a Short o a B sin que te vea el AWP. <em>Quieto, salto y soltás (jump throw)</em></td></tr>
+        <tr><td><strong><a href="https://csnades.gg/dust2/smokes/mid-doors-from-t-spawn" target="_blank" rel="noopener">Mid Doors</a></strong><br><small>Mid · desde T Spawn</small></td><td>Tapa las puertas de Mid, desde donde los CT miran todo Mid. <em>Quieto, salto y soltás (jump throw)</em></td></tr>
+        <tr><td><strong><a href="https://csnades.gg/dust2/smokes/b-doors-from-upper-tunnels-a" target="_blank" rel="noopener">B Doors</a></strong><br><small>B · desde Upper Tunnels</small></td><td>Tapa las puertas de B, por donde rotan los CT. <em>Quieto, clic izquierdo</em></td></tr>
+        <tr><td><strong><a href="https://csnades.gg/dust2/smokes/b-window-from-outside-b-tunnels" target="_blank" rel="noopener">B Window</a></strong><br><small>B · desde Outside B Tunnels</small></td><td>Tapa la ventana de B, desde donde un CT mira la salida de Túneles. <em>Quieto, salto y soltás (jump throw)</em></td></tr>
+        <tr><td><strong><a href="https://csnades.gg/dust2/smokes/long-doors-from-car" target="_blank" rel="noopener">Long Doors</a></strong><br><small>Lado CT · desde Car</small></td><td>Para los CT: tapa las puertas de Long para frenar el avance por Long. <em>Quieto, salto y soltás (jump throw)</em></td></tr>
+      </table>
+      <p><strong>Para practicarlo sin buscar el lugar:</strong> en tu servidor de práctica (lo armás con el módulo de humos), copiá la línea del humo y pegala en la consola. Te deja parado y apuntando justo; solo tenés que tirar como dice la tabla.</p>
+      <pre><code>A Cross:
+setpos 860.031250 790.030640 65.400719;setang -25.430794 43.542336 0.000000
+
+CT Spawn (A):
+setpos -275.031250 1345.415039 -58.539078;setang -37.483829 131.785400 0.000000
+
+Long Corner:
+setpos 649.568481 -186.747192 61.964893;setang -37.637314 69.328232 0.000000
+
+Xbox (Mid):
+setpos -507.981140 -662.065613 184.600830;setang -4.644310 84.623192 0.000000
+
+Mid Doors:
+setpos -452.659668 -660.031799 174.561096;setang -10.086742 88.501434 0.000000
+
+B Doors:
+setpos -1833.242920 1224.881836 96.114487;setang -66.117722 64.137291 0.000000
+
+B Window:
+setpos -1332.026001 491.966980 72.031250;setang -49.104042 89.166710 0.000000
+
+Long Doors:
+setpos 1783.865845 2080.022705 67.510422;setang -7.305259 -132.512497 0.000000</code></pre>
+      <p>Los humos van <strong>juntos</strong>: un humo solo tapa un rincón, pero tres al mismo tiempo cortan un sitio entero. Por eso en la tabla están agrupados por zona.</p>
+      <p>Por ejemplo, para entrar a B desde Túneles, un compañero tira B Doors y otro B Window; los CT que rotan y el que mira desde la ventana quedan ciegos.</p>` },
   ],
   practica: [
     "Abrí Dust II en una partida privada, recorré Long y Short hasta A diciendo los callouts y anotá cuántos recordaste sin mirar.",
     "Recorré los túneles hasta B y anotá la diferencia entre Upper y Lower Tunnels con tus palabras.",
     "Mirá el radar interactivo de Dust II en csdb.gg y anotá dónde están Goose, Closet y Xbox.",
+    "Practicá en tu servidor los humos de Dust II con las líneas setpos de la lección: tirá cada uno 5 veces y anotá cuántas veces cayó en el lugar.",
   ],
   recursos: [
     { t: "csdb.gg: radar interactivo de Dust2 con todos los callouts", url: "https://csdb.gg/maps/dust2/" },
     { t: "Wikipedia: lista de mapas competitivos de Counter-Strike (pool actual)", url: "https://en.wikipedia.org/wiki/List_of_competitive_Counter-Strike_maps" },
+    { t: "CSNADES.gg: todos los humos de Dust II en un mapa interactivo, con video de cada uno (en inglés)", url: "https://csnades.gg/dust2/smokes" },
   ],
   quiz: [
     { q: "Si un CT te espera en la zona hundida al final de Long en Dust II, ¿qué cantás?", opciones: ["\"Uno Goose\"","\"Uno Blue\"","\"Uno Pit\"","\"Uno Closet\""], correcta: 2, explicacion: "Pit es el pozo al final de Long. Goose tienta, pero está detrás de la plataforma de A." },
@@ -240,6 +478,10 @@ B → A: B Doors → CT Mid → CT Spawn → A</code></pre>
     { q: "Si un T sube a Short usando la caja de Mid junto a Catwalk, ¿qué caja es?", opciones: ["Xbox","Big Box","Double Stack","Blue"], correcta: 0, explicacion: "Xbox es la caja de Mid. Big Box tienta, pero está en B." },
     { q: "Si un CT rota de A a B por adentro, ¿por dónde pasa?", opciones: ["Long Doors","Upper Tunnels","Suicide","CT Mid y B Doors"], correcta: 3, explicacion: "Es la rotación de los CT. Upper Tunnels tienta porque llega a B, pero es del lado T." },
     { q: "Si al empezar la ronda hay un AWP mirando por el hueco de las puertas del medio, ¿dónde tirás la smoke?", opciones: ["En Long Doors","En Mid Doors","En B Doors","En Pit"], correcta: 1, explicacion: "Así cruzan sin darle el tiro. Long Doors tienta porque también son puertas, pero son de A." },
+    { q: "Si en Dust II querés cruzar Mid hacia Short sin que te vea el AWP, ¿qué humo tirás?", opciones: ["B Window","Long Corner","Xbox","B Doors"], correcta: 2, explicacion: "El humo en Xbox tapa Mid justo donde cruzás. B Window tienta, pero está en B." },
+    { q: "Si vas a entrar a B en Dust II desde Túneles, ¿qué dos humos tiran?", opciones: ["B Doors y B Window","A Cross y CT Spawn","Xbox y Mid Doors","Long Corner y Long Doors"], correcta: 0, explicacion: "Tapan la rotación y la ventana de B. A Cross tienta, pero es de A." },
+    { q: "Si vas a cruzar de Long hacia A en Dust II y te ven desde el sitio, ¿qué humo tirás?", opciones: ["B Doors","Mid Doors","Xbox","A Cross"], correcta: 3, explicacion: "A Cross tapa el cruce de Long a A. Mid Doors tienta, pero tapa Mid." },
+    { q: "Si sos CT en Dust II y los T empujan Long, ¿qué humo los demora?", opciones: ["B Window","Long Doors","Xbox","Top Mid"], correcta: 1, explicacion: "Tapa las puertas de Long y frena el avance. Xbox tienta porque los CT la usan, pero es de Mid." },
   ],
 },
 {
@@ -251,6 +493,7 @@ B → A: B Doors → CT Mid → CT Spawn → A</code></pre>
     "Explicar por qué Nuke es un mapa de dos pisos: A arriba y B abajo",
     "Nombrar los callouts de A: Hut, Heaven, Hell, Rafters, Squeaky, Mustang y Main",
     "Nombrar los callouts de B y del exterior: Ramp, Secret, Vents, Decon, Outside, Garage y Silo",
+    "Tirar los humos esenciales de Nuke y saber qué tapa cada uno",
   ],
   lecciones: [
     { titulo: "Un mapa de dos pisos", video: {"id":"_R00VoaWzvw","t":"Callouts de Nuke en español · Fer NS (3:06)"}, html: `
@@ -272,15 +515,48 @@ B → A: B Doors → CT Mid → CT Spawn → A</code></pre>
       <p>🗺️ <strong><a href="https://csdb.gg/maps/nuke/" target="_blank" rel="noopener">Abrí el mapa de Nuke con las calls marcadas</a></strong> (se abre aparte, en inglés: cada nombre aparece en su lugar del radar). Tenelo al lado mientras leés la tabla.</p><table><tr><th>Call (en español)</th><th>Dónde está</th></tr><tr><td><strong>Ramp</strong><br><small>Rampa</small></td><td>Cuarto largo que baja hacia B: la ruta interior principal</td></tr><tr><td><strong>Bottom Ramp</strong><br><small>Abajo de Rampa</small></td><td>Final de Ramp, donde se abre a B</td></tr><tr><td><strong>Headshot</strong><br><small>Headshot (igual)</small></td><td>Caja al fondo de Ramp con ángulo a la cabeza</td></tr><tr><td><strong>Stack / Boost</strong><br><small>Pila / boost</small></td><td>Cajas en Ramp para cubrirse o subirse</td></tr><tr><td><strong>Turn Pike</strong><br><small>Turn Pike (igual)</small></td><td>Cuartito entre Ramp y Hell: atajo de rotación</td></tr><tr><td><strong>B Site</strong><br><small>Sitio B</small></td><td>Sitio de abajo, en el sótano del reactor</td></tr><tr><td><strong>Big Box</strong><br><small>Caja grande</small></td><td>Caja grande sobre la entrada de Ramp</td></tr><tr><td><strong>Dark</strong><br><small>Oscuro</small></td><td>Rincón oscuro junto a la escalera de B</td></tr><tr><td><strong>Doors</strong><br><small>Puertas</small></td><td>Puertas dobles desde Tunnels o Window a B</td></tr><tr><td><strong>Window</strong><br><small>Ventana</small></td><td>Cuarto con ventana que se rompe y mira B</td></tr><tr><td><strong>Observation</strong><br><small>Observación</small></td><td>Cuarto con vidrio que mira B desde atrás</td></tr><tr><td><strong>Decon</strong><br><small>Descontaminación</small></td><td>Cuarto que une los ductos de atrás con B</td></tr><tr><td><strong>Tunnels / Back Vents</strong><br><small>Túneles / ductos de atrás</small></td><td>Pasillos detrás de B que unen Secret, Window y Decon</td></tr></table>
       <p><strong>Escuchar es medio mapa:</strong> los pasos en Vents y en las escaleras se oyen desde el otro piso. Un buen CT de Nuke canta "suenan Vents" antes de ver a nadie.</p>
       <p>Por ejemplo, oís que alguien baja por la escalera que viene de afuera hacia los túneles de B. La call es "suena Secret", y el CT de B se prepara para un ataque por atrás.</p>` },
+    { titulo: "Los humos de Nuke", video: {"id":"HMxO4q0LUp0","t":"Todo lo que sé de Nuke · juanch1 (28:16)"}, html: `
+      <p class="idea">Estos son los humos (smokes) esenciales de Nuke. Tocá el nombre de cada uno y se abre su video: ahí ves dónde pararte, adónde apuntar y cómo tirarlo.</p>
+      <table>
+        <tr><th>Humo y desde dónde</th><th>Para qué sirve y cómo se tira</th></tr>
+        <tr><td><strong><a href="https://csnades.gg/nuke/smokes/heaven-from-silo" target="_blank" rel="noopener">Heaven</a></strong><br><small>A · desde Silo</small></td><td>Tapa Heaven, la pasarela alta de los CT que mira A. <em>Quieto, clic izquierdo</em></td></tr>
+        <tr><td><strong><a href="https://csnades.gg/nuke/smokes/garage-from-under-silo" target="_blank" rel="noopener">Garage</a></strong><br><small>Outside · desde Under Silo</small></td><td>Tapa Garage, el depósito de los CT que controla Outside. <em>Quieto, clic izquierdo</em></td></tr>
+        <tr><td><strong><a href="https://csnades.gg/nuke/smokes/ct-red-from-under-silo" target="_blank" rel="noopener">CT Red</a></strong><br><small>Outside · desde Under Silo</small></td><td>Tapa el contenedor rojo de los CT en Outside. <em>Quieto, clic izquierdo</em></td></tr>
+        <tr><td><strong><a href="https://csnades.gg/nuke/smokes/secret-far-from-under-silo" target="_blank" rel="noopener">Secret</a></strong><br><small>Outside · desde Under Silo</small></td><td>Tapa la llegada a Secret, la escalera que baja hacia B. <em>Quieto, clic izquierdo</em></td></tr>
+        <tr><td><strong><a href="https://csnades.gg/nuke/smokes/ramp-from-trophy-a" target="_blank" rel="noopener">Ramp</a></strong><br><small>B · desde Trophy</small></td><td>Tapa Ramp para bajar hacia B sin que te vean los CT de abajo. <em>Corriendo, clic izquierdo</em></td></tr>
+        <tr><td><strong><a href="https://csnades.gg/nuke/smokes/squeaky-from-heaven" target="_blank" rel="noopener">Squeaky</a></strong><br><small>Lado CT · desde Heaven</small></td><td>Para los CT: tapa Squeaky, una de las entradas de los T a A. <em>Quieto, clic izquierdo</em></td></tr>
+      </table>
+      <p><strong>Para practicarlo sin buscar el lugar:</strong> en tu servidor de práctica (lo armás con el módulo de humos), copiá la línea del humo y pegala en la consola. Te deja parado y apuntando justo; solo tenés que tirar como dice la tabla.</p>
+      <pre><code>Heaven:
+setpos -19.661560 -1461.646362 17.167660;setang -21.658056 47.196793 0.000000
+
+Garage:
+setpos -308.972900 -1924.057251 -351.961548;setang -19.713923 0.360994 0.000000
+
+CT Red:
+setpos -141.270569 -1962.644165 -351.968750;setang -36.348190 17.487387 0.000000
+
+Secret:
+setpos -423.570129 -1752.576172 -351.968750;setang -22.229683 -16.962109 0.000000
+
+Ramp:
+setpos 251.968475 -352.282166 -351.968750;setang -8.553168 131.843216 0.000000
+
+Squeaky:
+setpos 1011.644836 -457.968750 -63.968750;setang -8.194401 -120.156166 0.000000</code></pre>
+      <p>Los humos van <strong>juntos</strong>: un humo solo tapa un rincón, pero tres al mismo tiempo cortan un sitio entero. Por eso en la tabla están agrupados por zona.</p>
+      <p>Por ejemplo, para cruzar Outside, desde Under Silo tiran Garage, CT Red y Secret; así el patio queda tapado del lado de los CT.</p>` },
   ],
   practica: [
     "Abrí Nuke en una partida privada, caminá de A a B por adentro (por Vents o Hell) y anotá cuántos segundos tardás.",
     "Recorré A y B diciendo los callouts y anotá cuántos recordaste sin mirar.",
     "En el radar interactivo de Nuke de csdb.gg, anotá qué une Vents y qué une Secret.",
+    "Practicá en tu servidor los humos de Nuke con las líneas setpos de la lección: tirá cada uno 5 veces y anotá cuántas veces cayó en el lugar.",
   ],
   recursos: [
     { t: "csdb.gg: radar interactivo de Nuke con todos los callouts", url: "https://csdb.gg/maps/nuke/" },
     { t: "Wikipedia: lista de mapas competitivos de Counter-Strike (pool actual)", url: "https://en.wikipedia.org/wiki/List_of_competitive_Counter-Strike_maps" },
+    { t: "CSNADES.gg: todos los humos de Nuke en un mapa interactivo, con video de cada uno (en inglés)", url: "https://csnades.gg/nuke/smokes" },
   ],
   quiz: [
     { q: "¿Qué tiene de especial Nuke frente a los otros mapas?", opciones: ["Tiene un solo sitio","Los sitios están en extremos opuestos del mapa","A está arriba y B abajo, casi una encima de la otra","No tiene Mid"], correcta: 2, explicacion: "Son dos pisos y la rotación es rápida. \"Extremos opuestos\" tienta porque así es en otros mapas." },
@@ -295,6 +571,10 @@ B → A: B Doors → CT Mid → CT Spawn → A</code></pre>
     { q: "Si un CT cubre B desde el cuarto con la ventana que se rompe, ¿dónde está?", opciones: ["Window","Observation","Heaven","Garage"], correcta: 0, explicacion: "Window es el cuarto de la ventana rompible. Observation tienta porque también tiene vidrio, pero mira desde atrás." },
     { q: "¿Qué une A, Secret y B por adentro?", opciones: ["Outside","Lobby","Silo","Vents"], correcta: 3, explicacion: "Vents son los ductos entre pisos. Outside tienta, pero es el patio de afuera." },
     { q: "Si un T mira el patio desde el silo alto del lado T, ¿qué call das?", opciones: ["\"Uno Garage\"","\"Uno Silo\"","\"Uno CT Red\"","\"Uno Decon\""], correcta: 1, explicacion: "Silo es la torre del lado T. Garage tienta porque controla el patio, pero es del lado CT." },
+    { q: "Si en Nuke querés cruzar Outside, ¿qué humos tiran desde Under Silo?", opciones: ["Heaven, Squeaky y Ramp","Ramp y Heaven","Garage, CT Red y Secret","Squeaky y Garage"], correcta: 2, explicacion: "Esos tres tapan el lado CT del patio. Heaven tienta, pero mira A desde adentro." },
+    { q: "Si atacás A en Nuke y el CT de la pasarela alta te mata siempre, ¿qué humo tirás?", opciones: ["Heaven","Garage","Ramp","CT Red"], correcta: 0, explicacion: "Heaven es la pasarela alta sobre A. Garage tienta, pero está afuera." },
+    { q: "Si en Nuke vas a bajar por Ramp hacia B, ¿qué humo te cubre?", opciones: ["Heaven","Squeaky","Garage","Ramp, tirado desde Trophy"], correcta: 3, explicacion: "Tapa la rampa para que no te vean desde abajo. Squeaky tienta, pero es de A." },
+    { q: "Si sos CT en Nuke y escuchás la puerta de Squeaky, ¿qué humo podés tirar desde Heaven?", opciones: ["Ramp","Squeaky","Secret","Garage"], correcta: 1, explicacion: "Tapa esa entrada a A. Ramp tienta, pero lleva a B." },
   ],
 },
 {
@@ -306,6 +586,7 @@ B → A: B Doors → CT Mid → CT Spawn → A</code></pre>
     "Nombrar los callouts de A: Main, Donut, Plat, Triple Box, Temple y Short",
     "Nombrar los callouts de B: Ramp, Cave (Dark y Lamp Room), House, Pillar y Back Halls",
     "Nombrar Mid y el lado T: Elbow, Snipers Nest, Tunnels, Water, Ruins y Split",
+    "Tirar los humos esenciales de Ancient y saber qué tapa cada uno",
   ],
   lecciones: [
     { titulo: "A: Main, Donut y el sitio", video: {"id":"Vx4XyrmGcJg","t":"Callouts de Ancient en español · Fer NS (5:43)"}, html: `
@@ -322,15 +603,56 @@ B → A: B Doors → CT Mid → CT Spawn → A</code></pre>
       <p>🗺️ <strong><a href="https://csdb.gg/maps/ancient/" target="_blank" rel="noopener">Abrí el mapa de Ancient con las calls marcadas</a></strong> (se abre aparte, en inglés: cada nombre aparece en su lugar del radar). Tenelo al lado mientras leés la tabla.</p><table><tr><th>Call (en español)</th><th>Dónde está</th></tr><tr><td><strong>T Spawn</strong><br><small>Spawn T</small></td><td>Spawn de los T, al sur del mapa</td></tr><tr><td><strong>Outside</strong><br><small>Afuera</small></td><td>Terreno abierto entre T spawn y los pasillos hacia A</td></tr><tr><td><strong>Split</strong><br><small>Bifurcación</small></td><td>Cruce que une T spawn con Elbow y Stairs</td></tr><tr><td><strong>Stairs</strong><br><small>Escaleras</small></td><td>Escalones de Split a A Halls</td></tr><tr><td><strong>Elbow</strong><br><small>Codo</small></td><td>Pasillo doblado que une Split con Mid</td></tr><tr><td><strong>Mid</strong><br><small>Medio</small></td><td>Zona abierta central entre Elbow, Doors y Snipers Nest</td></tr><tr><td><strong>Top Mid (Top of Mid)</strong><br><small>Arriba de Mid</small></td><td>Parte alta de Mid, junto a la escalera hacia Snipers Nest</td></tr><tr><td><strong>Snipers Nest</strong><br><small>Nido del francotirador</small></td><td>Puertas dobles con vista dominante de Mid para los CT</td></tr><tr><td><strong>Tunnels</strong><br><small>Túneles</small></td><td>Pasaje de Mid a Short</td></tr><tr><td><strong>Pit</strong><br><small>Pozo</small></td><td>Hueco frente a Tunnels, para cubrirse o hacer lurk</td></tr><tr><td><strong>Tunnel</strong><br><small>Túnel</small></td><td>Pasaje desde T spawn hasta Water</td></tr><tr><td><strong>Water</strong><br><small>Agua</small></td><td>Tramo de arroyo entre Tunnel y Ruins</td></tr><tr><td><strong>Ruins</strong><br><small>Ruinas</small></td><td>Estructuras rotas entre Water y Doors, cerca de Ramp</td></tr><tr><td><strong>Doors</strong><br><small>Puertas</small></td><td>Puertas dobles de Ruins a T Lower</td></tr><tr><td><strong>CT Spawn</strong><br><small>Spawn CT</small></td><td>Spawn de los CT, al norte del mapa</td></tr></table>
       <p><strong>Dos "Tunnel":</strong> "Tunnels" (plural) lleva de Mid a Short; "Tunnel" (singular) lleva de T spawn a Water. Aclará cuál.</p>
       <p>Por ejemplo, un CT espía Mid desde las puertas dobles de arriba. La call es "uno Snipers Nest", y los T usan una smoke ahí antes de cruzar por Elbow.</p>` },
+    { titulo: "Los humos de Ancient", video: {"id":"8pgAZcTi3C8","t":"La guía de humos de Ancient, en inglés (se entiende mirando) · CS Tactics (15:46)"}, html: `
+      <p class="idea">Estos son los humos (smokes) esenciales de Ancient. Tocá el nombre de cada uno y se abre su video: ahí ves dónde pararte, adónde apuntar y cómo tirarlo.</p>
+      <table>
+        <tr><th>Humo y desde dónde</th><th>Para qué sirve y cómo se tira</th></tr>
+        <tr><td><strong><a href="https://csnades.gg/ancient/smokes/ct-from-outside-a" target="_blank" rel="noopener">CT (A)</a></strong><br><small>A · desde Outside A</small></td><td>Tapa la vista desde CT hacia el sitio A. <em>Quieto, salto y soltás (jump throw)</em></td></tr>
+        <tr><td><strong><a href="https://csnades.gg/ancient/smokes/temple-from-outside-a" target="_blank" rel="noopener">Temple</a></strong><br><small>A · desde Outside A</small></td><td>Tapa Temple, el pasaje de los CT con vista larga a Main. <em>Quieto, salto y soltás (jump throw)</em></td></tr>
+        <tr><td><strong><a href="https://csnades.gg/ancient/smokes/donut-tunnel-from-outside-a" target="_blank" rel="noopener">Donut</a></strong><br><small>A · desde Outside A</small></td><td>Tapa Donut, el cuarto redondo al lado de A que lleva a CT. <em>Quieto, salto y soltás (jump throw)</em></td></tr>
+        <tr><td><strong><a href="https://csnades.gg/ancient/smokes/top-mid-from-elbow" target="_blank" rel="noopener">Top Mid</a></strong><br><small>Mid · desde Elbow</small></td><td>Tapa Top Mid para avanzar por Mid. <em>Quieto, clic izquierdo</em></td></tr>
+        <tr><td><strong><a href="https://csnades.gg/ancient/smokes/cave-from-ruins" target="_blank" rel="noopener">Cave</a></strong><br><small>B · desde Ruins</small></td><td>Tapa Cave, un ángulo de los CT del lado de B. <em>Quieto, salto y soltás (jump throw)</em></td></tr>
+        <tr><td><strong><a href="https://csnades.gg/ancient/smokes/back-alley-from-ruins" target="_blank" rel="noopener">Back Alley</a></strong><br><small>B · desde Ruins</small></td><td>Tapa el pasillo del fondo por donde llegan los CT a B. <em>Quieto, salto y soltás (jump throw)</em></td></tr>
+        <tr><td><strong><a href="https://csnades.gg/ancient/smokes/b-ramp-from-ct-spawn" target="_blank" rel="noopener">B Ramp</a></strong><br><small>Lado CT · desde CT Spawn</small></td><td>Para los CT: tapa la rampa de entrada a B. <em>Quieto, salto y soltás (jump throw)</em></td></tr>
+        <tr><td><strong><a href="https://csnades.gg/ancient/smokes/a-main-from-big-box" target="_blank" rel="noopener">A Main</a></strong><br><small>Lado CT · desde Big Box</small></td><td>Para los CT: tapa la entrada principal de A. <em>Quieto, clic izquierdo</em></td></tr>
+      </table>
+      <p><strong>Para practicarlo sin buscar el lugar:</strong> en tu servidor de práctica (lo armás con el módulo de humos), copiá la línea del humo y pegala en la consola. Te deja parado y apuntando justo; solo tenés que tirar como dice la tabla.</p>
+      <pre><code>CT (A):
+setpos -1934.369507 -862.027649 49.846832;setang -43.344669 67.021294 0.000000
+
+Temple:
+setpos -1769.358398 -1244.817993 30.066071;setang -28.685102 86.793671 0.000000
+
+Donut:
+setpos -1934.712646 -862.030884 49.697601;setang -32.102016 74.690254 0.000000
+
+Top Mid:
+setpos -1050.372925 -792.027771 98.125954;setang -55.200752 60.267784 0.000000
+
+Cave:
+setpos 1255.968750 -1479.968750 83.832565;setang -11.334518 110.762878 0.000000
+
+Back Alley:
+setpos 914.950989 -1479.970947 73.276695;setang -7.672632 83.737144 0.000000
+
+B Ramp:
+setpos -66.031250 1771.968262 99.075851;setang -39.098480 -56.059330 0.000000
+
+A Main:
+setpos -1599.031250 1187.968750 116.031250;setang -13.472486 -120.882263 0.000000</code></pre>
+      <p>Los humos van <strong>juntos</strong>: un humo solo tapa un rincón, pero tres al mismo tiempo cortan un sitio entero. Por eso en la tabla están agrupados por zona.</p>
+      <p>Por ejemplo, para ejecutar A, desde Outside A tiran CT, Temple y Donut; el sitio queda cortado de las tres llegadas de los CT.</p>` },
   ],
   practica: [
     "Abrí Ancient en una partida privada, recorré A por Main y por Short diciendo los callouts y anotá cuántos recordaste sin mirar.",
     "Recorré B por Ramp y por Lamp Room, Dark y House, y anotá cuántos segundos tarda cada camino.",
     "En el radar interactivo de Ancient de csdb.gg, anotá la diferencia entre Tunnels y Tunnel.",
+    "Practicá en tu servidor los humos de Ancient con las líneas setpos de la lección: tirá cada uno 5 veces y anotá cuántas veces cayó en el lugar.",
   ],
   recursos: [
     { t: "csdb.gg: radar interactivo de Ancient con todos los callouts", url: "https://csdb.gg/maps/ancient/" },
     { t: "Wikipedia: lista de mapas competitivos de Counter-Strike (pool actual)", url: "https://en.wikipedia.org/wiki/List_of_competitive_Counter-Strike_maps" },
+    { t: "CSNADES.gg: todos los humos de Ancient en un mapa interactivo, con video de cada uno (en inglés)", url: "https://csnades.gg/ancient/smokes" },
   ],
   quiz: [
     { q: "Si entrás a A de Ancient por Main y te matan desde el cuarto redondo del costado, ¿qué cantás?", opciones: ["\"Uno Temple\"","\"Uno Pillar\"","\"Uno Donut\"","\"Uno House\""], correcta: 2, explicacion: "Donut es el cuarto redondo de A. Temple tienta porque está del lado CT, pero es el pasaje desde spawn." },
@@ -345,6 +667,10 @@ B → A: B Doors → CT Mid → CT Spawn → A</code></pre>
     { q: "Tu compañero dice \"uno Tunnel\" en singular. ¿Qué zona es?", opciones: ["El pasaje de T spawn a Water","El pasaje de Mid a Short","La rampa de B","Donut"], correcta: 0, explicacion: "Tunnel (singular) va a Water; Tunnels (plural) va de Mid a Short. Confundirlos tienta por el nombre." },
     { q: "Ves a un T en el tramo de arroyo entre Tunnel y Ruins. ¿Qué call das?", opciones: ["\"Uno Pit\"","\"Uno Heaven\"","\"Uno Plat\"","\"Uno Water\""], correcta: 3, explicacion: "Water es el arroyo. Pit tienta porque es un hueco, pero está frente a Tunnels." },
     { q: "Si muchos jugadores dicen \"Cave\" en Ancient, ¿a qué zona se refieren?", opciones: ["A Donut","A la zona oscura de Lamp Room y Dark, hacia B","A T spawn","A Temple"], correcta: 1, explicacion: "Cave es un apodo de esa zona. Donut tienta porque es un cuarto cerrado, pero está en A." },
+    { q: "Si vas a ejecutar A en Ancient desde Outside A, ¿qué tres humos tiran?", opciones: ["Cave, Back Alley y B Ramp","Top Mid y Cave","CT, Temple y Donut","A Main y B Ramp"], correcta: 2, explicacion: "Cortan las tres llegadas de los CT a A. Cave tienta, pero es del lado de B." },
+    { q: "Si en Ancient querés avanzar por Mid, ¿qué humo tirás desde Elbow?", opciones: ["Top Mid","Temple","Cave","Donut"], correcta: 0, explicacion: "Top Mid tapa la parte alta de Mid. Donut tienta porque está cerca, pero es de A." },
+    { q: "Si atacás B en Ancient desde Ruins, ¿qué humos tirás?", opciones: ["CT y Temple","Donut y Top Mid","A Main y Big Box","Cave y Back Alley"], correcta: 3, explicacion: "Tapan los ángulos de los CT del lado de B. Temple tienta, pero es de A." },
+    { q: "Si sos CT en Ancient y los T vienen a B por la rampa, ¿qué humo los frena?", opciones: ["A Main","B Ramp","Temple","Donut"], correcta: 1, explicacion: "B Ramp es la entrada principal a B. A Main tienta porque también es de los CT, pero es de A." },
   ],
 },
 {
@@ -356,6 +682,7 @@ B → A: B Doors → CT Mid → CT Spawn → A</code></pre>
     "Nombrar los callouts de A: Main, Fountain, Connector, Walkway, Heaven y Tunnel",
     "Nombrar los callouts de B: B Long, Gate, Snipers Nest, Bricks, Pillar, Corner y Ninja",
     "Nombrar Mid: Bridge, Water, Canal, Double Doors, Boat y Palace",
+    "Tirar los humos esenciales de Anubis y saber qué tapa cada uno",
   ],
   lecciones: [
     { titulo: "A: Main, Fuente y Connector", video: {"id":"9wCUJBHRfMc","t":"Callouts de Anubis en español · Fer NS (4:03)"}, html: `
@@ -371,15 +698,48 @@ B → A: B Doors → CT Mid → CT Spawn → A</code></pre>
       <p>🗺️ <strong><a href="https://csdb.gg/maps/anubis/" target="_blank" rel="noopener">Abrí el mapa de Anubis con las calls marcadas</a></strong> (se abre aparte, en inglés: cada nombre aparece en su lugar del radar). Tenelo al lado mientras leés la tabla.</p><table><tr><th>Call (en español)</th><th>Dónde está</th></tr><tr><td><strong>T Spawn</strong><br><small>Spawn T</small></td><td>Spawn al sur, que se abre hacia A Main, Top Mid y Ruins</td></tr><tr><td><strong>Alley</strong><br><small>Callejón</small></td><td>Carril desde T spawn hacia Mid y el lado de B</td></tr><tr><td><strong>Top Mid</strong><br><small>Arriba de Mid</small></td><td>Entrada de los T a Mid, hacia Bridge y Double Doors</td></tr><tr><td><strong>Bridge</strong><br><small>Puente</small></td><td>Pasarela elevada que cruza Mid hacia Double Doors</td></tr><tr><td><strong>Water</strong><br><small>Agua</small></td><td>Canal debajo del puente: la ruta baja de Mid</td></tr><tr><td><strong>Canal</strong><br><small>Canal</small></td><td>Vía de agua más ancha que alimenta Water, Boat y los cruces a B</td></tr><tr><td><strong>Stairs</strong><br><small>Escaleras</small></td><td>Escalones de Alley hasta el nivel del agua</td></tr><tr><td><strong>Double Doors (Mid Doors)</strong><br><small>Puertas dobles</small></td><td>Puertas en el centro del mapa, entre Bridge y Middle</td></tr><tr><td><strong>Middle</strong><br><small>Centro</small></td><td>Zona central del lado CT detrás de Double Doors</td></tr><tr><td><strong>Palace</strong><br><small>Palacio</small></td><td>Salón cubierto que une Middle, el lado T y B</td></tr><tr><td><strong>E Box</strong><br><small>E Box (igual)</small></td><td>Hueco interior de Middle hacia B: atajo de rotación</td></tr><tr><td><strong>CT Spawn</strong><br><small>Spawn CT</small></td><td>Al norte, con salida a A por Tunnel y a B por Street o Cave</td></tr></table>
       <p><strong>Ojo con Palace y Heaven:</strong> Anubis tiene un Palace distinto al de Mirage, y dos Heaven (el de A y el de Ruins). Aclarar "Heaven A" o "Heaven Ruins" evita confusiones.</p>
       <p>Por ejemplo, un T cruza por abajo del puente, en el agua. La call es "uno Water", no "uno Bridge": uno está arriba y el otro abajo.</p>` },
+    { titulo: "Los humos de Anubis", video: {"id":"B5l6BWLQEhk","t":"Anubis: todos los humos del lado T en menos de 2 minutos · Gus1to (1:41)"}, html: `
+      <p class="idea">Estos son los humos (smokes) esenciales de Anubis. Tocá el nombre de cada uno y se abre su video: ahí ves dónde pararte, adónde apuntar y cómo tirarlo.</p>
+      <table>
+        <tr><th>Humo y desde dónde</th><th>Para qué sirve y cómo se tira</th></tr>
+        <tr><td><strong><a href="https://csnades.gg/anubis/smokes/connector-from-t-upper" target="_blank" rel="noopener">Connector</a></strong><br><small>A · desde T Upper</small></td><td>Tapa Connector, el pasillo angosto entre Mid y A. <em>Quieto, clic izquierdo</em></td></tr>
+        <tr><td><strong><a href="https://csnades.gg/anubis/smokes/heaven-from-t-upper" target="_blank" rel="noopener">Heaven</a></strong><br><small>A · desde T Upper</small></td><td>Tapa Heaven, la plataforma alta de los CT sobre A. <em>Quieto, salto y soltás (jump throw)</em></td></tr>
+        <tr><td><strong><a href="https://csnades.gg/anubis/smokes/top-mid-from-t-spawn-b" target="_blank" rel="noopener">Top Mid</a></strong><br><small>Mid · desde T Spawn</small></td><td>Tapa la entrada de Mid de los T para salir sin que te vean. <em>Quieto, salto y soltás (jump throw)</em></td></tr>
+        <tr><td><strong><a href="https://csnades.gg/anubis/smokes/ebox-from-ruins" target="_blank" rel="noopener">E-Box</a></strong><br><small>B · desde Ruins</small></td><td>Tapa E-Box, el rincón por donde los CT cortan de Mid hacia B. <em>Quieto, clic izquierdo</em></td></tr>
+        <tr><td><strong><a href="https://csnades.gg/anubis/smokes/ct-from-ruins" target="_blank" rel="noopener">CT (B)</a></strong><br><small>B · desde Ruins</small></td><td>Tapa la llegada de los CT al sitio B. <em>Quieto, clic izquierdo</em></td></tr>
+        <tr><td><strong><a href="https://csnades.gg/anubis/smokes/bridge-from-ct-spawn" target="_blank" rel="noopener">Bridge</a></strong><br><small>Lado CT · desde CT Spawn</small></td><td>Para los CT: tapa el puente de Mid. <em>Quieto, salto y soltás (jump throw)</em></td></tr>
+      </table>
+      <p><strong>Para practicarlo sin buscar el lugar:</strong> en tu servidor de práctica (lo armás con el módulo de humos), copiá la línea del humo y pegala en la consola. Te deja parado y apuntando justo; solo tenés que tirar como dice la tabla.</p>
+      <pre><code>Connector:
+setpos 1279.321045 571.968872 65.788254;setang -11.477298 125.519043 0.000000
+
+Heaven:
+setpos 1493.968750 157.031250 64.031250;setang -20.233910 101.987717 0.000000
+
+Top Mid:
+setpos -299.410522 -1725.968872 69.240440;setang -12.882040 85.062614 0.000000
+
+E-Box:
+setpos -1016.031250 -201.272644 64.031250;setang -48.091095 126.990288 0.000000
+
+CT (B):
+setpos -1321.326416 -491.967651 161.128159;setang -35.326256 80.217430 0.000000
+
+Bridge:
+setpos -368.945068 2360.894531 88.031494;setang -31.763067 -82.266800 0.000000</code></pre>
+      <p>Los humos van <strong>juntos</strong>: un humo solo tapa un rincón, pero tres al mismo tiempo cortan un sitio entero. Por eso en la tabla están agrupados por zona.</p>
+      <p>Por ejemplo, para ejecutar A, desde T Upper tiran Connector y Heaven; los CT de Mid y el de la plataforma alta quedan sin vista.</p>` },
   ],
   practica: [
     "Abrí Anubis en una partida privada, recorré A por Main y por Connector diciendo los callouts y anotá cuántos recordaste sin mirar.",
     "Recorré B Long hasta Gate y anotá desde dónde te podría ver un CT en Sniper.",
     "En el radar interactivo de Anubis de csdb.gg, anotá dónde están los dos Heaven del mapa.",
+    "Practicá en tu servidor los humos de Anubis con las líneas setpos de la lección: tirá cada uno 5 veces y anotá cuántas veces cayó en el lugar.",
   ],
   recursos: [
     { t: "csdb.gg: radar interactivo de Anubis con todos los callouts", url: "https://csdb.gg/maps/anubis/" },
     { t: "Wikipedia: lista de mapas competitivos de Counter-Strike (pool actual)", url: "https://en.wikipedia.org/wiki/List_of_competitive_Counter-Strike_maps" },
+    { t: "CSNADES.gg: todos los humos de Anubis en un mapa interactivo, con video de cada uno (en inglés)", url: "https://csnades.gg/anubis/smokes" },
   ],
   quiz: [
     { q: "Si un T se cubre en la plataforma frente a la entrada de A de Anubis, ¿qué cantás?", opciones: ["\"Uno Gate\"","\"Uno Bricks\"","\"Uno Fountain\"","\"Uno Ivy\""], correcta: 2, explicacion: "Fountain es la plataforma frente a Main. Gate tienta porque es una entrada, pero es la de B." },
@@ -394,6 +754,10 @@ B → A: B Doors → CT Mid → CT Spawn → A</code></pre>
     { q: "¿Qué hay en el centro del mapa entre Bridge y Middle?", opciones: ["Double Doors (las puertas dobles)","Gate","Fountain","Tunnel"], correcta: 0, explicacion: "Double Doors separan Mid del lado CT. Gate tienta, pero es de B." },
     { q: "Tu compañero dice \"uno Heaven\" en Anubis. ¿Qué le preguntás?", opciones: ["Nada, hay uno solo","\"¿En Mirage?\"","\"¿Es en Water?\"","\"¿Heaven de A o de Ruins?\""], correcta: 3, explicacion: "Anubis tiene dos Heaven. \"Hay uno solo\" tienta si recién aprendés el mapa." },
     { q: "Si un CT rota por un hueco interior de Middle hacia B, ¿por dónde pasa?", opciones: ["A Main","E Box","Ruins","Drop"], correcta: 1, explicacion: "E Box es el atajo de rotación. Ruins tienta porque llega a B, pero es del lado T." },
+    { q: "Si vas a ejecutar A en Anubis desde T Upper, ¿qué dos humos tiran?", opciones: ["E-Box y CT","Bridge y Top Mid","Connector y Heaven","E-Box y Bridge"], correcta: 2, explicacion: "Tapan el pasillo de Mid y la plataforma alta de A. E-Box tienta, pero corta hacia B." },
+    { q: "Si en Anubis querés salir de spawn hacia Mid sin que te vean, ¿qué humo tirás?", opciones: ["Top Mid","Heaven","CT (B)","Connector"], correcta: 0, explicacion: "Top Mid es la entrada de Mid de los T. Connector tienta, pero está más adelante, hacia A." },
+    { q: "Si atacás B en Anubis desde Ruins, ¿qué humos tirás?", opciones: ["Heaven y Connector","Bridge y Top Mid","Solo Heaven","E-Box y CT"], correcta: 3, explicacion: "Tapan el corte desde Mid y la llegada de los CT a B. Heaven tienta, pero mira A." },
+    { q: "Si sos CT en Anubis y querés frenar a los T que cruzan Mid por arriba, ¿qué humo tirás?", opciones: ["Heaven","Bridge","E-Box","Connector"], correcta: 1, explicacion: "Bridge es el puente de Mid. Heaven tienta porque es de los CT, pero mira A." },
   ],
 },
 {
@@ -405,6 +769,7 @@ B → A: B Doors → CT Mid → CT Spawn → A</code></pre>
     "Nombrar los callouts de A: A Main, Squeaky, Quad, Forklift, Highway, Truck y Electrical Box",
     "Nombrar los callouts de B: B Main, Checkers, Heaven, Hell, Rafters, Sun Room y Tree Room",
     "Nombrar Mid y las rotaciones: Vents, White Box, Connector, Garage y CT Halls",
+    "Tirar los humos esenciales de Cache y saber qué tapa cada uno",
   ],
   lecciones: [
     { titulo: "A: Main, Squeaky y Highway", video: {"id":"TDA4FpJiOVA","t":"Aprendé todos los callouts de Cache en 4 minutos · ZOlky CS2 (4:13)"}, html: `
@@ -425,15 +790,56 @@ Mid → Vents → Checkers → B
 Rotación de los CT:
 A ↔ B por CT Halls (o por Connector)</code></pre>
       <p>Por ejemplo, el AWP de los CT mira Mid desde la caja blanca del lado de Highway. La call es "AWP White Box", y los T tiran una smoke antes de cruzar.</p>` },
+    { titulo: "Los humos de Cache", video: {"id":"ps2BgkrgnLQ","t":"Mejores humos de Cache en CS2 · Gukardo (3:47)"}, html: `
+      <p class="idea">Estos son los humos (smokes) esenciales de Cache. Tocá el nombre de cada uno y se abre su video: ahí ves dónde pararte, adónde apuntar y cómo tirarlo.</p>
+      <table>
+        <tr><th>Humo y desde dónde</th><th>Para qué sirve y cómo se tira</th></tr>
+        <tr><td><strong><a href="https://csnades.gg/cache/smokes/forklift-from-outside-squeaky" target="_blank" rel="noopener">Forklift</a></strong><br><small>A · desde Outside Squeaky</small></td><td>Tapa el autoelevador, la primera cobertura de los CT en A. <em>Quieto, clic izquierdo</em></td></tr>
+        <tr><td><strong><a href="https://csnades.gg/cache/smokes/back-a-site-from-outside-squeaky" target="_blank" rel="noopener">Fondo de A (Quad)</a></strong><br><small>A · desde Outside Squeaky</small></td><td>Tapa el fondo del sitio A, junto a Quad. <em>Quieto, clic izquierdo</em></td></tr>
+        <tr><td><strong><a href="https://csnades.gg/cache/smokes/highway-from-truck" target="_blank" rel="noopener">Highway</a></strong><br><small>A · desde Truck</small></td><td>Tapa Highway, la subida por donde rotan los CT de Mid a A. <em>Quieto, salto y soltás (jump throw)</em></td></tr>
+        <tr><td><strong><a href="https://csnades.gg/cache/smokes/nbk-from-outside-a-main" target="_blank" rel="noopener">NBK</a></strong><br><small>A · desde Outside A Main</small></td><td>Tapa NBK, el rincón entre Squeaky y Quad donde espera un CT. <em>Quieto, salto y soltás (jump throw)</em></td></tr>
+        <tr><td><strong><a href="https://csnades.gg/cache/smokes/right-mid-from-garage" target="_blank" rel="noopener">Mid (lado derecho)</a></strong><br><small>Mid · desde Garage</small></td><td>Tapa un costado de Mid para avanzar desde Garage. <em>Quieto, clic izquierdo</em></td></tr>
+        <tr><td><strong><a href="https://csnades.gg/cache/smokes/ct-from-sun-room" target="_blank" rel="noopener">CT (B)</a></strong><br><small>B · desde Sun Room</small></td><td>Tapa la llegada de los CT al sitio B. <em>Quieto, salto y soltás los dos clics</em></td></tr>
+        <tr><td><strong><a href="https://csnades.gg/cache/smokes/heaven-from-b-main" target="_blank" rel="noopener">Heaven (B)</a></strong><br><small>B · desde B Main</small></td><td>Tapa Heaven, la plataforma de madera de los CT sobre B. <em>Quieto, clic izquierdo</em></td></tr>
+        <tr><td><strong><a href="https://csnades.gg/cache/smokes/a-main-from-truck" target="_blank" rel="noopener">A Main</a></strong><br><small>Lado CT · desde Truck</small></td><td>Para los CT: tapa la entrada principal de A. <em>Quieto, clic izquierdo</em></td></tr>
+      </table>
+      <p><strong>Para practicarlo sin buscar el lugar:</strong> en tu servidor de práctica (lo armás con el módulo de humos), copiá la línea del humo y pegala en la consola. Te deja parado y apuntando justo; solo tenés que tirar como dice la tabla.</p>
+      <pre><code>Forklift:
+setpos 1315.960083 1587.968750 1768.000000;setang -54.791935 -178.067902 0.000000
+
+Fondo de A (Quad):
+setpos 1315.968750 1587.962524 1768.000000;setang -48.428482 -174.424484 0.000000
+
+Highway:
+setpos 1807.344727 701.968506 1672.000000;setang -35.406303 172.310226 0.000000
+
+NBK:
+setpos 1282.158203 522.031250 1674.969116;setang -56.183327 131.607437 0.000000
+
+Mid (lado derecho):
+setpos 1731.186157 208.031250 1676.000000;setang -11.611091 173.967438 0.000000
+
+CT (B):
+setpos 579.206726 -1449.947266 1676.265625;setang -2.874133 151.275269 0.000000
+
+Heaven (B):
+setpos 286.931183 -759.994812 1676.000000;setang -33.829708 137.568298 0.000000
+
+A Main:
+setpos -916.031250 1082.854248 1751.368164;setang -21.871262 22.539627 0.000000</code></pre>
+      <p>Los humos van <strong>juntos</strong>: un humo solo tapa un rincón, pero tres al mismo tiempo cortan un sitio entero. Por eso en la tabla están agrupados por zona.</p>
+      <p>Por ejemplo, para ejecutar A, desde Outside Squeaky tiran Forklift y el fondo de A, y otro tira Highway desde Truck; quedan pocos rincones abiertos.</p>` },
   ],
   practica: [
     "Abrí Cache en una partida privada, recorré A y B diciendo los callouts y anotá cuántos recordaste sin mirar.",
     "Cronometrá cuánto tarda un CT en ir de A a B por CT Halls y anotá los segundos.",
     "En el radar interactivo de Cache de csdb.gg, anotá qué une Vents y qué une Highway.",
+    "Practicá en tu servidor los humos de Cache con las líneas setpos de la lección: tirá cada uno 5 veces y anotá cuántas veces cayó en el lugar.",
   ],
   recursos: [
     { t: "csdb.gg: radar interactivo de Cache con todos los callouts", url: "https://csdb.gg/maps/cache/" },
     { t: "Dot Esports: notas de la Temporada 5 de Premier (Cache entra, Overpass sale)", url: "https://dotesports.com/counter-strike/news/cs2-season-5-update-patch-notes" },
+    { t: "CSNADES.gg: todos los humos de Cache en un mapa interactivo, con video de cada uno (en inglés)", url: "https://csnades.gg/cache/smokes" },
   ],
   quiz: [
     { q: "Si un CT espera en la pila de cuatro cajas del fondo de A en Cache, ¿qué cantás?", opciones: ["\"Uno Forklift\"","\"Uno White Box\"","\"Uno Quad\"","\"Uno Truck\""], correcta: 2, explicacion: "Quad es la pila de cuatro cajas. Forklift tienta porque también está en A, pero es el autoelevador del frente." },
@@ -448,6 +854,10 @@ A ↔ B por CT Halls (o por Connector)</code></pre>
     { q: "Si el AWP CT mira Mid desde la caja blanca del lado de Highway, ¿qué cantás?", opciones: ["\"AWP White Box\"","\"AWP Red\"","\"AWP Garage\"","\"AWP Lockers\""], correcta: 0, explicacion: "White Box es el lugar clásico del AWP CT. Red tienta, pero es el contenedor de Garage, del lado T." },
     { q: "Si un CT rota de A a B por adentro, ¿por dónde pasa?", opciones: ["B Halls","A Long","T Yard","CT Halls (o Connector)"], correcta: 3, explicacion: "CT Halls une los dos sitios para los CT. B Halls tienta, pero es el pasillo de los T." },
     { q: "¿Qué mapa salió del pool de Premier cuando entró Cache en julio de 2026?", opciones: ["Mirage","Overpass","Dust II","Nuke"], correcta: 1, explicacion: "Cache reemplazó a Overpass. Dust II tienta porque es otro clásico, pero sigue en el pool." },
+    { q: "Si vas a ejecutar A en Cache, ¿qué humos tapan el sitio?", opciones: ["Heaven (B) y CT (B)","Solo Mid","Forklift, el fondo de A y Highway","A Main y Garage"], correcta: 2, explicacion: "Tapan la cobertura del sitio, el fondo y la rotación. Heaven (B) tienta, pero es de B." },
+    { q: "Si en Cache querés cortar la rotación de los CT de Mid a A, ¿qué humo tirás?", opciones: ["Highway","Heaven (B)","CT (B)","Forklift"], correcta: 0, explicacion: "Highway es la subida de Mid a A. Forklift tienta, pero está en el sitio." },
+    { q: "Si atacás B en Cache y el CT de la plataforma de madera te mata, ¿qué humo tirás?", opciones: ["Highway","NBK","Forklift","Heaven (B)"], correcta: 3, explicacion: "Heaven es la plataforma alta de B. NBK tienta, pero es un rincón de A." },
+    { q: "Si sos CT en Cache y los T empujan por la entrada principal de A, ¿qué humo los demora?", opciones: ["Heaven (B)","A Main","Highway","Mid"], correcta: 1, explicacion: "Tapa la entrada principal de A. Highway tienta porque es de los CT, pero es la rotación desde Mid." },
   ],
 },
 {

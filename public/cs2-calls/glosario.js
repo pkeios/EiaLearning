@@ -42,4 +42,11 @@ window.GLOSARIO = [
   { t: 'White Box', d: 'En Cache, la caja blanca del lado de Highway: lugar clásico del AWP de los CT.', m: 'cache' },
   { t: 'Demo', d: 'La grabación de una partida, que se ve desde los ojos de cualquier jugador.', m: 'proyecto' },
   { t: 'Rúbrica', d: 'Una lista de criterios con puntaje para saber si algo está listo.', m: 'proyecto' },
+  { t: 'Humo', d: 'Granada que larga una nube que tapa la vista. En inglés, smoke. Cuesta $300.', m: 'humos' },
+  { t: 'Ejecución', d: 'Entrar a un sitio tirando la utilidad junta y al mismo tiempo.', m: 'humos' },
+  { t: 'Lineup', d: 'La combinación de dónde te parás, adónde apuntás y cómo tirás para que una granada caiga siempre igual.', m: 'humos' },
+  { t: 'Jump throw', d: 'Tiro en el que saltás y soltás el clic en el mismo momento.', m: 'humos' },
+  { t: 'Servidor de práctica', d: 'Partida tuya sin rivales, con comandos para practicar granadas.', m: 'humos' },
+  { t: 'Consola', d: 'Ventana del juego donde se escriben comandos. Se abre con la tecla ~.', m: 'humos' },
+  { t: 'setpos y setang', d: 'Comandos que te ubican en un punto exacto del mapa y te dejan apuntando a un lugar exacto. Solo funcionan con sv_cheats 1.', m: 'humos' },
 ];

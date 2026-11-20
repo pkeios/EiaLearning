@@ -140,5 +140,5 @@ Para cambiar el orden, mové las líneas. Para agregar un curso, sumá una líne
 - [ ] `chicos-cuerpo` · Cómo funciona el cuerpo · chicos de 10 a 13 · Chicos
 
 ## Gaming
-- [x] `cs2-calls` · Counter-Strike 2: mapas y calls de Premier (los 7 mapas del pool, con cada callout en español y dónde está) · jugadores de CS2 · Gaming · "Counter-Strike 2: mapas y calls de Premier"
+- [x] `cs2-calls` · Counter-Strike 2: mapas y calls de Premier (los 7 mapas del pool, con cada callout en español y dónde está) · jugadores de CS2 · Gaming · "Counter-Strike 2: mapas, calls y humos de Premier"
 - [x] `lol-diamante` · League of Legends: de Hierro a Diamante · jugadores de LoL · Gaming · "League of Legends: de Hierro a Diamante"
