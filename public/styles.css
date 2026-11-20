@@ -234,3 +234,4 @@ button.termino:hover { transform: none; box-shadow: none; color: var(--acento2);
 .video { margin: 1rem 0; }
 .video iframe { display: block; width: 100%; aspect-ratio: 16 / 9; border: 0; border-radius: 10px; background: var(--card2); }
 .video figcaption { font-size: .88em; color: var(--suave, inherit); margin-top: .35rem; }
+.video video { display: block; width: 100%; aspect-ratio: 16 / 9; border-radius: 10px; background: #000; }

@@ -159,7 +159,7 @@ bind n sv_rethrow_last_grenade</code></pre>
         <tr><td>sv_grenade_trajectory_prac_pipreview 1</td><td>Muestra en un recuadro dónde va a caer la granada</td></tr>
         <tr><td>bind n sv_rethrow_last_grenade</td><td>Con la tecla N se repite el último tiro, para ver cómo cae</td></tr>
       </table>
-      <p><strong>Las líneas setpos:</strong> en cada mapa del curso hay una línea por humo, que empieza con <em>setpos</em> y sigue con <em>setang</em>. Pegala en la consola: te deja parado y apuntando exacto. Tirás como dice la tabla y mirás dónde cae. Después intentá encontrar ese mismo lugar caminando, sin el comando: ese es el aprendizaje de verdad.</p>
+      <p><strong>Las líneas setpos:</strong> en cada mapa del curso, debajo del video de cada humo, hay una línea por humo, que empieza con <em>setpos</em> y sigue con <em>setang</em>. Pegala en la consola: te deja parado y apuntando exacto. Tirás como dice la tabla y mirás dónde cae. Después intentá encontrar ese mismo lugar caminando, sin el comando: ese es el aprendizaje de verdad.</p>
       <p>Todo esto funciona <strong>solo en tu servidor</strong>. En Premier o en una partida oficial no hay trucos.</p>
       <p>Por ejemplo, para aprender el humo de Window en Mirage: pegás su línea setpos, tirás 5 veces con la tecla N para repetir, y después lo buscás vos solo desde T spawn hasta que te sale 3 veces seguidas.</p>` },
   ],
@@ -217,47 +217,48 @@ B → A: Market → Kitchen → Window → Connector → Jungle</code></pre>
       <p><strong>Tomar Mid</strong> les da a los T el control de Connector y Short: pueden dividir el ataque entre los dos sitios (un <strong>split</strong>).</p>
       <p>Por ejemplo, el AWP de los CT está en Window y no deja cruzar Mid. Los T tiran una smoke a Window y recién ahí cruzan a Connector.</p>` },
     { titulo: "Los humos de Mirage", video: {"id":"o4jfU01yVUk","t":"Todos los humos de Mirage en CS2 · bubu (3:42)"}, html: `
-      <p class="idea">Estos son los humos (smokes) esenciales de Mirage. Tocá el nombre de cada uno y se abre su video: ahí ves dónde pararte, adónde apuntar y cómo tirarlo.</p>
+      <p class="idea">Estos son los humos (smokes) esenciales de Mirage. Cada uno tiene acá abajo su video corto, que te muestra dónde pararte, adónde apuntar y cómo tirarlo.</p>
       <table>
-        <tr><th>Humo y desde dónde</th><th>Para qué sirve y cómo se tira</th></tr>
-        <tr><td><strong><a href="https://csnades.gg/mirage/smokes/ticket-booth-from-a-ramp" target="_blank" rel="noopener">CT (Ticket Booth)</a></strong><br><small>A · desde A Ramp</small></td><td>Tapa la vista desde CT y la cabina hacia el sitio A. <em>Quieto, salto y soltás (jump throw)</em></td></tr>
-        <tr><td><strong><a href="https://csnades.gg/mirage/smokes/stairs-from-a-ramp" target="_blank" rel="noopener">Stairs</a></strong><br><small>A · desde A Ramp</small></td><td>Tapa la escalera del fondo de A, desde donde un CT mira Ramp. <em>Quieto, clic izquierdo</em></td></tr>
-        <tr><td><strong><a href="https://csnades.gg/mirage/smokes/jungle-from-a-ramp" target="_blank" rel="noopener">Jungle</a></strong><br><small>A · desde A Ramp</small></td><td>Tapa Jungle y la salida de Connector hacia A. <em>Quieto, salto y soltás (jump throw)</em></td></tr>
-        <tr><td><strong><a href="https://csnades.gg/mirage/smokes/mid-window-from-t-roof" target="_blank" rel="noopener">Window</a></strong><br><small>Mid · desde T Roof</small></td><td>Ciega al AWP de Window para poder cruzar Mid. <em>Quieto, salto y soltás (jump throw)</em></td></tr>
-        <tr><td><strong><a href="https://csnades.gg/mirage/smokes/top-mid-from-t-spawn" target="_blank" rel="noopener">Top Mid</a></strong><br><small>Mid · desde T Spawn</small></td><td>Tapa la entrada de Mid de los T para salir de spawn sin que te vean. <em>Quieto, clic izquierdo</em></td></tr>
-        <tr><td><strong><a href="https://csnades.gg/mirage/smokes/market-window-from-back-alley" target="_blank" rel="noopener">Market Window</a></strong><br><small>B · desde Back Alley</small></td><td>Tapa la ventana del Mercado, desde donde los CT ven el sitio B. <em>Quieto, salto y soltás (jump throw)</em></td></tr>
-        <tr><td><strong><a href="https://csnades.gg/mirage/smokes/market-door-from-back-alley" target="_blank" rel="noopener">Market Door</a></strong><br><small>B · desde Back Alley</small></td><td>Tapa la puerta del Mercado, por donde vuelven los CT a B. <em>Quieto, salto y soltás (jump throw)</em></td></tr>
-        <tr><td><strong><a href="https://csnades.gg/mirage/smokes/b-short-from-back-alley" target="_blank" rel="noopener">Short (B)</a></strong><br><small>B · desde Back Alley</small></td><td>Tapa Short (Cat) para que un CT de ahí no vea el sitio B. <em>Quieto, clic izquierdo</em></td></tr>
-        <tr><td><strong><a href="https://csnades.gg/mirage/smokes/palace-from-ct-spawn" target="_blank" rel="noopener">Palace</a></strong><br><small>Lado CT · desde CT Spawn</small></td><td>Para los CT: demora a los T que salen de Palace hacia A. <em>Quieto, salto y soltás (jump throw)</em></td></tr>
+        <tr><th>Humo y desde dónde</th><th>Cómo se tira</th></tr>
+        <tr><td><strong>CT (Ticket Booth)</strong><br><small>A · desde A Ramp</small></td><td>Quieto, salto y soltás (jump throw)</td></tr>
+        <tr><td><strong>Stairs</strong><br><small>A · desde A Ramp</small></td><td>Quieto, clic izquierdo</td></tr>
+        <tr><td><strong>Jungle</strong><br><small>A · desde A Ramp</small></td><td>Quieto, salto y soltás (jump throw)</td></tr>
+        <tr><td><strong>Window</strong><br><small>Mid · desde T Roof</small></td><td>Quieto, salto y soltás (jump throw)</td></tr>
+        <tr><td><strong>Top Mid</strong><br><small>Mid · desde T Spawn</small></td><td>Quieto, clic izquierdo</td></tr>
+        <tr><td><strong>Market Window</strong><br><small>B · desde Back Alley</small></td><td>Quieto, salto y soltás (jump throw)</td></tr>
+        <tr><td><strong>Market Door</strong><br><small>B · desde Back Alley</small></td><td>Quieto, salto y soltás (jump throw)</td></tr>
+        <tr><td><strong>Short (B)</strong><br><small>B · desde Back Alley</small></td><td>Quieto, clic izquierdo</td></tr>
+        <tr><td><strong>Palace</strong><br><small>Lado CT · desde CT Spawn</small></td><td>Quieto, salto y soltás (jump throw)</td></tr>
       </table>
-      <p><strong>Para practicarlo sin buscar el lugar:</strong> en tu servidor de práctica (lo armás con el módulo de humos), copiá la línea del humo y pegala en la consola. Te deja parado y apuntando justo; solo tenés que tirar como dice la tabla.</p>
-      <pre><code>CT (Ticket Booth):
-setpos 872.438599 -1036.029541 -194.964050;setang -13.902396 -142.189148 0.000000
-
-Stairs:
-setpos 1148.765991 -1183.968262 -143.171799;setang -41.636101 -165.239334 0.000000
-
-Jungle:
-setpos 907.886047 -1036.031250 -194.619080;setang -56.234268 -161.656998 0.000000
-
-Window:
-setpos 1127.970581 -1208.217041 -44.968750;setang -21.300035 166.887238 0.000000
-
-Top Mid:
-setpos 1422.970337 70.968750 -55.699707;setang -33.431511 -160.986145 0.000000
-
-Market Window:
-setpos -160.031250 887.968750 -71.647980;setang -50.280293 -146.488480 0.000000
-
-Market Door:
-setpos -161.031006 450.875763 -10.753876;setang -11.539766 -161.965912 0.000000
-
-Short (B):
-setpos -160.031250 887.970276 -71.648178;setang -45.790627 -134.498291 0.000000
-
-Palace:
-setpos -2031.972656 -1764.757935 -226.729340;setang -28.193851 -10.925070 0.000000</code></pre>
-      <p>Los humos van <strong>juntos</strong>: un humo solo tapa un rincón, pero tres al mismo tiempo cortan un sitio entero. Por eso en la tabla están agrupados por zona.</p>
+      <p><strong>Para practicarlo sin buscar el lugar:</strong> debajo de cada video está su línea de consola. En tu servidor de práctica (lo armás con el módulo de humos), copiala y pegala en la consola: te deja parado y apuntando justo, y solo tenés que tirar como dice la tabla.</p>
+      <p><strong>💨 CT (Ticket Booth)</strong> <small>(A · desde A Ramp)</small><br>Tapa la vista desde CT y la cabina hacia el sitio A. <em>Quieto, salto y soltás (jump throw).</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/mirage-smoke-6UrrcOsJSD/lq.mp4" poster="https://assets.csnades.gg/nades/mirage-smoke-6UrrcOsJSD/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/mirage/smokes/ticket-booth-from-a-ramp" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos 872.438599 -1036.029541 -194.964050;setang -13.902396 -142.189148 0.000000</code></pre>
+      <p><strong>💨 Stairs</strong> <small>(A · desde A Ramp)</small><br>Tapa la escalera del fondo de A, desde donde un CT mira Ramp. <em>Quieto, clic izquierdo.</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/mirage-smoke-FmNaL1KYD4/lq.mp4" poster="https://assets.csnades.gg/nades/mirage-smoke-FmNaL1KYD4/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/mirage/smokes/stairs-from-a-ramp" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos 1148.765991 -1183.968262 -143.171799;setang -41.636101 -165.239334 0.000000</code></pre>
+      <p><strong>💨 Jungle</strong> <small>(A · desde A Ramp)</small><br>Tapa Jungle y la salida de Connector hacia A. <em>Quieto, salto y soltás (jump throw).</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/mirage-smoke-IDOx7cwRPw/lq.mp4" poster="https://assets.csnades.gg/nades/mirage-smoke-IDOx7cwRPw/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/mirage/smokes/jungle-from-a-ramp" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos 907.886047 -1036.031250 -194.619080;setang -56.234268 -161.656998 0.000000</code></pre>
+      <p><strong>💨 Window</strong> <small>(Mid · desde T Roof)</small><br>Ciega al AWP de Window para poder cruzar Mid. <em>Quieto, salto y soltás (jump throw).</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/mirage-smoke-JCgKV8frFW/lq.mp4" poster="https://assets.csnades.gg/nades/mirage-smoke-JCgKV8frFW/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/mirage/smokes/mid-window-from-t-roof" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos 1127.970581 -1208.217041 -44.968750;setang -21.300035 166.887238 0.000000</code></pre>
+      <p><strong>💨 Top Mid</strong> <small>(Mid · desde T Spawn)</small><br>Tapa la entrada de Mid de los T para salir de spawn sin que te vean. <em>Quieto, clic izquierdo.</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/mirage-smoke-wsMc7skGQh/lq.mp4" poster="https://assets.csnades.gg/nades/mirage-smoke-wsMc7skGQh/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/mirage/smokes/top-mid-from-t-spawn" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos 1422.970337 70.968750 -55.699707;setang -33.431511 -160.986145 0.000000</code></pre>
+      <p><strong>💨 Market Window</strong> <small>(B · desde Back Alley)</small><br>Tapa la ventana del Mercado, desde donde los CT ven el sitio B. <em>Quieto, salto y soltás (jump throw).</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/mirage-smoke-I60PpERA4N/lq.mp4" poster="https://assets.csnades.gg/nades/mirage-smoke-I60PpERA4N/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/mirage/smokes/market-window-from-back-alley" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos -160.031250 887.968750 -71.647980;setang -50.280293 -146.488480 0.000000</code></pre>
+      <p><strong>💨 Market Door</strong> <small>(B · desde Back Alley)</small><br>Tapa la puerta del Mercado, por donde vuelven los CT a B. <em>Quieto, salto y soltás (jump throw).</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/mirage-smoke-UJiXtqvbkb/lq.mp4" poster="https://assets.csnades.gg/nades/mirage-smoke-UJiXtqvbkb/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/mirage/smokes/market-door-from-back-alley" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos -161.031006 450.875763 -10.753876;setang -11.539766 -161.965912 0.000000</code></pre>
+      <p><strong>💨 Short (B)</strong> <small>(B · desde Back Alley)</small><br>Tapa Short (Cat) para que un CT de ahí no vea el sitio B. <em>Quieto, clic izquierdo.</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/mirage-smoke-GUXzZRmfWN/lq.mp4" poster="https://assets.csnades.gg/nades/mirage-smoke-GUXzZRmfWN/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/mirage/smokes/b-short-from-back-alley" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos -160.031250 887.970276 -71.648178;setang -45.790627 -134.498291 0.000000</code></pre>
+      <p><strong>💨 Palace</strong> <small>(lado CT · desde CT Spawn)</small><br>Para los CT: demora a los T que salen de Palace hacia A. <em>Quieto, salto y soltás (jump throw).</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/mirage-smoke-RiIimkK4X7/lq.mp4" poster="https://assets.csnades.gg/nades/mirage-smoke-RiIimkK4X7/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/mirage/smokes/palace-from-ct-spawn" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos -2031.972656 -1764.757935 -226.729340;setang -28.193851 -10.925070 0.000000</code></pre>
+      <p>Los humos van <strong>juntos</strong>: un humo solo tapa un rincón, pero tres al mismo tiempo cortan un sitio entero. Por eso están agrupados por zona.</p>
       <p>Por ejemplo, para ejecutar A, tres compañeros tiran CT, Stairs y Jungle desde A Ramp a la vez; cuando caen, entran por Ramp y Palace sin que nadie los vea desde atrás.</p>` },
   ],
   practica: [
@@ -269,7 +270,7 @@ setpos -2031.972656 -1764.757935 -226.729340;setang -28.193851 -10.925070 0.0000
   recursos: [
     { t: "csdb.gg: radar interactivo de Mirage con todos los callouts", url: "https://csdb.gg/maps/mirage/" },
     { t: "Wikipedia: lista de mapas competitivos de Counter-Strike (pool actual)", url: "https://en.wikipedia.org/wiki/List_of_competitive_Counter-Strike_maps" },
-    { t: "CSNADES.gg: todos los humos de Mirage en un mapa interactivo, con video de cada uno (en inglés)", url: "https://csnades.gg/mirage/smokes" },
+    { t: "CSNADES.gg: todos los humos de Mirage en un mapa interactivo (en inglés)", url: "https://csnades.gg/mirage/smokes" },
   ],
   quiz: [
     { q: "Si entrás por Ramp en Mirage y te matan desde la escalera del fondo de A, ¿qué cantás?", opciones: ["\"Uno Palace\"","\"Uno Jungle\"","\"Uno Stairs\"","\"Uno al fondo arriba\""], correcta: 2, explicacion: "Stairs es la escalera del fondo de A. Palace tienta porque también está arriba, pero es el edificio de los T." },
@@ -317,43 +318,44 @@ setpos -2031.972656 -1764.757935 -226.729340;setang -28.193851 -10.925070 0.0000
       <p><strong>Para rotar,</strong> CT Spawn está en el medio: un CT llega rápido a los dos sitios, pero tiene que cruzar zonas abiertas.</p>
       <p>Por ejemplo, un T aparece en el carril paralelo que sale de los apartamentos de los T. La call es "uno Second Mid".</p>` },
     { titulo: "Los humos de Inferno", video: {"id":"uKeuOnAl-S4","t":"Inferno: toda la utilidad que tenés que saber · Lecho (9:46)"}, html: `
-      <p class="idea">Estos son los humos (smokes) esenciales de Inferno. Tocá el nombre de cada uno y se abre su video: ahí ves dónde pararte, adónde apuntar y cómo tirarlo.</p>
+      <p class="idea">Estos son los humos (smokes) esenciales de Inferno. Cada uno tiene acá abajo su video corto, que te muestra dónde pararte, adónde apuntar y cómo tirarlo.</p>
       <table>
-        <tr><th>Humo y desde dónde</th><th>Para qué sirve y cómo se tira</th></tr>
-        <tr><td><strong><a href="https://csnades.gg/inferno/smokes/boiler-from-alt-mid" target="_blank" rel="noopener">Boiler</a></strong><br><small>A · desde Alt Mid</small></td><td>Tapa Boiler, el cuarto por donde los CT rotan entre Mid y A. <em>Quieto, clic izquierdo</em></td></tr>
-        <tr><td><strong><a href="https://csnades.gg/inferno/smokes/arch-from-alt-mid" target="_blank" rel="noopener">Arch</a></strong><br><small>A · desde Alt Mid</small></td><td>Tapa Arch, el arco por donde llegan los CT a A desde CT spawn. <em>Quieto, salto y soltás (jump throw)</em></td></tr>
-        <tr><td><strong><a href="https://csnades.gg/inferno/smokes/library-from-alt-mid" target="_blank" rel="noopener">Library</a></strong><br><small>A · desde Alt Mid</small></td><td>Tapa Library, el cuarto de los CT que mira Long y A. <em>Quieto, salto y soltás (jump throw)</em></td></tr>
-        <tr><td><strong><a href="https://csnades.gg/inferno/smokes/pit-from-alt-mid" target="_blank" rel="noopener">Pit</a></strong><br><small>A · desde Alt Mid</small></td><td>Tapa Pit, el pozo al borde de A donde suele esperar un CT. <em>Quieto, salto y soltás (jump throw)</em></td></tr>
-        <tr><td><strong><a href="https://csnades.gg/inferno/smokes/ct-from-banana-b" target="_blank" rel="noopener">CT (B)</a></strong><br><small>B · desde Banana</small></td><td>Tapa la llegada de los CT al sitio B cuando entrás por Banana. <em>Quieto, clic izquierdo</em></td></tr>
-        <tr><td><strong><a href="https://csnades.gg/inferno/smokes/coffins-from-banana-b" target="_blank" rel="noopener">Coffins</a></strong><br><small>B · desde Banana</small></td><td>Tapa Coffins (los ataúdes), el escondite del fondo de B. <em>Quieto, salto y soltás (jump throw)</em></td></tr>
-        <tr><td><strong><a href="https://csnades.gg/inferno/smokes/b-entrance-from-ct" target="_blank" rel="noopener">Banana (entrada de B)</a></strong><br><small>Lado CT · desde CT</small></td><td>Para los CT: tapa la salida de Banana para frenar un ataque a B. <em>Quieto, clic izquierdo</em></td></tr>
-        <tr><td><strong><a href="https://csnades.gg/inferno/smokes/top-mid-from-ct-spawn" target="_blank" rel="noopener">Top Mid</a></strong><br><small>Lado CT · desde CT Spawn</small></td><td>Para los CT: tapa Mid para que los T no avancen viéndote. <em>Quieto, salto y soltás (jump throw)</em></td></tr>
+        <tr><th>Humo y desde dónde</th><th>Cómo se tira</th></tr>
+        <tr><td><strong>Boiler</strong><br><small>A · desde Alt Mid</small></td><td>Quieto, clic izquierdo</td></tr>
+        <tr><td><strong>Arch</strong><br><small>A · desde Alt Mid</small></td><td>Quieto, salto y soltás (jump throw)</td></tr>
+        <tr><td><strong>Library</strong><br><small>A · desde Alt Mid</small></td><td>Quieto, salto y soltás (jump throw)</td></tr>
+        <tr><td><strong>Pit</strong><br><small>A · desde Alt Mid</small></td><td>Quieto, salto y soltás (jump throw)</td></tr>
+        <tr><td><strong>CT (B)</strong><br><small>B · desde Banana</small></td><td>Quieto, clic izquierdo</td></tr>
+        <tr><td><strong>Coffins</strong><br><small>B · desde Banana</small></td><td>Quieto, salto y soltás (jump throw)</td></tr>
+        <tr><td><strong>Banana (entrada de B)</strong><br><small>Lado CT · desde CT</small></td><td>Quieto, clic izquierdo</td></tr>
+        <tr><td><strong>Top Mid</strong><br><small>Lado CT · desde CT Spawn</small></td><td>Quieto, salto y soltás (jump throw)</td></tr>
       </table>
-      <p><strong>Para practicarlo sin buscar el lugar:</strong> en tu servidor de práctica (lo armás con el módulo de humos), copiá la línea del humo y pegala en la consola. Te deja parado y apuntando justo; solo tenés que tirar como dice la tabla.</p>
-      <pre><code>Boiler:
-setpos 729.031494 243.912567 155.573914;setang -19.713053 41.695580 0.000000
-
-Arch:
-setpos 807.031250 -290.968750 153.034042;setang -55.324913 56.475582 0.000000
-
-Library:
-setpos 807.031250 -290.968750 153.031250;setang -48.684139 40.793961 0.000000
-
-Pit:
-setpos 187.968750 -197.968750 131.306793;setang -22.096590 3.939515 0.000000
-
-CT (B):
-setpos 371.229248 1661.555420 198.031311;setang -32.234665 64.704498 0.000000
-
-Coffins:
-setpos 369.498260 1664.064087 196.596329;setang -1.258356 82.267311 0.000000
-
-Banana (entrada de B):
-setpos 1441.968628 2983.968750 192.032013;setang -16.613552 -148.700287 0.000000
-
-Top Mid:
-setpos 2552.343018 2193.372559 200.897049;setang -25.738585 -125.363625 0.000000</code></pre>
-      <p>Los humos van <strong>juntos</strong>: un humo solo tapa un rincón, pero tres al mismo tiempo cortan un sitio entero. Por eso en la tabla están agrupados por zona.</p>
+      <p><strong>Para practicarlo sin buscar el lugar:</strong> debajo de cada video está su línea de consola. En tu servidor de práctica (lo armás con el módulo de humos), copiala y pegala en la consola: te deja parado y apuntando justo, y solo tenés que tirar como dice la tabla.</p>
+      <p><strong>💨 Boiler</strong> <small>(A · desde Alt Mid)</small><br>Tapa Boiler, el cuarto por donde los CT rotan entre Mid y A. <em>Quieto, clic izquierdo.</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/inferno-smoke-M8clAgezGq/lq.mp4" poster="https://assets.csnades.gg/nades/inferno-smoke-M8clAgezGq/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/inferno/smokes/boiler-from-alt-mid" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos 729.031494 243.912567 155.573914;setang -19.713053 41.695580 0.000000</code></pre>
+      <p><strong>💨 Arch</strong> <small>(A · desde Alt Mid)</small><br>Tapa Arch, el arco por donde llegan los CT a A desde CT spawn. <em>Quieto, salto y soltás (jump throw).</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/inferno-smoke-ByTtdpC7XM/lq.mp4" poster="https://assets.csnades.gg/nades/inferno-smoke-ByTtdpC7XM/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/inferno/smokes/arch-from-alt-mid" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos 807.031250 -290.968750 153.034042;setang -55.324913 56.475582 0.000000</code></pre>
+      <p><strong>💨 Library</strong> <small>(A · desde Alt Mid)</small><br>Tapa Library, el cuarto de los CT que mira Long y A. <em>Quieto, salto y soltás (jump throw).</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/inferno-smoke-G1sPcgBbK0/lq.mp4" poster="https://assets.csnades.gg/nades/inferno-smoke-G1sPcgBbK0/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/inferno/smokes/library-from-alt-mid" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos 807.031250 -290.968750 153.031250;setang -48.684139 40.793961 0.000000</code></pre>
+      <p><strong>💨 Pit</strong> <small>(A · desde Alt Mid)</small><br>Tapa Pit, el pozo al borde de A donde suele esperar un CT. <em>Quieto, salto y soltás (jump throw).</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/inferno-smoke-mTMBhbR0iR/lq.mp4" poster="https://assets.csnades.gg/nades/inferno-smoke-mTMBhbR0iR/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/inferno/smokes/pit-from-alt-mid" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos 187.968750 -197.968750 131.306793;setang -22.096590 3.939515 0.000000</code></pre>
+      <p><strong>💨 CT (B)</strong> <small>(B · desde Banana)</small><br>Tapa la llegada de los CT al sitio B cuando entrás por Banana. <em>Quieto, clic izquierdo.</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/inferno-smoke-9LzHE8aRot/lq.mp4" poster="https://assets.csnades.gg/nades/inferno-smoke-9LzHE8aRot/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/inferno/smokes/ct-from-banana-b" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos 371.229248 1661.555420 198.031311;setang -32.234665 64.704498 0.000000</code></pre>
+      <p><strong>💨 Coffins</strong> <small>(B · desde Banana)</small><br>Tapa Coffins (los ataúdes), el escondite del fondo de B. <em>Quieto, salto y soltás (jump throw).</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/inferno-smoke-vTGxzPpPDo/lq.mp4" poster="https://assets.csnades.gg/nades/inferno-smoke-vTGxzPpPDo/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/inferno/smokes/coffins-from-banana-b" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos 369.498260 1664.064087 196.596329;setang -1.258356 82.267311 0.000000</code></pre>
+      <p><strong>💨 Banana (entrada de B)</strong> <small>(lado CT · desde CT)</small><br>Para los CT: tapa la salida de Banana para frenar un ataque a B. <em>Quieto, clic izquierdo.</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/inferno-smoke-xW7r3rJT5R/lq.mp4" poster="https://assets.csnades.gg/nades/inferno-smoke-xW7r3rJT5R/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/inferno/smokes/b-entrance-from-ct" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos 1441.968628 2983.968750 192.032013;setang -16.613552 -148.700287 0.000000</code></pre>
+      <p><strong>💨 Top Mid</strong> <small>(lado CT · desde CT Spawn)</small><br>Para los CT: tapa Mid para que los T no avancen viéndote. <em>Quieto, salto y soltás (jump throw).</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/inferno-smoke-AWr3PkVWhL/lq.mp4" poster="https://assets.csnades.gg/nades/inferno-smoke-AWr3PkVWhL/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/inferno/smokes/top-mid-from-ct-spawn" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos 2552.343018 2193.372559 200.897049;setang -25.738585 -125.363625 0.000000</code></pre>
+      <p>Los humos van <strong>juntos</strong>: un humo solo tapa un rincón, pero tres al mismo tiempo cortan un sitio entero. Por eso están agrupados por zona.</p>
       <p>Por ejemplo, para ejecutar B, desde Banana tiran CT y Coffins; con esos dos humos solo queda un rincón por limpiar al entrar al sitio.</p>` },
   ],
   practica: [
@@ -365,7 +367,7 @@ setpos 2552.343018 2193.372559 200.897049;setang -25.738585 -125.363625 0.000000
   recursos: [
     { t: "csdb.gg: radar interactivo de Inferno con todos los callouts", url: "https://csdb.gg/maps/inferno/" },
     { t: "Wikipedia: lista de mapas competitivos de Counter-Strike (pool actual)", url: "https://en.wikipedia.org/wiki/List_of_competitive_Counter-Strike_maps" },
-    { t: "CSNADES.gg: todos los humos de Inferno en un mapa interactivo, con video de cada uno (en inglés)", url: "https://csnades.gg/inferno/smokes" },
+    { t: "CSNADES.gg: todos los humos de Inferno en un mapa interactivo (en inglés)", url: "https://csnades.gg/inferno/smokes" },
   ],
   quiz: [
     { q: "Desde B de Inferno ves a un T detrás del auto quemado de arriba de Banana. ¿Qué cantás?", opciones: ["\"Uno Logs\"","\"Uno Sandbags\"","\"Uno Car\"","\"Uno Fountain\""], correcta: 2, explicacion: "Car está arriba de Banana. Logs tienta, pero está abajo, del lado T." },
@@ -415,43 +417,44 @@ B → A: B Doors → CT Mid → CT Spawn → A</code></pre>
       <p><strong>Ojo con "Cat":</strong> en Dust II es Short de A. En Mirage, Cat es Short de B.</p>
       <p>Por ejemplo, al empezar la ronda un CT con AWP mira por el hueco de las puertas del medio. Los T cruzan con una smoke en "Mid Doors" para no regalarle el tiro.</p>` },
     { titulo: "Los humos de Dust II", video: {"id":"SC6N2RcDQh4","t":"Granadas de Dust 2 que tenés que saber · juanch1 (16:26)"}, html: `
-      <p class="idea">Estos son los humos (smokes) esenciales de Dust II. Tocá el nombre de cada uno y se abre su video: ahí ves dónde pararte, adónde apuntar y cómo tirarlo.</p>
+      <p class="idea">Estos son los humos (smokes) esenciales de Dust II. Cada uno tiene acá abajo su video corto, que te muestra dónde pararte, adónde apuntar y cómo tirarlo.</p>
       <table>
-        <tr><th>Humo y desde dónde</th><th>Para qué sirve y cómo se tira</th></tr>
-        <tr><td><strong><a href="https://csnades.gg/dust2/smokes/a-cross-from-long-doors" target="_blank" rel="noopener">A Cross</a></strong><br><small>A · desde Long Doors</small></td><td>Tapa el cruce de Long hacia A para pasar sin que te vean desde el sitio. <em>Corriendo, clic izquierdo</em></td></tr>
-        <tr><td><strong><a href="https://csnades.gg/dust2/smokes/ct-spawn-from-xbox" target="_blank" rel="noopener">CT Spawn (A)</a></strong><br><small>A · desde XBox</small></td><td>Tapa la vista desde CT hacia A cuando entrás por Short. <em>Quieto, clic izquierdo</em></td></tr>
-        <tr><td><strong><a href="https://csnades.gg/dust2/smokes/long-corner-from-outside-a-long" target="_blank" rel="noopener">Long Corner</a></strong><br><small>A · desde Outside A Long</small></td><td>Tapa la esquina de Long donde espera un CT. <em>Quieto, clic izquierdo</em></td></tr>
-        <tr><td><strong><a href="https://csnades.gg/dust2/smokes/xbox-from-t-spawn" target="_blank" rel="noopener">Xbox (Mid)</a></strong><br><small>Mid · desde T Spawn</small></td><td>Tapa Mid a la altura de Xbox para cruzar a Short o a B sin que te vea el AWP. <em>Quieto, salto y soltás (jump throw)</em></td></tr>
-        <tr><td><strong><a href="https://csnades.gg/dust2/smokes/mid-doors-from-t-spawn" target="_blank" rel="noopener">Mid Doors</a></strong><br><small>Mid · desde T Spawn</small></td><td>Tapa las puertas de Mid, desde donde los CT miran todo Mid. <em>Quieto, salto y soltás (jump throw)</em></td></tr>
-        <tr><td><strong><a href="https://csnades.gg/dust2/smokes/b-doors-from-upper-tunnels-a" target="_blank" rel="noopener">B Doors</a></strong><br><small>B · desde Upper Tunnels</small></td><td>Tapa las puertas de B, por donde rotan los CT. <em>Quieto, clic izquierdo</em></td></tr>
-        <tr><td><strong><a href="https://csnades.gg/dust2/smokes/b-window-from-outside-b-tunnels" target="_blank" rel="noopener">B Window</a></strong><br><small>B · desde Outside B Tunnels</small></td><td>Tapa la ventana de B, desde donde un CT mira la salida de Túneles. <em>Quieto, salto y soltás (jump throw)</em></td></tr>
-        <tr><td><strong><a href="https://csnades.gg/dust2/smokes/long-doors-from-car" target="_blank" rel="noopener">Long Doors</a></strong><br><small>Lado CT · desde Car</small></td><td>Para los CT: tapa las puertas de Long para frenar el avance por Long. <em>Quieto, salto y soltás (jump throw)</em></td></tr>
+        <tr><th>Humo y desde dónde</th><th>Cómo se tira</th></tr>
+        <tr><td><strong>A Cross</strong><br><small>A · desde Long Doors</small></td><td>Corriendo, clic izquierdo</td></tr>
+        <tr><td><strong>CT Spawn (A)</strong><br><small>A · desde XBox</small></td><td>Quieto, clic izquierdo</td></tr>
+        <tr><td><strong>Long Corner</strong><br><small>A · desde Outside A Long</small></td><td>Quieto, clic izquierdo</td></tr>
+        <tr><td><strong>Xbox (Mid)</strong><br><small>Mid · desde T Spawn</small></td><td>Quieto, salto y soltás (jump throw)</td></tr>
+        <tr><td><strong>Mid Doors</strong><br><small>Mid · desde T Spawn</small></td><td>Quieto, salto y soltás (jump throw)</td></tr>
+        <tr><td><strong>B Doors</strong><br><small>B · desde Upper Tunnels</small></td><td>Quieto, clic izquierdo</td></tr>
+        <tr><td><strong>B Window</strong><br><small>B · desde Outside B Tunnels</small></td><td>Quieto, salto y soltás (jump throw)</td></tr>
+        <tr><td><strong>Long Doors</strong><br><small>Lado CT · desde Car</small></td><td>Quieto, salto y soltás (jump throw)</td></tr>
       </table>
-      <p><strong>Para practicarlo sin buscar el lugar:</strong> en tu servidor de práctica (lo armás con el módulo de humos), copiá la línea del humo y pegala en la consola. Te deja parado y apuntando justo; solo tenés que tirar como dice la tabla.</p>
-      <pre><code>A Cross:
-setpos 860.031250 790.030640 65.400719;setang -25.430794 43.542336 0.000000
-
-CT Spawn (A):
-setpos -275.031250 1345.415039 -58.539078;setang -37.483829 131.785400 0.000000
-
-Long Corner:
-setpos 649.568481 -186.747192 61.964893;setang -37.637314 69.328232 0.000000
-
-Xbox (Mid):
-setpos -507.981140 -662.065613 184.600830;setang -4.644310 84.623192 0.000000
-
-Mid Doors:
-setpos -452.659668 -660.031799 174.561096;setang -10.086742 88.501434 0.000000
-
-B Doors:
-setpos -1833.242920 1224.881836 96.114487;setang -66.117722 64.137291 0.000000
-
-B Window:
-setpos -1332.026001 491.966980 72.031250;setang -49.104042 89.166710 0.000000
-
-Long Doors:
-setpos 1783.865845 2080.022705 67.510422;setang -7.305259 -132.512497 0.000000</code></pre>
-      <p>Los humos van <strong>juntos</strong>: un humo solo tapa un rincón, pero tres al mismo tiempo cortan un sitio entero. Por eso en la tabla están agrupados por zona.</p>
+      <p><strong>Para practicarlo sin buscar el lugar:</strong> debajo de cada video está su línea de consola. En tu servidor de práctica (lo armás con el módulo de humos), copiala y pegala en la consola: te deja parado y apuntando justo, y solo tenés que tirar como dice la tabla.</p>
+      <p><strong>💨 A Cross</strong> <small>(A · desde Long Doors)</small><br>Tapa el cruce de Long hacia A para pasar sin que te vean desde el sitio. <em>Corriendo, clic izquierdo.</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/dust2-smoke-dBt2lcA3vc/lq.mp4" poster="https://assets.csnades.gg/nades/dust2-smoke-dBt2lcA3vc/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/dust2/smokes/a-cross-from-long-doors" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos 860.031250 790.030640 65.400719;setang -25.430794 43.542336 0.000000</code></pre>
+      <p><strong>💨 CT Spawn (A)</strong> <small>(A · desde XBox)</small><br>Tapa la vista desde CT hacia A cuando entrás por Short. <em>Quieto, clic izquierdo.</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/dust2-smoke-XMJVOfP5Ca/lq.mp4" poster="https://assets.csnades.gg/nades/dust2-smoke-XMJVOfP5Ca/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/dust2/smokes/ct-spawn-from-xbox" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos -275.031250 1345.415039 -58.539078;setang -37.483829 131.785400 0.000000</code></pre>
+      <p><strong>💨 Long Corner</strong> <small>(A · desde Outside A Long)</small><br>Tapa la esquina de Long donde espera un CT. <em>Quieto, clic izquierdo.</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/dust2-smoke-pOy1yKGuae/lq.mp4" poster="https://assets.csnades.gg/nades/dust2-smoke-pOy1yKGuae/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/dust2/smokes/long-corner-from-outside-a-long" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos 649.568481 -186.747192 61.964893;setang -37.637314 69.328232 0.000000</code></pre>
+      <p><strong>💨 Xbox (Mid)</strong> <small>(Mid · desde T Spawn)</small><br>Tapa Mid a la altura de Xbox para cruzar a Short o a B sin que te vea el AWP. <em>Quieto, salto y soltás (jump throw).</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/dust2-smoke-pXWCQLmYhk/lq.mp4" poster="https://assets.csnades.gg/nades/dust2-smoke-pXWCQLmYhk/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/dust2/smokes/xbox-from-t-spawn" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos -507.981140 -662.065613 184.600830;setang -4.644310 84.623192 0.000000</code></pre>
+      <p><strong>💨 Mid Doors</strong> <small>(Mid · desde T Spawn)</small><br>Tapa las puertas de Mid, desde donde los CT miran todo Mid. <em>Quieto, salto y soltás (jump throw).</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/dust2-smoke-bye3X5vLuZ/lq.mp4" poster="https://assets.csnades.gg/nades/dust2-smoke-bye3X5vLuZ/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/dust2/smokes/mid-doors-from-t-spawn" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos -452.659668 -660.031799 174.561096;setang -10.086742 88.501434 0.000000</code></pre>
+      <p><strong>💨 B Doors</strong> <small>(B · desde Upper Tunnels)</small><br>Tapa las puertas de B, por donde rotan los CT. <em>Quieto, clic izquierdo.</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/dust2-smoke-7KwvY4vQcC/lq.mp4" poster="https://assets.csnades.gg/nades/dust2-smoke-7KwvY4vQcC/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/dust2/smokes/b-doors-from-upper-tunnels-a" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos -1833.242920 1224.881836 96.114487;setang -66.117722 64.137291 0.000000</code></pre>
+      <p><strong>💨 B Window</strong> <small>(B · desde Outside B Tunnels)</small><br>Tapa la ventana de B, desde donde un CT mira la salida de Túneles. <em>Quieto, salto y soltás (jump throw).</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/dust2-smoke-MtLiZmb0gQ/lq.mp4" poster="https://assets.csnades.gg/nades/dust2-smoke-MtLiZmb0gQ/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/dust2/smokes/b-window-from-outside-b-tunnels" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos -1332.026001 491.966980 72.031250;setang -49.104042 89.166710 0.000000</code></pre>
+      <p><strong>💨 Long Doors</strong> <small>(lado CT · desde Car)</small><br>Para los CT: tapa las puertas de Long para frenar el avance por Long. <em>Quieto, salto y soltás (jump throw).</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/dust2-smoke-rvINJHyhOX/lq.mp4" poster="https://assets.csnades.gg/nades/dust2-smoke-rvINJHyhOX/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/dust2/smokes/long-doors-from-car" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos 1783.865845 2080.022705 67.510422;setang -7.305259 -132.512497 0.000000</code></pre>
+      <p>Los humos van <strong>juntos</strong>: un humo solo tapa un rincón, pero tres al mismo tiempo cortan un sitio entero. Por eso están agrupados por zona.</p>
       <p>Por ejemplo, para entrar a B desde Túneles, un compañero tira B Doors y otro B Window; los CT que rotan y el que mira desde la ventana quedan ciegos.</p>` },
   ],
   practica: [
@@ -463,7 +466,7 @@ setpos 1783.865845 2080.022705 67.510422;setang -7.305259 -132.512497 0.000000</
   recursos: [
     { t: "csdb.gg: radar interactivo de Dust2 con todos los callouts", url: "https://csdb.gg/maps/dust2/" },
     { t: "Wikipedia: lista de mapas competitivos de Counter-Strike (pool actual)", url: "https://en.wikipedia.org/wiki/List_of_competitive_Counter-Strike_maps" },
-    { t: "CSNADES.gg: todos los humos de Dust II en un mapa interactivo, con video de cada uno (en inglés)", url: "https://csnades.gg/dust2/smokes" },
+    { t: "CSNADES.gg: todos los humos de Dust II en un mapa interactivo (en inglés)", url: "https://csnades.gg/dust2/smokes" },
   ],
   quiz: [
     { q: "Si un CT te espera en la zona hundida al final de Long en Dust II, ¿qué cantás?", opciones: ["\"Uno Goose\"","\"Uno Blue\"","\"Uno Pit\"","\"Uno Closet\""], correcta: 2, explicacion: "Pit es el pozo al final de Long. Goose tienta, pero está detrás de la plataforma de A." },
@@ -516,35 +519,36 @@ setpos 1783.865845 2080.022705 67.510422;setang -7.305259 -132.512497 0.000000</
       <p><strong>Escuchar es medio mapa:</strong> los pasos en Vents y en las escaleras se oyen desde el otro piso. Un buen CT de Nuke canta "suenan Vents" antes de ver a nadie.</p>
       <p>Por ejemplo, oís que alguien baja por la escalera que viene de afuera hacia los túneles de B. La call es "suena Secret", y el CT de B se prepara para un ataque por atrás.</p>` },
     { titulo: "Los humos de Nuke", video: {"id":"HMxO4q0LUp0","t":"Todo lo que sé de Nuke · juanch1 (28:16)"}, html: `
-      <p class="idea">Estos son los humos (smokes) esenciales de Nuke. Tocá el nombre de cada uno y se abre su video: ahí ves dónde pararte, adónde apuntar y cómo tirarlo.</p>
+      <p class="idea">Estos son los humos (smokes) esenciales de Nuke. Cada uno tiene acá abajo su video corto, que te muestra dónde pararte, adónde apuntar y cómo tirarlo.</p>
       <table>
-        <tr><th>Humo y desde dónde</th><th>Para qué sirve y cómo se tira</th></tr>
-        <tr><td><strong><a href="https://csnades.gg/nuke/smokes/heaven-from-silo" target="_blank" rel="noopener">Heaven</a></strong><br><small>A · desde Silo</small></td><td>Tapa Heaven, la pasarela alta de los CT que mira A. <em>Quieto, clic izquierdo</em></td></tr>
-        <tr><td><strong><a href="https://csnades.gg/nuke/smokes/garage-from-under-silo" target="_blank" rel="noopener">Garage</a></strong><br><small>Outside · desde Under Silo</small></td><td>Tapa Garage, el depósito de los CT que controla Outside. <em>Quieto, clic izquierdo</em></td></tr>
-        <tr><td><strong><a href="https://csnades.gg/nuke/smokes/ct-red-from-under-silo" target="_blank" rel="noopener">CT Red</a></strong><br><small>Outside · desde Under Silo</small></td><td>Tapa el contenedor rojo de los CT en Outside. <em>Quieto, clic izquierdo</em></td></tr>
-        <tr><td><strong><a href="https://csnades.gg/nuke/smokes/secret-far-from-under-silo" target="_blank" rel="noopener">Secret</a></strong><br><small>Outside · desde Under Silo</small></td><td>Tapa la llegada a Secret, la escalera que baja hacia B. <em>Quieto, clic izquierdo</em></td></tr>
-        <tr><td><strong><a href="https://csnades.gg/nuke/smokes/ramp-from-trophy-a" target="_blank" rel="noopener">Ramp</a></strong><br><small>B · desde Trophy</small></td><td>Tapa Ramp para bajar hacia B sin que te vean los CT de abajo. <em>Corriendo, clic izquierdo</em></td></tr>
-        <tr><td><strong><a href="https://csnades.gg/nuke/smokes/squeaky-from-heaven" target="_blank" rel="noopener">Squeaky</a></strong><br><small>Lado CT · desde Heaven</small></td><td>Para los CT: tapa Squeaky, una de las entradas de los T a A. <em>Quieto, clic izquierdo</em></td></tr>
+        <tr><th>Humo y desde dónde</th><th>Cómo se tira</th></tr>
+        <tr><td><strong>Heaven</strong><br><small>A · desde Silo</small></td><td>Quieto, clic izquierdo</td></tr>
+        <tr><td><strong>Garage</strong><br><small>Outside · desde Under Silo</small></td><td>Quieto, clic izquierdo</td></tr>
+        <tr><td><strong>CT Red</strong><br><small>Outside · desde Under Silo</small></td><td>Quieto, clic izquierdo</td></tr>
+        <tr><td><strong>Secret</strong><br><small>Outside · desde Under Silo</small></td><td>Quieto, clic izquierdo</td></tr>
+        <tr><td><strong>Ramp</strong><br><small>B · desde Trophy</small></td><td>Corriendo, clic izquierdo</td></tr>
+        <tr><td><strong>Squeaky</strong><br><small>Lado CT · desde Heaven</small></td><td>Quieto, clic izquierdo</td></tr>
       </table>
-      <p><strong>Para practicarlo sin buscar el lugar:</strong> en tu servidor de práctica (lo armás con el módulo de humos), copiá la línea del humo y pegala en la consola. Te deja parado y apuntando justo; solo tenés que tirar como dice la tabla.</p>
-      <pre><code>Heaven:
-setpos -19.661560 -1461.646362 17.167660;setang -21.658056 47.196793 0.000000
-
-Garage:
-setpos -308.972900 -1924.057251 -351.961548;setang -19.713923 0.360994 0.000000
-
-CT Red:
-setpos -141.270569 -1962.644165 -351.968750;setang -36.348190 17.487387 0.000000
-
-Secret:
-setpos -423.570129 -1752.576172 -351.968750;setang -22.229683 -16.962109 0.000000
-
-Ramp:
-setpos 251.968475 -352.282166 -351.968750;setang -8.553168 131.843216 0.000000
-
-Squeaky:
-setpos 1011.644836 -457.968750 -63.968750;setang -8.194401 -120.156166 0.000000</code></pre>
-      <p>Los humos van <strong>juntos</strong>: un humo solo tapa un rincón, pero tres al mismo tiempo cortan un sitio entero. Por eso en la tabla están agrupados por zona.</p>
+      <p><strong>Para practicarlo sin buscar el lugar:</strong> debajo de cada video está su línea de consola. En tu servidor de práctica (lo armás con el módulo de humos), copiala y pegala en la consola: te deja parado y apuntando justo, y solo tenés que tirar como dice la tabla.</p>
+      <p><strong>💨 Heaven</strong> <small>(A · desde Silo)</small><br>Tapa Heaven, la pasarela alta de los CT que mira A. <em>Quieto, clic izquierdo.</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/nuke-smoke-ZcYGFCKa39/lq.mp4" poster="https://assets.csnades.gg/nades/nuke-smoke-ZcYGFCKa39/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/nuke/smokes/heaven-from-silo" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos -19.661560 -1461.646362 17.167660;setang -21.658056 47.196793 0.000000</code></pre>
+      <p><strong>💨 Garage</strong> <small>(Outside · desde Under Silo)</small><br>Tapa Garage, el depósito de los CT que controla Outside. <em>Quieto, clic izquierdo.</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/nuke-smoke-l3koCgeoHZ/lq.mp4" poster="https://assets.csnades.gg/nades/nuke-smoke-l3koCgeoHZ/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/nuke/smokes/garage-from-under-silo" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos -308.972900 -1924.057251 -351.961548;setang -19.713923 0.360994 0.000000</code></pre>
+      <p><strong>💨 CT Red</strong> <small>(Outside · desde Under Silo)</small><br>Tapa el contenedor rojo de los CT en Outside. <em>Quieto, clic izquierdo.</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/nuke-smoke-EYwJuFOVfp/lq.mp4" poster="https://assets.csnades.gg/nades/nuke-smoke-EYwJuFOVfp/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/nuke/smokes/ct-red-from-under-silo" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos -141.270569 -1962.644165 -351.968750;setang -36.348190 17.487387 0.000000</code></pre>
+      <p><strong>💨 Secret</strong> <small>(Outside · desde Under Silo)</small><br>Tapa la llegada a Secret, la escalera que baja hacia B. <em>Quieto, clic izquierdo.</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/nuke-smoke-Sswwq7kpV9/lq.mp4" poster="https://assets.csnades.gg/nades/nuke-smoke-Sswwq7kpV9/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/nuke/smokes/secret-far-from-under-silo" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos -423.570129 -1752.576172 -351.968750;setang -22.229683 -16.962109 0.000000</code></pre>
+      <p><strong>💨 Ramp</strong> <small>(B · desde Trophy)</small><br>Tapa Ramp para bajar hacia B sin que te vean los CT de abajo. <em>Corriendo, clic izquierdo.</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/nuke-smoke-GnMSqEPcto/lq.mp4" poster="https://assets.csnades.gg/nades/nuke-smoke-GnMSqEPcto/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/nuke/smokes/ramp-from-trophy-a" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos 251.968475 -352.282166 -351.968750;setang -8.553168 131.843216 0.000000</code></pre>
+      <p><strong>💨 Squeaky</strong> <small>(lado CT · desde Heaven)</small><br>Para los CT: tapa Squeaky, una de las entradas de los T a A. <em>Quieto, clic izquierdo.</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/nuke-smoke-QefmQzSwxJ/lq.mp4" poster="https://assets.csnades.gg/nades/nuke-smoke-QefmQzSwxJ/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/nuke/smokes/squeaky-from-heaven" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos 1011.644836 -457.968750 -63.968750;setang -8.194401 -120.156166 0.000000</code></pre>
+      <p>Los humos van <strong>juntos</strong>: un humo solo tapa un rincón, pero tres al mismo tiempo cortan un sitio entero. Por eso están agrupados por zona.</p>
       <p>Por ejemplo, para cruzar Outside, desde Under Silo tiran Garage, CT Red y Secret; así el patio queda tapado del lado de los CT.</p>` },
   ],
   practica: [
@@ -556,7 +560,7 @@ setpos 1011.644836 -457.968750 -63.968750;setang -8.194401 -120.156166 0.000000<
   recursos: [
     { t: "csdb.gg: radar interactivo de Nuke con todos los callouts", url: "https://csdb.gg/maps/nuke/" },
     { t: "Wikipedia: lista de mapas competitivos de Counter-Strike (pool actual)", url: "https://en.wikipedia.org/wiki/List_of_competitive_Counter-Strike_maps" },
-    { t: "CSNADES.gg: todos los humos de Nuke en un mapa interactivo, con video de cada uno (en inglés)", url: "https://csnades.gg/nuke/smokes" },
+    { t: "CSNADES.gg: todos los humos de Nuke en un mapa interactivo (en inglés)", url: "https://csnades.gg/nuke/smokes" },
   ],
   quiz: [
     { q: "¿Qué tiene de especial Nuke frente a los otros mapas?", opciones: ["Tiene un solo sitio","Los sitios están en extremos opuestos del mapa","A está arriba y B abajo, casi una encima de la otra","No tiene Mid"], correcta: 2, explicacion: "Son dos pisos y la rotación es rápida. \"Extremos opuestos\" tienta porque así es en otros mapas." },
@@ -604,43 +608,44 @@ setpos 1011.644836 -457.968750 -63.968750;setang -8.194401 -120.156166 0.000000<
       <p><strong>Dos "Tunnel":</strong> "Tunnels" (plural) lleva de Mid a Short; "Tunnel" (singular) lleva de T spawn a Water. Aclará cuál.</p>
       <p>Por ejemplo, un CT espía Mid desde las puertas dobles de arriba. La call es "uno Snipers Nest", y los T usan una smoke ahí antes de cruzar por Elbow.</p>` },
     { titulo: "Los humos de Ancient", video: {"id":"8pgAZcTi3C8","t":"La guía de humos de Ancient, en inglés (se entiende mirando) · CS Tactics (15:46)"}, html: `
-      <p class="idea">Estos son los humos (smokes) esenciales de Ancient. Tocá el nombre de cada uno y se abre su video: ahí ves dónde pararte, adónde apuntar y cómo tirarlo.</p>
+      <p class="idea">Estos son los humos (smokes) esenciales de Ancient. Cada uno tiene acá abajo su video corto, que te muestra dónde pararte, adónde apuntar y cómo tirarlo.</p>
       <table>
-        <tr><th>Humo y desde dónde</th><th>Para qué sirve y cómo se tira</th></tr>
-        <tr><td><strong><a href="https://csnades.gg/ancient/smokes/ct-from-outside-a" target="_blank" rel="noopener">CT (A)</a></strong><br><small>A · desde Outside A</small></td><td>Tapa la vista desde CT hacia el sitio A. <em>Quieto, salto y soltás (jump throw)</em></td></tr>
-        <tr><td><strong><a href="https://csnades.gg/ancient/smokes/temple-from-outside-a" target="_blank" rel="noopener">Temple</a></strong><br><small>A · desde Outside A</small></td><td>Tapa Temple, el pasaje de los CT con vista larga a Main. <em>Quieto, salto y soltás (jump throw)</em></td></tr>
-        <tr><td><strong><a href="https://csnades.gg/ancient/smokes/donut-tunnel-from-outside-a" target="_blank" rel="noopener">Donut</a></strong><br><small>A · desde Outside A</small></td><td>Tapa Donut, el cuarto redondo al lado de A que lleva a CT. <em>Quieto, salto y soltás (jump throw)</em></td></tr>
-        <tr><td><strong><a href="https://csnades.gg/ancient/smokes/top-mid-from-elbow" target="_blank" rel="noopener">Top Mid</a></strong><br><small>Mid · desde Elbow</small></td><td>Tapa Top Mid para avanzar por Mid. <em>Quieto, clic izquierdo</em></td></tr>
-        <tr><td><strong><a href="https://csnades.gg/ancient/smokes/cave-from-ruins" target="_blank" rel="noopener">Cave</a></strong><br><small>B · desde Ruins</small></td><td>Tapa Cave, un ángulo de los CT del lado de B. <em>Quieto, salto y soltás (jump throw)</em></td></tr>
-        <tr><td><strong><a href="https://csnades.gg/ancient/smokes/back-alley-from-ruins" target="_blank" rel="noopener">Back Alley</a></strong><br><small>B · desde Ruins</small></td><td>Tapa el pasillo del fondo por donde llegan los CT a B. <em>Quieto, salto y soltás (jump throw)</em></td></tr>
-        <tr><td><strong><a href="https://csnades.gg/ancient/smokes/b-ramp-from-ct-spawn" target="_blank" rel="noopener">B Ramp</a></strong><br><small>Lado CT · desde CT Spawn</small></td><td>Para los CT: tapa la rampa de entrada a B. <em>Quieto, salto y soltás (jump throw)</em></td></tr>
-        <tr><td><strong><a href="https://csnades.gg/ancient/smokes/a-main-from-big-box" target="_blank" rel="noopener">A Main</a></strong><br><small>Lado CT · desde Big Box</small></td><td>Para los CT: tapa la entrada principal de A. <em>Quieto, clic izquierdo</em></td></tr>
+        <tr><th>Humo y desde dónde</th><th>Cómo se tira</th></tr>
+        <tr><td><strong>CT (A)</strong><br><small>A · desde Outside A</small></td><td>Quieto, salto y soltás (jump throw)</td></tr>
+        <tr><td><strong>Temple</strong><br><small>A · desde Outside A</small></td><td>Quieto, salto y soltás (jump throw)</td></tr>
+        <tr><td><strong>Donut</strong><br><small>A · desde Outside A</small></td><td>Quieto, salto y soltás (jump throw)</td></tr>
+        <tr><td><strong>Top Mid</strong><br><small>Mid · desde Elbow</small></td><td>Quieto, clic izquierdo</td></tr>
+        <tr><td><strong>Cave</strong><br><small>B · desde Ruins</small></td><td>Quieto, salto y soltás (jump throw)</td></tr>
+        <tr><td><strong>Back Alley</strong><br><small>B · desde Ruins</small></td><td>Quieto, salto y soltás (jump throw)</td></tr>
+        <tr><td><strong>B Ramp</strong><br><small>Lado CT · desde CT Spawn</small></td><td>Quieto, salto y soltás (jump throw)</td></tr>
+        <tr><td><strong>A Main</strong><br><small>Lado CT · desde Big Box</small></td><td>Quieto, clic izquierdo</td></tr>
       </table>
-      <p><strong>Para practicarlo sin buscar el lugar:</strong> en tu servidor de práctica (lo armás con el módulo de humos), copiá la línea del humo y pegala en la consola. Te deja parado y apuntando justo; solo tenés que tirar como dice la tabla.</p>
-      <pre><code>CT (A):
-setpos -1934.369507 -862.027649 49.846832;setang -43.344669 67.021294 0.000000
-
-Temple:
-setpos -1769.358398 -1244.817993 30.066071;setang -28.685102 86.793671 0.000000
-
-Donut:
-setpos -1934.712646 -862.030884 49.697601;setang -32.102016 74.690254 0.000000
-
-Top Mid:
-setpos -1050.372925 -792.027771 98.125954;setang -55.200752 60.267784 0.000000
-
-Cave:
-setpos 1255.968750 -1479.968750 83.832565;setang -11.334518 110.762878 0.000000
-
-Back Alley:
-setpos 914.950989 -1479.970947 73.276695;setang -7.672632 83.737144 0.000000
-
-B Ramp:
-setpos -66.031250 1771.968262 99.075851;setang -39.098480 -56.059330 0.000000
-
-A Main:
-setpos -1599.031250 1187.968750 116.031250;setang -13.472486 -120.882263 0.000000</code></pre>
-      <p>Los humos van <strong>juntos</strong>: un humo solo tapa un rincón, pero tres al mismo tiempo cortan un sitio entero. Por eso en la tabla están agrupados por zona.</p>
+      <p><strong>Para practicarlo sin buscar el lugar:</strong> debajo de cada video está su línea de consola. En tu servidor de práctica (lo armás con el módulo de humos), copiala y pegala en la consola: te deja parado y apuntando justo, y solo tenés que tirar como dice la tabla.</p>
+      <p><strong>💨 CT (A)</strong> <small>(A · desde Outside A)</small><br>Tapa la vista desde CT hacia el sitio A. <em>Quieto, salto y soltás (jump throw).</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/ancient-smoke-05JJVnP8AP/lq.mp4" poster="https://assets.csnades.gg/nades/ancient-smoke-05JJVnP8AP/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/ancient/smokes/ct-from-outside-a" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos -1934.369507 -862.027649 49.846832;setang -43.344669 67.021294 0.000000</code></pre>
+      <p><strong>💨 Temple</strong> <small>(A · desde Outside A)</small><br>Tapa Temple, el pasaje de los CT con vista larga a Main. <em>Quieto, salto y soltás (jump throw).</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/ancient-smoke-jRgHHBZPeJ/lq.mp4" poster="https://assets.csnades.gg/nades/ancient-smoke-jRgHHBZPeJ/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/ancient/smokes/temple-from-outside-a" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos -1769.358398 -1244.817993 30.066071;setang -28.685102 86.793671 0.000000</code></pre>
+      <p><strong>💨 Donut</strong> <small>(A · desde Outside A)</small><br>Tapa Donut, el cuarto redondo al lado de A que lleva a CT. <em>Quieto, salto y soltás (jump throw).</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/ancient-smoke-0JpsvFLFbE/lq.mp4" poster="https://assets.csnades.gg/nades/ancient-smoke-0JpsvFLFbE/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/ancient/smokes/donut-tunnel-from-outside-a" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos -1934.712646 -862.030884 49.697601;setang -32.102016 74.690254 0.000000</code></pre>
+      <p><strong>💨 Top Mid</strong> <small>(Mid · desde Elbow)</small><br>Tapa Top Mid para avanzar por Mid. <em>Quieto, clic izquierdo.</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/ancient-smoke-hxqGWlgsf1/lq.mp4" poster="https://assets.csnades.gg/nades/ancient-smoke-hxqGWlgsf1/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/ancient/smokes/top-mid-from-elbow" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos -1050.372925 -792.027771 98.125954;setang -55.200752 60.267784 0.000000</code></pre>
+      <p><strong>💨 Cave</strong> <small>(B · desde Ruins)</small><br>Tapa Cave, un ángulo de los CT del lado de B. <em>Quieto, salto y soltás (jump throw).</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/ancient-smoke-I7c4pmQBTz/lq.mp4" poster="https://assets.csnades.gg/nades/ancient-smoke-I7c4pmQBTz/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/ancient/smokes/cave-from-ruins" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos 1255.968750 -1479.968750 83.832565;setang -11.334518 110.762878 0.000000</code></pre>
+      <p><strong>💨 Back Alley</strong> <small>(B · desde Ruins)</small><br>Tapa el pasillo del fondo por donde llegan los CT a B. <em>Quieto, salto y soltás (jump throw).</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/ancient-smoke-T3Mseb88b9/lq.mp4" poster="https://assets.csnades.gg/nades/ancient-smoke-T3Mseb88b9/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/ancient/smokes/back-alley-from-ruins" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos 914.950989 -1479.970947 73.276695;setang -7.672632 83.737144 0.000000</code></pre>
+      <p><strong>💨 B Ramp</strong> <small>(lado CT · desde CT Spawn)</small><br>Para los CT: tapa la rampa de entrada a B. <em>Quieto, salto y soltás (jump throw).</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/ancient-smoke-epkiyQGoi3/lq.mp4" poster="https://assets.csnades.gg/nades/ancient-smoke-epkiyQGoi3/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/ancient/smokes/b-ramp-from-ct-spawn" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos -66.031250 1771.968262 99.075851;setang -39.098480 -56.059330 0.000000</code></pre>
+      <p><strong>💨 A Main</strong> <small>(lado CT · desde Big Box)</small><br>Para los CT: tapa la entrada principal de A. <em>Quieto, clic izquierdo.</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/ancient-smoke-VUZHW05YXm/lq.mp4" poster="https://assets.csnades.gg/nades/ancient-smoke-VUZHW05YXm/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/ancient/smokes/a-main-from-big-box" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos -1599.031250 1187.968750 116.031250;setang -13.472486 -120.882263 0.000000</code></pre>
+      <p>Los humos van <strong>juntos</strong>: un humo solo tapa un rincón, pero tres al mismo tiempo cortan un sitio entero. Por eso están agrupados por zona.</p>
       <p>Por ejemplo, para ejecutar A, desde Outside A tiran CT, Temple y Donut; el sitio queda cortado de las tres llegadas de los CT.</p>` },
   ],
   practica: [
@@ -652,7 +657,7 @@ setpos -1599.031250 1187.968750 116.031250;setang -13.472486 -120.882263 0.00000
   recursos: [
     { t: "csdb.gg: radar interactivo de Ancient con todos los callouts", url: "https://csdb.gg/maps/ancient/" },
     { t: "Wikipedia: lista de mapas competitivos de Counter-Strike (pool actual)", url: "https://en.wikipedia.org/wiki/List_of_competitive_Counter-Strike_maps" },
-    { t: "CSNADES.gg: todos los humos de Ancient en un mapa interactivo, con video de cada uno (en inglés)", url: "https://csnades.gg/ancient/smokes" },
+    { t: "CSNADES.gg: todos los humos de Ancient en un mapa interactivo (en inglés)", url: "https://csnades.gg/ancient/smokes" },
   ],
   quiz: [
     { q: "Si entrás a A de Ancient por Main y te matan desde el cuarto redondo del costado, ¿qué cantás?", opciones: ["\"Uno Temple\"","\"Uno Pillar\"","\"Uno Donut\"","\"Uno House\""], correcta: 2, explicacion: "Donut es el cuarto redondo de A. Temple tienta porque está del lado CT, pero es el pasaje desde spawn." },
@@ -699,35 +704,36 @@ setpos -1599.031250 1187.968750 116.031250;setang -13.472486 -120.882263 0.00000
       <p><strong>Ojo con Palace y Heaven:</strong> Anubis tiene un Palace distinto al de Mirage, y dos Heaven (el de A y el de Ruins). Aclarar "Heaven A" o "Heaven Ruins" evita confusiones.</p>
       <p>Por ejemplo, un T cruza por abajo del puente, en el agua. La call es "uno Water", no "uno Bridge": uno está arriba y el otro abajo.</p>` },
     { titulo: "Los humos de Anubis", video: {"id":"B5l6BWLQEhk","t":"Anubis: todos los humos del lado T en menos de 2 minutos · Gus1to (1:41)"}, html: `
-      <p class="idea">Estos son los humos (smokes) esenciales de Anubis. Tocá el nombre de cada uno y se abre su video: ahí ves dónde pararte, adónde apuntar y cómo tirarlo.</p>
+      <p class="idea">Estos son los humos (smokes) esenciales de Anubis. Cada uno tiene acá abajo su video corto, que te muestra dónde pararte, adónde apuntar y cómo tirarlo.</p>
       <table>
-        <tr><th>Humo y desde dónde</th><th>Para qué sirve y cómo se tira</th></tr>
-        <tr><td><strong><a href="https://csnades.gg/anubis/smokes/connector-from-t-upper" target="_blank" rel="noopener">Connector</a></strong><br><small>A · desde T Upper</small></td><td>Tapa Connector, el pasillo angosto entre Mid y A. <em>Quieto, clic izquierdo</em></td></tr>
-        <tr><td><strong><a href="https://csnades.gg/anubis/smokes/heaven-from-t-upper" target="_blank" rel="noopener">Heaven</a></strong><br><small>A · desde T Upper</small></td><td>Tapa Heaven, la plataforma alta de los CT sobre A. <em>Quieto, salto y soltás (jump throw)</em></td></tr>
-        <tr><td><strong><a href="https://csnades.gg/anubis/smokes/top-mid-from-t-spawn-b" target="_blank" rel="noopener">Top Mid</a></strong><br><small>Mid · desde T Spawn</small></td><td>Tapa la entrada de Mid de los T para salir sin que te vean. <em>Quieto, salto y soltás (jump throw)</em></td></tr>
-        <tr><td><strong><a href="https://csnades.gg/anubis/smokes/ebox-from-ruins" target="_blank" rel="noopener">E-Box</a></strong><br><small>B · desde Ruins</small></td><td>Tapa E-Box, el rincón por donde los CT cortan de Mid hacia B. <em>Quieto, clic izquierdo</em></td></tr>
-        <tr><td><strong><a href="https://csnades.gg/anubis/smokes/ct-from-ruins" target="_blank" rel="noopener">CT (B)</a></strong><br><small>B · desde Ruins</small></td><td>Tapa la llegada de los CT al sitio B. <em>Quieto, clic izquierdo</em></td></tr>
-        <tr><td><strong><a href="https://csnades.gg/anubis/smokes/bridge-from-ct-spawn" target="_blank" rel="noopener">Bridge</a></strong><br><small>Lado CT · desde CT Spawn</small></td><td>Para los CT: tapa el puente de Mid. <em>Quieto, salto y soltás (jump throw)</em></td></tr>
+        <tr><th>Humo y desde dónde</th><th>Cómo se tira</th></tr>
+        <tr><td><strong>Connector</strong><br><small>A · desde T Upper</small></td><td>Quieto, clic izquierdo</td></tr>
+        <tr><td><strong>Heaven</strong><br><small>A · desde T Upper</small></td><td>Quieto, salto y soltás (jump throw)</td></tr>
+        <tr><td><strong>Top Mid</strong><br><small>Mid · desde T Spawn</small></td><td>Quieto, salto y soltás (jump throw)</td></tr>
+        <tr><td><strong>E-Box</strong><br><small>B · desde Ruins</small></td><td>Quieto, clic izquierdo</td></tr>
+        <tr><td><strong>CT (B)</strong><br><small>B · desde Ruins</small></td><td>Quieto, clic izquierdo</td></tr>
+        <tr><td><strong>Bridge</strong><br><small>Lado CT · desde CT Spawn</small></td><td>Quieto, salto y soltás (jump throw)</td></tr>
       </table>
-      <p><strong>Para practicarlo sin buscar el lugar:</strong> en tu servidor de práctica (lo armás con el módulo de humos), copiá la línea del humo y pegala en la consola. Te deja parado y apuntando justo; solo tenés que tirar como dice la tabla.</p>
-      <pre><code>Connector:
-setpos 1279.321045 571.968872 65.788254;setang -11.477298 125.519043 0.000000
-
-Heaven:
-setpos 1493.968750 157.031250 64.031250;setang -20.233910 101.987717 0.000000
-
-Top Mid:
-setpos -299.410522 -1725.968872 69.240440;setang -12.882040 85.062614 0.000000
-
-E-Box:
-setpos -1016.031250 -201.272644 64.031250;setang -48.091095 126.990288 0.000000
-
-CT (B):
-setpos -1321.326416 -491.967651 161.128159;setang -35.326256 80.217430 0.000000
-
-Bridge:
-setpos -368.945068 2360.894531 88.031494;setang -31.763067 -82.266800 0.000000</code></pre>
-      <p>Los humos van <strong>juntos</strong>: un humo solo tapa un rincón, pero tres al mismo tiempo cortan un sitio entero. Por eso en la tabla están agrupados por zona.</p>
+      <p><strong>Para practicarlo sin buscar el lugar:</strong> debajo de cada video está su línea de consola. En tu servidor de práctica (lo armás con el módulo de humos), copiala y pegala en la consola: te deja parado y apuntando justo, y solo tenés que tirar como dice la tabla.</p>
+      <p><strong>💨 Connector</strong> <small>(A · desde T Upper)</small><br>Tapa Connector, el pasillo angosto entre Mid y A. <em>Quieto, clic izquierdo.</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/anubis-smoke-Qoj34RwWIE/lq.mp4" poster="https://assets.csnades.gg/nades/anubis-smoke-Qoj34RwWIE/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/anubis/smokes/connector-from-t-upper" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos 1279.321045 571.968872 65.788254;setang -11.477298 125.519043 0.000000</code></pre>
+      <p><strong>💨 Heaven</strong> <small>(A · desde T Upper)</small><br>Tapa Heaven, la plataforma alta de los CT sobre A. <em>Quieto, salto y soltás (jump throw).</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/anubis-smoke-aQBt4qCxLI/lq.mp4" poster="https://assets.csnades.gg/nades/anubis-smoke-aQBt4qCxLI/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/anubis/smokes/heaven-from-t-upper" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos 1493.968750 157.031250 64.031250;setang -20.233910 101.987717 0.000000</code></pre>
+      <p><strong>💨 Top Mid</strong> <small>(Mid · desde T Spawn)</small><br>Tapa la entrada de Mid de los T para salir sin que te vean. <em>Quieto, salto y soltás (jump throw).</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/anubis-smoke-T1HaCXURLB/lq.mp4" poster="https://assets.csnades.gg/nades/anubis-smoke-T1HaCXURLB/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/anubis/smokes/top-mid-from-t-spawn-b" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos -299.410522 -1725.968872 69.240440;setang -12.882040 85.062614 0.000000</code></pre>
+      <p><strong>💨 E-Box</strong> <small>(B · desde Ruins)</small><br>Tapa E-Box, el rincón por donde los CT cortan de Mid hacia B. <em>Quieto, clic izquierdo.</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/anubis-smoke-irru6YOyDc/lq.mp4" poster="https://assets.csnades.gg/nades/anubis-smoke-irru6YOyDc/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/anubis/smokes/ebox-from-ruins" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos -1016.031250 -201.272644 64.031250;setang -48.091095 126.990288 0.000000</code></pre>
+      <p><strong>💨 CT (B)</strong> <small>(B · desde Ruins)</small><br>Tapa la llegada de los CT al sitio B. <em>Quieto, clic izquierdo.</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/anubis-smoke-AYQkrOmc0o/lq.mp4" poster="https://assets.csnades.gg/nades/anubis-smoke-AYQkrOmc0o/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/anubis/smokes/ct-from-ruins" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos -1321.326416 -491.967651 161.128159;setang -35.326256 80.217430 0.000000</code></pre>
+      <p><strong>💨 Bridge</strong> <small>(lado CT · desde CT Spawn)</small><br>Para los CT: tapa el puente de Mid. <em>Quieto, salto y soltás (jump throw).</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/anubis-smoke-y4RgwsxY6Q/lq.mp4" poster="https://assets.csnades.gg/nades/anubis-smoke-y4RgwsxY6Q/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/anubis/smokes/bridge-from-ct-spawn" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos -368.945068 2360.894531 88.031494;setang -31.763067 -82.266800 0.000000</code></pre>
+      <p>Los humos van <strong>juntos</strong>: un humo solo tapa un rincón, pero tres al mismo tiempo cortan un sitio entero. Por eso están agrupados por zona.</p>
       <p>Por ejemplo, para ejecutar A, desde T Upper tiran Connector y Heaven; los CT de Mid y el de la plataforma alta quedan sin vista.</p>` },
   ],
   practica: [
@@ -739,7 +745,7 @@ setpos -368.945068 2360.894531 88.031494;setang -31.763067 -82.266800 0.000000</
   recursos: [
     { t: "csdb.gg: radar interactivo de Anubis con todos los callouts", url: "https://csdb.gg/maps/anubis/" },
     { t: "Wikipedia: lista de mapas competitivos de Counter-Strike (pool actual)", url: "https://en.wikipedia.org/wiki/List_of_competitive_Counter-Strike_maps" },
-    { t: "CSNADES.gg: todos los humos de Anubis en un mapa interactivo, con video de cada uno (en inglés)", url: "https://csnades.gg/anubis/smokes" },
+    { t: "CSNADES.gg: todos los humos de Anubis en un mapa interactivo (en inglés)", url: "https://csnades.gg/anubis/smokes" },
   ],
   quiz: [
     { q: "Si un T se cubre en la plataforma frente a la entrada de A de Anubis, ¿qué cantás?", opciones: ["\"Uno Gate\"","\"Uno Bricks\"","\"Uno Fountain\"","\"Uno Ivy\""], correcta: 2, explicacion: "Fountain es la plataforma frente a Main. Gate tienta porque es una entrada, pero es la de B." },
@@ -791,43 +797,44 @@ Rotación de los CT:
 A ↔ B por CT Halls (o por Connector)</code></pre>
       <p>Por ejemplo, el AWP de los CT mira Mid desde la caja blanca del lado de Highway. La call es "AWP White Box", y los T tiran una smoke antes de cruzar.</p>` },
     { titulo: "Los humos de Cache", video: {"id":"ps2BgkrgnLQ","t":"Mejores humos de Cache en CS2 · Gukardo (3:47)"}, html: `
-      <p class="idea">Estos son los humos (smokes) esenciales de Cache. Tocá el nombre de cada uno y se abre su video: ahí ves dónde pararte, adónde apuntar y cómo tirarlo.</p>
+      <p class="idea">Estos son los humos (smokes) esenciales de Cache. Cada uno tiene acá abajo su video corto, que te muestra dónde pararte, adónde apuntar y cómo tirarlo.</p>
       <table>
-        <tr><th>Humo y desde dónde</th><th>Para qué sirve y cómo se tira</th></tr>
-        <tr><td><strong><a href="https://csnades.gg/cache/smokes/forklift-from-outside-squeaky" target="_blank" rel="noopener">Forklift</a></strong><br><small>A · desde Outside Squeaky</small></td><td>Tapa el autoelevador, la primera cobertura de los CT en A. <em>Quieto, clic izquierdo</em></td></tr>
-        <tr><td><strong><a href="https://csnades.gg/cache/smokes/back-a-site-from-outside-squeaky" target="_blank" rel="noopener">Fondo de A (Quad)</a></strong><br><small>A · desde Outside Squeaky</small></td><td>Tapa el fondo del sitio A, junto a Quad. <em>Quieto, clic izquierdo</em></td></tr>
-        <tr><td><strong><a href="https://csnades.gg/cache/smokes/highway-from-truck" target="_blank" rel="noopener">Highway</a></strong><br><small>A · desde Truck</small></td><td>Tapa Highway, la subida por donde rotan los CT de Mid a A. <em>Quieto, salto y soltás (jump throw)</em></td></tr>
-        <tr><td><strong><a href="https://csnades.gg/cache/smokes/nbk-from-outside-a-main" target="_blank" rel="noopener">NBK</a></strong><br><small>A · desde Outside A Main</small></td><td>Tapa NBK, el rincón entre Squeaky y Quad donde espera un CT. <em>Quieto, salto y soltás (jump throw)</em></td></tr>
-        <tr><td><strong><a href="https://csnades.gg/cache/smokes/right-mid-from-garage" target="_blank" rel="noopener">Mid (lado derecho)</a></strong><br><small>Mid · desde Garage</small></td><td>Tapa un costado de Mid para avanzar desde Garage. <em>Quieto, clic izquierdo</em></td></tr>
-        <tr><td><strong><a href="https://csnades.gg/cache/smokes/ct-from-sun-room" target="_blank" rel="noopener">CT (B)</a></strong><br><small>B · desde Sun Room</small></td><td>Tapa la llegada de los CT al sitio B. <em>Quieto, salto y soltás los dos clics</em></td></tr>
-        <tr><td><strong><a href="https://csnades.gg/cache/smokes/heaven-from-b-main" target="_blank" rel="noopener">Heaven (B)</a></strong><br><small>B · desde B Main</small></td><td>Tapa Heaven, la plataforma de madera de los CT sobre B. <em>Quieto, clic izquierdo</em></td></tr>
-        <tr><td><strong><a href="https://csnades.gg/cache/smokes/a-main-from-truck" target="_blank" rel="noopener">A Main</a></strong><br><small>Lado CT · desde Truck</small></td><td>Para los CT: tapa la entrada principal de A. <em>Quieto, clic izquierdo</em></td></tr>
+        <tr><th>Humo y desde dónde</th><th>Cómo se tira</th></tr>
+        <tr><td><strong>Forklift</strong><br><small>A · desde Outside Squeaky</small></td><td>Quieto, clic izquierdo</td></tr>
+        <tr><td><strong>Fondo de A (Quad)</strong><br><small>A · desde Outside Squeaky</small></td><td>Quieto, clic izquierdo</td></tr>
+        <tr><td><strong>Highway</strong><br><small>A · desde Truck</small></td><td>Quieto, salto y soltás (jump throw)</td></tr>
+        <tr><td><strong>NBK</strong><br><small>A · desde Outside A Main</small></td><td>Quieto, salto y soltás (jump throw)</td></tr>
+        <tr><td><strong>Mid (lado derecho)</strong><br><small>Mid · desde Garage</small></td><td>Quieto, clic izquierdo</td></tr>
+        <tr><td><strong>CT (B)</strong><br><small>B · desde Sun Room</small></td><td>Quieto, salto y soltás los dos clics</td></tr>
+        <tr><td><strong>Heaven (B)</strong><br><small>B · desde B Main</small></td><td>Quieto, clic izquierdo</td></tr>
+        <tr><td><strong>A Main</strong><br><small>Lado CT · desde Truck</small></td><td>Quieto, clic izquierdo</td></tr>
       </table>
-      <p><strong>Para practicarlo sin buscar el lugar:</strong> en tu servidor de práctica (lo armás con el módulo de humos), copiá la línea del humo y pegala en la consola. Te deja parado y apuntando justo; solo tenés que tirar como dice la tabla.</p>
-      <pre><code>Forklift:
-setpos 1315.960083 1587.968750 1768.000000;setang -54.791935 -178.067902 0.000000
-
-Fondo de A (Quad):
-setpos 1315.968750 1587.962524 1768.000000;setang -48.428482 -174.424484 0.000000
-
-Highway:
-setpos 1807.344727 701.968506 1672.000000;setang -35.406303 172.310226 0.000000
-
-NBK:
-setpos 1282.158203 522.031250 1674.969116;setang -56.183327 131.607437 0.000000
-
-Mid (lado derecho):
-setpos 1731.186157 208.031250 1676.000000;setang -11.611091 173.967438 0.000000
-
-CT (B):
-setpos 579.206726 -1449.947266 1676.265625;setang -2.874133 151.275269 0.000000
-
-Heaven (B):
-setpos 286.931183 -759.994812 1676.000000;setang -33.829708 137.568298 0.000000
-
-A Main:
-setpos -916.031250 1082.854248 1751.368164;setang -21.871262 22.539627 0.000000</code></pre>
-      <p>Los humos van <strong>juntos</strong>: un humo solo tapa un rincón, pero tres al mismo tiempo cortan un sitio entero. Por eso en la tabla están agrupados por zona.</p>
+      <p><strong>Para practicarlo sin buscar el lugar:</strong> debajo de cada video está su línea de consola. En tu servidor de práctica (lo armás con el módulo de humos), copiala y pegala en la consola: te deja parado y apuntando justo, y solo tenés que tirar como dice la tabla.</p>
+      <p><strong>💨 Forklift</strong> <small>(A · desde Outside Squeaky)</small><br>Tapa el autoelevador, la primera cobertura de los CT en A. <em>Quieto, clic izquierdo.</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/cache-smoke-Bm0pxctIts/lq.mp4" poster="https://assets.csnades.gg/nades/cache-smoke-Bm0pxctIts/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/cache/smokes/forklift-from-outside-squeaky" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos 1315.960083 1587.968750 1768.000000;setang -54.791935 -178.067902 0.000000</code></pre>
+      <p><strong>💨 Fondo de A (Quad)</strong> <small>(A · desde Outside Squeaky)</small><br>Tapa el fondo del sitio A, junto a Quad. <em>Quieto, clic izquierdo.</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/cache-smoke-mMK97AyqvZ/lq.mp4" poster="https://assets.csnades.gg/nades/cache-smoke-mMK97AyqvZ/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/cache/smokes/back-a-site-from-outside-squeaky" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos 1315.968750 1587.962524 1768.000000;setang -48.428482 -174.424484 0.000000</code></pre>
+      <p><strong>💨 Highway</strong> <small>(A · desde Truck)</small><br>Tapa Highway, la subida por donde rotan los CT de Mid a A. <em>Quieto, salto y soltás (jump throw).</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/cache-smoke-YayxoQ4qxh/lq.mp4" poster="https://assets.csnades.gg/nades/cache-smoke-YayxoQ4qxh/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/cache/smokes/highway-from-truck" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos 1807.344727 701.968506 1672.000000;setang -35.406303 172.310226 0.000000</code></pre>
+      <p><strong>💨 NBK</strong> <small>(A · desde Outside A Main)</small><br>Tapa NBK, el rincón entre Squeaky y Quad donde espera un CT. <em>Quieto, salto y soltás (jump throw).</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/cache-smoke-ACOsbzEdtx/lq.mp4" poster="https://assets.csnades.gg/nades/cache-smoke-ACOsbzEdtx/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/cache/smokes/nbk-from-outside-a-main" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos 1282.158203 522.031250 1674.969116;setang -56.183327 131.607437 0.000000</code></pre>
+      <p><strong>💨 Mid (lado derecho)</strong> <small>(Mid · desde Garage)</small><br>Tapa un costado de Mid para avanzar desde Garage. <em>Quieto, clic izquierdo.</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/cache-smoke-0CRKYU9cDw/lq.mp4" poster="https://assets.csnades.gg/nades/cache-smoke-0CRKYU9cDw/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/cache/smokes/right-mid-from-garage" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos 1731.186157 208.031250 1676.000000;setang -11.611091 173.967438 0.000000</code></pre>
+      <p><strong>💨 CT (B)</strong> <small>(B · desde Sun Room)</small><br>Tapa la llegada de los CT al sitio B. <em>Quieto, salto y soltás los dos clics.</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/cache-smoke-ORDvnr5ctw/lq.mp4" poster="https://assets.csnades.gg/nades/cache-smoke-ORDvnr5ctw/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/cache/smokes/ct-from-sun-room" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos 579.206726 -1449.947266 1676.265625;setang -2.874133 151.275269 0.000000</code></pre>
+      <p><strong>💨 Heaven (B)</strong> <small>(B · desde B Main)</small><br>Tapa Heaven, la plataforma de madera de los CT sobre B. <em>Quieto, clic izquierdo.</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/cache-smoke-aHzkPliICo/lq.mp4" poster="https://assets.csnades.gg/nades/cache-smoke-aHzkPliICo/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/cache/smokes/heaven-from-b-main" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos 286.931183 -759.994812 1676.000000;setang -33.829708 137.568298 0.000000</code></pre>
+      <p><strong>💨 A Main</strong> <small>(lado CT · desde Truck)</small><br>Para los CT: tapa la entrada principal de A. <em>Quieto, clic izquierdo.</em></p>
+      <figure class="video humo"><video src="https://assets.csnades.gg/nades/cache-smoke-B5bCYxZUEW/lq.mp4" poster="https://assets.csnades.gg/nades/cache-smoke-B5bCYxZUEW/thumbnail.webp" preload="none" controls muted playsinline></video><figcaption>Video: <a href="https://csnades.gg/cache/smokes/a-main-from-truck" target="_blank" rel="noopener">CSNADES.gg</a> (se carga al tocar play)</figcaption></figure>
+      <pre><code>setpos -916.031250 1082.854248 1751.368164;setang -21.871262 22.539627 0.000000</code></pre>
+      <p>Los humos van <strong>juntos</strong>: un humo solo tapa un rincón, pero tres al mismo tiempo cortan un sitio entero. Por eso están agrupados por zona.</p>
       <p>Por ejemplo, para ejecutar A, desde Outside Squeaky tiran Forklift y el fondo de A, y otro tira Highway desde Truck; quedan pocos rincones abiertos.</p>` },
   ],
   practica: [
@@ -839,7 +846,7 @@ setpos -916.031250 1082.854248 1751.368164;setang -21.871262 22.539627 0.000000<
   recursos: [
     { t: "csdb.gg: radar interactivo de Cache con todos los callouts", url: "https://csdb.gg/maps/cache/" },
     { t: "Dot Esports: notas de la Temporada 5 de Premier (Cache entra, Overpass sale)", url: "https://dotesports.com/counter-strike/news/cs2-season-5-update-patch-notes" },
-    { t: "CSNADES.gg: todos los humos de Cache en un mapa interactivo, con video de cada uno (en inglés)", url: "https://csnades.gg/cache/smokes" },
+    { t: "CSNADES.gg: todos los humos de Cache en un mapa interactivo (en inglés)", url: "https://csnades.gg/cache/smokes" },
   ],
   quiz: [
     { q: "Si un CT espera en la pila de cuatro cajas del fondo de A en Cache, ¿qué cantás?", opciones: ["\"Uno Forklift\"","\"Uno White Box\"","\"Uno Quad\"","\"Uno Truck\""], correcta: 2, explicacion: "Quad es la pila de cuatro cajas. Forklift tienta porque también está en A, pero es el autoelevador del frente." },
