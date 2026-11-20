@@ -113,6 +113,11 @@ a.stat:hover { border-color: var(--acento); text-decoration: none; }
 .leccion summary::after { content: "▾"; margin-left: auto; color: var(--suave); transition: transform .2s; }
 .leccion[open] summary::after { transform: rotate(180deg); }
 .leccion.leida summary { color: var(--suave); }
+.leccion details.granada { border: 1px solid var(--borde); border-radius: 10px; margin: .4rem 0; background: var(--card2); }
+.leccion details.granada summary { display: block; padding: .6rem .8rem; font-weight: 400; }
+.leccion details.granada summary::after { content: "▾"; float: right; transform: none; }
+.leccion details.granada[open] summary::after { transform: rotate(180deg); }
+.leccion details.granada > :not(summary) { margin-left: .8rem; margin-right: .8rem; }
 .leccion .contenido { padding: 0 1.5rem; border-top: 1px solid var(--borde); }
 .leccion .contenido table { border-collapse: collapse; margin: .8rem 0; display: block; overflow-x: auto; }
 .leccion .contenido th, .leccion .contenido td { padding: .3rem .6rem; border: 1px solid var(--borde); text-align: left; }

@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="es" data-curso="cat-gaming">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Guía de granadas de CS2</title>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="icon" href="../icono-192.png">
+  <meta name="theme-color" content="#0b1020">
+  <script>document.documentElement.style.fontSize = Math.round((Number(localStorage.getItem('letra')) || 1) * 100) + '%'; document.documentElement.dataset.tema = localStorage.getItem('tema') || (matchMedia('(prefers-color-scheme: light)').matches ? 'claro' : 'oscuro');</script>
+  <style>
+    .guia { max-width: 820px; margin: 0 auto; padding: 1rem 16px 3rem; }
+    .guia-filtros { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: .6rem; margin: 1rem 0; }
+    .guia-filtros label { display: flex; flex-direction: column; gap: .25rem; font-size: .9rem; color: var(--suave); }
+    .guia-filtros select, .guia-filtros input[type=search] { font: inherit; padding: .5rem; border-radius: 8px; border: 1px solid var(--borde); background: var(--card); color: var(--texto); }
+    .guia-filtros .check { flex-direction: row; align-items: center; }
+    .guia details.granada { border: 1px solid var(--borde); border-radius: 10px; margin: .4rem 0; background: var(--card2); }
+    .guia details.granada summary { cursor: pointer; padding: .6rem .8rem; }
+    .guia details.granada > :not(summary) { margin: .5rem .8rem; }
+    .guia pre { overflow-x: auto; }
+    .guia video { display: block; width: 100%; aspect-ratio: 16 / 9; border-radius: 10px; background: #000; }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="./" class="marca">🎯 CS2 calls</a>
+    <nav><a href="./">← Volver al curso</a></nav>
+  </header>
+  <main class="guia">
+    <h1>Guía de granadas</h1>
+    <p>Todas las granadas de los 7 mapas de Premier, separadas por lado. Tocá una para ver su video, cómo se tira y su línea de consola para el servidor de práctica (lo armás con el módulo de granadas del curso). Las que tienen ⭐ son las recomendadas para empezar.</p>
+    <div class="guia-filtros">
+      <label>Mapa <select id="mapa"></select></label>
+      <label>Lado <select id="lado"><option value="t">T (atacan)</option><option value="ct">CT (defienden)</option></select></label>
+      <label>Tipo <select id="tipo"><option value="">Todas</option><option value="smoke">💨 Humos</option><option value="flashbang">⚡ Flashes</option><option value="molotov">🔥 Molotovs</option><option value="he">💥 HE</option></select></label>
+      <label>Buscar <input id="buscar" type="search" placeholder="Ej.: Window, Ramp"></label>
+      <label class="check"><input id="solo" type="checkbox"> Solo ⭐</label>
+    </div>
+    <p id="cuenta" aria-live="polite"></p>
+    <div id="lista"></div>
+    <p><small>Videos y lineups: <a href="https://csnades.gg/" target="_blank" rel="noopener">CSNADES.gg</a>. Los videos se cargan recién al tocar play.</small></p>
+  </main>
+  <script src="granadas-datos.js"></script>
+  <script src="granadas.js"></script>
+</body>
+</html>
