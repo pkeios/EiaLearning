@@ -101,7 +101,7 @@ Para cambiar el orden, mové las líneas. Para agregar un curso, sumá una líne
 - [x] `vender-online` · Vender por internet · emprendedores · Emprender · "Vender por internet"
 - [x] `redes-sociales` · Redes sociales para tu emprendimiento · emprendedores · Emprender · "Redes sociales para tu emprendimiento"
 - [x] `fotos-producto` · Fotos de producto con el celular · emprendedores · Emprender · "Fotos de producto con el celular"
-- [ ] `whatsapp-negocio` · Atender clientes por WhatsApp · emprendedores · Emprender
+- [x] `whatsapp-negocio` · Atender clientes por WhatsApp · emprendedores · Emprender · "Atender clientes por WhatsApp"
 - [ ] `marca` · Tu marca: nombre, logo y estilo · emprendedores · Emprender
 - [ ] `cuentas-emprendimiento` · Las cuentas del emprendimiento · emprendedores · Emprender
 - [ ] `ferias` · Vender en ferias y mercados · emprendedores · Emprender
