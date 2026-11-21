@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="es" data-curso="cat-emprender">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fotos de producto con el celular</title>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="icon" href="../icono-192.png">
+  <meta name="theme-color" content="#0b1020">
+  <script>document.documentElement.style.fontSize = Math.round((Number(localStorage.getItem('letra')) || 1) * 100) + '%'; document.documentElement.dataset.tema = localStorage.getItem('tema') || (matchMedia('(prefers-color-scheme: light)').matches ? 'claro' : 'oscuro');</script>
+  <!-- Mismo motor que el curso principal (../app.js), con su propio contenido y su propio progreso guardado aparte. -->
+  <script>window.CURSO = { clave: 'progreso-fotos-producto', nombre: 'Fotos de producto con el celular', archivo: 'fotos-producto', titular: 'Fotos de producto con el celular: <span class="degradado">luz, fondo y un catálogo que vende</span>', bajada: 'para sacar fotos de tus productos que muestren la verdad y vendan: luz de ventana, fondo casero, trucos del celular, edición sin engañar y un catálogo parejo, gratis y desde cero', chicos: false, sw: '../sw.js' };</script>
+</head>
+<body>
+  <header>
+    <a href="#/" class="marca">📸 Fotos de producto</a>
+    <nav><a href="../">🏠 Inicio</a><a href="#/buscar">🔎 Buscar</a><a href="#/glosario">📖 Glosario</a><a href="#/repaso">Repaso</a><a href="#/examen">Examen final</a><button id="letra-menos" class="tema" aria-label="Achicar la letra">A−</button><button id="letra-mas" class="tema" aria-label="Agrandar la letra">A+</button><button id="tema" class="tema" aria-label="Cambiar entre modo claro y oscuro"></button></nav>
+  </header>
+  <main id="app"></main>
+  <script src="contenido.js"></script>
+  <script src="glosario.js"></script>
+  <script src="../vendor/qrcode.js"></script>
+  <script src="../app.js"></script>
+</body>
+</html>

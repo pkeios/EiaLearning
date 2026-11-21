@@ -100,7 +100,7 @@ Para cambiar el orden, mové las líneas. Para agregar un curso, sumá una líne
 - [x] `costos-precios` · Costos y precios: cuánto cobrar · emprendedores · Emprender · "Costos y precios: cuánto cobrar"
 - [x] `vender-online` · Vender por internet · emprendedores · Emprender · "Vender por internet"
 - [x] `redes-sociales` · Redes sociales para tu emprendimiento · emprendedores · Emprender · "Redes sociales para tu emprendimiento"
-- [ ] `fotos-producto` · Fotos de producto con el celular · emprendedores · Emprender
+- [x] `fotos-producto` · Fotos de producto con el celular · emprendedores · Emprender · "Fotos de producto con el celular"
 - [ ] `whatsapp-negocio` · Atender clientes por WhatsApp · emprendedores · Emprender
 - [ ] `marca` · Tu marca: nombre, logo y estilo · emprendedores · Emprender
 - [ ] `cuentas-emprendimiento` · Las cuentas del emprendimiento · emprendedores · Emprender
