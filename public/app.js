@@ -358,6 +358,30 @@ function montarLab(pre) {
     pre.after(lab);
   };
 }
+// Laboratorio web: los bloques <pre class="web"> se pueden editar y ver funcionando en un marco aislado (sandbox sin acceso al sitio).
+// Si el código no trae etiquetas, se toma como JavaScript. Lo que se imprime con console.log aparece debajo.
+const CAPTURA_WEB = '<script>(()=>{const l=[];const f=()=>{if(!l.length)return;let p=document.getElementById("consola-lab");if(!p){p=document.createElement("pre");p.id="consola-lab";p.style.cssText="background:#111;color:#9f9;padding:.6rem;font:13px monospace;white-space:pre-wrap";document.body.append(p)}p.textContent=l.join("\\n")};const a=t=>{l.push(t);if(document.body)f()};console.log=(...x)=>a(x.map(v=>typeof v==="object"?JSON.stringify(v):String(v)).join(" "));window.onerror=m=>a("✘ "+m);addEventListener("DOMContentLoaded",f)})()<\/script>';
+const documentoLab = codigo => /<[a-z!]/i.test(codigo) ? CAPTURA_WEB + codigo : CAPTURA_WEB + '<body><script>' + codigo + '<\/script></body>';
+function montarLabWeb(pre) {
+  const boton = Object.assign(document.createElement('button'), { className: 'secundario boton-lab', textContent: '▶ Probar este código' });
+  pre.after(boton);
+  boton.onclick = () => {
+    boton.remove();
+    const lab = document.createElement('div');
+    lab.className = 'lab';
+    lab.innerHTML = `<label class="suave">🧪 Laboratorio: cambiá el código y tocá Ver resultado.</label>
+      <textarea spellcheck="false" aria-label="Código"></textarea>
+      <div class="acciones-lab"><button>▶ Ver resultado</button><button class="secundario" data-reset>↺ Volver al original</button></div>
+      <iframe class="vista-web" sandbox="allow-scripts" title="Resultado del código"></iframe>`;
+    const area = lab.querySelector('textarea'), marco = lab.querySelector('iframe'), [ver, reset] = lab.querySelectorAll('button');
+    area.value = pre.textContent;
+    area.rows = Math.min(20, area.value.split('\n').length + 1);
+    ver.onclick = () => { marco.srcdoc = documentoLab(area.value); };
+    reset.onclick = () => { area.value = pre.textContent; ver.onclick(); };
+    pre.after(lab);
+    ver.onclick();
+  };
+}
 function modulo(id, abrir = null) {
   const m = T.find(x => x.id === id);
   if (!m) return inicio();
@@ -435,7 +459,7 @@ function modulo(id, abrir = null) {
     modulo(id);
   });
   app.querySelectorAll('.contenido').forEach(marcarGlosario);
-  app.querySelectorAll('.contenido pre').forEach(pre => { if (esPython(pre.textContent)) montarLab(pre); });
+  app.querySelectorAll('.contenido pre').forEach(pre => { if (pre.classList.contains('web')) montarLabWeb(pre); else if (esPython(pre.textContent)) montarLab(pre); });
   const buscada = abrir != null && app.querySelectorAll('details.leccion')[abrir];
   if (buscada) {
     if (ultimaBusqueda) resaltarEn(buscada.querySelector('.contenido'), ultimaBusqueda);

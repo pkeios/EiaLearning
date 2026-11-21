@@ -10,8 +10,8 @@ vm.runInContext(leer('contenido.js'), ctx);
 vm.runInContext(leer('glosario.js'), ctx);
 vm.runInContext(leer('vendor/qrcode.js') + ';this.qrcode = qrcode;', ctx);
 ctx.window.qrcode = ctx.qrcode;
-vm.runInContext(leer('app.js') + ';this.X = { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos, avance, clavePractica, registrarExamen, planDeHoy, apuntesMarkdown, esCorrecta, preguntasDeNivel, preguntaObjetivo, cambiarLetra, novedades, marcarConocidas, iniciarNovedades, todasLasLecciones, trozosParaVoz, vozLatina, sumarMinuto, serieMinutos, minutosSemana, textoLogro, empaquetar, desempaquetar, comprimir, descomprimir, compararIntentos, sumarIntento, rondaModulo, POR_RONDA, esPython, reTermino };', ctx);
-const { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos, avance, clavePractica, registrarExamen, planDeHoy, apuntesMarkdown, esCorrecta, preguntasDeNivel, preguntaObjetivo, cambiarLetra, novedades, marcarConocidas, iniciarNovedades, todasLasLecciones, trozosParaVoz, vozLatina, sumarMinuto, serieMinutos, minutosSemana, textoLogro, empaquetar, desempaquetar, comprimir, descomprimir, compararIntentos, sumarIntento, rondaModulo, POR_RONDA, esPython, reTermino } = ctx.X;
+vm.runInContext(leer('app.js') + ';this.X = { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos, avance, clavePractica, registrarExamen, planDeHoy, apuntesMarkdown, esCorrecta, preguntasDeNivel, preguntaObjetivo, cambiarLetra, novedades, marcarConocidas, iniciarNovedades, todasLasLecciones, trozosParaVoz, vozLatina, sumarMinuto, serieMinutos, minutosSemana, textoLogro, empaquetar, desempaquetar, comprimir, descomprimir, compararIntentos, sumarIntento, rondaModulo, POR_RONDA, esPython, reTermino, documentoLab };', ctx);
+const { registrar, tocaHoy, dia, limpiarProgreso, cargar, racha, estudiar, buscar, promptTutor, modulosAFallas, marcas, tarjetaToca, calificarTarjeta, contarAcierto, pctAciertos, avance, clavePractica, registrarExamen, planDeHoy, apuntesMarkdown, esCorrecta, preguntasDeNivel, preguntaObjetivo, cambiarLetra, novedades, marcarConocidas, iniciarNovedades, todasLasLecciones, trozosParaVoz, vozLatina, sumarMinuto, serieMinutos, minutosSemana, textoLogro, empaquetar, desempaquetar, comprimir, descomprimir, compararIntentos, sumarIntento, rondaModulo, POR_RONDA, esPython, reTermino, documentoLab } = ctx.X;
 const plano = o => JSON.parse(JSON.stringify(o));
 
 // Inicio renderiza con progreso vacío
@@ -290,6 +290,9 @@ assert.deepStrictEqual(plano(compararIntentos([1, 2, 3], [3], [2, 3])), { correg
 // El laboratorio solo aparece en código Python, no en diagramas ni en comandos
 assert(esPython('import numpy as np\nprint(np.zeros(3))'));
 assert(esPython('x = 1\nprint(x)'));
+// Laboratorio web: el HTML queda como está; el JavaScript suelto va adentro de un <script>; siempre se captura console.log.
+assert(documentoLab('<h1>Hola</h1>').endsWith('<h1>Hola</h1>') && documentoLab('<h1>Hola</h1>').includes('console.log='));
+assert(documentoLab('console.log(1 + 1)').includes('<script>console.log(1 + 1)<\/script>'));
 assert(!esPython('python -m venv .venv'));
 assert(!esPython('import torch\nprint(torch.zeros(2))'));
 assert(!esPython('from sklearn.cluster import HDBSCAN\nX = embed(consultas)'));
