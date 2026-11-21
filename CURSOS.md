@@ -77,7 +77,7 @@ Para cambiar el orden, mové las líneas. Para agregar un curso, sumá una líne
 - [x] `arreglos-ropa` · Arreglos de ropa: ruedos, cierres y botones · adultos · Oficios · "Arreglos de ropa"
 - [x] `tejido` · Tejido con agujas y crochet · adultos · Oficios · "Tejido con agujas y crochet"
 - [x] `panaderia` · Panadería casera para vender · adultos · Oficios · "Panadería casera para vender"
-- [ ] `pasteleria` · Pastelería básica · adultos · Oficios
+- [x] `pasteleria` · Pastelería básica · adultos · Oficios · "Pastelería básica"
 - [ ] `cocina` · Cocina básica: comer bien gastando poco · adultos · Oficios
 - [ ] `conservas` · Conservas y dulces caseros seguros · adultos · Oficios
 - [ ] `bicicletas` · Mecánica de bicicletas · adultos · Oficios
