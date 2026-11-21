@@ -113,7 +113,7 @@ Para cambiar el orden, mové las líneas. Para agregar un curso, sumá una líne
 - [x] `estudiar-mejor` · Aprender a aprender: estudiar mejor · estudiantes y adultos · Vida diaria · "Aprender a aprender"
 - [x] `matematica-vida` · Matemática para la vida diaria · adultos · Vida diaria · "Matemática para la vida diaria"
 - [x] `lectura` · Leer mejor y entender lo que leés · adultos · Vida diaria · "Leer mejor y entender lo que leés"
-- [ ] `ortografia` · Ortografía y redacción sin vueltas · adultos · Vida diaria
+- [x] `ortografia` · Ortografía y redacción sin vueltas · adultos · Vida diaria · "Ortografía y redacción sin vueltas"
 - [ ] `consumo` · Comprar mejor: derechos del consumidor · adultos · Vida diaria
 - [ ] `ahorro-energia` · Ahorrar luz, gas y agua en casa · adultos · Vida diaria
 - [ ] `alimentacion` · Comer mejor con información confiable · adultos · Vida diaria
