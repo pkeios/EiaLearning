@@ -75,7 +75,7 @@ Para cambiar el orden, mové las líneas. Para agregar un curso, sumá una líne
 - [x] `jardineria` · Jardinería y cuidado de plantas · adultos · Oficios · "Jardinería y cuidado de plantas"
 - [x] `costura` · Costura a mano y a máquina · adultos · Oficios · "Costura a mano y a máquina"
 - [x] `arreglos-ropa` · Arreglos de ropa: ruedos, cierres y botones · adultos · Oficios · "Arreglos de ropa"
-- [ ] `tejido` · Tejido con agujas y crochet · adultos · Oficios
+- [x] `tejido` · Tejido con agujas y crochet · adultos · Oficios · "Tejido con agujas y crochet"
 - [ ] `panaderia` · Panadería casera para vender · adultos · Oficios
 - [ ] `pasteleria` · Pastelería básica · adultos · Oficios
 - [ ] `cocina` · Cocina básica: comer bien gastando poco · adultos · Oficios
