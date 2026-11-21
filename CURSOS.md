@@ -66,7 +66,7 @@ Para cambiar el orden, mové las líneas. Para agregar un curso, sumá una líne
 - [x] `ia-pymes` · IA para tu negocio o emprendimiento · emprendedores · Datos e IA · "IA para tu negocio o emprendimiento"
 - [x] `ia-imagenes` · Crear imágenes con IA, con responsabilidad · adultos · Datos e IA · "Crear imágenes con IA, con responsabilidad"
 - [x] `ia-estudiar` · Estudiar con IA sin hacer trampa · estudiantes secundarios y universitarios · Datos e IA · "Estudiar con IA sin hacer trampa"
-- [ ] `ia-etica` · IA y sociedad: qué cambia y qué cuidar · adultos · Datos e IA
+- [x] `ia-etica` · IA y sociedad: qué cambia y qué cuidar · adultos · Datos e IA · "IA y sociedad: qué cambia y qué cuidar"
 
 ## Oficios y manualidades
 - [x] `arreglos-hogar` · Arreglos de la casa: pintar, colgar, ajustar · adultos · Oficios · "Arreglos de la casa"
