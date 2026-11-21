@@ -362,6 +362,83 @@ function montarLab(pre) {
 // Si el código no trae etiquetas, se toma como JavaScript. Lo que se imprime con console.log aparece debajo.
 const CAPTURA_WEB = '<script>(()=>{const l=[];const f=()=>{if(!l.length)return;let p=document.getElementById("consola-lab");if(!p){p=document.createElement("pre");p.id="consola-lab";p.style.cssText="background:#111;color:#9f9;padding:.6rem;font:13px monospace;white-space:pre-wrap";document.body.append(p)}p.textContent=l.join("\\n")};const a=t=>{l.push(t);if(document.body)f()};console.log=(...x)=>a(x.map(v=>typeof v==="object"?JSON.stringify(v):String(v)).join(" "));window.onerror=m=>a("✘ "+m);addEventListener("DOMContentLoaded",f)})()<\/script>';
 const documentoLab = codigo => /<[a-z!]/i.test(codigo) ? CAPTURA_WEB + codigo : CAPTURA_WEB + '<body><script>' + codigo + '<\/script></body>';
+// Laboratorio SQL: los bloques <pre class="sql"> se corren con el sqlite3 de Pyodide sobre la base de ejemplo del curso
+// (window.BASE_SQL), que se vuelve a crear en cada ejecución. tools/test-sql.js usa este mismo código para comprobar las salidas.
+const SQL_RUNNER = String.raw`
+import sqlite3
+def _celda(v):
+    if v is None:
+        return 'NULL'
+    if isinstance(v, float):
+        return ('%.2f' % v).rstrip('0').rstrip('.')
+    return str(v)
+def _es_comentario(s):
+    return all(not l.strip() or l.strip().startswith('--') for l in s.split('\n'))
+def correr_sql(base, consulta):
+    con = sqlite3.connect(':memory:')
+    con.executescript(base)
+    partes, actual = [], ''
+    for linea in consulta.split('\n'):
+        actual += linea + '\n'
+        if sqlite3.complete_statement(actual):
+            partes.append(actual.strip())
+            actual = ''
+    if actual.strip():
+        partes.append(actual.strip())
+    salida = []
+    for sentencia in partes:
+        if _es_comentario(sentencia):
+            continue
+        cur = con.execute(sentencia)
+        if cur.description:
+            cols = [d[0] for d in cur.description]
+            filas = [[_celda(v) for v in f] for f in cur.fetchall()]
+            anchos = [max([len(c)] + [len(f[i]) for f in filas]) for i, c in enumerate(cols)]
+            renglon = lambda vals: ' | '.join(v.ljust(anchos[i]) for i, v in enumerate(vals)).rstrip()
+            texto = [renglon(cols), '-+-'.join('-' * a for a in anchos)] + [renglon(f) for f in filas]
+            texto.append('(%d %s)' % (len(filas), 'fila' if len(filas) == 1 else 'filas'))
+            salida.append('\n'.join(texto))
+        elif cur.rowcount >= 0:
+            salida.append('✔ %d %s' % (cur.rowcount, 'fila cambiada' if cur.rowcount == 1 else 'filas cambiadas'))
+        else:
+            salida.append('✔ Listo')
+    return '\n\n'.join(salida) if salida else '✔ Listo'
+`;
+function montarLabSQL(pre) {
+  const boton = Object.assign(document.createElement('button'), { className: 'secundario boton-lab', textContent: '▶ Probar esta consulta' });
+  pre.after(boton);
+  boton.onclick = () => {
+    boton.remove();
+    const lab = document.createElement('div');
+    lab.className = 'lab';
+    lab.innerHTML = `<label class="suave">🧪 Laboratorio SQL: editá la consulta y corréla sobre la base de ejemplo del curso. Cada vez arranca de cero; la primera vez tarda unos segundos en cargar.</label>
+      <textarea spellcheck="false" aria-label="Consulta SQL"></textarea>
+      <div class="acciones-lab"><button>▶ Ejecutar</button><button class="secundario" data-reset>↺ Volver al original</button></div>
+      <pre class="salida" aria-live="polite" hidden></pre>`;
+    const area = lab.querySelector('textarea'), salida = lab.querySelector('.salida'), [correr, reset] = lab.querySelectorAll('button');
+    area.value = pre.textContent;
+    area.rows = Math.min(20, area.value.split('\n').length + 1);
+    reset.onclick = () => { area.value = pre.textContent; };
+    correr.onclick = async () => {
+      correr.disabled = true;
+      salida.hidden = false;
+      salida.textContent = '⏳ Cargando...';
+      try {
+        const py = await cargarPython();
+        // En Pyodide, sqlite3 viene aparte: se carga la primera vez
+        if (!py.globals.has('correr_sql')) { await py.loadPackage('sqlite3', { messageCallback: () => {} }); py.runPython(SQL_RUNNER); }
+        py.globals.set('_base', window.BASE_SQL || '');
+        py.globals.set('_consulta', area.value);
+        salida.textContent = py.runPython('correr_sql(_base, _consulta)');
+      } catch (e) {
+        const error = String(e.message || e).trim().split('\n').slice(-1)[0].replace(/^sqlite3\.\w+: /, '');
+        salida.textContent = '✘ ' + error + (/no such (column|table)/.test(error) ? '\n💡 Revisá que el nombre de la tabla o de la columna esté bien escrito.' : /syntax error/.test(error) ? '\n💡 Revisá comas, comillas y paréntesis cerca de donde dice el error.' : '');
+      }
+      correr.disabled = false;
+    };
+    pre.after(lab);
+  };
+}
 function montarLabWeb(pre) {
   const boton = Object.assign(document.createElement('button'), { className: 'secundario boton-lab', textContent: '▶ Probar este código' });
   pre.after(boton);
@@ -459,7 +536,7 @@ function modulo(id, abrir = null) {
     modulo(id);
   });
   app.querySelectorAll('.contenido').forEach(marcarGlosario);
-  app.querySelectorAll('.contenido pre').forEach(pre => { if (pre.classList.contains('web')) montarLabWeb(pre); else if (esPython(pre.textContent)) montarLab(pre); });
+  app.querySelectorAll('.contenido pre').forEach(pre => { if (pre.classList.contains('web')) montarLabWeb(pre); else if (pre.classList.contains('sql')) montarLabSQL(pre); else if (esPython(pre.textContent)) montarLab(pre); });
   const buscada = abrir != null && app.querySelectorAll('details.leccion')[abrir];
   if (buscada) {
     if (ultimaBusqueda) resaltarEn(buscada.querySelector('.contenido'), ultimaBusqueda);

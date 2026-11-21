@@ -294,6 +294,11 @@ assert(esPython('x = 1\nprint(x)'));
 assert(documentoLab('<h1>Hola</h1>').endsWith('<h1>Hola</h1>') && documentoLab('<h1>Hola</h1>').includes('console.log='));
 assert(documentoLab('console.log(1 + 1)').includes('<script>console.log(1 + 1)<\/script>'));
 assert(!esPython('python -m venv .venv'));
+// Laboratorio SQL: los <pre class="sql"> van al laboratorio SQL (no al de Python) y el código de Python que lo corre define correr_sql.
+// Las salidas de cada consulta las compara tools/test-sql.js con ese mismo código.
+assert.match(leer('app.js'), /pre\.classList\.contains\('sql'\)\) montarLabSQL\(pre\)/);
+assert.match(leer('app.js').match(/const SQL_RUNNER = String\.raw`([\s\S]*?)`;/)[1], /def correr_sql\(base, consulta\):/);
+assert(!esPython('SELECT nombre FROM productos;'));
 assert(!esPython('import torch\nprint(torch.zeros(2))'));
 assert(!esPython('from sklearn.cluster import HDBSCAN\nX = embed(consultas)'));
 assert(esPython('import numpy as np\ndef embed(t):\n    return np.zeros(3)\nprint(embed(1))'));

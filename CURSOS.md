@@ -44,7 +44,7 @@ Para cambiar el orden, mové las líneas. Para agregar un curso, sumá una líne
 - [x] `web` · Desarrollo web desde cero: HTML, CSS y JavaScript · quien quiere programar · Tecnología · "Desarrollo web desde cero"
 - [x] `cpp` · C++ para principiantes: variables, decisiones, bucles, funciones, vectores y tu primer programa completo · quien nunca programó · Tecnología · "C++ para principiantes"
 - [x] `javascript` · JavaScript desde cero · quien hizo el curso de web · Tecnología · "JavaScript desde cero"
-- [ ] `sql` · SQL para hacer preguntas a los datos · adultos · Tecnología
+- [x] `sql` · SQL para hacer preguntas a los datos · adultos · Tecnología · "SQL para hacer preguntas a los datos"
 - [ ] `terminal` · La terminal y Linux sin miedo · quien empieza a programar · Tecnología
 - [ ] `redes` · Redes e internet: cómo funciona todo · adultos · Tecnología
 - [ ] `ciberseguridad` · Ciberseguridad: introducción al oficio · quien quiere trabajar en seguridad · Tecnología
