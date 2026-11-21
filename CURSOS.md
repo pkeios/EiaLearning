@@ -78,7 +78,7 @@ Para cambiar el orden, mové las líneas. Para agregar un curso, sumá una líne
 - [x] `tejido` · Tejido con agujas y crochet · adultos · Oficios · "Tejido con agujas y crochet"
 - [x] `panaderia` · Panadería casera para vender · adultos · Oficios · "Panadería casera para vender"
 - [x] `pasteleria` · Pastelería básica · adultos · Oficios · "Pastelería básica"
-- [ ] `cocina` · Cocina básica: comer bien gastando poco · adultos · Oficios
+- [x] `cocina` · Cocina básica: comer bien gastando poco · adultos · Oficios · "Cocina básica: comer bien gastando poco"
 - [ ] `conservas` · Conservas y dulces caseros seguros · adultos · Oficios
 - [ ] `bicicletas` · Mecánica de bicicletas · adultos · Oficios
 - [ ] `auto-basico` · Mantenimiento básico del auto · adultos con auto · Oficios
