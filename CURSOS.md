@@ -132,7 +132,7 @@ Para cambiar el orden, mové las líneas. Para agregar un curso, sumá una líne
 - [x] `chicos/ciencia.html` · Ciencia en casa: experimentos seguros (formato de misiones) · chicos de 10 a 13 · Chicos · "Ciencia en casa"
 - [x] `chicos-matematica` · Matemática con desafíos · chicos de 10 a 13 · Chicos · "Matemática con desafíos" (en chicos/matematica.html, formato de misiones)
 - [x] `chicos-escribir` · Escribir cuentos · chicos de 10 a 13 · Chicos · "Escribir cuentos" (en chicos/escribir.html, formato de misiones)
-- [ ] `chicos-espacio` · El espacio y los planetas · chicos de 10 a 13 · Chicos
+- [x] `chicos-espacio` · El espacio y los planetas · chicos de 10 a 13 · Chicos · "El espacio y los planetas" (en chicos/espacio.html, formato de misiones)
 - [ ] `chicos-huerta` · Huerta para chicos · chicos de 10 a 13 · Chicos
 - [ ] `chicos-estudiar` · Aprender a estudiar · chicos de 10 a 13 · Chicos
 - [ ] `chicos-noticias` · ¿Es verdad? Noticias y videos falsos · chicos de 10 a 13 · Chicos

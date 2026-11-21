@@ -41,7 +41,7 @@ const fallas = [], ok = (c, m) => { if (!c) fallas.push(m); };
 
   const aviso = () => pag.textContent('#aviso-mision');
   const esperarAviso = () => pag.waitForFunction(() => /🎉|🤔/.test(document.querySelector('#aviso-mision').textContent), null, { timeout: 8000 });
-  for (const [html, clave, cuantas] of [['web.html', 'chicos-web', 12], ['internet.html', 'chicos-internet', 7], ['programar.html', 'chicos-programar', 7], ['plata.html', 'chicos-plata', 8], ['ciencia.html', 'chicos-ciencia', 8], ['matematica.html', 'chicos-matematica', 8], ['escribir.html', 'chicos-escribir', 8]]) {
+  for (const [html, clave, cuantas] of [['web.html', 'chicos-web', 12], ['internet.html', 'chicos-internet', 7], ['programar.html', 'chicos-programar', 7], ['plata.html', 'chicos-plata', 8], ['ciencia.html', 'chicos-ciencia', 8], ['matematica.html', 'chicos-matematica', 8], ['escribir.html', 'chicos-escribir', 8], ['espacio.html', 'chicos-espacio', 8]]) {
   // Entrada de los cursos para chicos → este curso
   await pag.goto(B + 'chicos/');
   await pag.click(`a[href="${html}"]`);
@@ -116,7 +116,7 @@ const fallas = [], ok = (c, m) => { if (!c) fallas.push(m); };
   }
   // El inicio del sitio lleva a los tres cursos.
   await pag.goto(B);
-  for (const h of ['chicos/web.html', 'chicos/internet.html', 'chicos/programar.html', 'chicos/plata.html', 'chicos/ciencia.html', 'chicos/matematica.html', 'chicos/escribir.html']) ok(await pag.$(`a[href="${h}"]`), 'el inicio no enlaza ' + h);
+  for (const h of ['chicos/web.html', 'chicos/internet.html', 'chicos/programar.html', 'chicos/plata.html', 'chicos/ciencia.html', 'chicos/matematica.html', 'chicos/escribir.html', 'chicos/espacio.html']) ok(await pag.$(`a[href="${h}"]`), 'el inicio no enlaza ' + h);
 
   // Consola: el error sale en castellano y con el número de línea del código del chico.
   await pag.goto(B + 'chicos/web.html#/libre'); await pag.waitForSelector('.editor textarea');
