@@ -195,6 +195,98 @@ bind n sv_rethrow_last_grenade</code></pre>
   ],
 },
 {
+  id: "recoil",
+  icono: "🔫",
+  titulo: "Recoil: controlar el spray de las armas",
+  nivel: "Intermedio",
+  objetivos: [
+    "Elegir entre tiro suelto, ráfaga o spray según la distancia",
+    "Frenar antes de disparar con counter-strafe",
+    "Conocer cómo patean los rifles más usados y practicar el control del spray",
+  ],
+  lecciones: [
+    { titulo: "Tiro suelto, ráfaga o spray", video: {"id":"cnJir-u_fAc","t":"Cuándo y cómo hacer taps, ráfagas y sprays · TiburoN (10:53)"}, html: `
+      <p class="idea">El <strong>recoil</strong> (retroceso) es cuánto se levanta y se mueve el arma mientras disparás seguido. La primera bala va donde apuntás; las que siguen se van alejando. Por eso la forma de disparar cambia con la distancia.</p>
+      <table>
+        <tr><th>Forma</th><th>Qué es</th><th>Cuándo</th></tr>
+        <tr><td>Tap (tiro suelto)</td><td>Una bala, esperás un instante, otra</td><td>Lejos: solo la primera bala es precisa</td></tr>
+        <tr><td>Ráfaga</td><td>De 3 a 5 balas y frenás</td><td>Distancia media</td></tr>
+        <tr><td>Spray</td><td>Mantenés apretado y compensás el retroceso con el mouse</td><td>Cerca, o contra varios rivales juntos</td></tr>
+      </table>
+      <p><strong>Compensar</strong> es mover el mouse para el lado contrario al que se va el arma. Si el arma sube, tirás el mouse para abajo.</p>
+      <p><strong>Disparar quieto:</strong> si te movés mientras disparás, las balas salen desparramadas. Antes de disparar tenés que frenar. La forma rápida de frenar es el <strong>counter-strafe</strong>: si venías caminando a la derecha con la D, soltás la D y tocás un instante la A. El personaje se frena en seco y la primera bala sale precisa.</p>
+      <pre><code>Duelo típico:
+1. Te asomás caminando hacia un costado.
+2. Ves al rival: counter-strafe (tecla contraria un instante).
+3. Disparás: tap si está lejos, ráfaga si está a media distancia.
+4. Si no cayó, te volvés a cubrir y repetís.</code></pre>
+      <p><strong>Agacharte</strong> mejora un poco la precisión, pero te deja quieto y más fácil de pegar: usalo cuando ya estás disparando y el rival está lejos.</p>
+      <p>Por ejemplo, un rival en el fondo de Long en Dust II está lejos: con la AK-47 le tirás taps a la cabeza. Si lo hacés en spray, desde la tercera o cuarta bala ya pasan por arriba de su cabeza.</p>` },
+    { titulo: "Los rifles: AK-47 y las M4", video: {"id":"RLjjKaQ-q8w","t":"Cómo controlar el retroceso: el recoil de todos los rifles · TiburoN (13:46)"}, html: `
+      <p class="idea">Cada arma patea siempre de la misma forma: eso se llama <strong>patrón de spray</strong>. Como es siempre igual, se puede aprender, igual que un humo.</p>
+      <table>
+        <tr><th>Arma</th><th>Lado</th><th>Cargador</th><th>Qué saber</th></tr>
+        <tr><td><a href="https://op.gg/cs2/spray-patterns/ak47" target="_blank" rel="noopener">AK-47</a></td><td>T</td><td>30</td><td>Un tiro a la cabeza mata aunque el rival tenga casco, a cualquier distancia. Patea fuerte</td></tr>
+        <tr><td><a href="https://op.gg/cs2/spray-patterns/m4a1" target="_blank" rel="noopener">M4A4</a></td><td>CT</td><td>30</td><td>Más balas y más cadencia que la M4A1-S, y más retroceso</td></tr>
+        <tr><td><a href="https://op.gg/cs2/spray-patterns/m4a1_silencer" target="_blank" rel="noopener">M4A1-S</a></td><td>CT</td><td>20</td><td>Silenciada, con el spray más chico y fácil de controlar; pocas balas</td></tr>
+        <tr><td><a href="https://op.gg/cs2/spray-patterns/galilar" target="_blank" rel="noopener">Galil AR</a></td><td>T</td><td>35</td><td>Más barata que la AK: para rondas con poca plata</td></tr>
+        <tr><td><a href="https://op.gg/cs2/spray-patterns/famas" target="_blank" rel="noopener">FAMAS</a></td><td>CT</td><td>25</td><td>Más barata que las M4; con clic derecho dispara en ráfagas</td></tr>
+      </table>
+      <p>Tocá el nombre de cada arma: se abre su patrón animado en OP.GG, con un modo práctica que te puntúa cómo lo seguís con el mouse.</p>
+      <p><strong>La forma que comparten:</strong> las primeras balas suben casi derecho para arriba, así que tirás el mouse hacia abajo, parejo. Después el spray se va hacia un costado y después hacia el otro: ahí seguís bajando y además corregís hacia el lado contrario. En la página de cada arma ves exactamente para qué lado va.</p>
+      <pre><code>Cómo se aprende un patrón, de a partes:
+Semana 1: las primeras 10 balas (la subida)
+Semana 2: hasta 15 balas
+Semana 3: el cargador entero</code></pre>
+      <p><strong>Las M4 no matan de un tiro a la cabeza con casco</strong>, la AK-47 sí. Por eso con una M4 conviene más una ráfaga corta que un solo tap.</p>
+      <p>Por ejemplo, para aprender el spray de la AK-47 primero dominá las 10 primeras balas: en casi todos los duelos cercanos, el rival cae antes de la bala 10.</p>` },
+    { titulo: "Subfusiles, pistolas y cómo practicar", video: {"id":"9LcegAJQK1c","t":"Cómo hacer el strafe y el counter-strafe en CS2 · TiburoN (9:06)"}, html: `
+      <p class="idea">El spray se aprende con repetición corta y seguida: unos minutos por día rinden más que una hora por semana.</p>
+      <table>
+        <tr><th>Arma</th><th>Lado</th><th>Cargador</th><th>Cómo se usa</th></tr>
+        <tr><td><a href="https://op.gg/cs2/spray-patterns/mac10" target="_blank" rel="noopener">MAC-10</a></td><td>T</td><td>30</td><td>Spray de cerca, en rondas con poca plata</td></tr>
+        <tr><td><a href="https://op.gg/cs2/spray-patterns/mp9" target="_blank" rel="noopener">MP9</a></td><td>CT</td><td>30</td><td>Spray de cerca, en rondas con poca plata</td></tr>
+        <tr><td>Desert Eagle</td><td>Los dos</td><td>7</td><td>Un tiro por vez: esperá a que la mira se acomode entre disparo y disparo</td></tr>
+      </table>
+      <p>Los <strong>subfusiles</strong> patean menos pero hacen menos daño de lejos: pelealos de cerca y moviéndote entre coberturas.</p>
+      <pre><code>Rutina de 10 minutos (en tu servidor de práctica):
+1. sv_infinite_ammo 1  (en el módulo de granadas armaste el servidor)
+2. Parate a unos 10 metros de una pared lisa.
+3. Disparo con la AK-47: 3 ráfagas de 5 balas, mirando los agujeros.
+4. 5 sprays de 10 balas tirando el mouse hacia abajo.
+5. 5 sprays de 15 balas. Mirá si los agujeros quedan juntos.
+6. Repetí con la M4A1-S o la M4A4.
+7. Cerrá con 2 minutos del modo práctica de OP.GG.</code></pre>
+      <p>Si los agujeros quedan en una línea que sube, te falta bajar el mouse. Si quedan abajo de donde apuntabas, bajaste de más.</p>
+      <p><strong>cl_crosshair_recoil:</strong> este comando hace que la mira se mueva con el retroceso (0 la deja quieta, 1 la mueve). Viene en 1 y no necesita sv_cheats. Probá los dos y quedate con el que te ayude a ver lo que hace el arma.</p>
+      <p><strong>Ojo con los mapas del Workshop:</strong> el más conocido para practicar spray, Recoil Master, fue retirado del Workshop y Steam lo marca como incompatible con CS2. Usá la pared y OP.GG.</p>
+      <p>Por ejemplo, si hacés esta rutina 10 minutos por día, la pared te muestra tu progreso: tus sprays de 10 balas tienen que pasar de una línea larga a un grupo chico de agujeros.</p>` },
+  ],
+  practica: [
+    "Hacé 20 counter-strafes caminando de lado y disparando un tap a una pared, y anotá en cuántos la bala cayó en el punto donde apuntabas.",
+    "En tu servidor, tirá 5 sprays de 10 balas con la AK-47 a una pared a unos 10 metros y anotá en cuántos los agujeros quedaron en un grupo del tamaño de una cabeza.",
+    "Probá el modo práctica de OP.GG con la AK-47 y con una M4 durante 3 días seguidos y anotá tu puntaje de cada día.",
+  ],
+  recursos: [
+    { t: "OP.GG: patrones de spray de todas las armas de CS2, animados y con modo práctica (en inglés)", url: "https://op.gg/cs2/spray-patterns" },
+    { t: "csdb.gg: qué hace el comando cl_crosshair_recoil (en inglés)", url: "https://csdb.gg/es/command/cl-crosshair-recoil/" },
+  ],
+  quiz: [
+    { q: "Si un rival está muy lejos y tenés una AK-47, ¿cómo disparás?", opciones: ["Spray del cargador entero","Corriendo hacia él mientras disparás","Con taps: un tiro, una pausa corta, otro tiro","Ráfagas de 15 balas"], correcta: 2, explicacion: "De lejos solo la primera bala es precisa. El spray tienta porque tira más balas, pero desde la tercera pasan por arriba." },
+    { q: "Si el rival está a media distancia, ¿qué forma de disparar te conviene?", opciones: ["Ráfagas de 3 a 5 balas","El cargador entero sin parar","Un solo tap y esperar","Disparar moviéndote"], correcta: 0, explicacion: "La ráfaga junta varias balas antes de que el arma suba mucho. El spray largo tienta, pero a esa distancia se desparrama." },
+    { q: "Venís caminando a la derecha con la D y aparece un rival. ¿Qué hacés antes de disparar?", opciones: ["Seguís caminando y disparás","Saltás y disparás","Apretás la D más fuerte","Soltás la D y tocás un instante la A para frenar"], correcta: 3, explicacion: "El counter-strafe te frena en seco y la bala sale precisa. Disparar caminando tienta por rápido, pero las balas salen desparramadas." },
+    { q: "Si mientras hacés spray el arma se va para arriba, ¿hacia dónde movés el mouse?", opciones: ["Hacia arriba","Hacia abajo","No lo movés","Hacia los costados nada más"], correcta: 1, explicacion: "Se compensa para el lado contrario. Seguir el arma para arriba tienta, pero la aleja más del rival." },
+    { q: "Le pegás un tiro a la cabeza a un rival con casco. ¿Con qué arma lo matás de un tiro a cualquier distancia?", opciones: ["Con la M4A1-S","Con la M4A4","Con la AK-47","Con la MP9"], correcta: 2, explicacion: "La AK-47 mata de un tiro a la cabeza con casco. Las M4 tientan por precisas, pero no alcanza con un solo tiro." },
+    { q: "Sos CT y te cuesta controlar el spray. ¿Qué M4 te conviene probar?", opciones: ["La M4A1-S, que tiene el spray más chico","La M4A4, que patea más","Ninguna, solo la AK-47","La MAC-10"], correcta: 0, explicacion: "La M4A1-S es la más fácil de controlar. La M4A4 tienta por tener 30 balas, pero patea más." },
+    { q: "Si tenés una M4A1-S, ¿cuántas balas tenés en el cargador?", opciones: ["30","35","25","20"], correcta: 3, explicacion: "La M4A1-S tiene 20. Treinta tienta porque es lo de la AK-47 y la M4A4, pero esta tiene menos." },
+    { q: "Sos T y tenés poca plata para comprar rifle. ¿Qué arma te conviene?", opciones: ["La M4A4","La Galil AR o la MAC-10","La FAMAS","La MP9"], correcta: 1, explicacion: "La Galil y la MAC-10 son de los T. La FAMAS tienta por barata, pero es de los CT." },
+    { q: "Vas a aprender el spray de la AK-47. ¿Por dónde empezás?", opciones: ["Por el cargador entero de una","Por las últimas 10 balas","Por las primeras 10 balas","Por disparar corriendo"], correcta: 2, explicacion: "De a partes se aprende mejor, y casi todos los duelos se definen antes de la bala 10. El cargador entero tienta, pero es mucho de golpe." },
+    { q: "En la pared, tus 10 balas quedan en una línea que sube. ¿Qué corregís?", opciones: ["Tirás el mouse más hacia abajo","Tirás menos hacia abajo","Disparás corriendo","Nada, está bien"], correcta: 0, explicacion: "La línea que sube dice que te faltó compensar. \"Está bien\" tienta, pero las balas pasarían por arriba de la cabeza." },
+    { q: "Usás la Desert Eagle. ¿Cómo disparás?", opciones: ["Apretando lo más rápido posible","En spray largo","Siempre corriendo","Un tiro por vez, esperando que la mira se acomode"], correcta: 3, explicacion: "La Deagle castiga apurarse. Disparar rápido tienta para tirar más, pero el segundo tiro sale desviado." },
+    { q: "Querés practicar spray y te recomiendan el mapa Recoil Master del Workshop. ¿Qué tenés en cuenta?", opciones: ["Que es el único método que existe","Que fue retirado y Steam lo marca incompatible con CS2: mejor la pared y OP.GG","Que hay que pagarlo","Que solo funciona en Premier"], correcta: 1, explicacion: "Ese mapa ya no está disponible. \"Es el único método\" tienta porque es famoso, pero la pared y el modo práctica funcionan igual." },
+  ],
+},
+{
   id: "mirage",
   icono: "🏜️",
   titulo: "Mirage",
