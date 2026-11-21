@@ -1,6 +1,6 @@
 // Service worker: permite estudiar sin conexión.
 // Responde desde la caché si puede y, en paralelo, baja la versión nueva: la próxima visita ya ve el contenido actualizado.
-const CACHE = 'curso-v21';
+const CACHE = 'curso-v22';
 const ARCHIVOS = ['./', 'index.html', 'curso.html', 'styles.css', 'app.js', 'contenido.js', 'glosario.js', 'vendor/qrcode.js', 'mapa.js', 'manifest.webmanifest', 'icono-192.png', 'icono-512.png', 'chicos/', 'chicos/estilos.css', 'chicos/ingles.html', 'chicos/ingles-unidades.js', 'chicos/misiones.js', 'chicos/web.html', 'chicos/web-misiones.js', 'chicos/internet.html', 'chicos/internet-misiones.js', 'chicos/programar.html', 'chicos/programar-misiones.js', 'chicos/plata.html', 'chicos/plata-misiones.js', 'chicos/ciencia.html', 'chicos/ciencia-misiones.js', 'chicos/matematica.html', 'chicos/matematica-misiones.js'];
 
 self.addEventListener('install', e => {

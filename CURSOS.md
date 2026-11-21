@@ -42,7 +42,7 @@ Para cambiar el orden, mové las líneas. Para agregar un curso, sumá una líne
 - [x] `git` · Git y GitHub desde cero · quien empieza a programar · Tecnología · "Git y GitHub desde cero"
 - [x] `python-automatizar` · Python para automatizar tareas · adultos que no programan · Tecnología · "Python para automatizar tareas"
 - [x] `web` · Desarrollo web desde cero: HTML, CSS y JavaScript · quien quiere programar · Tecnología · "Desarrollo web desde cero"
-- [ ] `cpp` · C++ para principiantes: variables, decisiones, bucles, funciones, vectores y tu primer programa completo · quien nunca programó · Tecnología
+- [x] `cpp` · C++ para principiantes: variables, decisiones, bucles, funciones, vectores y tu primer programa completo · quien nunca programó · Tecnología · "C++ para principiantes"
 - [ ] `javascript` · JavaScript desde cero · quien hizo el curso de web · Tecnología
 - [ ] `sql` · SQL para hacer preguntas a los datos · adultos · Tecnología
 - [ ] `terminal` · La terminal y Linux sin miedo · quien empieza a programar · Tecnología

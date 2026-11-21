@@ -145,7 +145,7 @@ a.stat:hover { border-color: var(--acento); text-decoration: none; }
 .cta { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; margin: 2.5rem 0 1.5rem; }
 .pasos { display: flex; justify-content: space-between; gap: 1rem; border-top: 1px solid var(--borde); padding-top: 1.2rem; font-size: .95rem; }
 pre { background: var(--codigo); border: 1px solid var(--borde); padding: 1rem; border-radius: 10px; overflow-x: auto; font-size: .88rem; line-height: 1.55; }
-code { font-family: ui-monospace, "Cascadia Code", Consolas, monospace; }
+code { font-family: ui-monospace, "Cascadia Code", Consolas, monospace; font-variant-ligatures: none; } /* sin ligaduras: que <= y << se vean como se tipean */
 :not(pre) > code { background: var(--card2); padding: .1rem .35rem; border-radius: 5px; font-size: .9em; }
 textarea { width: 100%; background: var(--bg); color: var(--texto); border: 1px solid var(--borde); border-radius: 10px; padding: .8rem; font: inherit; resize: vertical; }
 
