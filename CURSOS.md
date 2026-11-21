@@ -129,7 +129,7 @@ Para cambiar el orden, mové las líneas. Para agregar un curso, sumá una líne
 - [x] `chicos/programar.html` · Pensar como programador (nivel 1, formato de misiones) · chicos de 10 a 13 · Chicos · "Pensar como programador"
 - [x] `chicos/web.html` · Programá tu web: HTML, CSS y JavaScript con editor (nivel 2 de programación, formato de misiones) · chicos de 12 a 14 · Chicos · "Programá tu web"
 - [x] `chicos/plata.html` · Plata para chicos: ahorrar y comparar precios (formato de misiones) · chicos de 10 a 13 · Chicos · "Plata para chicos"
-- [ ] `chicos-ciencia` · Ciencia en casa: experimentos seguros · chicos de 10 a 13 · Chicos
+- [x] `chicos/ciencia.html` · Ciencia en casa: experimentos seguros (formato de misiones) · chicos de 10 a 13 · Chicos · "Ciencia en casa"
 - [ ] `chicos-matematica` · Matemática con desafíos · chicos de 10 a 13 · Chicos
 - [ ] `chicos-escribir` · Escribir cuentos · chicos de 10 a 13 · Chicos
 - [ ] `chicos-espacio` · El espacio y los planetas · chicos de 10 a 13 · Chicos
