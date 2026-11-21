@@ -131,7 +131,7 @@ Para cambiar el orden, mové las líneas. Para agregar un curso, sumá una líne
 - [x] `chicos/plata.html` · Plata para chicos: ahorrar y comparar precios (formato de misiones) · chicos de 10 a 13 · Chicos · "Plata para chicos"
 - [x] `chicos/ciencia.html` · Ciencia en casa: experimentos seguros (formato de misiones) · chicos de 10 a 13 · Chicos · "Ciencia en casa"
 - [x] `chicos-matematica` · Matemática con desafíos · chicos de 10 a 13 · Chicos · "Matemática con desafíos" (en chicos/matematica.html, formato de misiones)
-- [ ] `chicos-escribir` · Escribir cuentos · chicos de 10 a 13 · Chicos
+- [x] `chicos-escribir` · Escribir cuentos · chicos de 10 a 13 · Chicos · "Escribir cuentos" (en chicos/escribir.html, formato de misiones)
 - [ ] `chicos-espacio` · El espacio y los planetas · chicos de 10 a 13 · Chicos
 - [ ] `chicos-huerta` · Huerta para chicos · chicos de 10 a 13 · Chicos
 - [ ] `chicos-estudiar` · Aprender a estudiar · chicos de 10 a 13 · Chicos
