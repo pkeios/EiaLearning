@@ -299,6 +299,10 @@ assert(!esPython('python -m venv .venv'));
 assert.match(leer('app.js'), /pre\.classList\.contains\('sql'\)\) montarLabSQL\(pre\)/);
 assert.match(leer('app.js').match(/const SQL_RUNNER = String\.raw`([\s\S]*?)`;/)[1], /def correr_sql\(base, consulta\):/);
 assert(!esPython('SELECT nombre FROM productos;'));
+// Laboratorio de terminal: los <pre class="terminal"> van a la terminal simulada; sus salidas las controla tools/test-terminal.js.
+assert(leer('app.js').includes("pre.classList.contains('terminal')) montarLabTerminal(pre)"));
+assert(/\/\/ ---------- Terminal simulada \(inicio\) ----------[\s\S]*function terminalSimulada\(guion\)[\s\S]*\/\/ ---------- Terminal simulada \(fin\) ----------/.test(leer('app.js')));
+assert(!esPython('cd Documentos'));
 assert(!esPython('import torch\nprint(torch.zeros(2))'));
 assert(!esPython('from sklearn.cluster import HDBSCAN\nX = embed(consultas)'));
 assert(esPython('import numpy as np\ndef embed(t):\n    return np.zeros(3)\nprint(embed(1))'));

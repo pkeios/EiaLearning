@@ -439,6 +439,193 @@ function montarLabSQL(pre) {
     pre.after(lab);
   };
 }
+// ---------- Terminal simulada (inicio) ----------
+// Laboratorio de terminal: los bloques <pre class="terminal"> se corren en una terminal de práctica que vive en el navegador,
+// con una carpeta de ejemplo que arranca de cero en cada ejecución. tools/test-terminal.js usa este mismo código para comprobar las salidas.
+// shortcut: imita solo los comandos y opciones que enseña el curso de terminal; si un curso necesita otros, se suman acá con su test.
+const CASA_TERMINAL = {
+  '.bashrc': '# Configuración de la terminal de Ana\nalias ll="ls -l"',
+  'Documentos': { 'notas.txt': 'Comprar yerba\nLlamar a Marta\nPagar la luz\nEstudiar para el parcial', 'receta.txt': 'Pan casero\n500 g de harina\n300 ml de agua\n10 g de sal\n25 g de levadura' },
+  'Descargas': { 'foto-playa.jpg': '', 'foto-cumple.jpg': '', 'informe.pdf': '', 'temas.txt': 'Zamba de mi esperanza\nLa bifurcada\nFlaca\nMuchacha ojos de papel' },
+  'compras.txt': 'yerba\nleche\npan\nyerba\nfideos\nleche\nyerba',
+  'ventas.csv': 'fecha,producto,monto\n2026-03-02,yerba,3900\n2026-03-02,pan,2900\n2026-03-03,yerba,3900\n2026-03-03,leche,1300\n2026-03-04,fideos,1200\n2026-03-04,Yerba,3900',
+};
+function terminalSimulada(guion) {
+  const raiz = { home: { ana: JSON.parse(JSON.stringify(CASA_TERMINAL)) }, tmp: {} };
+  const CASA = ['home', 'ana'];
+  let dondeEstoy = [...CASA], salida = [];
+  const NOEXISTE = 'No existe el archivo o el directorio';
+  const esCarpeta = x => x !== null && typeof x === 'object';
+  const ruta = p => {
+    let partes = p.startsWith('/') ? [] : p === '~' || p.startsWith('~/') ? [...CASA] : [...dondeEstoy];
+    for (const t of p.replace(/^~\/?/, '').split('/')) { if (t === '..') partes.pop(); else if (t && t !== '.') partes.push(t); }
+    return partes;
+  };
+  const buscar = partes => partes.reduce((n, t) => (esCarpeta(n) && Object.prototype.hasOwnProperty.call(n, t) ? n[t] : undefined), raiz);
+  const padre = partes => ({ carpeta: buscar(partes.slice(0, -1)), nombre: partes[partes.length - 1] });
+  const ordenar = l => [...l].sort((a, b) => a.replace(/^\./, '').localeCompare(b.replace(/^\./, ''), 'es', { sensitivity: 'base' }));
+  // Separa en palabras respetando comillas; las palabras con * sin comillas se expanden con los nombres de la carpeta
+  const palabras = linea => {
+    const res = []; let actual = '', comilla = '', hay = false, comodin = false;
+    for (const ch of linea) {
+      if (comilla) { if (ch === comilla) comilla = ''; else actual += ch; }
+      else if (ch === '"' || ch === "'") { comilla = ch; hay = true; }
+      else if (ch === ' ' || ch === '\t') { if (hay || actual) res.push({ t: actual, comodin }); actual = ''; hay = false; comodin = false; }
+      else { actual += ch; if (ch === '*') comodin = true; }
+    }
+    if (hay || actual) res.push({ t: actual, comodin });
+    return res.flatMap(({ t, comodin }) => {
+      if (!comodin) return [t];
+      const i = t.lastIndexOf('/'), dir = i < 0 ? '' : t.slice(0, i + 1), patron = t.slice(i + 1);
+      const carpeta = buscar(ruta(dir || '.')), re = new RegExp('^' + patron.replace(/[.+?^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '.*') + '$');
+      const ok = esCarpeta(carpeta) ? ordenar(Object.keys(carpeta).filter(n => re.test(n) && !n.startsWith('.'))).map(n => dir + n) : [];
+      return ok.length ? ok : [t];
+    });
+  };
+  const leer = (nombre, cmd) => {
+    const n = buscar(ruta(nombre));
+    if (n === undefined) throw new Error(`${cmd}: ${nombre}: ${NOEXISTE}`);
+    if (esCarpeta(n)) throw new Error(`${cmd}: ${nombre}: Es un directorio`);
+    return n;
+  };
+  const opciones = (args, conNumero) => { const op = new Set(), resto = []; let n = null;
+    for (let i = 0; i < args.length; i++) {
+      if (conNumero && args[i] === '-n' && /^\d+$/.test(args[i + 1] || '')) { n = Number(args[++i]); continue; }
+      if (/^-[a-zA-Z]+$/.test(args[i])) { for (const c of args[i].slice(1)) op.add(c); continue; }
+      resto.push(args[i]);
+    }
+    return { op, resto, n };
+  };
+  const lineas = t => (t === '' ? [] : t.replace(/\n$/, '').split('\n'));
+  const entrada = (resto, stdin, cmd) => (resto.length ? resto.map(f => leer(f, cmd)).join('\n') : stdin);
+  const comandos = {
+    pwd: () => '/' + dondeEstoy.join('/'),
+    whoami: () => 'ana',
+    echo: a => a.join(' '),
+    clear: () => { salida = []; return null; },
+    cd: a => { const p = ruta(a[0] || '~'), n = buscar(p);
+      if (n === undefined) throw new Error(`bash: cd: ${a[0]}: ${NOEXISTE}`);
+      if (!esCarpeta(n)) throw new Error(`bash: cd: ${a[0]}: No es un directorio`);
+      dondeEstoy = p; return null; },
+    ls: a => { const { op, resto } = opciones(a), objetivos = resto.length ? resto : ['.'], partes = [];
+      if (op.has('l')) throw new Error('ls -l: en esta terminal de práctica no está; probalo en la terminal de tu computadora');
+      // Como el ls de verdad: primero los errores, después los archivos en un renglón y al final cada carpeta
+      const faltan = objetivos.filter(o => buscar(ruta(o)) === undefined), archivos = objetivos.filter(o => { const n = buscar(ruta(o)); return n !== undefined && !esCarpeta(n); });
+      faltan.forEach(o => partes.push(`ls: no se puede acceder a '${o}': ${NOEXISTE}`));
+      if (archivos.length) partes.push(ordenar(archivos).join('  '));
+      for (const o of ordenar(objetivos)) {
+        const n = buscar(ruta(o));
+        if (!esCarpeta(n)) continue;
+        let nombres = Object.keys(n).filter(x => op.has('a') || !x.startsWith('.'));
+        nombres = ordenar(nombres); if (op.has('a')) nombres = ['.', '..', ...nombres];
+        const lista = nombres.join('  ');
+        partes.push(objetivos.length > 1 ? `${o}:\n${lista}` : lista);
+      }
+      return partes.join('\n\n'); },
+    mkdir: a => { const { op, resto } = opciones(a), err = [];
+      for (const d of resto) {
+        const p = ruta(d);
+        if (op.has('p')) { let n = raiz; for (const t of p) { if (!esCarpeta(n[t])) n[t] = {}; n = n[t]; } continue; }
+        const { carpeta, nombre } = padre(p);
+        if (!esCarpeta(carpeta)) err.push(`mkdir: no se puede crear el directorio «${d}»: ${NOEXISTE}`);
+        else if (carpeta[nombre] !== undefined) err.push(`mkdir: no se puede crear el directorio «${d}»: El archivo ya existe`);
+        else carpeta[nombre] = {};
+      }
+      if (err.length) throw new Error(err.join('\n')); return null; },
+    touch: a => { for (const f of a) { const { carpeta, nombre } = padre(ruta(f));
+      if (!esCarpeta(carpeta)) throw new Error(`touch: no se puede efectuar 'touch' sobre '${f}': ${NOEXISTE}`);
+      if (carpeta[nombre] === undefined) carpeta[nombre] = ''; } return null; },
+    cat: (a, stdin) => entrada(a, stdin, 'cat'),
+    rm: a => { const { op, resto } = opciones(a), err = [];
+      for (const f of resto) { const { carpeta, nombre } = padre(ruta(f)), n = esCarpeta(carpeta) ? carpeta[nombre] : undefined;
+        if (n === undefined) err.push(`rm: no se puede borrar '${f}': ${NOEXISTE}`);
+        else if (esCarpeta(n) && !op.has('r')) err.push(`rm: no se puede borrar '${f}': Es un directorio`);
+        else delete carpeta[nombre]; }
+      if (err.length) throw new Error(err.join('\n')); return null; },
+    cp: a => copiarOMover(a, 'cp'),
+    mv: a => copiarOMover(a, 'mv'),
+    head: (a, stdin) => { const { resto, n } = opciones(a, true); return lineas(entrada(resto, stdin, 'head')).slice(0, n ?? 10).join('\n'); },
+    tail: (a, stdin) => { const { resto, n } = opciones(a, true), l = lineas(entrada(resto, stdin, 'tail')); return l.slice(Math.max(0, l.length - (n ?? 10))).join('\n'); },
+    wc: (a, stdin) => { const { op, resto } = opciones(a), t = entrada(resto, stdin, 'wc'), nombre = resto.length === 1 ? ' ' + resto[0] : '';
+      if (op.has('w')) return (t.split(/\s+/).filter(Boolean).length) + nombre;
+      return lineas(t).length + nombre; },
+    grep: (a, stdin) => { const { op, resto } = opciones(a), [patron, ...archivos] = resto;
+      if (patron === undefined) throw new Error('grep: falta qué buscar. Uso: grep palabra archivo');
+      const t = entrada(archivos, stdin, 'grep'), quiere = x => (op.has('i') ? x.toLowerCase().includes(patron.toLowerCase()) : x.includes(patron)) !== op.has('v');
+      const ok = lineas(t).map((x, i) => [x, i + 1]).filter(([x]) => quiere(x));
+      if (op.has('c')) return String(ok.length);
+      return ok.map(([x, i]) => (op.has('n') ? i + ':' : '') + x).join('\n'); },
+    sort: (a, stdin) => { const { op, resto } = opciones(a), l = lineas(entrada(resto, stdin, 'sort'));
+      l.sort(op.has('n') ? (x, y) => parseFloat(x) - parseFloat(y) : (x, y) => x.localeCompare(y, 'es', { sensitivity: 'base' }) || (x < y ? -1 : x > y ? 1 : 0));
+      if (op.has('r')) l.reverse(); return l.join('\n'); },
+    uniq: (a, stdin) => { const { op, resto } = opciones(a), l = lineas(entrada(resto, stdin, 'uniq')), g = [];
+      for (const x of l) { if (g.length && g[g.length - 1][0] === x) g[g.length - 1][1]++; else g.push([x, 1]); }
+      return g.map(([x, c]) => (op.has('c') ? String(c).padStart(7) + ' ' : '') + x).join('\n'); },
+  };
+  function copiarOMover(a, cmd) {
+    const { op, resto } = opciones(a);
+    if (resto.length < 2) throw new Error(`${cmd}: falta el destino. Uso: ${cmd} origen destino`);
+    const destino = resto.pop(), dp = ruta(destino), dn = buscar(dp);
+    for (const o of resto) {
+      const op1 = ruta(o), { carpeta, nombre } = padre(op1), n = esCarpeta(carpeta) ? carpeta[nombre] : undefined;
+      if (n === undefined) throw new Error(`${cmd}: no se puede efectuar stat sobre '${o}': ${NOEXISTE}`);
+      if (cmd === 'cp' && esCarpeta(n) && !op.has('r')) throw new Error(`cp: -r no especificado; se omite el directorio '${o}'`);
+      const final = esCarpeta(dn) ? { carpeta: dn, nombre } : padre(dp);
+      if (!esCarpeta(final.carpeta)) throw new Error(`${cmd}: no se puede crear '${destino}': ${NOEXISTE}`);
+      final.carpeta[final.nombre] = JSON.parse(JSON.stringify(n));
+      if (cmd === 'mv') delete carpeta[nombre];
+    }
+    return null;
+  }
+  for (const crudo of guion.replace(/\r/g, '').split('\n')) {
+    const linea = crudo.trim();
+    if (!linea || linea.startsWith('#')) continue;
+    salida.push('$ ' + linea);
+    try {
+      // Tuberías (|) y, al final, redirección a un archivo (> reemplaza, >> agrega)
+      let tramos = linea.split('|').map(x => x.trim()), redir = null;
+      const ultimo = tramos[tramos.length - 1].match(/^(.*?)\s*(>>?)\s*(\S+)$/);
+      if (ultimo) { tramos[tramos.length - 1] = ultimo[1]; redir = { modo: ultimo[2], archivo: ultimo[3] }; }
+      let datos = '';
+      for (const tramo of tramos) {
+        const [cmd, ...args] = palabras(tramo);
+        if (!cmd) throw new Error('bash: error de sintaxis cerca de «|»');
+        if (cmd === 'man' || cmd === 'sudo' || cmd === 'apt' || cmd === 'chmod' || cmd === 'nano') throw new Error(`${cmd}: en esta terminal de práctica no está; probalo en la terminal de tu computadora`);
+        if (!comandos[cmd]) throw new Error(`bash: ${cmd}: orden no encontrada`);
+        const r = comandos[cmd](args, datos);
+        datos = r === null ? '' : r;
+      }
+      if (redir) {
+        const { carpeta, nombre } = padre(ruta(redir.archivo));
+        if (!esCarpeta(carpeta)) throw new Error(`bash: ${redir.archivo}: ${NOEXISTE}`);
+        if (esCarpeta(carpeta[nombre])) throw new Error(`bash: ${redir.archivo}: Es un directorio`);
+        const previo = carpeta[nombre] || '';
+        carpeta[nombre] = redir.modo === '>>' && previo ? previo.replace(/\n$/, '') + '\n' + datos : datos;
+      } else if (datos !== '') salida.push(datos);
+    } catch (e) { salida.push(e.message); }
+  }
+  return salida.join('\n');
+}
+// ---------- Terminal simulada (fin) ----------
+function montarLabTerminal(pre) {
+  const boton = Object.assign(document.createElement('button'), { className: 'secundario boton-lab', textContent: '▶ Probar en la terminal de práctica' });
+  pre.after(boton);
+  boton.onclick = () => {
+    boton.remove();
+    const lab = document.createElement('div');
+    lab.className = 'lab';
+    lab.innerHTML = `<label class="suave">🧪 Terminal de práctica: escribí un comando por renglón y ejecutalos. Es una imitación que vive en tu navegador: arranca siempre en la carpeta de Ana y no toca tu computadora.</label>
+      <textarea spellcheck="false" aria-label="Comandos de terminal"></textarea>
+      <div class="acciones-lab"><button>▶ Ejecutar</button><button class="secundario" data-reset>↺ Volver al original</button></div>
+      <pre class="salida" aria-live="polite" hidden></pre>`;
+    const area = lab.querySelector('textarea'), salida = lab.querySelector('.salida'), [correr, reset] = lab.querySelectorAll('button');
+    area.value = pre.textContent;
+    area.rows = Math.min(20, area.value.split('\n').length + 1);
+    reset.onclick = () => { area.value = pre.textContent; };
+    correr.onclick = () => { salida.hidden = false; salida.textContent = terminalSimulada(area.value) || '✔ Listo (estos comandos no muestran nada)'; };
+    pre.after(lab);
+  };
+}
 function montarLabWeb(pre) {
   const boton = Object.assign(document.createElement('button'), { className: 'secundario boton-lab', textContent: '▶ Probar este código' });
   pre.after(boton);
@@ -536,7 +723,7 @@ function modulo(id, abrir = null) {
     modulo(id);
   });
   app.querySelectorAll('.contenido').forEach(marcarGlosario);
-  app.querySelectorAll('.contenido pre').forEach(pre => { if (pre.classList.contains('web')) montarLabWeb(pre); else if (pre.classList.contains('sql')) montarLabSQL(pre); else if (esPython(pre.textContent)) montarLab(pre); });
+  app.querySelectorAll('.contenido pre').forEach(pre => { if (pre.classList.contains('web')) montarLabWeb(pre); else if (pre.classList.contains('sql')) montarLabSQL(pre); else if (pre.classList.contains('terminal')) montarLabTerminal(pre); else if (esPython(pre.textContent)) montarLab(pre); });
   const buscada = abrir != null && app.querySelectorAll('details.leccion')[abrir];
   if (buscada) {
     if (ultimaBusqueda) resaltarEn(buscada.querySelector('.contenido'), ultimaBusqueda);
