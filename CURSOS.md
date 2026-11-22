@@ -79,7 +79,7 @@ Para cambiar el orden, mové las líneas. Para agregar un curso, sumá una líne
 - [x] `panaderia` · Panadería casera para vender · adultos · Oficios · "Panadería casera para vender"
 - [x] `pasteleria` · Pastelería básica · adultos · Oficios · "Pastelería básica"
 - [x] `cocina` · Cocina básica: comer bien gastando poco · adultos · Oficios · "Cocina básica: comer bien gastando poco"
-- [ ] `conservas` · Conservas y dulces caseros seguros · adultos · Oficios
+- [x] `conservas` · Conservas y dulces caseros seguros · adultos · Oficios · "Conservas y dulces caseros seguros"
 - [ ] `bicicletas` · Mecánica de bicicletas · adultos · Oficios
 - [ ] `auto-basico` · Mantenimiento básico del auto · adultos con auto · Oficios
 - [ ] `restaurar-muebles` · Restaurar y reciclar muebles · adultos · Oficios
