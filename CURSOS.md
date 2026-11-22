@@ -115,7 +115,7 @@ Para cambiar el orden, mové las líneas. Para agregar un curso, sumá una líne
 - [x] `lectura` · Leer mejor y entender lo que leés · adultos · Vida diaria · "Leer mejor y entender lo que leés"
 - [x] `ortografia` · Ortografía y redacción sin vueltas · adultos · Vida diaria · "Ortografía y redacción sin vueltas"
 - [x] `consumo` · Comprar mejor: derechos del consumidor · adultos · Vida diaria · "Comprar mejor: derechos del consumidor"
-- [ ] `ahorro-energia` · Ahorrar luz, gas y agua en casa · adultos · Vida diaria
+- [x] `ahorro-energia` · Ahorrar luz, gas y agua en casa · adultos · Vida diaria · "Ahorrar luz, gas y agua en casa"
 - [ ] `alimentacion` · Comer mejor con información confiable · adultos · Vida diaria
 - [ ] `primeros-auxilios` · Primeros auxilios: qué hacer mientras llega la ayuda · adultos (no reemplaza un curso presencial) · Vida diaria
 - [ ] `primeros-auxilios-combate` · Primeros auxilios en deportes de combate (boxeo, artes marciales, judo, jiu-jitsu, MMA): golpes en la cabeza, cortes, sangrado de nariz, torceduras, estrangulaciones y cuándo parar · practicantes, profes y entrenadores (no reemplaza un curso presencial ni al médico del evento) · Vida diaria
