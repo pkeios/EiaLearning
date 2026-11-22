@@ -15,6 +15,7 @@ const CURSOS = [
   { html: 'matematica.html', datos: 'matematica-misiones.js', clave: 'chicos-matematica', min: 8, codigo: 0, tareas: 8 },
   { html: 'escribir.html', datos: 'escribir-misiones.js', clave: 'chicos-escribir', min: 8, codigo: 0, tareas: 8 },
   { html: 'espacio.html', datos: 'espacio-misiones.js', clave: 'chicos-espacio', min: 8, codigo: 0, tareas: 8 },
+  { html: 'huerta.html', datos: 'huerta-misiones.js', clave: 'chicos-huerta', min: 8, codigo: 0, tareas: 8 },
 ];
 const palabras = t => t.replace(/<[^>]+>/g, '').split(/\s+/).filter(Boolean).length;
 const claves = new Set();

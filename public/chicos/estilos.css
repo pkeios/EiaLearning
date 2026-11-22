@@ -151,6 +151,7 @@ textarea { font-size: 1rem; }
 :root[data-curso="matematica"] { --color: #2f6fe4; --cabeza: linear-gradient(135deg, #2f6fe4, #d6406f); }
 :root[data-curso="escribir"] { --color: #d6406f; --cabeza: linear-gradient(135deg, #d6406f, #e0a100); }
 :root[data-curso="espacio"] { --color: #3b3f9e; --cabeza: linear-gradient(135deg, #3b3f9e, #7a5af8); }
+:root[data-curso="huerta"] { --color: #3d8b3d; --cabeza: linear-gradient(135deg, #3d8b3d, #8bc34a); }
 :root[data-curso="programar"] { --color: #2f6fe4; --cabeza: linear-gradient(135deg, #2f6fe4, #e0a100); }
 .ordenados { text-align: left; font-size: 1.15rem; margin: .6rem 0; padding-left: 1.6rem; }
 .ordenados li { background: #e7f7ee; border-radius: 12px; padding: .3rem .6rem; margin: .3rem 0; }
