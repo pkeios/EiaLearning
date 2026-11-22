@@ -103,7 +103,7 @@ Para cambiar el orden, mové las líneas. Para agregar un curso, sumá una líne
 - [x] `fotos-producto` · Fotos de producto con el celular · emprendedores · Emprender · "Fotos de producto con el celular"
 - [x] `whatsapp-negocio` · Atender clientes por WhatsApp · emprendedores · Emprender · "Atender clientes por WhatsApp"
 - [x] `marca` · Tu marca: nombre, logo y estilo · emprendedores · Emprender · "Tu marca: nombre, logo y estilo"
-- [ ] `cuentas-emprendimiento` · Las cuentas del emprendimiento · emprendedores · Emprender
+- [x] `cuentas-emprendimiento` · Las cuentas del emprendimiento · emprendedores · Emprender · "Las cuentas del emprendimiento"
 - [ ] `ferias` · Vender en ferias y mercados · emprendedores · Emprender
 - [ ] `servicios` · Ofrecer servicios: presupuestos y clientes · trabajadores independientes · Emprender
 
